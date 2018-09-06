@@ -14,8 +14,7 @@ struct D_E_Register
 		__in(ch_bit<32>)in_rd1,
 		__in(ch_bit<5>) in_rs2,
 		__in(ch_bit<32>)in_rd2,
-		__in(ch_bit<3>) in_func3,
-		__in(ch_bit<7>) in_func7,
+		__in(ch_bit<4>) in_alu_op,
 		__in(ch_bit<1>) in_wb,
 		__in(ch_bit2)   in_PC_next,
 
@@ -25,8 +24,7 @@ struct D_E_Register
 		__out(ch_bit<32>)out_rd1,
 		__out(ch_bit<5>) out_rs2,
 		__out(ch_bit<32>)out_rd2,
-		__out(ch_bit<3>) out_func3,
-		__out(ch_bit<7>) out_func7,
+		__out(ch_bit<4>) out_alu_op,
 		__out(ch_bit<1>) out_wb,
 		__out(ch_bit2)   out_PC_next
 	);
@@ -40,8 +38,7 @@ struct D_E_Register
 		ch_reg<ch_bit<32>> rd1(0);
 		ch_reg<ch_bit<5>>  rs2(0);
 		ch_reg<ch_bit<32>> rd2(0);
-		ch_reg<ch_bit<3>>  func3(0);
-		ch_reg<ch_bit<7>>  func7(0);
+		ch_reg<ch_bit<4>>  alu_op(0);
 		ch_reg<ch_bit<1>>  wb(0);
 		ch_reg<ch_bit2>    PC_next_out(0);
 
@@ -51,8 +48,7 @@ struct D_E_Register
 		io.out_rd1 = rd1;
 		io.out_rs2 = rs2;
 		io.out_rd2 = rd2;
-		io.out_func3 = func3;
-		io.out_func7 = func7;
+		io.out_alu_op = alu_op;
 		io.out_wb = wb;
 		io.out_PC_next = PC_next_out;
 		
@@ -62,8 +58,7 @@ struct D_E_Register
 		rd1->next = io.in_rd1;
 		rs2->next = io.in_rs2;
 		rd2->next = io.in_rd2;
-		func3->next = io.in_func3;
-		func7->next = io.in_func7;
+		alu_op->next = io.in_alu_op;
 		wb->next = io.in_wb;
 		PC_next_out->next = io.in_PC_next;
 

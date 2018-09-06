@@ -41,8 +41,7 @@ struct Pipeline
     d_e_register.io.in_rd1(decode.io.out_rd1);
     d_e_register.io.in_rs2(decode.io.out_rs2);
     d_e_register.io.in_rd2(decode.io.out_rd2);
-    d_e_register.io.in_func3(decode.io.out_func3);
-    d_e_register.io.in_func7(decode.io.out_func7);
+    d_e_register.io.in_alu_op(decode.io.out_alu_op);
     d_e_register.io.in_PC_next(decode.io.out_PC_next);
     d_e_register.io.in_wb(decode.io.out_wb);
 
@@ -53,8 +52,7 @@ struct Pipeline
     execute.io.in_rd1(d_e_register.io.out_rd1);
     execute.io.in_rs2(d_e_register.io.out_rs2);
     execute.io.in_rd2(d_e_register.io.out_rd2);
-    execute.io.in_func3(d_e_register.io.out_func3);
-    execute.io.in_func7(d_e_register.io.out_func7);
+    execute.io.in_alu_op(d_e_register.io.out_alu_op);
     execute.io.in_PC_next(d_e_register.io.out_PC_next);
     execute.io.in_wb(d_e_register.io.out_wb);
 

@@ -14,8 +14,7 @@ struct Execute
 		__in(ch_bit<32>)in_rd1,
 		__in(ch_bit<5>) in_rs2,
 		__in(ch_bit<32>)in_rd2,
-		__in(ch_bit<3>) in_func3,
-		__in(ch_bit<7>) in_func7,
+		__in(ch_bit<4>) in_alu_op,
 		__in(ch_bit<1>) in_wb,
 		__in(ch_bit2)   in_PC_next,
 
@@ -34,40 +33,45 @@ struct Execute
 		ch_bit<32> ALU_in2 = io.in_rd2; 
 
 
-		__switch(io.in_func3.as_uint())
+		__switch(io.in_alu_op.as_uint())
 			__case(0) 
 			{
-				ch_bit<32> add = ALU_in1.as_int() + ALU_in2.as_int();
-				ch_bit<32> sub = ALU_in1.as_int() - ALU_in2.as_int();
-				io.out_alu_result = ch_sel(io.in_func7.as_uint() == 0, add, sub);
+				io.out_alu_result = ALU_in1.as_int() + ALU_in2.as_int();
 			}
 			__case(1)
 			{
-				io.out_alu_result = ALU_in1.as_uint() << ALU_in2.as_uint();
+				io.out_alu_result = ALU_in1.as_int() - ALU_in2.as_int();
 			}
 			__case(2)
 			{
-				io.out_alu_result = ch_sel(ALU_in1.as_int() < ALU_in2.as_int(), ch_bit<32>(0), ch_bit<32>(1));
+				io.out_alu_result = ALU_in1.as_uint() << ALU_in2.as_uint();
 			}
 			__case(3)
 			{
-				io.out_alu_result = ch_sel(ALU_in1.as_uint() < ALU_in2.as_uint(), ch_bit<32>(0), ch_bit<32>(1));
+				io.out_alu_result = ch_sel(ALU_in1.as_int() < ALU_in2.as_int(), ch_bit<32>(0), ch_bit<32>(1));
 			}
 			__case(4)
 			{
-				io.out_alu_result = ALU_in1 ^ ALU_in2;
+				io.out_alu_result = ch_sel(ALU_in1.as_uint() < ALU_in2.as_uint(), ch_bit<32>(0), ch_bit<32>(1));
 			}
 			__case(5)
 			{
-				ch_bit<32> logical = ALU_in1.as_uint() >> ALU_in2.as_uint();
-				ch_bit<32> arithm  = ALU_in1.as_int()  >> ALU_in2.as_uint();
-				io.out_alu_result  = ch_sel(io.in_func7.as_uint() == 0, logical, arithm);
+				
+				io.out_alu_result = ALU_in1 ^ ALU_in2;
 			}
 			__case(6)
 			{
-				io.out_alu_result = ALU_in1 | ALU_in2;
+				io.out_alu_result = ALU_in1.as_uint() >> ALU_in2.as_uint();
 			}
 			__case(7)
+			{
+				io.out_alu_result  = ALU_in1.as_int()  >> ALU_in2.as_uint();
+			}
+			__case(8)
+			{
+				io.out_alu_result = ALU_in1 | ALU_in2;
+			}
+			__case(9)
 			{
 				io.out_alu_result = ALU_in2 & ALU_in1;
 			}

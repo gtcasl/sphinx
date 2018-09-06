@@ -16,7 +16,7 @@ struct Fetch
 	{
 
 		
-		ch_rom<ch_bit<32>, 4> inst_mem({0x00000000, 0x80720333, 0x00000000, 0x00000000});
+		ch_rom<ch_bit<32>, 4> inst_mem({0x00000000, 0x00720333, 0x00000000, 0x00000000});
 		ch_reg<ch_bit2> PC(0);
 
 		io.out_instruction = inst_mem.read(PC.as_uint());
