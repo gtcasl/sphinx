@@ -44,6 +44,7 @@ struct Pipeline
     d_e_register.io.in_alu_op(decode.io.out_alu_op);
     d_e_register.io.in_PC_next(decode.io.out_PC_next);
     d_e_register.io.in_wb(decode.io.out_wb);
+    // d_e_register.io(decode.io);
 
     // d_e_register to execute
     execute.io.in_opcode(d_e_register.io.out_opcode);

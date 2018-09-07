@@ -1,6 +1,18 @@
 #include <cash.h>
 #include <ioport.h>
 
+// __inout(decode_io, (
+// 	__out(ch_bit<7>) out_opcode,
+// 	__out(ch_bit<5>) out_rd,
+// 	__out(ch_bit<5>) out_rs1,
+// 	__out(ch_bit<32>) out_rd1,
+// 	__out(ch_bit<5>) out_rs2,
+// 	__out(ch_bit<32>) out_rd2,
+// 	__out(ch_bit<1>) out_wb,
+// 	__out(ch_bit<4>) out_alu_op,
+// 	__out(ch_bit2)   out_PC_next
+// ));
+
 using namespace ch::core;
 using namespace ch::sim;
 
@@ -17,6 +29,8 @@ struct D_E_Register
 		__in(ch_bit<4>) in_alu_op,
 		__in(ch_bit<1>) in_wb,
 		__in(ch_bit2)   in_PC_next,
+
+         // (ch_flip_io<decode_io>) in,
 
 		__out(ch_bit<7>) out_opcode,
 		__out(ch_bit<5>) out_rd,

@@ -5,6 +5,18 @@ using namespace ch::core;
 using namespace ch::sim;
 
 
+// __inout(decode_io, (
+// 	__out(ch_bit<7>) out_opcode,
+// 	__out(ch_bit<5>) out_rd,
+// 	__out(ch_bit<5>) out_rs1,
+// 	__out(ch_bit<32>) out_rd1,
+// 	__out(ch_bit<5>) out_rs2,
+// 	__out(ch_bit<32>) out_rd2,
+// 	__out(ch_bit<1>) out_wb,
+// 	__out(ch_bit<4>) out_alu_op,
+// 	__out(ch_bit2)   out_PC_next
+// ));
+
 struct Decode
 {
 	__io(
@@ -20,6 +32,7 @@ struct Decode
 		__out(ch_bit<32>) actual_change,
 
 		// Outputs
+		// (decode_io) out
 		__out(ch_bit<7>) out_opcode,
 		__out(ch_bit<5>) out_rd,
 		__out(ch_bit<5>) out_rs1,
@@ -35,6 +48,8 @@ struct Decode
 	{
 
 		ch_mem<ch_bit<32>, 32> registers;
+
+
 
 		registers.write(ch_uint<5>(4), ch_uint<32>(4) );
 		registers.write(ch_uint<5>(7), ch_uint<32>(7) );
@@ -102,5 +117,9 @@ struct Decode
 		// Debugging outputs
 		io.actual_change = registers.read(ch_uint<5>(6));
 
+
 	}
+
 };
+
+
