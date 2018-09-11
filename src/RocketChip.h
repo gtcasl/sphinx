@@ -1,3 +1,4 @@
+//
 #include <cash.h>
 #include <ioport.h>
 
@@ -133,9 +134,13 @@ class RocketChip
 {
     public:
         RocketChip(std::string);
+        ~RocketChip();
         void simulate();
         void export_model(void);
     private:
+
+        void ProcessFile(void);
+
         ch_device<Pipeline> pipeline;
         ch_tracer sim;
         std::ifstream instruction_file;
@@ -150,14 +155,61 @@ RocketChip::RocketChip(std::string instruction_file_name)
         std::cout << "Unable to open file";
         exit(1); // terminate with error
     }
+
+    this->ProcessFile();
 }
 
-void RocketChip::simulate()
+RocketChip::~RocketChip()
 {
+    instruction_file.close();
+}
+
+void RocketChip::ProcessFile(void) {
+
+    std::ofstream ofs ("../test.txt", std::ofstream::out);
+
+    std::cout << "Size of Unsighed: " << sizeof(unsigned) << std::endl;
+    unsigned inst;
+    char line[129];
+
+    while (this->instruction_file >> line)
+    {
+        int ii;
+        int jj = 0;
+        int zz = 8;
+        for (ii = 0; ii < 7; ii++)
+        {
+            char curr_inst[1];
+            
+            strncpy(curr_inst, line + jj, 8);
+            // inst = (unsigned) strtol(curr_inst, NULL, 16); 
+
+            if (curr_inst[7] == '3')
+                std::cout << "Inst: " << curr_inst << std::endl;
+
+            // if (inst[1])
+
+
+
+            // if ((inst & 3) != 0)
+            // {
+            //     // std::cout << "\tInst: " << std::hex << inst << std::endl;
+            // }
+            jj += 8;
+            zz += 8;
+        }
+    }
+
+    ofs.close();
+
+}
+
+
+void RocketChip::simulate(void) {
 
     sim.run([&](ch_tick t)->bool {
 
-        int inst;
+        unsigned inst;
 
         if (this->instruction_file >> std::hex >> inst)
         {
