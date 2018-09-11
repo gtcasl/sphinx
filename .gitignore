@@ -1,0 +1,5 @@
+src/pipeline.out
+src/inst.bin
+src/pipeline.o
+src/pipeline.v
+src/pipeline.vcd

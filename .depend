@@ -1,0 +1,2 @@
+pipeline.o: pipeline.cpp fetch.h f_d_register.h decode.h d_e_register.h \
+ execute.h e_m_register.h memory.h m_w_register.h write_back.h
