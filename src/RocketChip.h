@@ -123,13 +123,7 @@ struct Pipeline
   ch_module<Write_Back> write_back;
 };
 
-// 01000000010100110000001000110011
-// 0x00530233
-// 0x00330233
-// 0x00628233
-// 0x00420233
-// 0x00530233
-// 0x00000000
+
 class RocketChip
 {
     public:
@@ -152,7 +146,7 @@ RocketChip::RocketChip(std::string instruction_file_name)
     sim = ch_tracer(this->pipeline);
     instruction_file.open(instruction_file_name);
     if (!instruction_file) {
-        std::cout << "Unable to open file";
+        std::cout << "Unable to open file" << std::endl;
         exit(1); // terminate with error
     }
 
@@ -166,37 +160,20 @@ RocketChip::~RocketChip()
 
 void RocketChip::ProcessFile(void) {
 
-    std::ofstream ofs ("../test.txt", std::ofstream::out);
+    std::ofstream ofs ("../inst.bin", std::ofstream::out);
+    std::string line;
+    std::string curr_inst;
 
-    std::cout << "Size of Unsighed: " << sizeof(unsigned) << std::endl;
-    unsigned inst;
-    char line[129];
 
-    while (this->instruction_file >> line)
+    while (instruction_file >> line)
     {
         int ii;
-        int jj = 0;
-        int zz = 8;
-        for (ii = 0; ii < 7; ii++)
+        for (ii = 0; ii < 16; ii++)
         {
-            char curr_inst[1];
-            
-            strncpy(curr_inst, line + jj, 8);
-            // inst = (unsigned) strtol(curr_inst, NULL, 16); 
+            curr_inst = line.substr(ii*8,8);
 
-            if (curr_inst[7] == '3')
-                std::cout << "Inst: " << curr_inst << std::endl;
-
-            // if (inst[1])
-
-
-
-            // if ((inst & 3) != 0)
-            // {
-            //     // std::cout << "\tInst: " << std::hex << inst << std::endl;
-            // }
-            jj += 8;
-            zz += 8;
+            if ( curr_inst[7] == '3')
+                ofs << curr_inst << std::endl;
         }
     }
 
