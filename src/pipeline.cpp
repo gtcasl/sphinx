@@ -1,14 +1,15 @@
 ////
 #include "RocketChip.h"
 
-// WSh
-
-int main()
+int main(int argc, char ** argv)
 {
 
-  RocketChip rocketchip("smd");
-  rocketchip.simulate();
-  rocketchip.export_model();
+  if (argc > 1)
+  {
+    RocketChip rocketchip(argv[1]);
+    rocketchip.simulate();
+    rocketchip.export_model();
+  }
 
 }
 
