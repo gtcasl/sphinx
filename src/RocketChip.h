@@ -15,6 +15,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <unistd.h>
+// #include<cv.h>
 
 using namespace ch::core;
 using namespace ch::sim;
@@ -134,63 +136,93 @@ class RocketChip
     private:
 
         void ProcessFile(void);
-
+        void asmToHex(void);
+        void filterHex(void);
         ch_device<Pipeline> pipeline;
         ch_tracer sim;
-        std::ifstream instruction_file;
+        std::string instruction_file_name;
 };
 
 
 RocketChip::RocketChip(std::string instruction_file_name)
 {
     sim = ch_tracer(this->pipeline);
-    instruction_file.open(instruction_file_name);
-    if (!instruction_file) {
-        std::cout << "Unable to open file" << std::endl;
-        exit(1); // terminate with error
-    }
+
+    this->instruction_file_name = instruction_file_name;
 
     this->ProcessFile();
 }
 
 RocketChip::~RocketChip()
 {
-    instruction_file.close();
+
 }
 
-void RocketChip::ProcessFile(void) {
+void RocketChip::ProcessFile(void)
+{
 
-    std::ofstream ofs ("../inst.bin", std::ofstream::out);
+    std::cout << "About to call asm" << std::endl;
+
+    this->asmToHex();
+    this->filterHex();
+
+}
+
+void RocketChip::asmToHex(void)
+{
+
+
+
+    system("/opt/riscv/bin/riscv32-unknown-linux-gnu-gcc ../traces/file.S -o ../Workspace/file.run");
+
+    sleep(1);
+
+    system("/usr/bin/bin/elf2hex 64 4096 ../Workspace/file.run >> ../Workspace/file.bin");
+}
+
+void RocketChip::filterHex(void)
+{
+
+
+
+    std::ofstream ofs ("../Workspace/file.hex", std::ofstream::out);
+    std::ifstream ifs ("../Workspace/file.bin", std::ifstream::in);
     std::string line;
     std::string curr_inst;
 
 
-    while (instruction_file >> line)
+    while (ifs >> line)
     {
         int ii;
         for (ii = 0; ii < 16; ii++)
         {
             curr_inst = line.substr(ii*8,8);
 
-            if ( curr_inst[7] == '3')
+            if  (curr_inst[7] == '3')
+            {
                 ofs << curr_inst << std::endl;
+            }
         }
     }
 
     ofs.close();
+    ifs.close();
 
 }
 
 
 void RocketChip::simulate(void) {
 
+
+    std::ifstream instruction_file("../Workspace/file.hex");
+
     sim.run([&](ch_tick t)->bool {
 
         unsigned inst;
 
-        if (this->instruction_file >> std::hex >> inst)
+        if (instruction_file >> std::hex >> inst)
         {
-            std::cout << "inst: " << std::hex << inst << std::endl;
+            std::cout << "\ninst_going_in: " << std::hex << inst << std::endl;
             pipeline.io.in_din = inst;
             pipeline.io.in_push = true;
         }
@@ -200,8 +232,8 @@ void RocketChip::simulate(void) {
             pipeline.io.in_push = false;
         }
 
-        std::cout << "\n-------------------------------------t: " << (t) << std::endl;
-        std::cout << "actual_change: " << pipeline.io.actual_change << std::endl;
+        std::cout << "t: " << (t) << std::endl;
+        // std::cout << "\tactual_change: " << pipeline.io.actual_change << std::endl;
 
         return (t != 30);
     });

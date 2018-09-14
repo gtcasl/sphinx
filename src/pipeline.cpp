@@ -6,9 +6,9 @@
 int main()
 {
 
-  RocketChip rocketchip("../traces/file.hex");
-  // rocketchip.simulate();
-  // rocketchip.export_model();
+  RocketChip rocketchip("smd");
+  rocketchip.simulate();
+  rocketchip.export_model();
 
 }
 
