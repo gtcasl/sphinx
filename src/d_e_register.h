@@ -20,43 +20,52 @@ using namespace ch::sim;
 struct D_E_Register
 {
 	__io(
-		__in(ch_bit<7>) in_opcode,
 		__in(ch_bit<5>) in_rd,
 		__in(ch_bit<5>) in_rs1,
 		__in(ch_bit<32>)in_rd1,
 		__in(ch_bit<5>) in_rs2,
 		__in(ch_bit<32>)in_rd2,
 		__in(ch_bit<4>) in_alu_op,
-		__in(ch_bit<1>) in_wb,
+		__in(ch_bit<2>) in_wb,
+		__in(ch_bit<1>) in_rs2_src, // NEW
+		__in(ch_bit<12>) in_itype_immed, // new
+		__in(ch_bit<3>) in_mem_read, // NEW
+		__in(ch_bit<3>) in_mem_write,
 		__in(ch_bit2)   in_PC_next,
 
          // (ch_flip_io<decode_io>) in,
 
-		__out(ch_bit<7>) out_opcode,
 		__out(ch_bit<5>) out_rd,
 		__out(ch_bit<5>) out_rs1,
 		__out(ch_bit<32>)out_rd1,
 		__out(ch_bit<5>) out_rs2,
 		__out(ch_bit<32>)out_rd2,
 		__out(ch_bit<4>) out_alu_op,
-		__out(ch_bit<1>) out_wb,
+		__out(ch_bit<2>) out_wb,
+		__out(ch_bit<1>) out_rs2_src, // NEW
+		__out(ch_bit<12>) out_itype_immed, // new
+		__out(ch_bit<3>) out_mem_read,
+		__out(ch_bit<3>) out_mem_write,
 		__out(ch_bit2)   out_PC_next
 	);
 
 	void describe()
 	{
 
-		ch_reg<ch_bit<7>>  opcode(0);
 		ch_reg<ch_bit<5>>  rd(0);
 		ch_reg<ch_bit<5>>  rs1(0);
 		ch_reg<ch_bit<32>> rd1(0);
 		ch_reg<ch_bit<5>>  rs2(0);
 		ch_reg<ch_bit<32>> rd2(0);
 		ch_reg<ch_bit<4>>  alu_op(0);
-		ch_reg<ch_bit<1>>  wb(0);
+		ch_reg<ch_bit<2>>  wb(0);
 		ch_reg<ch_bit2>    PC_next_out(0);
+		ch_reg<ch_bit<1>>  rs2_src(0);
+		ch_reg<ch_bit<12>> itype_immed(0);
+		ch_reg<ch_bit<3>>  mem_read(0);
+		ch_reg<ch_bit<3>>  mem_write(0);
 
-		io.out_opcode = opcode;
+
 		io.out_rd = rd;
 		io.out_rs1 = rs1;
 		io.out_rd1 = rd1;
@@ -65,8 +74,11 @@ struct D_E_Register
 		io.out_alu_op = alu_op;
 		io.out_wb = wb;
 		io.out_PC_next = PC_next_out;
-		
-		opcode->next = io.in_opcode;
+		io.out_rs2_src = rs2_src;
+		io.out_itype_immed = itype_immed;
+		io.out_mem_read = mem_read;
+		io.out_mem_write = mem_write;
+
 		rd->next = io.in_rd;
 		rs1->next = io.in_rs1;
 		rd1->next = io.in_rd1;
@@ -75,7 +87,10 @@ struct D_E_Register
 		alu_op->next = io.in_alu_op;
 		wb->next = io.in_wb;
 		PC_next_out->next = io.in_PC_next;
-
+		rs2_src->next = io.in_rs2_src;
+		itype_immed->next = io.in_itype_immed;
+		mem_read->next = io.in_mem_read;
+		mem_write->next = io.in_mem_write;
 
 
 	}

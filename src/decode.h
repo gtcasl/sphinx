@@ -24,23 +24,26 @@ struct Decode
 		__in(ch_bit<32>)   in_instruction,
 		__in(ch_bit2)    in_PC_next,
 		// WriteBack inputs
-		__in(ch_bit<32>) in_alu_result,
+		__in(ch_bit<32>) in_write_data,
 		__in(ch_bit<5>) in_rd,
-		__in(ch_bit<1>) in_wb,
+		__in(ch_bit<2>) in_wb,
 
 		// Debugging outputs
 		__out(ch_bit<32>) actual_change,
 
 		// Outputs
 		// (decode_io) out
-		__out(ch_bit<7>) out_opcode,
 		__out(ch_bit<5>) out_rd,
 		__out(ch_bit<5>) out_rs1,
 		__out(ch_bit<32>) out_rd1,
 		__out(ch_bit<5>) out_rs2,
 		__out(ch_bit<32>) out_rd2,
-		__out(ch_bit<1>) out_wb,
+		__out(ch_bit<2>) out_wb,
 		__out(ch_bit<4>) out_alu_op,
+		__out(ch_bit<1>) out_rs2_src, // NEW
+		__out(ch_bit<12>) out_itype_immed, // new
+		__out(ch_bit<3>) out_mem_read, // NEW
+		__out(ch_bit<3>) out_mem_write, // NEW
 		__out(ch_bit2)   out_PC_next
 	);
 
@@ -49,20 +52,17 @@ struct Decode
 
 		ch_mem<ch_bit<32>, 32> registers;
 
+		ch_bit<7> curr_opcode;
+		ch_bool is_itype;
+		ch_bool is_rtype;
+		ch_bool is_stype;
+
+		ch_bool write_register = ch_sel(io.in_wb.as_uint() > 0, ch_bool(true), ch_bool(false));
+
+		registers.write(io.in_rd, io.in_write_data, write_register);
 
 
-		registers.write(ch_uint<5>(4), ch_uint<32>(4) );
-		registers.write(ch_uint<5>(7), ch_uint<32>(7) );
-
-
-
-		registers.write(io.in_rd, io.in_alu_result, io.in_wb.as_uint());
-
-
-		ch_print("\nPC: {0}\nWB:{1}\nDATA{2}", io.in_PC_next, io.in_wb, io.in_alu_result);
-
-
-		io.out_opcode      = ch_slice<7>(io.in_instruction);;
+		curr_opcode        = ch_slice<7>(io.in_instruction);;
 		io.out_rd          = ch_slice<5>(io.in_instruction >> 7);
 		io.out_rs1         = ch_slice<5>(io.in_instruction >> 15);
 		io.out_rd1         = registers.read(io.out_rs1);
@@ -72,8 +72,19 @@ struct Decode
 		ch_bit<7> func7    = ch_slice<7>(io.in_instruction >> 25);
 		io.out_PC_next     = io.in_PC_next;
 
+		// MEM signals 
+		io.out_mem_read  = ch_sel(curr_opcode == 3, func3, ch_bit<3>(7));
+		io.out_mem_write = ch_sel(curr_opcode == 35, func3, ch_bit<3>(7));
+
+
 		// Write Back sigal
-		io.out_wb          = ch_sel(io.out_opcode == 51, ch_bit<1>(1), ch_bit<1>(0));
+		is_rtype  = curr_opcode == 51;
+		is_itype  = (curr_opcode == 19) || (curr_opcode == 3); 
+		is_stype  = (curr_opcode == 35);
+
+		io.out_wb = ch_sel(is_rtype, ch_bit<2>(1), ch_sel(is_itype, ch_bit<2>(2), ch_bit<2>(0)));
+
+		io.out_rs2_src = ch_sel(is_itype, ch_bit<1>(1), ch_bit<1>(0));
 
 		// ALU OP
 		__switch(func3.as_uint())
@@ -111,7 +122,29 @@ struct Decode
 			}
 			__default
 			{
-				io.out_alu_op = 15;
+				io.out_alu_op = 15; 
+			};
+
+		__switch(curr_opcode)
+			__case(19) 
+			{
+				ch_bool shift_i = (func3 == 1) || (func3 == 5);
+
+				ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2); // out_rs2 represents shamt
+
+				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
+			}
+			__case(35)
+			{
+				io.out_itype_immed = ch_cat(func7, io.out_rd);
+			}
+			// __case(2)
+			// {
+
+			// }
+			__default
+			{
+				io.out_itype_immed = ch_bit<12>(123); 
 			};
 
 		// Debugging outputs

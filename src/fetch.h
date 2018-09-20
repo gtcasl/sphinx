@@ -37,6 +37,7 @@ struct Instruction_Queue {
   }
 };
 
+const std::string& init_file = "../Workspace/file.hex";
 
 struct Fetch
 {
@@ -53,8 +54,12 @@ struct Fetch
 		instruction_queue.io.din(io.in_din);
 		instruction_queue.io.push(io.in_push);
 		instruction_queue.io.pop = ch_bool(true);
-		
-		// ch_rom<ch_bit<32>, 4> inst_mem({0x00000000, 0x00720333, 0x00000000, 0x00000000});
+	
+
+
+
+		//ch_rom(const std::string& init_file, CH_SLOC)
+		// ch_rom<ch_bit<32>, 4> inst_mem(init_file);
 		ch_reg<ch_bit2> PC(0);
 
 		

@@ -48,7 +48,6 @@ struct Pipeline
     decode.io.in_PC_next(f_d_register.io.out_PC_next);
 
     // decode to d_e_register
-    d_e_register.io.in_opcode(decode.io.out_opcode);
     d_e_register.io.in_rd(decode.io.out_rd);
     d_e_register.io.in_rs1(decode.io.out_rs1);
     d_e_register.io.in_rd1(decode.io.out_rd1);
@@ -56,11 +55,14 @@ struct Pipeline
     d_e_register.io.in_rd2(decode.io.out_rd2);
     d_e_register.io.in_alu_op(decode.io.out_alu_op);
     d_e_register.io.in_PC_next(decode.io.out_PC_next);
+    d_e_register.io.in_rs2_src(decode.io.out_rs2_src);
+    d_e_register.io.in_itype_immed(decode.io.out_itype_immed);
     d_e_register.io.in_wb(decode.io.out_wb);
+    d_e_register.io.in_mem_read(decode.io.out_mem_read);
+    d_e_register.io.in_mem_write(decode.io.out_mem_write);
     // d_e_register.io(decode.io);
 
     // d_e_register to execute
-    execute.io.in_opcode(d_e_register.io.out_opcode);
     execute.io.in_rd(d_e_register.io.out_rd);
     execute.io.in_rs1(d_e_register.io.out_rs1);
     execute.io.in_rd1(d_e_register.io.out_rd1);
@@ -68,27 +70,40 @@ struct Pipeline
     execute.io.in_rd2(d_e_register.io.out_rd2);
     execute.io.in_alu_op(d_e_register.io.out_alu_op);
     execute.io.in_PC_next(d_e_register.io.out_PC_next);
+    execute.io.in_rs2_src(d_e_register.io.out_rs2_src);
+    execute.io.in_itype_immed(d_e_register.io.out_itype_immed);
     execute.io.in_wb(d_e_register.io.out_wb);
+    execute.io.in_mem_read(d_e_register.io.out_mem_read);
+    execute.io.in_mem_write(d_e_register.io.out_mem_write);
 
     // execute to e_m_register
     e_m_register.io.in_alu_result(execute.io.out_alu_result);
     e_m_register.io.in_rd(execute.io.out_rd);
     e_m_register.io.in_rs1(execute.io.out_rs1);
     e_m_register.io.in_rs2(execute.io.out_rs2);
+    e_m_register.io.in_rd1(execute.io.out_rd1);
+    e_m_register.io.in_rd2(execute.io.out_rd2);
     e_m_register.io.in_PC_next(execute.io.out_PC_next);
     e_m_register.io.in_wb(execute.io.out_wb);
+    e_m_register.io.in_mem_read(execute.io.out_mem_read);
+    e_m_register.io.in_mem_write(execute.io.out_mem_write);
 
     // e_m_regsiter to memory
     memory.io.in_alu_result(e_m_register.io.out_alu_result);
     memory.io.in_rd(e_m_register.io.out_rd);
     memory.io.in_rs1(e_m_register.io.out_rs1);
+    memory.io.in_rd1(e_m_register.io.out_rd1);
     memory.io.in_rs2(e_m_register.io.out_rs2);
+    memory.io.in_rd2(e_m_register.io.out_rd2);
     memory.io.in_PC_next(e_m_register.io.out_PC_next);
     memory.io.in_wb(e_m_register.io.out_wb);
+    memory.io.in_mem_read(e_m_register.io.out_mem_read);
+    memory.io.in_mem_write(e_m_register.io.out_mem_write);
 
 
     // memory to m_w_register
     m_w_register.io.in_alu_result(memory.io.out_alu_result);
+    m_w_register.io.in_mem_result(memory.io.out_mem_result);
     m_w_register.io.in_rd(memory.io.out_rd);
     m_w_register.io.in_rs1(memory.io.out_rs1);
     m_w_register.io.in_rs2(memory.io.out_rs2);
@@ -102,9 +117,10 @@ struct Pipeline
     write_back.io.in_rs2(m_w_register.io.out_rs2);
     write_back.io.in_PC_next(m_w_register.io.out_PC_next);
     write_back.io.in_wb(m_w_register.io.out_wb);
+    write_back.io.in_mem_result(m_w_register.io.out_mem_result);
 
     // write_back to decode
-    decode.io.in_alu_result(write_back.io.out_alu_result);
+    decode.io.in_write_data(write_back.io.out_write_data);
     decode.io.in_rd(write_back.io.out_rd);
     decode.io.in_wb(write_back.io.out_wb);
 
