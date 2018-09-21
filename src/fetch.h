@@ -59,7 +59,7 @@ struct Fetch
 
 
 		//ch_rom(const std::string& init_file, CH_SLOC)
-		// ch_rom<ch_bit<32>, 4> inst_mem(init_file);
+		ch_rom<ch_bit<32>, 4096> inst_mem(init_file);
 		ch_reg<ch_bit2> PC(0);
 
 		
