@@ -14,7 +14,7 @@ struct M_W_Register
 		__in(ch_bit<2>) in_wb,
 		__in(ch_bit<5>) in_rs1,
 		__in(ch_bit<5>) in_rs2,
-		__in(ch_bit2)   in_PC_next,
+		__in(ch_bit<32>)   in_PC_next,
 
 		__out(ch_bit<32>) out_alu_result,
 		__out(ch_bit<32>) out_mem_result, // NEW
@@ -22,7 +22,7 @@ struct M_W_Register
 		__out(ch_bit<2>) out_wb,
 		__out(ch_bit<5>) out_rs1,
 		__out(ch_bit<5>) out_rs2,
-		__out(ch_bit2)   out_PC_next
+		__out(ch_bit<32>)   out_PC_next
 	);
 
 	void describe()
@@ -34,7 +34,7 @@ struct M_W_Register
 		ch_reg<ch_bit<5>>  rs1(0);
 		ch_reg<ch_bit<5>>  rs2(0);
 		ch_reg<ch_bit<2>>  wb(0);
-		ch_reg<ch_bit2>    PC_next(0);
+		ch_reg<ch_bit<32>>    PC_next(0);
 
 		io.out_alu_result = alu_result;
 		io.out_mem_result = mem_result;

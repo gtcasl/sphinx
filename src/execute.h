@@ -19,7 +19,7 @@ struct Execute
 		__in(ch_bit<12>) in_itype_immed, // new
 		__in(ch_bit<3>) in_mem_read, // NEW
 		__in(ch_bit<3>) in_mem_write, // NEW
-		__in(ch_bit2)   in_PC_next,
+		__in(ch_bit<32>)   in_PC_next,
 
 		__out(ch_bit<32>) out_alu_result,
 		__out(ch_bit<5>) out_rd,
@@ -30,7 +30,7 @@ struct Execute
 		__out(ch_bit<32>) out_rd2,
 		__out(ch_bit<3>) out_mem_read,
 		__out(ch_bit<3>) out_mem_write,
-		__out(ch_bit2)   out_PC_next
+		__out(ch_bit<32>)   out_PC_next
 	);
 
 	void describe()

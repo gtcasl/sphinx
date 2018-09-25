@@ -31,7 +31,7 @@ struct D_E_Register
 		__in(ch_bit<12>) in_itype_immed, // new
 		__in(ch_bit<3>) in_mem_read, // NEW
 		__in(ch_bit<3>) in_mem_write,
-		__in(ch_bit2)   in_PC_next,
+		__in(ch_bit<32>)   in_PC_next,
 
          // (ch_flip_io<decode_io>) in,
 
@@ -46,7 +46,7 @@ struct D_E_Register
 		__out(ch_bit<12>) out_itype_immed, // new
 		__out(ch_bit<3>) out_mem_read,
 		__out(ch_bit<3>) out_mem_write,
-		__out(ch_bit2)   out_PC_next
+		__out(ch_bit<32>)   out_PC_next
 	);
 
 	void describe()
@@ -59,7 +59,7 @@ struct D_E_Register
 		ch_reg<ch_bit<32>> rd2(0);
 		ch_reg<ch_bit<4>>  alu_op(0);
 		ch_reg<ch_bit<2>>  wb(0);
-		ch_reg<ch_bit2>    PC_next_out(0);
+		ch_reg<ch_bit<32>>    PC_next_out(0);
 		ch_reg<ch_bit<1>>  rs2_src(0);
 		ch_reg<ch_bit<12>> itype_immed(0);
 		ch_reg<ch_bit<3>>  mem_read(0);

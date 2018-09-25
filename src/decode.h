@@ -22,7 +22,7 @@ struct Decode
 	__io(
 		// Fetch Inputs
 		__in(ch_bit<32>)   in_instruction,
-		__in(ch_bit2)    in_PC_next,
+		__in(ch_bit<32>)    in_PC_next,
 		// WriteBack inputs
 		__in(ch_bit<32>) in_write_data,
 		__in(ch_bit<5>) in_rd,
@@ -44,7 +44,7 @@ struct Decode
 		__out(ch_bit<12>) out_itype_immed, // new
 		__out(ch_bit<3>) out_mem_read, // NEW
 		__out(ch_bit<3>) out_mem_write, // NEW
-		__out(ch_bit2)   out_PC_next
+		__out(ch_bit<32>)   out_PC_next
 	);
 
 	void describe()

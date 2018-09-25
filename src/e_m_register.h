@@ -17,7 +17,7 @@ struct E_M_Register
 		__in(ch_bit<32>)in_rd2,
 		__in(ch_bit<3>) in_mem_read, // NEW
 		__in(ch_bit<3>) in_mem_write, // NEW
-		__in(ch_bit2)   in_PC_next,
+		__in(ch_bit<32>)   in_PC_next,
 
 		__out(ch_bit<32>) out_alu_result,
 		__out(ch_bit<5>) out_rd,
@@ -28,7 +28,7 @@ struct E_M_Register
 		__out(ch_bit<5>) out_rs2,
 		__out(ch_bit<3>) out_mem_read,
 		__out(ch_bit<3>) out_mem_write,
-		__out(ch_bit2)   out_PC_next
+		__out(ch_bit<32>)   out_PC_next
 	);
 
 	void describe()
@@ -41,7 +41,7 @@ struct E_M_Register
 		ch_reg<ch_bit<5>>  rs2(0);
 		ch_reg<ch_bit<32>> rd2(0);
 		ch_reg<ch_bit<2>>  wb(0);
-		ch_reg<ch_bit2>    PC_next(0);
+		ch_reg<ch_bit<32>>    PC_next(0);
 		ch_reg<ch_bit<3>>  mem_read(0);
 		ch_reg<ch_bit<3>>  mem_write(0);
 

@@ -7,7 +7,7 @@ struct Write_Back
 		__in(ch_bit<2>) in_wb,
 		__in(ch_bit<5>) in_rs1,
 		__in(ch_bit<5>) in_rs2,
-		__in(ch_bit2)   in_PC_next,
+		__in(ch_bit<32>)   in_PC_next,
 
 		__out(ch_bit<32>) out_write_data,
 		__out(ch_bit<5>) out_rd,

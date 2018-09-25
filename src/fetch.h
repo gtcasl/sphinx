@@ -45,38 +45,38 @@ struct Fetch
 		__in(ch_bit<32>) in_din,
 		__in(ch_bool) in_push,
 		__out(ch_bit<32>) out_instruction,
-		__out(ch_bit2)  out_PC_next
+		__out(ch_bit<32>)  out_PC_next
 	);
 
 	void describe()
 	{
 
-		instruction_queue.io.din(io.in_din);
-		instruction_queue.io.push(io.in_push);
-		instruction_queue.io.pop = ch_bool(true);
+		// instruction_queue.io.din(io.in_din);
+		// instruction_queue.io.push(io.in_push);
+		// instruction_queue.io.pop = ch_bool(true);
 	
 
 
 
 		//ch_rom(const std::string& init_file, CH_SLOC)
-		ch_rom<ch_bit<32>, 4096> inst_mem(init_file);
-		ch_reg<ch_bit2> PC(0);
+		// ch_rom<ch_bit<32>, 4096> inst_mem(init_file);
+
+		ch_reg<ch_bit<32>> PC(0);
 
 		
-		// io.out_instruction = inst_mem.read(PC.as_uint());
+		io.out_instruction = io.in_din;
 
 		// instruction_queue.dout(out_instruction.dout);
-		io.out_instruction(instruction_queue.io.dout);
+		// io.out_instruction(instruction_queue.io.dout);
+
+		ch_print("in_instruction: {0}", io.out_instruction);
 
 
-		ch_print("out_instruction: {0}", io.out_instruction);
-
-
-		io.out_PC_next = ch_sel(PC.as_uint() == 3, PC, PC.as_uint() + 1);
+		io.out_PC_next = PC.as_uint();
 		
-		PC->next       = io.out_PC_next;
+		PC->next       = io.out_PC_next.as_uint() + 1;
 	}
 
-	ch_module<Instruction_Queue<32>> instruction_queue;
+	// ch_module<Instruction_Queue<32>> instruction_queue;
 };
 

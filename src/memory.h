@@ -17,7 +17,7 @@ struct Memory
 		__in(ch_bit<32>) in_rd1,
 		__in(ch_bit<5>) in_rs2,
 		__in(ch_bit<32>) in_rd2,
-		__in(ch_bit2)   in_PC_next,
+		__in(ch_bit<32>)   in_PC_next,
 
 		__out(ch_bit<32>) out_alu_result,
 		__out(ch_bit<32>) out_mem_result, // Neww
@@ -25,7 +25,7 @@ struct Memory
 		__out(ch_bit<2>) out_wb,
 		__out(ch_bit<5>) out_rs1,
 		__out(ch_bit<5>) out_rs2,
-		__out(ch_bit2)   out_PC_next
+		__out(ch_bit<32>)   out_PC_next
 	);
 
 	void describe()
