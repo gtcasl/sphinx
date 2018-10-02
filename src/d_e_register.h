@@ -31,7 +31,8 @@ struct D_E_Register
 		__in(ch_bit<12>) in_itype_immed, // new
 		__in(ch_bit<3>) in_mem_read, // NEW
 		__in(ch_bit<3>) in_mem_write,
-		__in(ch_bit<32>)   in_PC_next,
+		__in(ch_bit<32>) in_PC_next,
+		__in(ch_bit<3>) in_branch_type,
 
          // (ch_flip_io<decode_io>) in,
 
@@ -46,6 +47,7 @@ struct D_E_Register
 		__out(ch_bit<12>) out_itype_immed, // new
 		__out(ch_bit<3>) out_mem_read,
 		__out(ch_bit<3>) out_mem_write,
+		__out(ch_bit<3>) out_branch_type,
 		__out(ch_bit<32>)   out_PC_next
 	);
 
@@ -64,6 +66,7 @@ struct D_E_Register
 		ch_reg<ch_bit<12>> itype_immed(0);
 		ch_reg<ch_bit<3>>  mem_read(0);
 		ch_reg<ch_bit<3>>  mem_write(0);
+		ch_reg<ch_bit<3>> branch_type(0);
 
 
 		io.out_rd = rd;
@@ -78,6 +81,7 @@ struct D_E_Register
 		io.out_itype_immed = itype_immed;
 		io.out_mem_read = mem_read;
 		io.out_mem_write = mem_write;
+		io.out_branch_type = branch_type;
 
 		rd->next = io.in_rd;
 		rs1->next = io.in_rs1;
@@ -91,7 +95,7 @@ struct D_E_Register
 		itype_immed->next = io.in_itype_immed;
 		mem_read->next = io.in_mem_read;
 		mem_write->next = io.in_mem_write;
-
+		branch_type->next = io.in_branch_type;
 
 	}
 };

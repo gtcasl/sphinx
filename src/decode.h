@@ -1,5 +1,6 @@
 #include <cash.h>
 #include <ioport.h>
+#include "define.h"
 
 using namespace ch::core;
 using namespace ch::sim;
@@ -16,6 +17,7 @@ using namespace ch::sim;
 // 	__out(ch_bit<4>) out_alu_op,
 // 	__out(ch_bit2)   out_PC_next
 // ));
+
 
 struct Decode
 {
@@ -44,6 +46,8 @@ struct Decode
 		__out(ch_bit<12>) out_itype_immed, // new
 		__out(ch_bit<3>) out_mem_read, // NEW
 		__out(ch_bit<3>) out_mem_write, // NEW
+		__out(ch_bit<3>) out_branch_type,
+		__out(ch_bit<1>) out_branch_stall,
 		__out(ch_bit<32>)   out_PC_next
 	);
 
@@ -53,99 +57,160 @@ struct Decode
 		ch_mem<ch_bit<32>, 32> registers;
 
 		ch_bit<7> curr_opcode;
+		ch_bit<4> alu_op;
+		ch_bit<4> b_alu_op;
+
 		ch_bool is_itype;
 		ch_bool is_rtype;
 		ch_bool is_stype;
+		ch_bool is_btype;
+		ch_bool is_linst;
 
 		ch_bool write_register = ch_sel(io.in_wb.as_uint() > 0, ch_bool(true), ch_bool(false));
 
 		registers.write(io.in_rd, io.in_write_data, write_register);
 
 
-		curr_opcode        = ch_slice<7>(io.in_instruction);;
-		io.out_rd          = ch_slice<5>(io.in_instruction >> 7);
-		io.out_rs1         = ch_slice<5>(io.in_instruction >> 15);
-		io.out_rd1         = registers.read(io.out_rs1);
-		io.out_rs2         = ch_slice<5>(io.in_instruction >> 20);
-		io.out_rd2         = registers.read(io.out_rs2);
-		ch_bit<3> func3    = ch_slice<3>(io.in_instruction >> 12);
-		ch_bit<7> func7    = ch_slice<7>(io.in_instruction >> 25);
-		io.out_PC_next     = io.in_PC_next;
-
-		// MEM signals 
-		io.out_mem_read  = ch_sel(curr_opcode == 3, func3, ch_bit<3>(7));
-		io.out_mem_write = ch_sel(curr_opcode == 35, func3, ch_bit<3>(7));
+		curr_opcode            = ch_slice<7>(io.in_instruction);
+		io.out_rd              = ch_slice<5>(io.in_instruction >> 7);
+		io.out_rs1             = ch_slice<5>(io.in_instruction >> 15);
+		io.out_rd1             = registers.read(io.out_rs1);
+		io.out_rs2             = ch_slice<5>(io.in_instruction >> 20);
+		io.out_rd2             = registers.read(io.out_rs2);
+		ch_bit<3> func3        = ch_slice<3>(io.in_instruction >> 12);
+		ch_bit<7> func7        = ch_slice<7>(io.in_instruction >> 25);
+		io.out_PC_next         = io.in_PC_next;
 
 
 		// Write Back sigal
-		is_rtype  = curr_opcode == 51;
-		is_itype  = (curr_opcode == 19) || (curr_opcode == 3); 
-		is_stype  = (curr_opcode == 35);
+		is_rtype  = curr_opcode == R_INST;
+		is_linst  = (curr_opcode == L_INST);
+		is_itype  = (curr_opcode == ALU_INST) || is_linst; 
+		is_stype  = (curr_opcode == S_INST);
+		is_btype  = (curr_opcode == B_INST);
 
-		io.out_wb = ch_sel(is_rtype, ch_bit<2>(1), ch_sel(is_itype, ch_bit<2>(2), ch_bit<2>(0)));
 
-		io.out_rs2_src = ch_sel(is_itype, ch_bit<1>(1), ch_bit<1>(0));
+		io.out_wb      = ch_sel(is_linst, WB_MEM, ch_sel(is_itype || is_rtype, WB_ALU, NO_WB));
+		io.out_rs2_src = ch_sel(is_itype, RS2_IMMED, RS2_REG);
+
+		// MEM signals 
+		io.out_mem_read  = ch_sel(curr_opcode == L_INST, func3, ch_bit<3>(7));
+		io.out_mem_write = ch_sel(curr_opcode == is_stype, func3, ch_bit<3>(7));
+
+
+		__switch(curr_opcode)
+			__case(ALU_INST) 
+			{
+				io.out_branch_type = NO_BRANCH;
+				io.out_branch_stall = NO_STALL;
+
+				ch_bool shift_i = (func3 == 1) || (func3 == 5);
+				ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2); // out_rs2 represents shamt
+
+				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
+			}
+			__case(S_INST)
+			{
+				io.out_branch_type = NO_BRANCH;
+				io.out_branch_stall = NO_STALL;
+
+				io.out_itype_immed = ch_cat(func7, io.out_rd);
+			}
+			__case(B_INST)
+			{
+
+
+
+				io.out_branch_stall = STALL;
+
+				ch_bit<1> b_12      = io.in_instruction[31];
+				ch_bit<1> b_11      = io.in_instruction[7];
+				ch_bit<4> b_1_to_4  = ch_slice<4>(io.in_instruction >> 8);
+				ch_bit<6> b_5_to_10 = ch_slice<6>(io.in_instruction >> 25);
+
+				io.out_itype_immed = ch_cat(b_12, b_11, b_5_to_10, b_1_to_4);
+
+				ch_print("BRANCH INSTRUCTION: {0}\tOFFSET: {1}", io.in_instruction, io.out_itype_immed);
+
+				__switch(func3.as_uint())
+					__case(0)
+					{
+						io.out_branch_type = BEQ;
+					}
+					__case(1)
+					{
+						io.out_branch_type = BNE;
+					}
+					__case(4)
+					{
+						io.out_branch_type  = BLT;
+					}
+					__case(5)
+					{
+						io.out_branch_type = BGT;
+					}
+					__case(6)
+					{
+						io.out_branch_type = BLTU;
+					}
+					__case(7)
+					{
+						io.out_branch_type = BGTU;
+					}
+					__default
+					{
+						io.out_branch_type = NO_BRANCH; 
+					};
+
+
+			}
+			__default
+			{
+				io.out_branch_type  = NO_BRANCH;
+				io.out_branch_stall = NO_STALL;
+				io.out_itype_immed  = ch_bit<12>(123);
+			};
 
 		// ALU OP
 		__switch(func3.as_uint())
 			__case(0) 
 			{
-				io.out_alu_op = ch_sel(func7.as_uint() == 0, ch_bit<4>(0), ch_bit<4>(1));
+				alu_op = ch_sel(func7.as_uint() == 0, ADD, SUB);
 			}
 			__case(1)
 			{
-				io.out_alu_op = ch_bit<4>(2);
+				alu_op = SLLA;
 			}
 			__case(2)
 			{
-				io.out_alu_op = ch_bit<4>(3);
+				alu_op = SLT;
 			}
 			__case(3)
 			{
-				io.out_alu_op = ch_bit<4>(4);
+				alu_op = SLTU;
 			}
 			__case(4)
 			{
-				io.out_alu_op = ch_bit<4>(5);
+				alu_op = XOR;
 			}
 			__case(5)
 			{
-				io.out_alu_op  = ch_sel(func7.as_uint() == 0, ch_bit<4>(6), ch_bit<4>(7));
+				alu_op  = ch_sel(func7.as_uint() == 0, SRL, SRA);
 			}
 			__case(6)
 			{
-				io.out_alu_op = ch_bit<4>(8);
+				alu_op = OR;
 			}
 			__case(7)
 			{
-				io.out_alu_op = ch_bit<4>(9);
+				alu_op = AND;
 			}
 			__default
 			{
-				io.out_alu_op = 15; 
+				alu_op = NO_ALU; 
 			};
 
-		__switch(curr_opcode)
-			__case(19) 
-			{
-				ch_bool shift_i = (func3 == 1) || (func3 == 5);
-
-				ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2); // out_rs2 represents shamt
-
-				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
-			}
-			__case(35)
-			{
-				io.out_itype_immed = ch_cat(func7, io.out_rd);
-			}
-			// __case(2)
-			// {
-
-			// }
-			__default
-			{
-				io.out_itype_immed = ch_bit<12>(123); 
-			};
+		io.out_alu_op = ch_sel(is_btype, ch_sel(io.out_branch_type.as_uint() < (BLTU_int) , SUB, SUBU), alu_op);
 
 		// Debugging outputs
 		io.actual_change = registers.read(ch_uint<5>(6));

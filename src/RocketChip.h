@@ -42,6 +42,13 @@ struct Pipeline
     fetch.io.in_din(io.in_din);
     fetch.io.in_push(io.in_push);
 
+    // FETCH TO HOST
+    fetch.io.out_PC_next(io.PC);
+
+    // EXE TO FETCH
+    fetch.io.in_branch_dir(execute.io.out_branch_dir);
+    fetch.io.in_branch_dest(execute.io.out_branch_dest);
+
     // fetch TO f_d_register
     f_d_register.io.in_instruction(fetch.io.out_instruction);
     f_d_register.io.in_PC_next(fetch.io.out_PC_next);
@@ -63,6 +70,7 @@ struct Pipeline
     d_e_register.io.in_wb(decode.io.out_wb);
     d_e_register.io.in_mem_read(decode.io.out_mem_read);
     d_e_register.io.in_mem_write(decode.io.out_mem_write);
+    d_e_register.io.in_branch_type(decode.io.out_branch_type); // branch type
     // d_e_register.io(decode.io);
 
     // d_e_register to execute
@@ -78,6 +86,7 @@ struct Pipeline
     execute.io.in_wb(d_e_register.io.out_wb);
     execute.io.in_mem_read(d_e_register.io.out_mem_read);
     execute.io.in_mem_write(d_e_register.io.out_mem_write);
+    execute.io.in_branch_type(d_e_register.io.out_branch_type);
 
     // execute to e_m_register
     e_m_register.io.in_alu_result(execute.io.out_alu_result);
@@ -130,7 +139,6 @@ struct Pipeline
 
     // debugging registers
     decode.io.actual_change(io.actual_change);
-    fetch.io.out_PC_next(io.PC);
 
   }
 
@@ -177,7 +185,7 @@ RocketChip::RocketChip(std::string instruction_file_name)
 
 RocketChip::~RocketChip()
 {
-    system("rm ../Workspace/*");
+    // system("rm ../Workspace/*");
 }
 
 void RocketChip::ProcessFile(void)
@@ -224,7 +232,6 @@ void RocketChip::filterHex(void)
 {
 
 
-    bool debug = false;
 
     std::ofstream ofs ("../Workspace/file.hex", std::ofstream::out);
     std::ifstream ifs ("../Workspace/file.bin", std::ifstream::in);
@@ -239,29 +246,24 @@ void RocketChip::filterHex(void)
         {
             curr_inst = line.substr(ii*8,8);
 
-            if(debug) std::cout << "HEX: " << curr_inst << std::endl;
 
             unsigned jj;
 
             unsigned inst = 0;
             for (jj = 0; jj < curr_inst.size(); jj++)
             {
-                if(debug) std::cout << curr_inst[jj] << " -> ";
                 if (curr_inst[jj] != '0')
                 {
 
                     inst += ctoh(curr_inst[jj]) * pow(16, (curr_inst.size() - 1) - jj);
-                    if(debug) std::cout << "16 ^ " << (curr_inst.size() - 1) - jj << " = " << ctoh(curr_inst[jj]) * pow(16, (curr_inst.size() - 1) - jj) << std::endl;;
                 } else
                 {
-                    if(debug) std::cout << "0" << std::endl;
                 }
             }
 
             if (inst != 0)
             {
                 ofs << inst << std::endl;
-                if(debug) std::cout << "INT: " << inst << std::endl;
             }
         }
     }
@@ -273,25 +275,36 @@ void RocketChip::filterHex(void)
 
 }
 
+
 // DEBUG
 void RocketChip::populate_inst_vec(void)
 {
 
+    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+
     unsigned inst;
     std::ifstream instruction_file("../Workspace/file.hex");
-    while (instruction_file >> inst)
+    int s = 0;
+    while (instruction_file >> std::dec >> inst)
     {
         this->inst_vec.push_back(inst);
-        std::cout << std::hex << inst << std::endl;
+        s++;
     }
 
+
+    for (int i = 0; i < this->inst_vec.size(); i++) std::cout << std::hex << this->inst_vec[i] << std::endl;
+
     std::cout << "END" << std::endl;
+    std::cout << "# static instructions = " << this->inst_vec.size() << std::endl;
+    std::cout << "# static s = " << s << std::endl;
 }
 
 
 
 void RocketChip::simulate(void) {
 
+
+    std::cout << "***********************************" << std::endl;
 
     sim.run([&](ch_tick t)->bool {        
 
@@ -315,7 +328,7 @@ void RocketChip::simulate(void) {
 
         std::cout << std::endl;
         
-        return (new_PC != (this->inst_vec.size() + 10));
+        return (new_PC < (this->inst_vec.size() + 10));
     });
 
 }

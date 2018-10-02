@@ -40,8 +40,8 @@ struct Memory
 		__switch(io.in_mem_read.as_uint())
 			__case(0) 
 			{
-				ch_bit<24> ones(16777215);
-				ch_bit<24> zeros(0);
+				ch_bit<24> ones(ONES_24BITS);
+				ch_bit<24> zeros(ZERO);
 				
 				// LB sign extend
 				ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<12>(io.in_alu_result)));
@@ -50,8 +50,8 @@ struct Memory
 			__case(1)
 			{
 				// LH sign extend
-				ch_bit<16> ones(65535);
-				ch_bit<16> zeros(0);
+				ch_bit<16> ones(ONES_16BITS);
+				ch_bit<16> zeros(ZERO);
 				
 				ch_bit<16> half = ch_slice<16>(mem_module.read(ch_slice<12>(io.in_alu_result)));
 				mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_cat(zeros, half));
@@ -63,7 +63,7 @@ struct Memory
 			}
 			__case(4)
 			{
-				ch_bit<24> zeros(0);
+				ch_bit<24> zeros(ZERO);
 				// LBU
 				ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<12>(io.in_alu_result)));
 				mem_result = ch_cat(zeros, byte);
@@ -82,29 +82,31 @@ struct Memory
 			};
 
 
-		// __switch(io.in_mem_write.as_uint())
-		// 	__case(0) 
-		// 	{
-		// 		// SB
-		// 		ch_bit<24> zeros(0);
-		// 		ch_bit<32> word = ch_cat(zeros, ch_slice<8>(io.in_rd2)) | mem_module.read(ch_slice<12>(io.in_alu_result));
-		// 		mem_module.write(ch_slice<12>(io.in_alu_result), word, true);
-		// 	}
-		// 	__case(1)
-		// 	{
-		// 		// SH
-		// 		ch_bit<16> zeros(0);
-		// 		ch_bit<32> word = ch_cat(zeros, ch_slice<16>(io.in_rd2)) | mem_module.read(ch_slice<12>(io.in_alu_result));
-		// 		mem_module.write(ch_slice<12>(io.in_alu_result), word, true);
-		// 	__case(2)
-		// 	{
-		// 		// SW
-		// 		mem_module.write(ch_slice<12>(io.in_alu_result), io.in_rd2, true);
-		// 	}
-		// 	__default
-		// 	{
-
-		// 	};
+		__switch(io.in_mem_write.as_uint())
+			__case(0) 
+			{
+				// SB
+				ch_bit<24> zeros(0);
+				ch_bit<32> word = ch_cat(zeros, ch_slice<8>(io.in_rd2)) | mem_module.read(ch_slice<12>(io.in_alu_result));
+				ch_bit<12> address = ch_slice<12>(io.in_alu_result);
+				mem_module.write(address.as_uint(), word, TRUE);
+			}
+			__case(1)
+			{
+				// SH
+				ch_bit<16> zeros(0);
+				ch_bit<32> word = ch_cat(zeros, ch_slice<16>(io.in_rd2)) | mem_module.read(ch_slice<12>(io.in_alu_result));
+				mem_module.write(ch_slice<12>(io.in_alu_result), word, TRUE);
+			}
+			__case(2)
+			{
+				// SW
+				mem_module.write(ch_slice<12>(io.in_alu_result), io.in_rd2, TRUE);
+			}
+			__default
+			{
+				mem_module.write(ch_slice<12>(io.in_alu_result), io.in_rd2, FALSE);
+			};
 
 
 
