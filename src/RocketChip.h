@@ -11,6 +11,7 @@
 #include "memory.h"
 #include "m_w_register.h"
 #include "write_back.h"
+#include "forwarding.h"
 
 #include <iostream>
 #include <iomanip>
@@ -43,7 +44,7 @@ struct Pipeline
     fetch.io.in_push(io.in_push);
 
     // FETCH TO HOST
-    fetch.io.out_PC_next(io.PC);
+    fetch.io.out_PC(io.PC);
 
     // EXE TO FETCH
     fetch.io.in_branch_dir(execute.io.out_branch_dir);
@@ -72,6 +73,13 @@ struct Pipeline
     d_e_register.io.in_mem_write(decode.io.out_mem_write);
     d_e_register.io.in_branch_type(decode.io.out_branch_type); // branch type
     // d_e_register.io(decode.io);
+
+
+    // Decode to f_d_register
+    f_d_register.io.in_branch_stall(decode.io.out_branch_stall);
+    // Decode to FETCH
+    fetch.io.in_branch_stall(decode.io.out_branch_stall);
+
 
     // d_e_register to execute
     execute.io.in_rd(d_e_register.io.out_rd);
@@ -137,6 +145,34 @@ struct Pipeline
     decode.io.in_wb(write_back.io.out_wb);
 
 
+    // Forwarding unit
+    forwarding.io.in_decode_src1(decode.io.out_rs1);
+    forwarding.io.in_decode_src2(decode.io.out_rs2);
+
+    forwarding.io.in_execute_dest(execute.io.out_rd);
+    forwarding.io.in_execute_wb(execute.io.out_wb);
+    forwarding.io.in_execute_alu_result(execute.io.out_alu_result);
+
+    forwarding.io.in_memory_dest(memory.io.out_rd);
+    forwarding.io.in_memory_wb(memory.io.out_wb);
+    forwarding.io.in_memory_alu_result(memory.io.out_alu_result);
+    forwarding.io.in_memory_mem_data(memory.io.out_mem_result);
+
+    forwarding.io.in_writeback_dest(m_w_register.io.out_rd);
+    forwarding.io.in_writeback_wb(m_w_register.io.out_wb);
+    forwarding.io.in_writeback_alu_result(m_w_register.io.out_alu_result);
+    forwarding.io.in_writeback_mem_data(m_w_register.io.out_mem_result);
+
+
+    decode.io.in_src1_fwd(forwarding.io.out_src1_fwd);
+    decode.io.in_src1_fwd_data(forwarding.io.out_src1_fwd_data);
+    decode.io.in_src2_fwd(forwarding.io.out_src2_fwd);
+    decode.io.in_src2_fwd_data(forwarding.io.out_src2_fwd_data);
+
+    f_d_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
+    d_e_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
+    fetch.io.in_fwd_stall(forwarding.io.out_fwd_stall);
+
     // debugging registers
     decode.io.actual_change(io.actual_change);
 
@@ -151,6 +187,7 @@ struct Pipeline
   ch_module<Memory> memory;
   ch_module<M_W_Register> m_w_register;
   ch_module<Write_Back> write_back;
+  ch_module<Forwarding> forwarding;
 };
 
 
@@ -292,7 +329,7 @@ void RocketChip::populate_inst_vec(void)
     }
 
 
-    for (int i = 0; i < this->inst_vec.size(); i++) std::cout << std::hex << this->inst_vec[i] << std::endl;
+    for (unsigned i = 0; i < this->inst_vec.size(); i++) std::cout << std::hex << this->inst_vec[i] << std::endl;
 
     std::cout << "END" << std::endl;
     std::cout << "# static instructions = " << this->inst_vec.size() << std::endl;

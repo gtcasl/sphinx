@@ -21,6 +21,10 @@
 #define ALU_INST 19
 #define S_INST 35
 #define B_INST 99
+#define LUI_INST 55
+#define AUIPC_INST 23
+#define JAL_INST 111
+#define JALR_INST 103
 
 
 
@@ -86,16 +90,27 @@
 #define WB_MEM ch_bit<2>(2)
 #define NO_WB  ch_bit<2>(0)
 
+#define WB_ALU_int (1)
+#define WB_MEM_int (2)
+#define NO_WB_int  (0)
+
 // RS2 SRC
 #define RS2_IMMED ch_bit<1>(1)
 #define RS2_REG ch_bit<1>(0)
 
 
+// FORWARDING
+#define NO_FWD ch_bit<1>(0)
+#define FWD ch_bit<1>(1)
+
 
 // IMMEDIATES 
 #define ZERO 0
+#define CH_ZERO(x) ch_bit<x>(0)
 #define ONES_24BITS 16777215
 #define ONES_16BITS 65535
+#define anything ch_bit<12>(123)
+#define anything32 ch_bit<32>(123)
 
 
 #endif

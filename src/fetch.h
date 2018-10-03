@@ -15,7 +15,10 @@ struct Fetch
 		__in(ch_bool) in_push,
 		__in(ch_bit<1>) in_branch_dir,
 		__in(ch_bit<32>) in_branch_dest,
+		__in(ch_bit<1>) in_branch_stall,
+		__in(ch_bit<1>) in_fwd_stall,
 		__out(ch_bit<32>) out_instruction,
+		__out(ch_bit<32>) out_PC,
 		__out(ch_bit<32>)  out_PC_next
 	);
 
@@ -25,15 +28,18 @@ struct Fetch
 
 
 		ch_reg<ch_bit<32>> PC(0);
-
+		ch_bool stall = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL);
 		
 		io.out_instruction = io.in_din;
 
-		io.out_PC_next = ch_sel(io.in_branch_dir.as_uint() == TAKEN_int, io.in_branch_dest, PC.as_uint());
+		io.out_PC = ch_sel(io.in_branch_dir.as_uint() == TAKEN_int, io.in_branch_dest, PC.as_uint());
+
+		io.out_PC_next = io.out_PC.as_uint() + 1;
 
 
 
 		ch_print("DIR: {0}\tDEST{1}",io.in_branch_dir, io.in_branch_dest);
+		ch_print("STALL: {0}", io.in_branch_stall);
 
 		// io.out_PC_next = PC.as_uint();
 
@@ -41,7 +47,7 @@ struct Fetch
 		// io.out_PC_next = ch_sel(io.in_branch_dir.as_uint() == 1, io.in_branch_dest.as_uint() + 1, PC.as_uint() + 1);
 		// PC->next       = ch_sel(io.in_branch_dir.as_uint() == 1, io.in_branch_dest.as_uint() + 1, PC.as_uint() + 1);
 		
-		PC->next       = io.out_PC_next.as_uint() + 1;
+		PC->next       = ch_sel(stall, io.out_PC, io.out_PC_next);
 	}
 
 };
