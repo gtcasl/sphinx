@@ -14,6 +14,7 @@ struct F_D_Register
 		__in(ch_bit<1>) in_branch_stall,
 		__in(ch_bit<1>) in_fwd_stall,
 		__out(ch_bit<32>) out_instruction,
+		// __out(ch_bool) out_valid,
 		__out(ch_bit<32>) out_PC_next
 
 	);
@@ -24,14 +25,27 @@ struct F_D_Register
 		ch_reg<ch_bit<32>> instruction(0);
 		ch_reg<ch_bit<32>> PC_next(0);
 
+
+
 		ch_bool stall = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL);
-		
+
+
+
+
 		io.out_instruction = instruction;
 		io.out_PC_next     = PC_next;
 
+		__if((io.in_fwd_stall == STALL))
+		{
 
-		instruction->next = ch_sel(stall, CH_ZERO(32), io.in_instruction);
-		    PC_next->next = ch_sel(stall, CH_ZERO(32), io.in_PC_next);
+			ch_print("NEED TO FWD STALL");
+		};
+
+		__if(!(io.in_fwd_stall == STALL))
+		{
+			instruction->next  = io.in_instruction;
+			PC_next->next      = io.in_PC_next;
+		};
 
 
 	}

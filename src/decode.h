@@ -34,11 +34,48 @@ struct RegisterFile
 	void describe()
 	{
 		ch_mem<ch_bit<32>, 32> registers;
-	
-		registers.write(io.in_rd, io.in_data, io.in_write_register);
+		registers.write(ch_bit<5>(0), ch_bit<32>(0), TRUE);
+
+		registers.write(io.in_rd, io.in_data, ((io.in_write_register) && (io.in_rd.as_uint() != 0)));
 
 		io.out_src1_data = registers.read(io.in_src1);
 		io.out_src2_data = registers.read(io.in_src2);
+
+
+		ch_print("Reg 0: {0}", registers.read(ch_bit<5>(0)));
+		ch_print("Reg 1: {0}", registers.read(ch_bit<5>(1)));
+		ch_print("Reg 2: {0}", registers.read(ch_bit<5>(2)));
+		ch_print("Reg 3: {0}", registers.read(ch_bit<5>(3)));
+		ch_print("Reg 4: {0}", registers.read(ch_bit<5>(4)));
+		ch_print("Reg 5: {0}", registers.read(ch_bit<5>(5)));
+		ch_print("Reg 6: {0}", registers.read(ch_bit<5>(6)));
+		ch_print("Reg 7: {0}", registers.read(ch_bit<5>(7)));
+		ch_print("Reg 8: {0}", registers.read(ch_bit<5>(8)));
+		ch_print("Reg 9: {0}", registers.read(ch_bit<5>(9)));
+		ch_print("Reg 10: {0}", registers.read(ch_bit<5>(10)));
+		ch_print("Reg 11: {0}", registers.read(ch_bit<5>(11)));
+		ch_print("Reg 12: {0}", registers.read(ch_bit<5>(12)));
+		ch_print("Reg 13: {0}", registers.read(ch_bit<5>(13)));
+		ch_print("Reg 14: {0}", registers.read(ch_bit<5>(14)));
+		ch_print("Reg 15: {0}", registers.read(ch_bit<5>(15)));
+		ch_print("Reg 16: {0}", registers.read(ch_bit<5>(16)));
+		ch_print("Reg 17: {0}", registers.read(ch_bit<5>(17)));
+		ch_print("Reg 18: {0}", registers.read(ch_bit<5>(18)));
+		ch_print("Reg 19: {0}", registers.read(ch_bit<5>(19)));
+		ch_print("Reg 20: {0}", registers.read(ch_bit<5>(20)));
+		ch_print("Reg 21: {0}", registers.read(ch_bit<5>(21)));
+		ch_print("Reg 22: {0}", registers.read(ch_bit<5>(22)));
+		ch_print("Reg 23: {0}", registers.read(ch_bit<5>(23)));
+		ch_print("Reg 24: {0}", registers.read(ch_bit<5>(24)));
+		ch_print("Reg 25: {0}", registers.read(ch_bit<5>(25)));
+		ch_print("Reg 26: {0}", registers.read(ch_bit<5>(26)));
+		ch_print("Reg 27: {0}", registers.read(ch_bit<5>(27)));
+		ch_print("Reg 28: {0}", registers.read(ch_bit<5>(28)));
+		ch_print("Reg 29: {0}", registers.read(ch_bit<5>(29)));
+		ch_print("Reg 30: {0}", registers.read(ch_bit<5>(30)));
+		ch_print("Reg 31: {0}", registers.read(ch_bit<5>(31)));
+
+
 	}
 };
 
@@ -49,6 +86,7 @@ struct Decode
 		// Fetch Inputs
 		__in(ch_bit<32>)   in_instruction,
 		__in(ch_bit<32>)    in_PC_next,
+		__in(ch_bool)   in_stall,
 		// WriteBack inputs
 		__in(ch_bit<32>) in_write_data,
 		__in(ch_bit<5>) in_rd,
@@ -85,7 +123,7 @@ struct Decode
 	{
 
 
-		ch_bit<7> curr_opcode;
+		ch_bit<7> curr_opcode(0);
 		ch_bit<4> alu_op;
 		ch_bit<4> b_alu_op;
 		ch_bit<32> rd1_register;
@@ -99,10 +137,9 @@ struct Decode
 
 		ch_bool write_register = ch_sel(io.in_wb.as_uint() != NO_WB_int, TRUE, FALSE);
 
-		
+		ch_bool valid = !io.in_stall;
 
-
-		curr_opcode            = ch_slice<7>(io.in_instruction);
+		curr_opcode            = ch_sel(valid, ch_slice<7>(io.in_instruction), CH_ZERO(7));		
 		io.out_rd              = ch_slice<5>(io.in_instruction >> 7);
 		io.out_rs1             = ch_slice<5>(io.in_instruction >> 15);
 		io.out_rs2             = ch_slice<5>(io.in_instruction >> 20);
@@ -133,13 +170,16 @@ struct Decode
 
 
 		io.out_wb      = ch_sel(is_linst, WB_MEM, ch_sel(is_itype || is_rtype, WB_ALU, NO_WB));
-		io.out_rs2_src = ch_sel(is_itype, RS2_IMMED, RS2_REG);
-
+		io.out_rs2_src = ch_sel(is_itype || is_stype, RS2_IMMED, RS2_REG);
 		// MEM signals 
-		io.out_mem_read  = ch_sel(curr_opcode == L_INST, func3, ch_bit<3>(7));
-		io.out_mem_write = ch_sel(curr_opcode == is_stype, func3, ch_bit<3>(7));
+		io.out_mem_read  = ch_sel(is_linst, func3, NO_MEM_READ);
+		io.out_mem_write = ch_sel(is_stype, func3, NO_MEM_WRITE);
 
 		ch_print("curr_opcode: {0}", curr_opcode);
+		// ch_print("curr_mem_write: {0}", io.out_mem_write);
+		// ch_print("RS1: {0}", io.out_rs1);
+		// ch_print("RD1: {0}", io.out_rd1);
+		// ch_print("Immed: {0}", io.out_itype_immed);
 
 		__switch(curr_opcode)
 			__case(ALU_INST) 
@@ -151,12 +191,27 @@ struct Decode
 				ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2); // out_rs2 represents shamt
 
 				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
+				ch_print("ALU_INST");
+			}
+			__case(R_INST)
+			{
+				ch_print("R-Type INSTRUCTION");
+				io.out_branch_type  = NO_BRANCH;
+				io.out_branch_stall = NO_STALL;
+				io.out_itype_immed  = anything;
 			}
 			__case(S_INST)
 			{
 				io.out_branch_type = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed = ch_cat(func7, io.out_rd);
+				ch_print("S_INST");
+			}
+			__case(L_INST)
+			{
+				io.out_branch_type = NO_BRANCH;
+				io.out_branch_stall = NO_STALL;
+				io.out_itype_immed = ch_slice<12>(io.in_instruction >> 20);
 			}
 			__case(B_INST)
 			{
@@ -233,6 +288,7 @@ struct Decode
 			}
 			__default
 			{
+				ch_print("No INSTRUCTION");
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
@@ -277,7 +333,7 @@ struct Decode
 				alu_op = NO_ALU; 
 			};
 
-		io.out_alu_op = ch_sel(is_btype, ch_sel(io.out_branch_type.as_uint() < (BLTU_int) , SUB, SUBU), alu_op);
+		io.out_alu_op = ch_sel(is_btype, ch_sel(io.out_branch_type.as_uint() < (BLTU_int) , SUB, SUBU), ch_sel(is_stype || is_linst, ADD, alu_op));
 
 		// Debugging outputs
 		io.actual_change = ch_bit<32>(1);

@@ -46,6 +46,11 @@ struct Forwarding
 		ch_bool mem_mem_read = (io.in_memory_wb.as_uint() == WB_MEM_int);
 		ch_bool wb_mem_read  = (io.in_writeback_wb.as_uint() == WB_MEM_int);
 
+		__if (exe_mem_read)
+		{
+			ch_print("EXE_MEM_READ ENABLED");
+		};
+
 		// SRC1
 		ch_bool src1_exe_fwd = ((io.in_decode_src1.as_uint() == io.in_execute_dest.as_uint()) && 
 			                     (io.in_execute_wb.as_uint() != NO_WB_int));
@@ -61,7 +66,11 @@ struct Forwarding
 
 
 		io.out_src1_fwd  = src1_exe_fwd || src1_mem_fwd || src1_wb_fwd;
-		io.out_fwd_stall = ch_sel(src1_exe_fwd && exe_mem_read, STALL, NO_STALL);
+
+		__if(io.out_fwd_stall == STALL_int)
+		{
+			ch_print("OUT_FWD_STALL ENABLED");
+		};
 
 		io.out_src1_fwd_data = ch_sel( src1_exe_fwd, io.in_execute_alu_result,
 			                        ch_sel( src1_mem_fwd, ch_sel(mem_mem_read, io.in_memory_mem_data, io.in_memory_alu_result),
@@ -89,6 +98,11 @@ struct Forwarding
 			                        ch_sel( src2_mem_fwd, ch_sel(mem_mem_read, io.in_memory_mem_data, io.in_memory_alu_result),
 					                    ch_sel( src2_wb_fwd,  ch_sel(wb_mem_read,  io.in_writeback_mem_data, io.in_writeback_alu_result),
 										    anything32)));
+
+
+
+		io.out_fwd_stall = ch_sel((src1_exe_fwd || src2_exe_fwd) && exe_mem_read, STALL, NO_STALL);
+
 	}
 
 };

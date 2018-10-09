@@ -56,6 +56,16 @@
 #define STALL ch_bit<1>(1)
 #define NO_STALL ch_bit<1>(0)
 
+#define STALL_int (1)
+#define NO_STALL_int (0)
+
+
+// VALID
+#define VALID ch_bit<1>(1)
+#define NO_VALID ch_bit<1>(0)
+
+#define VALID_int (1)
+#define NO_VALID_int (0)
 
 // ALU OPS
 #define NO_ALU ch_bit<4>(15)
@@ -111,6 +121,11 @@
 #define ONES_16BITS 65535
 #define anything ch_bit<12>(123)
 #define anything32 ch_bit<32>(123)
+
+
+// MEMORY
+#define NO_MEM_WRITE ch_bit<3>(7)
+#define NO_MEM_READ  ch_bit<3>(7)
 
 
 #endif

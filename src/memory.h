@@ -8,7 +8,7 @@ using namespace ch::sim;
 struct Cache
 {
 	__io(
-		__in(ch_bit<32>) in_address,
+		__in(ch_bit<12>) in_address,
 		__in(ch_bit<3>) in_mem_read,
 		__in(ch_bit<3>) in_mem_write,
 		__in(ch_bit<32>) in_data,
@@ -95,7 +95,7 @@ struct Cache
 				mem_module.write(ch_slice<12>(io.in_address), io.in_data, FALSE);
 			};
 
-		io.out_data = ch_sel(io.in_mem_read == 1, mem_module.read(ch_slice<12>(io.in_address)), anything32);
+		io.out_data = mem_result;
 
 	}
 };
@@ -127,7 +127,9 @@ struct Memory
 	void describe()
 	{
 
-		cache.io.in_address = io.in_alu_result;
+		ch_bit<12> address = ch_slice<12>(io.in_alu_result.as_uint() >> 2);
+
+		cache.io.in_address = address;
 		cache.io.in_mem_read = io.in_mem_read;
 		cache.io.in_mem_write = io.in_mem_write;
 		cache.io.in_data = io.in_rd2;

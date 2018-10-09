@@ -30,7 +30,14 @@ struct Fetch
 		ch_reg<ch_bit<32>> PC(0);
 		ch_bool stall = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL);
 		
-		io.out_instruction = io.in_din;
+		io.out_instruction = ch_sel(stall, CH_ZERO(32), io.in_din);
+
+		ch_print("INSTRUCTION GOING OUT OF FETCH: {0}", io.out_instruction);
+
+		__if(io.in_branch_dir.as_uint() == TAKEN_int)
+		{
+			ch_print("Branch_dest: {0}", io.in_branch_dest);
+		};
 
 		io.out_PC = ch_sel(io.in_branch_dir.as_uint() == TAKEN_int, io.in_branch_dest, PC.as_uint());
 
@@ -38,8 +45,8 @@ struct Fetch
 
 
 
-		ch_print("DIR: {0}\tDEST{1}",io.in_branch_dir, io.in_branch_dest);
-		ch_print("STALL: {0}", io.in_branch_stall);
+		//ch_print("DIR: {0}\tDEST{1}",io.in_branch_dir, io.in_branch_dest);
+		//ch_print("STALL: {0}", io.in_branch_stall);
 
 		// io.out_PC_next = PC.as_uint();
 
