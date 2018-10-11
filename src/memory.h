@@ -18,6 +18,12 @@ struct Cache
 
 	void describe()
 	{
+
+
+		ch_print("****************");
+		ch_print("CACHE");
+		ch_print("****************");		
+
 		ch_mem<ch_bit<32>, 16777216> mem_module;
 
 		ch_print("MEM_VALUE @ 0x35: {0}", mem_module.read(ch_bit<24>(0x35)));
@@ -78,7 +84,7 @@ struct Cache
 				ch_bit<32> word = ch_cat(zeros, ch_slice<8>(io.in_data)) | mem_module.read(ch_slice<24>(io.in_address));
 				ch_bit<24> address = ch_slice<24>(io.in_address);
 				mem_module.write(address.as_uint(), word, TRUE);
-				ch_print("SB");
+				ch_print("!!!!!!!!!!WARNING");
 			}
 			__case(1)
 			{
@@ -86,18 +92,19 @@ struct Cache
 				ch_bit<16> zeros(0);
 				ch_bit<32> word = ch_cat(zeros, ch_slice<16>(io.in_data)) | mem_module.read(ch_slice<24>(io.in_address));
 				mem_module.write(ch_slice<24>(io.in_address), word, TRUE);
-				ch_print("SH");
+				ch_print("!!!!!!!!!!WARNING");
 			}
 			__case(2)
 			{
 				// SW
 				mem_module.write(ch_slice<24>(io.in_address), io.in_data, TRUE);
 				ch_print("Storing in address: {0}, value: {1}", ch_slice<24>(io.in_address), io.in_data);
+				ch_print("!!!!!!!!!!WARNING");
 			}
 			__default
 			{
 				// mem_module.write(ch_slice<24>(io.in_address), io.in_data, FALSE);
-				ch_print("NOT SDORING ANYTHING");
+				ch_print("$$$$$$$$$$$WARNING");
 			};
 
 		io.out_data = mem_result;
