@@ -29,22 +29,19 @@ struct F_D_Register
 
 		ch_bool stall = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL);
 
-
-
-
 		io.out_instruction = instruction;
 		io.out_PC_next     = PC_next;
 
-		__if((io.in_fwd_stall == STALL))
-		{
-
-			ch_print("NEED TO FWD STALL");
-		};
-
-		__if(!(io.in_fwd_stall == STALL))
+		__if(io.in_fwd_stall == NO_STALL)
 		{
 			instruction->next  = io.in_instruction;
 			PC_next->next      = io.in_PC_next;
+
+		} __else
+		{
+			ch_print("STALLING F_D_Register");
+			instruction->next = instruction.as_uint();
+			PC_next->next     = PC_next.as_uint();
 		};
 
 

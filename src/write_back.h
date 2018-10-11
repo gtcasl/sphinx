@@ -17,11 +17,20 @@ struct Write_Back
 	void describe()
 	{
 
+		ch_bool is_jal = io.in_wb.as_uint() == WB_JAL_int;
+		ch_bool uses_alu = io.in_wb.as_uint() == WB_ALU_int;
 
-		io.out_write_data = ch_sel(io.in_wb.as_uint() == 1, io.in_alu_result, io.in_mem_result);
+		io.out_write_data = ch_sel(is_jal , io.in_PC_next, ch_sel(uses_alu, io.in_alu_result, io.in_mem_result));
 
 		io.out_rd = io.in_rd;
 		io.out_wb = io.in_wb;
+
+		ch_print("****************");
+		ch_print("Write Back");
+		ch_print("****************");		
+
+
+		ch_print("rd: {0}, alu_result: {1}, mem_result: {2}", io.in_rd, io.in_alu_result, io.in_mem_result);
 
 
 	}

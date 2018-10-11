@@ -8,7 +8,7 @@ using namespace ch::sim;
 struct Cache
 {
 	__io(
-		__in(ch_bit<12>) in_address,
+		__in(ch_bit<24>) in_address,
 		__in(ch_bit<3>) in_mem_read,
 		__in(ch_bit<3>) in_mem_write,
 		__in(ch_bit<32>) in_data,
@@ -18,9 +18,9 @@ struct Cache
 
 	void describe()
 	{
-		ch_mem<ch_bit<32>, 4096> mem_module;
+		ch_mem<ch_bit<32>, 16777216> mem_module;
 
-		// 
+		ch_print("MEM_VALUE @ 0x35: {0}", mem_module.read(ch_bit<24>(0x35)));
 
 		ch_bit<32> mem_result(0);
 
@@ -31,7 +31,7 @@ struct Cache
 				ch_bit<24> zeros(ZERO);
 				
 				// LB sign extend
-				ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<12>(io.in_address)));
+				ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<24>(io.in_address)));
 				mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_cat(zeros, byte));
 			}
 			__case(1)
@@ -40,19 +40,20 @@ struct Cache
 				ch_bit<16> ones(ONES_16BITS);
 				ch_bit<16> zeros(ZERO);
 				
-				ch_bit<16> half = ch_slice<16>(mem_module.read(ch_slice<12>(io.in_address)));
+				ch_bit<16> half = ch_slice<16>(mem_module.read(ch_slice<24>(io.in_address)));
 				mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_cat(zeros, half));
 			}
 			__case(2)
 			{
 				// LW
-				mem_result = mem_module.read(ch_slice<12>(io.in_address));
+				mem_result = mem_module.read(ch_slice<24>(io.in_address));
+				ch_print("Reading Addr: {0}, Value: {1}", io.in_address, mem_result);
 			}
 			__case(4)
 			{
 				ch_bit<24> zeros(ZERO);
 				// LBU
-				ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<12>(io.in_address)));
+				ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<24>(io.in_address)));
 				mem_result = ch_cat(zeros, byte);
 			}
 			__case(5)
@@ -60,7 +61,7 @@ struct Cache
 				ch_bit<16> zeros(0);
 
 				// LHU
-				ch_bit<16> half = ch_slice<16>(mem_module.read(ch_slice<12>(io.in_address)));
+				ch_bit<16> half = ch_slice<16>(mem_module.read(ch_slice<24>(io.in_address)));
 				mem_result = ch_cat(zeros, half);
 			}
 			__default
@@ -70,29 +71,33 @@ struct Cache
 
 
 		__switch(io.in_mem_write.as_uint())
-			__case(0) 
+			__case(0)
 			{
 				// SB
 				ch_bit<24> zeros(0);
-				ch_bit<32> word = ch_cat(zeros, ch_slice<8>(io.in_data)) | mem_module.read(ch_slice<12>(io.in_address));
-				ch_bit<12> address = ch_slice<12>(io.in_address);
+				ch_bit<32> word = ch_cat(zeros, ch_slice<8>(io.in_data)) | mem_module.read(ch_slice<24>(io.in_address));
+				ch_bit<24> address = ch_slice<24>(io.in_address);
 				mem_module.write(address.as_uint(), word, TRUE);
+				ch_print("SB");
 			}
 			__case(1)
 			{
 				// SH
 				ch_bit<16> zeros(0);
-				ch_bit<32> word = ch_cat(zeros, ch_slice<16>(io.in_data)) | mem_module.read(ch_slice<12>(io.in_address));
-				mem_module.write(ch_slice<12>(io.in_address), word, TRUE);
+				ch_bit<32> word = ch_cat(zeros, ch_slice<16>(io.in_data)) | mem_module.read(ch_slice<24>(io.in_address));
+				mem_module.write(ch_slice<24>(io.in_address), word, TRUE);
+				ch_print("SH");
 			}
 			__case(2)
 			{
 				// SW
-				mem_module.write(ch_slice<12>(io.in_address), io.in_data, TRUE);
+				mem_module.write(ch_slice<24>(io.in_address), io.in_data, TRUE);
+				ch_print("Storing in address: {0}, value: {1}", ch_slice<24>(io.in_address), io.in_data);
 			}
 			__default
 			{
-				mem_module.write(ch_slice<12>(io.in_address), io.in_data, FALSE);
+				// mem_module.write(ch_slice<24>(io.in_address), io.in_data, FALSE);
+				ch_print("NOT SDORING ANYTHING");
 			};
 
 		io.out_data = mem_result;
@@ -127,7 +132,14 @@ struct Memory
 	void describe()
 	{
 
-		ch_bit<12> address = ch_slice<12>(io.in_alu_result.as_uint() >> 2);
+		ch_print("****************");
+		ch_print("MEMORY");
+		ch_print("****************");		
+
+
+		ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3}, mem_write: {4}, mem_read: {5}", io.in_rd, io.in_alu_result, io.out_mem_result, io.in_rd2, io.in_mem_write, io.in_mem_read);
+
+		ch_bit<24> address = ch_slice<24>(io.in_alu_result.as_uint() >> 2);
 
 		cache.io.in_address = address;
 		cache.io.in_mem_read = io.in_mem_read;

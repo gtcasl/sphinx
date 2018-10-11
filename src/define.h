@@ -3,6 +3,9 @@
 #ifndef __DEFINITIONS__
 #define __DEFINITIONS__
 
+
+
+
 // SIZES
 #define INST_SIZE 32
 #define INST_BUFF_SIZE
@@ -98,15 +101,27 @@
 // WRITEBACK
 #define WB_ALU ch_bit<2>(1)
 #define WB_MEM ch_bit<2>(2)
+#define WB_JAL ch_bit<2>(3)
 #define NO_WB  ch_bit<2>(0)
 
 #define WB_ALU_int (1)
 #define WB_MEM_int (2)
+#define WB_JAL_int (3)
 #define NO_WB_int  (0)
+
+// JAL
+#define JUMP ch_bit<1>(1)
+#define NO_JUMP ch_bit<1>(0)
+
+#define JUMP_int (1)
+#define NO_JUMP_int (0)
 
 // RS2 SRC
 #define RS2_IMMED ch_bit<1>(1)
 #define RS2_REG ch_bit<1>(0)
+
+#define RS2_IMMED_int (1)
+#define RS2_REG_int (0)
 
 
 // FORWARDING
@@ -126,6 +141,12 @@
 // MEMORY
 #define NO_MEM_WRITE ch_bit<3>(7)
 #define NO_MEM_READ  ch_bit<3>(7)
+
+
+// REG
+#define ZERO_REG ch_bit<5>(0)
+
+#define ZERO_REG_int (0)
 
 
 #endif

@@ -46,31 +46,24 @@ struct Forwarding
 		ch_bool mem_mem_read = (io.in_memory_wb.as_uint() == WB_MEM_int);
 		ch_bool wb_mem_read  = (io.in_writeback_wb.as_uint() == WB_MEM_int);
 
-		__if (exe_mem_read)
-		{
-			ch_print("EXE_MEM_READ ENABLED");
-		};
-
 		// SRC1
 		ch_bool src1_exe_fwd = ((io.in_decode_src1.as_uint() == io.in_execute_dest.as_uint()) && 
+								(io.in_decode_src1.as_uint() != ZERO_REG_int) &&
 			                     (io.in_execute_wb.as_uint() != NO_WB_int));
 
 		ch_bool src1_mem_fwd = ((io.in_decode_src1.as_uint() == io.in_memory_dest.as_uint()) &&
+							    (io.in_decode_src1.as_uint() != ZERO_REG_int) &&
 			                      (io.in_memory_wb.as_uint() != NO_WB_int) &&
 			                      (!src1_exe_fwd));
 
 		ch_bool src1_wb_fwd = ((io.in_decode_src1.as_uint() == io.in_writeback_dest.as_uint()) &&
-			                      (io.in_writeback_wb.as_uint() != NO_WB_int) &&
+							   (io.in_decode_src1.as_uint() != ZERO_REG_int) &&
+			                  (io.in_writeback_wb.as_uint() != NO_WB_int) &&
 			                      (!src1_exe_fwd) &&
 			                      (!src1_mem_fwd));
 
 
 		io.out_src1_fwd  = src1_exe_fwd || src1_mem_fwd || src1_wb_fwd;
-
-		__if(io.out_fwd_stall == STALL_int)
-		{
-			ch_print("OUT_FWD_STALL ENABLED");
-		};
 
 		io.out_src1_fwd_data = ch_sel( src1_exe_fwd, io.in_execute_alu_result,
 			                        ch_sel( src1_mem_fwd, ch_sel(mem_mem_read, io.in_memory_mem_data, io.in_memory_alu_result),
@@ -80,14 +73,17 @@ struct Forwarding
 
 		// SRC2
 		ch_bool src2_exe_fwd = ((io.in_decode_src2.as_uint() == io.in_execute_dest.as_uint()) && 
+								(io.in_decode_src2.as_uint() != ZERO_REG_int) &&
 			                     (io.in_execute_wb.as_uint() != NO_WB_int));
 
 		ch_bool src2_mem_fwd = ((io.in_decode_src2.as_uint() == io.in_memory_dest.as_uint()) &&
+								(io.in_decode_src2.as_uint() != ZERO_REG_int) &&
 			                      (io.in_memory_wb.as_uint() != NO_WB_int) &&
 			                      (!src2_exe_fwd));
 
 		ch_bool src2_wb_fwd = ((io.in_decode_src2.as_uint() == io.in_writeback_dest.as_uint()) &&
-			                      (io.in_writeback_wb.as_uint() != NO_WB_int) &&
+							   (io.in_decode_src2.as_uint() != ZERO_REG_int) &&
+			                  (io.in_writeback_wb.as_uint() != NO_WB_int) &&
 			                      (!src2_exe_fwd) &&
 			                      (!src2_mem_fwd));
 
@@ -102,6 +98,11 @@ struct Forwarding
 
 
 		io.out_fwd_stall = ch_sel((src1_exe_fwd || src2_exe_fwd) && exe_mem_read, STALL, NO_STALL);
+
+		__if(io.out_fwd_stall.as_uint() == STALL)
+		{
+			ch_print("###############FWD STALL");
+		};
 
 	}
 

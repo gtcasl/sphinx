@@ -14,16 +14,20 @@
 #include "forwarding.h"
 #include "define.h"
 
+#include <utility> 
 #include <iostream>
+#include <map> 
+#include <iterator>
 #include <iomanip>
 #include <fstream>
 #include <unistd.h>
 #include <vector>
 #include <math.h>
 
-
 using namespace ch::core;
 using namespace ch::sim;
+
+bool debug = true;
 
 struct Pipeline
 {
@@ -50,6 +54,9 @@ struct Pipeline
     // EXE TO FETCH
     fetch.io.in_branch_dir(execute.io.out_branch_dir);
     fetch.io.in_branch_dest(execute.io.out_branch_dest);
+    // DECODE TO FETCH
+    fetch.io.in_jal(decode.io.out_jal);
+    fetch.io.in_jal_dest(decode.io.out_jal_dest);
 
     // fetch TO f_d_register
     f_d_register.io.in_instruction(fetch.io.out_instruction);
@@ -204,16 +211,21 @@ class RocketChip
 
         void ProcessFile(void);
         void asmToHex(void);
-        void filterHex(void);
-        void populate_inst_vec(void);
-        std::vector<unsigned> inst_vec;
+        void populate_inst_map(void);
+        void get_start_address(void);
+        void print_stats(void);
+        std::map<unsigned,unsigned> inst_map;
+        unsigned start_pc;
         ch_device<Pipeline> pipeline;
         ch_tracer sim;
         std::string instruction_file_name;
+        int stats_static_inst;
+        int stats_dynamic_inst;
+        int stats_total_cycles;
 };
 
 
-RocketChip::RocketChip(std::string instruction_file_name)
+RocketChip::RocketChip(std::string instruction_file_name) : stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0)
 {
     sim = ch_tracer(this->pipeline);
 
@@ -230,10 +242,9 @@ RocketChip::~RocketChip()
 void RocketChip::ProcessFile(void)
 {
 
-    // this->asmToHex();
-    // this->filterHex();
-    this->populate_inst_vec();// DEBUG
-
+    this->asmToHex();
+    this->populate_inst_map();
+    this->get_start_address();
 }
 
 void RocketChip::asmToHex(void)
@@ -255,137 +266,116 @@ void RocketChip::asmToHex(void)
     system("python ../scripts/filter.py");
 
     // system("/usr/bin/bin/elf2hex 64 4096 ../Workspace/add.run >> ../Workspace/add.bin");
-
-    exit(1);
 }
-
-int ctoh(char c)
-{
-    if (c == '0') return 0;
-    if (c == '1') return 1;
-    if (c == '2') return 2;
-    if (c == '3') return 3;
-    if (c == '4') return 4;
-    if (c == '5') return 5;
-    if (c == '6') return 6;
-    if (c == '7') return 7;
-    if (c == '8') return 8;
-    if (c == '9') return 9;
-    if (c == 'a') return 10;
-    if (c == 'b') return 11;
-    if (c == 'c') return 12;
-    if (c == 'd') return 13;
-    if (c == 'e') return 14;
-    if (c == 'f') return 15;
-
-    return -1;
-}
-
-
-// void RocketChip::filterHex(void)
-// {
-
-
-
-//     std::ifstream ifs ("../Workspace/add.bin", std::ifstream::in);
-//     std::ofstream ofs ("../Workspace/add.hex", std::ofstream::out);
-//     std::string line;
-//     std::string curr_inst;
-//     while (ifs >> line)
-//     {
-//         int ii;
-//         for (ii = 0; ii < 16; ii++)
-//         {
-//             curr_inst = line.substr(ii*8,8);
-
-
-//             unsigned jj;
-
-//             unsigned inst = 0;
-//             for (jj = 0; jj < curr_inst.size(); jj++)
-//             {
-//                 if (curr_inst[jj] != '0')
-//                 {
-
-//                     inst += ctoh(curr_inst[jj]) * pow(16, (curr_inst.size() - 1) - jj);
-//                 } else
-//                 {
-//                 }
-//             }
-
-//             if ((inst != 0) && ((inst % 4) == 3))
-//             {
-//                 ofs << inst << std::endl;
-//             }
-//         }
-//     }
-
-//     ofs.close();
-//     ifs.close();
-
-// }
 
 
 // DEBUG
-void RocketChip::populate_inst_vec(void)
+void RocketChip::populate_inst_map(void)
 {
 
-    // std::ifstream instruction_file("../Workspace/add.hex");
-    // unsigned address;
-    // unsigned inst;
-    // while (instruction_file >> std::dec >> address >> inst)
-    // {
-    //     std::cout << "Address: " << std::hex << address << "\tInst: " << std::hex << inst << std::endl;
-    //     // this->inst_vec.push_back(inst);
-    //     // std::cout <<  std::hex << inst << std::endl;
-    // }
+
+
+    std::ifstream instruction_file("../Workspace/add.hex");
+    unsigned address;
+    unsigned inst;
+    while (instruction_file >> std::dec >> address >> inst)
+    {
+        inst_map.insert(std::pair<unsigned,unsigned>(address, inst));
+        stats_static_inst++;
+        if(debug) std::cout << "Address: " << std::hex << address << "\tInst: " << std::hex << inst << std::endl;
+    }
+    instruction_file.close();
+    // exit(1);
+
+
+    // inst_map.insert(std::pair<unsigned,unsigned>(0,0x00500113)); // addi $2, $0, 5
+    // inst_map.insert(std::pair<unsigned,unsigned>(4,0x00a00193)); // addi $3, $0, 10
+    // inst_map.insert(std::pair<unsigned,unsigned>(8,0x00218233)); // add  $4, $3, $2
+    // inst_map.insert(std::pair<unsigned,unsigned>(12,0x00402023)); // SW   $4, $0(0)
+    // inst_map.insert(std::pair<unsigned,unsigned>(16,0x00002283)); // LW  $5, $0(0) 
+    // inst_map.insert(std::pair<unsigned,unsigned>(20,0x00520263)); // beq $4, $5, +4
+    // inst_map.insert(std::pair<unsigned,unsigned>(24,0x00200313)); // addi $6, $0, 2
+    // inst_map.insert(std::pair<unsigned,unsigned>(28,0x00700413)); // addi $8, $0, 7
 
     // exit(1);
-    inst_vec.push_back(0x00500113); // addi $2, $0, 5
-    inst_vec.push_back(0x00a00193); // addi $3, $0, 10
-    inst_vec.push_back(0x00218233); // add  $4, $3, $2
-    inst_vec.push_back(0x00402023); // SW   $4, $0(0)
-    inst_vec.push_back(0x00002283); // LW  $5, $0(0) 
-    inst_vec.push_back(0x00520163); // beq $4, $5, +1
-    inst_vec.push_back(0x00200313); // addi $6, $0, 2
-    inst_vec.push_back(0x00700413); // addi $8, $0, 7
 
 }
 
 
+void RocketChip::get_start_address(void)
+{
+    std::ifstream address_file("../Workspace/tags.hex");
+    address_file >> std::dec >> this->start_pc;
+    this->start_pc -= 4;
+    if(debug) std::cout << "START_PC: " << std::hex << this->start_pc << std::endl;
+    address_file.close();
+
+    // exit(1);
+}
 
 void RocketChip::simulate(void) {
-
 
     std::cout << "***********************************" << std::endl;
 
     sim.run([&](ch_tick t)->bool {        
 
-        std::cout << "t: " << (t) << std::endl;
 
         unsigned new_PC = (int) pipeline.io.PC;
 
-        std::cout << "PC: " << std::dec <<  new_PC << std::endl;
+        static bool stop = false;
+        static int count = 0;
 
-        if (new_PC < this->inst_vec.size())
+        // unsigned start_pc = 0x10360; //0x10360
+
+        std::cout << "\nStep: " << t/2 << std::endl;
+        std::cout << "new_PC: " << new_PC << std::endl;
+
+
+        if (t == 0)
         {
-            std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << this->inst_vec[new_PC] << std::endl;
-            pipeline.io.in_din = this->inst_vec[new_PC];
+            std::cout << "SETTING START PC: " << start_pc << std::endl;
+            pipeline.io.in_din = start_pc;
             pipeline.io.in_push = true;
-
-
         }
         else
         {
-            pipeline.io.in_din = 0x00000000;
-            pipeline.io.in_push = true;
+
+            stats_total_cycles++;
+            if ((this->inst_map.find(new_PC) != this->inst_map.end()) && !stop)
+            {
+                stats_dynamic_inst++;
+                if (debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << this->inst_map[new_PC] << std::endl;
+                pipeline.io.in_din = this->inst_map[new_PC];
+                pipeline.io.in_push = false;
+            }
+            else
+            {
+
+                if(debug) std::cout << "shutting down! PC: " << std::hex << new_PC << std::endl;
+                stop = true;
+                count++;
+
+                pipeline.io.in_din = 0x00000000;
+                pipeline.io.in_push = false;
+            }
         }
 
-        std::cout << std::endl;
-        
-        return (new_PC < (this->inst_vec.size() + 6));
+            std::cout << "------------------------------------------";
+            std::cout << std::endl << std::endl << std::endl << std::endl;
+            
+            return (count < 5);
+            // return (new_PC < (this->inst_vec.size() + 6));
     });
+    this->print_stats();
+}
 
+
+void RocketChip::print_stats(void)
+{
+    std::cout << "# Static Instructions:\t" << this->stats_static_inst << std::endl;
+    std::cout << "# Dynamic Instructions:\t" << this->stats_dynamic_inst << std::endl;
+    std::cout << "# of total cycles:\t" << this->stats_total_cycles << std::endl;
+    std::cout << "CPI:\t" << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
 }
 
 void RocketChip::export_model()
