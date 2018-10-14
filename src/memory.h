@@ -117,8 +117,8 @@ struct Memory
 {
 	__io(
 		__in(ch_bit<32>) in_alu_result,
-		__in(ch_bit<3>) in_mem_read, // New
-		__in(ch_bit<3>) in_mem_write, // New
+		__in(ch_bit<3>) in_mem_read, 
+		__in(ch_bit<3>) in_mem_write,
 		__in(ch_bit<5>) in_rd,
 		__in(ch_bit<2>) in_wb,
 		__in(ch_bit<5>) in_rs1,
@@ -126,13 +126,20 @@ struct Memory
 		__in(ch_bit<5>) in_rs2,
 		__in(ch_bit<32>) in_rd2,
 		__in(ch_bit<32>)   in_PC_next,
+		__in(ch_bit<32>) in_cache_data, // CACHE REP
 
 		__out(ch_bit<32>) out_alu_result,
-		__out(ch_bit<32>) out_mem_result, // Neww
+		__out(ch_bit<32>) out_mem_result,
 		__out(ch_bit<5>) out_rd,
 		__out(ch_bit<2>) out_wb,
 		__out(ch_bit<5>) out_rs1,
 		__out(ch_bit<5>) out_rs2,
+
+		__out(ch_bit<24>) out_cache_address, // CACHE REP
+		__out(ch_bit<3>)  out_cache_mem_read, // CACHE REP
+		__out(ch_bit<3>) out_cache_mem_write, // CACHE REP
+		__out(ch_bit<32>) out_cache_data, // CACHE REP
+
 		__out(ch_bit<32>)   out_PC_next
 	);
 
@@ -148,12 +155,20 @@ struct Memory
 
 		ch_bit<24> address = ch_slice<24>(io.in_alu_result.as_uint() >> 2);
 
-		cache.io.in_address = address;
-		cache.io.in_mem_read = io.in_mem_read;
-		cache.io.in_mem_write = io.in_mem_write;
-		cache.io.in_data = io.in_rd2;
+		// cache.io.in_address = address;
+		// cache.io.in_mem_read = io.in_mem_read;
+		// cache.io.in_mem_write = io.in_mem_write;
+		// cache.io.in_data = io.in_rd2;
 
-		io.out_mem_result = cache.io.out_data;
+		// io.out_mem_result = cache.io.out_data;
+
+		io.out_cache_address = address;
+		io.out_cache_mem_write = io.in_mem_write;
+		io.out_cache_mem_read = io.in_mem_read;
+		io.out_cache_data = io.in_rd2;
+
+		io.out_mem_result = io.in_cache_data;
+
 		io.out_alu_result = io.in_alu_result;
 		io.out_rd = io.in_rd;
 		io.out_wb = io.in_wb;
@@ -164,6 +179,6 @@ struct Memory
 
 	}
 
-	ch_module<Cache> cache;
+	// ch_module<Cache> cache;
 
 };

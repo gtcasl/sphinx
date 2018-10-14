@@ -4,20 +4,20 @@ def get_main(inst_file):
 	output = open("../Workspace/tags.hex", "w")
 	found  = False
 	for line in inst_file:
-
-		if (found):
-			main.append(line)
-			if "ret" in line:
-				found = False
-
-		if len(line.split(" ")) == 2:
-			addr = line.replace(":", "")
-			addr = addr.replace("\n", "")
-			addr = addr.split(" ")
-			if (addr[1] == "<main>"):
+		if found:
+			if len(line.split(" ")) > 2:
+				main.append(line)
+			elif len(line.split(" ")) == 2:
+				addr = line.replace(":", "")
+				addr = addr.replace("\n", "")
+				addr = addr.split(" ")
+				if (addr[1] == "<main>"):
+					output.write("{}\n".format(int(addr[0], 16)))
+		else:
+			if "Disassembly of section .text:" in line:
 				found = True
-				output.write("{}\n".format(int(addr[0], 16)))
-				# print(addr)
+
+
 	return main
 
 

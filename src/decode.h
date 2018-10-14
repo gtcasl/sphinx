@@ -118,6 +118,7 @@ struct Decode
 		__out(ch_bit<1>) out_branch_stall,
 		__out(ch_bit<1>) out_jal,
 		__out(ch_bit<32>) out_jal_dest,
+		__out(ch_bit<20>) out_upper_immed,
 		__out(ch_bit<32>)   out_PC_next
 	);
 
@@ -137,6 +138,9 @@ struct Decode
 		ch_bool is_btype;
 		ch_bool is_linst;
 		ch_bool is_jal;
+		ch_bool is_jalr;
+		ch_bool is_lui;
+		ch_bool is_auipc;
 
 		ch_bool write_register = ch_sel(io.in_wb.as_uint() != NO_WB_int, TRUE, FALSE);
 
@@ -165,15 +169,21 @@ struct Decode
 		io.out_rd2 = ch_sel(io.in_src2_fwd == FWD, io.in_src2_fwd_data, rd2_register);
 
 		// Write Back sigal
-		is_rtype  = curr_opcode == R_INST;
+		is_rtype  = (curr_opcode == R_INST);
 		is_linst  = (curr_opcode == L_INST);
 		is_itype  = (curr_opcode == ALU_INST) || is_linst; 
 		is_stype  = (curr_opcode == S_INST);
 		is_btype  = (curr_opcode == B_INST);
 		is_jal    = (curr_opcode == JAL_INST);
+		is_jalr   = (curr_opcode == JALR_INST);
+		is_lui    = (curr_opcode == LUI_INST);
+		is_auipc  = (curr_opcode == AUIPC_INST);
 
 
-		io.out_wb      = ch_sel(is_jal && valid, WB_JAL, ch_sel(is_linst && valid, WB_MEM, ch_sel((is_itype || is_rtype) && valid, WB_ALU, NO_WB)));
+		io.out_wb      = ch_sel((is_jal || is_jalr) && valid, WB_JAL,
+			                   ch_sel(is_linst && valid, WB_MEM, 
+			                   	     ch_sel((is_itype || is_rtype || is_lui || is_auipc) && valid, WB_ALU,
+			                   	     	    NO_WB)));
 		io.out_rs2_src = ch_sel(is_itype || is_stype, RS2_IMMED, RS2_REG);
 		// MEM signals 
 		io.out_mem_read  = ch_sel(is_linst && valid, func3, NO_MEM_READ);
@@ -185,19 +195,16 @@ struct Decode
 
 		ch_print("Curr_inst: {0} , FWD for src1: {1} d: {2}, FWD for src2: {3} , d: {4}", io.in_instruction, io.in_src1_fwd, io.out_rd1, io.in_src2_fwd, io.out_rd2);
 		ch_print("src1: {0}, src2: {1}, rd: {2}", io.out_rs1, io.out_rs2, io.out_rd);
-		//ch_print("curr_opcode: {0}", curr_opcode);
-		// //ch_print("curr_mem_write: {0}", io.out_mem_write);
-		// //ch_print("RS1: {0}", io.out_rs1);
-		// //ch_print("RD1: {0}", io.out_rd1);
-		// //ch_print("Immed: {0}", io.out_itype_immed);
+
 
 		__switch(curr_opcode)
 			__case(ALU_INST) 
 			{
-				io.out_branch_type = NO_BRANCH;
+				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
+				io.out_upper_immed  = anything20;
 
 				ch_bool shift_i = (func3 == 1) || (func3 == 5);
 				ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2); // out_rs2 represents shamt
@@ -211,15 +218,17 @@ struct Decode
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
+				io.out_upper_immed  = anything20;
 			}
 			__case(S_INST)
 			{
-				io.out_branch_type = NO_BRANCH;
+				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
+				io.out_upper_immed  = anything20;
 
 				io.out_itype_immed = ch_cat(func7, io.out_rd);
 				ch_print("\nS_TYPE INST: {0}", io.in_instruction);
@@ -230,17 +239,19 @@ struct Decode
 			}
 			__case(L_INST)
 			{
-				io.out_branch_type = NO_BRANCH;
+				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
-				io.out_itype_immed = ch_slice<12>(io.in_instruction >> 20);
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
+				io.out_upper_immed  = anything20;
+				io.out_itype_immed  = ch_slice<12>(io.in_instruction >> 20);
 			}
 			__case(B_INST)
 			{
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
 				io.out_branch_stall = STALL;
+				io.out_upper_immed  = anything20;
 
 				ch_bit<1> b_12      = io.in_instruction[31];
 				ch_bit<1> b_11      = io.in_instruction[7];
@@ -262,7 +273,7 @@ struct Decode
 					}
 					__case(4)
 					{
-						io.out_branch_type  = BLT;
+						io.out_branch_type = BLT;
 					}
 					__case(5)
 					{
@@ -287,27 +298,28 @@ struct Decode
 			{
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
 				io.out_itype_immed  = anything;
-				//ch_print("LUI_INST WARNING");
+				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
+
 			}
 			__case(AUIPC_INST)
 			{
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
-				//ch_print("AUIPC_INST WARNING");
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
+				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
 			}
 			__case(JAL_INST)
 			{
-				io.out_jal = JUMP;
+				io.out_jal          = JUMP;
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
-				//ch_print("JAL_INST WARNING");
+				io.out_upper_immed  = anything20;
 
 				ch_bit<8> b_19_to_12 = ch_slice<8>(io.in_instruction >> 12);
 				ch_bit<1> b_11       = io.in_instruction[20];
@@ -318,7 +330,7 @@ struct Decode
 
 				ch_bit<21> unsigned_offset = ch_cat(b_20, b_19_to_12, b_11, b_10_to_1, b_0);
 
-				ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ch_bit<11>(2047), unsigned_offset), ch_cat(CH_ZERO(11), unsigned_offset));
+				ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_cat(CH_ZERO(11), unsigned_offset));
 
 
 				ch_bit<32> actual_pc = (io.in_PC_next.as_int() - 4); 
@@ -328,21 +340,25 @@ struct Decode
 			}
 			__case(JALR_INST)
 			{
+				io.out_jal          = JUMP;
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
-				//ch_print("JALR_INST WARNING");
+				io.out_upper_immed  = anything20;
+
+				ch_bit<12> jalr_immed = ch_cat(func7, io.out_rs2);
+				ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_cat(CH_ZERO(20), jalr_immed));
+
+				io.out_jal_dest = io.out_rd1.as_int() + offset.as_int();
 			}
 			__default
 			{
-				//ch_print("No INSTRUCTION");
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
-				io.out_jal = NO_JUMP;
-				io.out_jal_dest = anything32;
+				io.out_jal          = NO_JUMP;
+				io.out_jal_dest     = anything32;
+				io.out_upper_immed  = anything20;
 			};
 
 		// ALU OP
@@ -385,7 +401,10 @@ struct Decode
 				alu_op = NO_ALU; 
 			};
 
-		io.out_alu_op = ch_sel(is_btype, ch_sel(io.out_branch_type.as_uint() < (BLTU_int) , SUB, SUBU), ch_sel(is_stype || is_linst, ADD, alu_op));
+		io.out_alu_op = ch_sel(is_btype, ch_sel(io.out_branch_type.as_uint() < (BLTU_int) , SUB, SUBU), 
+							  ch_sel(is_lui, LUI_ALU,
+							  	     ch_sel(is_auipc, AUIPC_ALU,
+							  	     	   ch_sel(is_stype || is_linst, ADD, alu_op))));
 
 		// Debugging outputs
 		io.actual_change = ch_bit<32>(1);

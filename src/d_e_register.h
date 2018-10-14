@@ -35,6 +35,7 @@ struct D_E_Register
 		__in(ch_bit<32>) in_PC_next,
 		__in(ch_bit<3>) in_branch_type,
 		__in(ch_bit<1>) in_fwd_stall,
+		__in(ch_bit<20>) in_upper_immed,
 
          // (ch_flip_io<decode_io>) in,
 
@@ -50,6 +51,7 @@ struct D_E_Register
 		__out(ch_bit<3>) out_mem_read,
 		__out(ch_bit<3>) out_mem_write,
 		__out(ch_bit<3>) out_branch_type,
+		__out(ch_bit<20>) out_upper_immed,
 		__out(ch_bit<32>)   out_PC_next
 	);
 
@@ -63,13 +65,13 @@ struct D_E_Register
 		ch_reg<ch_bit<32>> rd2(0);
 		ch_reg<ch_bit<4>>  alu_op(0);
 		ch_reg<ch_bit<2>>  wb(0);
-		ch_reg<ch_bit<32>>    PC_next_out(0);
+		ch_reg<ch_bit<32>> PC_next_out(0);
 		ch_reg<ch_bit<1>>  rs2_src(0);
 		ch_reg<ch_bit<12>> itype_immed(0);
 		ch_reg<ch_bit<3>>  mem_read(0);
 		ch_reg<ch_bit<3>>  mem_write(0);
-		ch_reg<ch_bit<3>> branch_type(0);
-
+		ch_reg<ch_bit<3>>  branch_type(0);
+		ch_reg<ch_bit<20>> upper_immed(0);
 
 		io.out_rd          = rd;
 		io.out_rs1         = rs1;
@@ -84,6 +86,7 @@ struct D_E_Register
 		io.out_mem_read    = mem_read;
 		io.out_mem_write   = mem_write;
 		io.out_branch_type = branch_type;
+		io.out_upper_immed = upper_immed;
 
 		// rd->next          = io.in_rd;
 		// rs1->next         = io.in_rs1;
@@ -101,19 +104,20 @@ struct D_E_Register
 
 
 
-		rd->next          = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5), io.in_rd);
-		rs1->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5), io.in_rs1);
-		rd1->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32), io.in_rd1);
-		rs2->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5), io.in_rs2);
-		rd2->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32), io.in_rd2);
-		alu_op->next      = ch_sel(io.in_fwd_stall == STALL, NO_ALU, io.in_alu_op);
-		wb->next          = ch_sel(io.in_fwd_stall == STALL, NO_WB, io.in_wb);
-		PC_next_out->next = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32), io.in_PC_next);
-		rs2_src->next     = ch_sel(io.in_fwd_stall == STALL, RS2_REG, io.in_rs2_src);
-		itype_immed->next = ch_sel(io.in_fwd_stall == STALL, anything, io.in_itype_immed);
-		mem_read->next    = ch_sel(io.in_fwd_stall == STALL, NO_MEM_READ, io.in_mem_read);
+		rd->next          = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5)  , io.in_rd);
+		rs1->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5)  , io.in_rs1);
+		rd1->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32) , io.in_rd1);
+		rs2->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5)  , io.in_rs2);
+		rd2->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32) , io.in_rd2);
+		alu_op->next      = ch_sel(io.in_fwd_stall == STALL, NO_ALU      , io.in_alu_op);
+		wb->next          = ch_sel(io.in_fwd_stall == STALL, NO_WB       , io.in_wb);
+		PC_next_out->next = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32) , io.in_PC_next);
+		rs2_src->next     = ch_sel(io.in_fwd_stall == STALL, RS2_REG     , io.in_rs2_src);
+		itype_immed->next = ch_sel(io.in_fwd_stall == STALL, anything    , io.in_itype_immed);
+		mem_read->next    = ch_sel(io.in_fwd_stall == STALL, NO_MEM_READ , io.in_mem_read);
 		mem_write->next   = ch_sel(io.in_fwd_stall == STALL, NO_MEM_WRITE, io.in_mem_write);
-		branch_type->next = ch_sel(io.in_fwd_stall == STALL, NO_BRANCH, io.in_branch_type);
+		branch_type->next = ch_sel(io.in_fwd_stall == STALL, NO_BRANCH   , io.in_branch_type);
+		upper_immed->next = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(20) , io.in_upper_immed);
 
 
 	}

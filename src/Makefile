@@ -3,7 +3,7 @@
 CXXFLAGS += -std=c++17 -O0 -g -Wall -Wextra -pedantic -fmax-errors=1
 LDFLAGS += -lcash -lstdc++
 
-SRCS = pipeline.cpp
+SRCS = RocketChip.cpp
 
 PROJECTS = $(SRCS:.cpp=.out)
 PROJECTS_NAMES = $(SRCS:.cpp=)

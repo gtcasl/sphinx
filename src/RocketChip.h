@@ -35,6 +35,14 @@ struct Pipeline
   __io(
     __in(ch_bit<32>) in_din,
     __in(ch_bool) in_push,
+
+    __in(ch_bit<32>) in_cache_data, // CACHE REP
+
+    __out(ch_bit<24>) out_cache_address, // CACHE REP
+    __out(ch_bit<3>)  out_cache_mem_read, // CACHE REP
+    __out(ch_bit<3>) out_cache_mem_write, // CACHE REP
+    __out(ch_bit<32>) out_cache_data, // CACHE REP
+
     __out(ch_bit<32>) PC,
     __out(ch_bit<32>) actual_change
   );
@@ -47,6 +55,14 @@ struct Pipeline
     // Host to fetch
     fetch.io.in_din(io.in_din);
     fetch.io.in_push(io.in_push);
+
+    // CACHE REPLACEMENT
+    memory.io.out_cache_address(io.out_cache_address);
+    memory.io.out_cache_mem_write(io.out_cache_mem_write);
+    memory.io.out_cache_mem_read(io.out_cache_mem_read);
+    memory.io.out_cache_data(io.out_cache_data);
+
+    memory.io.in_cache_data(io.in_cache_data);
 
     // FETCH TO HOST
     fetch.io.out_PC(io.PC);
@@ -80,6 +96,7 @@ struct Pipeline
     d_e_register.io.in_mem_read(decode.io.out_mem_read);
     d_e_register.io.in_mem_write(decode.io.out_mem_write);
     d_e_register.io.in_branch_type(decode.io.out_branch_type); // branch type
+    d_e_register.io.in_upper_immed(decode.io.out_upper_immed);
     // d_e_register.io(decode.io);
 
 
@@ -103,6 +120,7 @@ struct Pipeline
     execute.io.in_mem_read(d_e_register.io.out_mem_read);
     execute.io.in_mem_write(d_e_register.io.out_mem_write);
     execute.io.in_branch_type(d_e_register.io.out_branch_type);
+    execute.io.in_upper_immed(d_e_register.io.out_upper_immed);
 
     // execute to e_m_register
     e_m_register.io.in_alu_result(execute.io.out_alu_result);
@@ -214,7 +232,10 @@ class RocketChip
         void populate_inst_map(void);
         void get_start_address(void);
         void print_stats(void);
+        void filterHex(void);
+
         std::map<unsigned,unsigned> inst_map;
+        std::vector<unsigned> cache_vec;
         unsigned start_pc;
         ch_device<Pipeline> pipeline;
         ch_tracer sim;
@@ -227,10 +248,11 @@ class RocketChip
 
 RocketChip::RocketChip(std::string instruction_file_name) : stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0)
 {
+    system("rm ../Workspace/*");
+    this->cache_vec.resize(4096);
+
     sim = ch_tracer(this->pipeline);
-
     this->instruction_file_name = instruction_file_name;
-
     this->ProcessFile();
 }
 
@@ -245,35 +267,19 @@ void RocketChip::ProcessFile(void)
     this->asmToHex();
     this->populate_inst_map();
     this->get_start_address();
+    this->filterHex();
 }
 
 void RocketChip::asmToHex(void)
 {
 
-    system("/opt/riscv/bin/riscv32-unknown-linux-gnu-gcc -march=rv32ifd -S ../traces/add.c -o ../traces/add.S");
-
-    sleep(1);
-
-    system("/opt/riscv/bin/riscv32-unknown-linux-gnu-gcc -march=rv32ifd ../traces/add.S -o ../Workspace/add.run");
-
-
-    sleep(1);
-
-    system("/opt/riscv/bin/riscv32-unknown-linux-gnu-objdump -d ../Workspace/add.run >> ../Workspace/add.dump");
-
-    sleep(1);
-
-    system("python ../scripts/filter.py");
-
-    // system("/usr/bin/bin/elf2hex 64 4096 ../Workspace/add.run >> ../Workspace/add.bin");
+    system("../scripts/compile_.sh");
 }
 
 
 // DEBUG
 void RocketChip::populate_inst_map(void)
 {
-
-
 
     std::ifstream instruction_file("../Workspace/add.hex");
     unsigned address;
@@ -313,19 +319,116 @@ void RocketChip::get_start_address(void)
     // exit(1);
 }
 
+int ctoh(char c)
+{
+    if (c == '0') return 0;
+    if (c == '1') return 1;
+    if (c == '2') return 2;
+    if (c == '3') return 3;
+    if (c == '4') return 4;
+    if (c == '5') return 5;
+    if (c == '6') return 6;
+    if (c == '7') return 7;
+    if (c == '8') return 8;
+    if (c == '9') return 9;
+    if (c == 'a') return 10;
+    if (c == 'b') return 11;
+    if (c == 'c') return 12;
+    if (c == 'd') return 13;
+    if (c == 'e') return 14;
+    if (c == 'f') return 15;
+
+    return -1;
+}
+
+void RocketChip::filterHex(void)
+{
+
+
+
+    std::ofstream ofs ("../Workspace/file.hex", std::ofstream::out);
+    std::ifstream ifs ("../Workspace/add.bin", std::ifstream::in);
+    std::string line;
+    std::string curr_inst;
+
+    int addr = 0;
+    while (ifs >> line)
+    {
+        int ii;
+        for (ii = 0; ii < 16; ii++)
+        {
+            curr_inst = line.substr(ii*8,8);
+
+
+            unsigned jj;
+
+            unsigned inst = 0;
+            for (jj = 0; jj < curr_inst.size(); jj++)
+            {
+                if (curr_inst[jj] != '0')
+                {
+
+                    inst += ctoh(curr_inst[jj]) * pow(16, (curr_inst.size() - 1) - jj);
+                } else
+                {
+                }
+            }
+
+            // if (inst != 0)
+            {
+                ofs << std::hex << addr << ": " << inst << std::endl;
+                addr += 4;
+            }
+        }
+    }
+
+    ofs.close();
+    ifs.close();
+
+}
+
 void RocketChip::simulate(void) {
 
     std::cout << "***********************************" << std::endl;
 
     sim.run([&](ch_tick t)->bool {        
 
+        // ******************************************
+        // PART THAT REPLACES CACHE MODULE
+        unsigned data      = (int) pipeline.io.out_cache_data;
+        unsigned address   = (int) pipeline.io.out_cache_address;
+        unsigned mem_read  = (int) pipeline.io.out_cache_mem_read;
+        unsigned mem_write = (int) pipeline.io.out_cache_mem_write;
+
+        if (mem_read == LW_MEM_READ_int)
+        {
+            pipeline.io.in_cache_data = this->cache_vec[address];
+            std::cout << "Reading ---> Address: " << address << "    Data: " << this->cache_vec[address] << std::endl;
+        } else
+        {
+            std::cout << "Reading ---> N/A" << std::endl;
+        }
+
+
+        if (mem_write == SW_MEM_WRITE_int)
+        {
+            this->cache_vec[address] = data;
+            std::cout << "Writing ---> Address: " << address << "    Data: " << data;
+        } else
+        {
+            std::cout << "Writing ---> N/A" << std::endl;
+        }
+
+        this->cache_vec[0] = 0;
+
+        std::cout << "MEM_VALUE @ 0x35: " << this->cache_vec[0x35] << std::endl;
+
+        // END PART THAT REPLACES CACHE MODULE
+        // ******************************************
 
         unsigned new_PC = (int) pipeline.io.PC;
-
         static bool stop = false;
         static int count = 0;
-
-        // unsigned start_pc = 0x10360; //0x10360
 
         std::cout << "\nStep: " << t/2 << std::endl;
         std::cout << "new_PC: " << new_PC << std::endl;
@@ -372,10 +475,10 @@ void RocketChip::simulate(void) {
 
 void RocketChip::print_stats(void)
 {
-    std::cout << "# Static Instructions:\t" << this->stats_static_inst << std::endl;
-    std::cout << "# Dynamic Instructions:\t" << this->stats_dynamic_inst << std::endl;
-    std::cout << "# of total cycles:\t" << this->stats_total_cycles << std::endl;
-    std::cout << "CPI:\t" << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
+    std::cout << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
+    std::cout << "# Dynamic Instructions:\t" << std::dec << this->stats_dynamic_inst << std::endl;
+    std::cout << "# of total cycles:\t" << std::dec << this->stats_total_cycles << std::endl;
+    std::cout << "CPI:\t" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
 }
 
 void RocketChip::export_model()

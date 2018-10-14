@@ -83,6 +83,8 @@
 #define OR ch_bit<4>(8)
 #define AND ch_bit<4>(9)
 #define SUBU ch_bit<4>(10)
+#define LUI_ALU ch_bit<4>(11)
+#define AUIPC_ALU ch_bit<4>(12)
 
 #define NO_ALU_int (15)
 #define ADD_int (0)
@@ -96,6 +98,8 @@
 #define OR_int (8)
 #define AND_int (9)
 #define SUBU_int (10)
+#define LUI_ALU_int (11)
+#define AUIPC_ALU_int (12)
 
 
 // WRITEBACK
@@ -134,14 +138,38 @@
 #define CH_ZERO(x) ch_bit<x>(0)
 #define ONES_24BITS 16777215
 #define ONES_16BITS 65535
+#define ONES_11BITS ch_bit<11>(2047)
+#define ONES_20BITS ch_bit<20>(1048575)
 #define anything ch_bit<12>(123)
 #define anything32 ch_bit<32>(123)
+#define anything20 ch_bit<20>(123)
 
 
 // MEMORY
-#define NO_MEM_WRITE ch_bit<3>(7)
-#define NO_MEM_READ  ch_bit<3>(7)
 
+#define NO_MEM_READ  ch_bit<3>(7)
+#define LB_MEM_READ  ch_bit<3>(0)
+#define LH_MEM_READ  ch_bit<3>(1)
+#define LW_MEM_READ  ch_bit<3>(2)
+#define LBU_MEM_READ ch_bit<3>(4)
+#define LHU_MEM_READ ch_bit<3>(5)
+
+#define NO_MEM_READ_int  (7)
+#define LB_MEM_READ_int  (0)
+#define LH_MEM_READ_int  (1)
+#define LW_MEM_READ_int  (2)
+#define LBU_MEM_READ_int (4)
+#define LHU_MEM_READ_int (5)
+
+#define NO_MEM_WRITE ch_bit<3>(7)
+#define SB_MEM_WRITE ch_bit<3>(0)
+#define SH_MEM_WRITE ch_bit<3>(1)
+#define SW_MEM_WRITE ch_bit<3>(2)
+
+#define NO_MEM_WRITE_int (7)
+#define SB_MEM_WRITE_int (0)
+#define SH_MEM_WRITE_int (1)
+#define SW_MEM_WRITE_int (2)
 
 // REG
 #define ZERO_REG ch_bit<5>(0)
