@@ -4,32 +4,35 @@ def get_main(inst_file):
 	output = open("../Workspace/tags.hex", "w")
 	found  = False
 	for line in inst_file:
-		if found:
+		if ("Disassembly" not in line) and ("..." not in line) and ("littleriscv" not in line):
+			# print("LINE: {}".format(line))
 			if len(line.split(" ")) > 2:
 				main.append(line)
-			elif len(line.split(" ")) == 2:
+			else:
+				# print("LINE: {}".format(line))
 				addr = line.replace(":", "")
 				addr = addr.replace("\n", "")
 				addr = addr.split(" ")
-				if (addr[1] == "<main>"):
-					output.write("{}\n".format(int(addr[0], 16)))
-		else:
-			if "Disassembly of section .text:" in line:
-				found = True
-
+				if (len(addr) > 1):
+					if (addr[1] == "<main>"):
+						# print("START ADDR LINE: {}".format(line))
+						output.write("{}\n".format(int(addr[0], 16)))
 
 	return main
 
 
 def parse_inst(main_inst):
 	instructions = []
+	# print("*****************")
+	# instructions.append(("1027c","0f000113"))
 	instructions.append(("10360","0f000113"))
 	for inst in main_inst:
 		inst = inst.replace(" ", "")
 		inst = inst.replace("\n", "")
 		inst = inst.replace(":", "")
 		info = inst.split("\t")
-		instructions.append((info[0], info[1]))
+		if (len(info[1]) <= 8):
+			instructions.append((info[0], info[1]))
 
 	# instructions.append(("10360", "0f000113"))
 	# instructions.append(("10364", "fe010113"))

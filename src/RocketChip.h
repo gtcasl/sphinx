@@ -24,6 +24,7 @@
 #include <vector>
 #include <math.h>
 
+
 using namespace ch::core;
 using namespace ch::sim;
 
@@ -43,6 +44,8 @@ struct Pipeline
     __out(ch_bit<3>) out_cache_mem_write, // CACHE REP
     __out(ch_bit<32>) out_cache_data, // CACHE REP
 
+    __out(ch_bool) out_fwd_stall, // DInst counting
+    __out(ch_bool) out_branch_stall,
     __out(ch_bit<32>) PC,
     __out(ch_bit<32>) actual_change
   );
@@ -51,6 +54,9 @@ struct Pipeline
   {
 
 
+    // DYNAMIC INSTRUCTION COUNTING:
+    io.out_branch_stall = decode.io.out_branch_stall;
+    io.out_fwd_stall    = forwarding.io.out_fwd_stall;
 
     // Host to fetch
     fetch.io.in_din(io.in_din);
@@ -178,17 +184,19 @@ struct Pipeline
     forwarding.io.in_execute_dest(execute.io.out_rd);
     forwarding.io.in_execute_wb(execute.io.out_wb);
     forwarding.io.in_execute_alu_result(execute.io.out_alu_result);
+    forwarding.io.in_execute_PC_next(execute.io.out_PC_next);
 
     forwarding.io.in_memory_dest(memory.io.out_rd);
     forwarding.io.in_memory_wb(memory.io.out_wb);
     forwarding.io.in_memory_alu_result(memory.io.out_alu_result);
     forwarding.io.in_memory_mem_data(memory.io.out_mem_result);
+    forwarding.io.in_memory_PC_next(memory.io.out_PC_next);
 
     forwarding.io.in_writeback_dest(m_w_register.io.out_rd);
     forwarding.io.in_writeback_wb(m_w_register.io.out_wb);
     forwarding.io.in_writeback_alu_result(m_w_register.io.out_alu_result);
     forwarding.io.in_writeback_mem_data(m_w_register.io.out_mem_result);
-
+    forwarding.io.in_writeback_PC_next(m_w_register.io.out_PC_next);
 
     decode.io.in_src1_fwd(forwarding.io.out_src1_fwd);
     decode.io.in_src1_fwd_data(forwarding.io.out_src1_fwd_data);
@@ -243,10 +251,14 @@ class RocketChip
         int stats_static_inst;
         int stats_dynamic_inst;
         int stats_total_cycles;
+        int stats_fwd_stalls;
+        int stats_branch_stalls;
+        clock_diff stats_sim_time;
 };
 
 
-RocketChip::RocketChip(std::string instruction_file_name) : stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0)
+RocketChip::RocketChip(std::string instruction_file_name) : stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0),
+                                                                stats_fwd_stalls(0), stats_branch_stalls(0)
 {
     system("rm ../Workspace/*");
     this->cache_vec.resize(4096);
@@ -289,6 +301,7 @@ void RocketChip::populate_inst_map(void)
         inst_map.insert(std::pair<unsigned,unsigned>(address, inst));
         stats_static_inst++;
         if(debug) std::cout << "Address: " << std::hex << address << "\tInst: " << std::hex << inst << std::endl;
+        if(debug) std::cout << "Static Inst: " << stats_static_inst << std::endl;
     }
     instruction_file.close();
     // exit(1);
@@ -391,29 +404,41 @@ void RocketChip::simulate(void) {
 
     std::cout << "***********************************" << std::endl;
 
+    clock_time start_time = std::chrono::high_resolution_clock::now();
     sim.run([&](ch_tick t)->bool {        
 
         // ******************************************
         // PART THAT REPLACES CACHE MODULE
+
+        std::cout << "******************" << std::endl;
+        std::cout << "CACHE MODULE" << std::endl;
+        std::cout << "******************" << std::endl;
+
         unsigned data      = (int) pipeline.io.out_cache_data;
         unsigned address   = (int) pipeline.io.out_cache_address;
         unsigned mem_read  = (int) pipeline.io.out_cache_mem_read;
         unsigned mem_write = (int) pipeline.io.out_cache_mem_write;
 
+        std::cout << "finished getting variables" << std::endl;
+
         if (mem_read == LW_MEM_READ_int)
         {
-            pipeline.io.in_cache_data = this->cache_vec[address];
+            std::cout << "ABOUT TO READ ADDRESS: " << address << std::endl;
             std::cout << "Reading ---> Address: " << address << "    Data: " << this->cache_vec[address] << std::endl;
+            pipeline.io.in_cache_data = this->cache_vec[address];
         } else
         {
             std::cout << "Reading ---> N/A" << std::endl;
         }
 
+        std::cout << "FINISHED READING PART" << std::endl;
+
 
         if (mem_write == SW_MEM_WRITE_int)
         {
-            this->cache_vec[address] = data;
+            std::cout << "ABOUT TO WRITE ADDRESS: " << address << std::endl;
             std::cout << "Writing ---> Address: " << address << "    Data: " << data;
+            this->cache_vec[address] = data;
         } else
         {
             std::cout << "Writing ---> N/A" << std::endl;
@@ -422,6 +447,10 @@ void RocketChip::simulate(void) {
         this->cache_vec[0] = 0;
 
         std::cout << "MEM_VALUE @ 0x35: " << this->cache_vec[0x35] << std::endl;
+
+        std::cout << "******************" << std::endl;
+        std::cout << "END CACHE MODULE" << std::endl;
+        std::cout << "******************" << std::endl;
 
         // END PART THAT REPLACES CACHE MODULE
         // ******************************************
@@ -443,10 +472,20 @@ void RocketChip::simulate(void) {
         else
         {
 
-            stats_total_cycles++;
+
+            if (pipeline.io.out_fwd_stall || pipeline.io.out_branch_stall)
+            {
+                --stats_dynamic_inst;
+                if (count > 0) --count;
+                if (pipeline.io.out_fwd_stall) ++this->stats_fwd_stalls;
+                if (pipeline.io.out_branch_stall) ++this->stats_branch_stalls;
+            }
+
+            ++stats_total_cycles;
+
             if ((this->inst_map.find(new_PC) != this->inst_map.end()) && !stop)
             {
-                stats_dynamic_inst++;
+                ++stats_dynamic_inst;
                 if (debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << this->inst_map[new_PC] << std::endl;
                 pipeline.io.in_din = this->inst_map[new_PC];
                 pipeline.io.in_push = false;
@@ -456,7 +495,7 @@ void RocketChip::simulate(void) {
 
                 if(debug) std::cout << "shutting down! PC: " << std::hex << new_PC << std::endl;
                 stop = true;
-                count++;
+                ++count;
 
                 pipeline.io.in_din = 0x00000000;
                 pipeline.io.in_push = false;
@@ -469,16 +508,24 @@ void RocketChip::simulate(void) {
             return (count < 5);
             // return (new_PC < (this->inst_vec.size() + 6));
     });
+    {
+        using namespace std::chrono;
+        this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
+    }
     this->print_stats();
 }
 
 
 void RocketChip::print_stats(void)
 {
-    std::cout << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
-    std::cout << "# Dynamic Instructions:\t" << std::dec << this->stats_dynamic_inst << std::endl;
-    std::cout << "# of total cycles:\t" << std::dec << this->stats_total_cycles << std::endl;
-    std::cout << "CPI:\t" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
+    std::cout << std::left;
+    // std::cout << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
+    std::cout << std::setw(24) << "# Dynamic Instructions:" << std::dec << this->stats_dynamic_inst << std::endl;
+    std::cout << std::setw(24) << "# of total cycles:" << std::dec << this->stats_total_cycles << std::endl;
+    std::cout << std::setw(24) << "# of forwarding stalls:" << std::dec << this->stats_fwd_stalls << std::endl;
+    std::cout << std::setw(24) << "# of branch stalls:" << std::dec << this->stats_branch_stalls << std::endl;
+    std::cout << std::setw(24) << "# CPI:" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
+    std::cout << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time.count() << " ms" << std::endl;
 }
 
 void RocketChip::export_model()

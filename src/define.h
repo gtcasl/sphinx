@@ -132,6 +132,8 @@
 #define NO_FWD ch_bit<1>(0)
 #define FWD ch_bit<1>(1)
 
+// Registers
+#define REG(x) ch_bit<5>(x)
 
 // IMMEDIATES 
 #define ZERO 0
@@ -176,5 +178,9 @@
 
 #define ZERO_REG_int (0)
 
+
+#include <chrono> 
+typedef std::chrono::time_point<std::chrono::high_resolution_clock> clock_time;
+typedef std::chrono::duration<double> clock_diff;
 
 #endif

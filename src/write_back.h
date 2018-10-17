@@ -30,7 +30,8 @@ struct Write_Back
 		ch_print("****************");		
 
 
-		ch_print("rd: {0}, alu_result: {1}, mem_result: {2}", io.in_rd, io.in_alu_result, io.in_mem_result);
+		ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, PC_next: {3}, WB: {4}", io.in_rd, io.in_alu_result, io.in_mem_result, io.in_PC_next, io.in_wb);
+		ch_print("rd: {0}, write+data: {1}", io.in_rd, io.out_write_data);
 
 
 	}

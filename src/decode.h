@@ -34,7 +34,17 @@ struct RegisterFile
 	void describe()
 	{
 		ch_mem<ch_bit<32>, 32> registers;
-		registers.write(ch_bit<5>(0), ch_bit<32>(0), TRUE);
+		registers.write(REG(0), ch_bit<32>(0), TRUE);
+
+
+		ch_reg<ch_bool> starting(false);
+
+		__if(starting == TRUE)
+		{
+			// registers.write(REG(2), ch_bit<32>(0x0f0), TRUE);
+			ch_print("DONT SETTING");
+			starting->next = FALSE;
+		};
 
 		registers.write(io.in_rd, io.in_data, ((io.in_write_register) && (io.in_rd.as_uint() != 0)));
 
@@ -44,13 +54,13 @@ struct RegisterFile
 
 		// ch_print("Reg 0: {0}", registers.read(ch_bit<5>(0)));
 		// ch_print("Reg 1: {0}", registers.read(ch_bit<5>(1)));
-		// ch_print("Reg 2: {0}", registers.read(ch_bit<5>(2)));
+		ch_print("Reg 2: {0}", registers.read(ch_bit<5>(2)));
 		// ch_print("Reg 3: {0}", registers.read(ch_bit<5>(3)));
 		// ch_print("Reg 4: {0}", registers.read(ch_bit<5>(4)));
 		// ch_print("Reg 5: {0}", registers.read(ch_bit<5>(5)));
 		// ch_print("Reg 6: {0}", registers.read(ch_bit<5>(6)));
 		// ch_print("Reg 7: {0}", registers.read(ch_bit<5>(7)));
-		// ch_print("Reg 8: {0}", registers.read(ch_bit<5>(8)));
+		ch_print("Reg 8: {0}", registers.read(ch_bit<5>(8)));
 		// ch_print("Reg 9: {0}", registers.read(ch_bit<5>(9)));
 		// ch_print("Reg 10: {0}", registers.read(ch_bit<5>(10)));
 		// ch_print("Reg 11: {0}", registers.read(ch_bit<5>(11)));
