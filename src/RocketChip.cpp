@@ -13,7 +13,6 @@ int main(int argc, char ** argv)
   {
   	std::cout << "Please input a file name" << std::endl;
   }
-
 }
 
 

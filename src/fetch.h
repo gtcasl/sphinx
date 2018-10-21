@@ -6,7 +6,7 @@ using namespace ch::core;
 using namespace ch::sim;
 
 
-const std::string& init_file = "../Workspace/add.hex";
+const std::string& init_file = "../traces/rv32ui-p-andi.hex";
 
 struct Fetch
 {
@@ -26,8 +26,6 @@ struct Fetch
 
 	void describe()
 	{
-
-
 
 		ch_reg<ch_bit<32>> PC(0); // 10364
 		ch_bool stall = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL);

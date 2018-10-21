@@ -2,6 +2,7 @@
 #include <cash.h>
 #include <ioport.h>
 
+// Pipeline Hardware definitions
 #include "fetch.h"
 #include "f_d_register.h"
 #include "decode.h"
@@ -14,6 +15,8 @@
 #include "forwarding.h"
 #include "define.h"
 
+
+// C++ libraries
 #include <utility> 
 #include <iostream>
 #include <map> 
@@ -24,6 +27,8 @@
 #include <vector>
 #include <math.h>
 
+// RAM
+#include "ram.h"
 
 using namespace ch::core;
 using namespace ch::sim;
@@ -222,13 +227,11 @@ class RocketChip
     private:
 
         void ProcessFile(void);
-        void asmToHex(void);
-        void populate_inst_map(void);
-        void get_start_address(void);
         void print_stats(void);
-        void filterHex(void);
 
         std::map<unsigned,unsigned> inst_map;
+        RAM ram;
+
         unsigned start_pc;
         ch_device<Pipeline> pipeline;
         ch_tracer sim;
@@ -260,128 +263,36 @@ RocketChip::~RocketChip()
 void RocketChip::ProcessFile(void)
 {
 
-    this->asmToHex();
-    this->populate_inst_map();
-    this->get_start_address();
-    this->filterHex();
-}
+    loadHexImpl(this->instruction_file_name, &this->ram);
 
-void RocketChip::asmToHex(void)
-{
+    // Printing state
+    uint32_t address = 0;
+    uint8_t word[4];
+    this->ram.read(address, 4, word);
 
-    system("../scripts/compile_.sh");
-}
+    std::cout << std::setfill('0');
+    std::cout << std::hex << address << ": " << std::setw(2) << (unsigned) word[3] << std::setw(2) << (unsigned) word[2];
+    std::cout << std::setw(2) << (unsigned) word[1] << std::setw(2) << (unsigned) word[0] << std::endl;
 
+    address += 4;
+    this->ram.read(address, 4, word);
 
-// DEBUG
-void RocketChip::populate_inst_map(void)
-{
+    std::cout << std::setfill('0');
+    std::cout << std::hex << address << ": " << std::setw(2) << (unsigned) word[3] << std::setw(2) << (unsigned) word[2];
+    std::cout << std::setw(2) << (unsigned) word[1] << std::setw(2) << (unsigned) word[0] << std::endl;
 
-    std::ifstream instruction_file("../Workspace/add.hex");
-    unsigned address;
-    unsigned inst;
-    while (instruction_file >> std::dec >> address >> inst)
+    for (address = 0x80000000; address < 0x80001047; address+= 4)
     {
-        inst_map.insert(std::pair<unsigned,unsigned>(address, inst));
-        stats_static_inst++;
-        if(debug) std::cout << "Address: " << std::hex << address << "\tInst: " << std::hex << inst << std::endl;
-        if(debug) std::cout << "Static Inst: " << stats_static_inst << std::endl;
-    }
-    instruction_file.close();
-    // exit(1);
+        uint8_t word[4];
+        this->ram.read(address, 4, word);
 
-
-    // inst_map.insert(std::pair<unsigned,unsigned>(0,0x00500113)); // addi $2, $0, 5
-    // inst_map.insert(std::pair<unsigned,unsigned>(4,0x00a00193)); // addi $3, $0, 10
-    // inst_map.insert(std::pair<unsigned,unsigned>(8,0x00218233)); // add  $4, $3, $2
-    // inst_map.insert(std::pair<unsigned,unsigned>(12,0x00402023)); // SW   $4, $0(0)
-    // inst_map.insert(std::pair<unsigned,unsigned>(16,0x00002283)); // LW  $5, $0(0) 
-    // inst_map.insert(std::pair<unsigned,unsigned>(20,0x00520263)); // beq $4, $5, +4
-    // inst_map.insert(std::pair<unsigned,unsigned>(24,0x00200313)); // addi $6, $0, 2
-    // inst_map.insert(std::pair<unsigned,unsigned>(28,0x00700413)); // addi $8, $0, 7
-
-    // exit(1);
-
-}
-
-
-void RocketChip::get_start_address(void)
-{
-    std::ifstream address_file("../Workspace/tags.hex");
-    address_file >> std::dec >> this->start_pc;
-    this->start_pc -= 4;
-    if(debug) std::cout << "START_PC: " << std::hex << this->start_pc << std::endl;
-    address_file.close();
-
-    // exit(1);
-}
-
-int ctoh(char c)
-{
-    if (c == '0') return 0;
-    if (c == '1') return 1;
-    if (c == '2') return 2;
-    if (c == '3') return 3;
-    if (c == '4') return 4;
-    if (c == '5') return 5;
-    if (c == '6') return 6;
-    if (c == '7') return 7;
-    if (c == '8') return 8;
-    if (c == '9') return 9;
-    if (c == 'a') return 10;
-    if (c == 'b') return 11;
-    if (c == 'c') return 12;
-    if (c == 'd') return 13;
-    if (c == 'e') return 14;
-    if (c == 'f') return 15;
-
-    return -1;
-}
-
-void RocketChip::filterHex(void)
-{
-
-
-
-    std::ofstream ofs ("../Workspace/file.hex", std::ofstream::out);
-    std::ifstream ifs ("../Workspace/add.bin", std::ifstream::in);
-    std::string line;
-    std::string curr_inst;
-
-    int addr = 0;
-    while (ifs >> line)
-    {
-        int ii;
-        for (ii = 0; ii < 16; ii++)
-        {
-            curr_inst = line.substr(ii*8,8);
-
-
-            unsigned jj;
-
-            unsigned inst = 0;
-            for (jj = 0; jj < curr_inst.size(); jj++)
-            {
-                if (curr_inst[jj] != '0')
-                {
-
-                    inst += ctoh(curr_inst[jj]) * pow(16, (curr_inst.size() - 1) - jj);
-                } else
-                {
-                }
-            }
-
-            // if (inst != 0)
-            {
-                ofs << std::hex << addr << ": " << inst << std::endl;
-                addr += 4;
-            }
-        }
+        std::cout << std::setfill('0');
+        std::cout << std::hex << address << ": " << std::setw(2) << (unsigned) word[3] << std::setw(2) << (unsigned) word[2];
+        std::cout << std::setw(2) << (unsigned) word[1] << std::setw(2) << (unsigned) word[0] << std::endl;
     }
 
-    ofs.close();
-    ifs.close();
 
+    exit(1);
 }
 
 void RocketChip::simulate(void) {

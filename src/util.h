@@ -1,75 +1,27 @@
-int ctoh(char c)
-{
-    if (c == '0') return 0;
-    if (c == '1') return 1;
-    if (c == '2') return 2;
-    if (c == '3') return 3;
-    if (c == '4') return 4;
-    if (c == '5') return 5;
-    if (c == '6') return 6;
-    if (c == '7') return 7;
-    if (c == '8') return 8;
-    if (c == '9') return 9;
-    if (c == 'a') return 10;
-    if (c == 'b') return 11;
-    if (c == 'c') return 12;
-    if (c == 'd') return 13;
-    if (c == 'e') return 14;
-    if (c == 'f') return 15;
+#include "string.h"
 
-    return -1;
+uint32_t hti(char c) {
+    if (c >= 'A' && c <= 'F')
+        return c - 'A' + 10;
+    if (c >= 'a' && c <= 'f')
+        return c - 'a' + 10;
+    return c - '0';
+}
+
+uint32_t hToI(char *c, uint32_t size) {
+    uint32_t value = 0;
+    for (uint32_t i = 0; i < size; i++) {
+        value += hti(c[i]) << ((size - i - 1) * 4);
+    }
+    return value;
 }
 
 
-class Memory{
-public:
-    uint8_t* mem[1 << 12];
 
-    Memory(){
-        for(uint32_t i = 0;i < (1 << 12);i++) mem[i] = NULL;
-    }
-    ~Memory(){
-        for(uint32_t i = 0;i < (1 << 12);i++) if(mem[i]) delete mem[i];
-    }
-
-    uint8_t* get(uint32_t address){
-
-        if(mem[address >> 20] == NULL) {
-            uint8_t* ptr = new uint8_t[1024*1024];
-            for(uint32_t i = 0;i < 1024*1024;i+=4) {
-                ptr[i + 0] = 0xFF;
-                ptr[i + 1] = 0xFF;
-                ptr[i + 2] = 0xFF;
-                ptr[i + 3] = 0xFF;
-            }
-            mem[address >> 20] = ptr;
-        }
-        return &mem[address >> 20][address & 0xFFFFF];
-    }
-
-    void read(uint32_t address,uint32_t length, uint8_t *data){
-        for(int i = 0;i < length;i++){
-            data[i] = (*this)[address + i];
-        }
-    }
-
-    void write(uint32_t address,uint32_t length, uint8_t *data){
-        for(int i = 0;i < length;i++){
-            (*this)[address + i] = data[i];
-        }
-    }
-
-    uint8_t& operator [](uint32_t address) {
-        return *get(address);
-    }
-
-};
-
-
-void loadHexImpl(string path,Memory* mem) {
+void loadHexImpl(std::string path,RAM* mem) {
     FILE *fp = fopen(&path[0], "r");
     if(fp == 0){
-        cout << path << " not found" << endl;
+        std::cout << path << " not found" << std::endl;
     }
     //Preload 0x0 <-> 0x80000000 jumps
     ((uint32_t*)mem->get(0))[0] = 0x800000b7;
@@ -92,8 +44,18 @@ void loadHexImpl(string path,Memory* mem) {
             switch (key) {
             case 0:
                 for (uint32_t i = 0; i < byteCount; i++) {
-                    *(mem->get(nextAddr + i)) = hToI(line + 9 + i * 2, 2);
+
+                    unsigned add = nextAddr + i;
+
+                    // if ((add % 4) == 0) add +=  3;
+                    // if ((add % 4) == 1) add +=  1;
+                    // if ((add % 4) == 2) add += -1;
+                    // if ((add % 4) == 3) add += -3;
+
+                    *(mem->get(add)) = hToI(line + 9 + i * 2, 2);
+                    // std::cout << "Address: " << std::hex <<(add + i) << "\tValue: " << std::hex << hToI(line + 9 + i * 2, 2) << std::endl;
                 }
+                std::cout << "********" << std::endl;
                 break;
             case 2:
 //              cout << offset << endl;
@@ -122,18 +84,3 @@ void loadHexImpl(string path,Memory* mem) {
     delete content;
 }
 
-uint32_t hti(char c) {
-    if (c >= 'A' && c <= 'F')
-        return c - 'A' + 10;
-    if (c >= 'a' && c <= 'f')
-        return c - 'a' + 10;
-    return c - '0';
-}
-
-uint32_t hToI(char *c, uint32_t size) {
-    uint32_t value = 0;
-    for (uint32_t i = 0; i < size; i++) {
-        value += hti(c[i]) << ((size - i - 1) * 4);
-    }
-    return value;
-}
