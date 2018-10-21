@@ -6,7 +6,7 @@ using namespace ch::core;
 using namespace ch::sim;
 
 
-const std::string& init_file = "../Workspace/file.hex";
+const std::string& init_file = "../Workspace/add.hex";
 
 struct Fetch
 {
@@ -39,6 +39,7 @@ struct Fetch
 
 		io.out_PC_next = io.out_PC.as_uint() + 4;
 
+		// ch_rom<ch_bit<32>, 4096> mem(init_file);
 
 
 		//ch_print("DIR: {0}\tDEST{1}",io.in_branch_dir, io.in_branch_dest);

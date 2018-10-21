@@ -37,13 +37,6 @@ struct Pipeline
     __in(ch_bit<32>) in_din,
     __in(ch_bool) in_push,
 
-    __in(ch_bit<32>) in_cache_data, // CACHE REP
-
-    __out(ch_bit<24>) out_cache_address, // CACHE REP
-    __out(ch_bit<3>)  out_cache_mem_read, // CACHE REP
-    __out(ch_bit<3>) out_cache_mem_write, // CACHE REP
-    __out(ch_bit<32>) out_cache_data, // CACHE REP
-
     __out(ch_bool) out_fwd_stall, // DInst counting
     __out(ch_bool) out_branch_stall,
     __out(ch_bit<32>) PC,
@@ -62,13 +55,6 @@ struct Pipeline
     fetch.io.in_din(io.in_din);
     fetch.io.in_push(io.in_push);
 
-    // CACHE REPLACEMENT
-    memory.io.out_cache_address(io.out_cache_address);
-    memory.io.out_cache_mem_write(io.out_cache_mem_write);
-    memory.io.out_cache_mem_read(io.out_cache_mem_read);
-    memory.io.out_cache_data(io.out_cache_data);
-
-    memory.io.in_cache_data(io.in_cache_data);
 
     // FETCH TO HOST
     fetch.io.out_PC(io.PC);
@@ -243,7 +229,6 @@ class RocketChip
         void filterHex(void);
 
         std::map<unsigned,unsigned> inst_map;
-        std::vector<unsigned> cache_vec;
         unsigned start_pc;
         ch_device<Pipeline> pipeline;
         ch_tracer sim;
@@ -261,7 +246,6 @@ RocketChip::RocketChip(std::string instruction_file_name) : stats_static_inst(0)
                                                                 stats_fwd_stalls(0), stats_branch_stalls(0)
 {
     system("rm ../Workspace/*");
-    this->cache_vec.resize(4096);
 
     sim = ch_tracer(this->pipeline);
     this->instruction_file_name = instruction_file_name;
@@ -406,54 +390,6 @@ void RocketChip::simulate(void) {
 
     clock_time start_time = std::chrono::high_resolution_clock::now();
     sim.run([&](ch_tick t)->bool {        
-
-        // ******************************************
-        // PART THAT REPLACES CACHE MODULE
-
-        std::cout << "******************" << std::endl;
-        std::cout << "CACHE MODULE" << std::endl;
-        std::cout << "******************" << std::endl;
-
-        unsigned data      = (int) pipeline.io.out_cache_data;
-        unsigned address   = (int) pipeline.io.out_cache_address;
-        unsigned mem_read  = (int) pipeline.io.out_cache_mem_read;
-        unsigned mem_write = (int) pipeline.io.out_cache_mem_write;
-
-        std::cout << "finished getting variables" << std::endl;
-
-        if (mem_read == LW_MEM_READ_int)
-        {
-            std::cout << "ABOUT TO READ ADDRESS: " << address << std::endl;
-            std::cout << "Reading ---> Address: " << address << "    Data: " << this->cache_vec[address] << std::endl;
-            pipeline.io.in_cache_data = this->cache_vec[address];
-        } else
-        {
-            std::cout << "Reading ---> N/A" << std::endl;
-        }
-
-        std::cout << "FINISHED READING PART" << std::endl;
-
-
-        if (mem_write == SW_MEM_WRITE_int)
-        {
-            std::cout << "ABOUT TO WRITE ADDRESS: " << address << std::endl;
-            std::cout << "Writing ---> Address: " << address << "    Data: " << data;
-            this->cache_vec[address] = data;
-        } else
-        {
-            std::cout << "Writing ---> N/A" << std::endl;
-        }
-
-        this->cache_vec[0] = 0;
-
-        std::cout << "MEM_VALUE @ 0x35: " << this->cache_vec[0x35] << std::endl;
-
-        std::cout << "******************" << std::endl;
-        std::cout << "END CACHE MODULE" << std::endl;
-        std::cout << "******************" << std::endl;
-
-        // END PART THAT REPLACES CACHE MODULE
-        // ******************************************
 
         unsigned new_PC = (int) pipeline.io.PC;
         static bool stop = false;

@@ -21,45 +21,119 @@ int ctoh(char c)
 }
 
 
-void filterHex(void)
-{
+class Memory{
+public:
+    uint8_t* mem[1 << 12];
 
+    Memory(){
+        for(uint32_t i = 0;i < (1 << 12);i++) mem[i] = NULL;
+    }
+    ~Memory(){
+        for(uint32_t i = 0;i < (1 << 12);i++) if(mem[i]) delete mem[i];
+    }
 
+    uint8_t* get(uint32_t address){
 
-    std::ifstream ifs ("../Workspace/add.bin", std::ifstream::in);
-    std::ofstream ofs ("../Workspace/add.hex", std::ofstream::out);
-    std::string line;
-    std::string curr_inst;
-    while (ifs >> line)
-    {
-        int ii;
-        for (ii = 0; ii < 16; ii++)
-        {
-            curr_inst = line.substr(ii*8,8);
-
-
-            unsigned jj;
-
-            unsigned inst = 0;
-            for (jj = 0; jj < curr_inst.size(); jj++)
-            {
-                if (curr_inst[jj] != '0')
-                {
-
-                    inst += ctoh(curr_inst[jj]) * pow(16, (curr_inst.size() - 1) - jj);
-                } else
-                {
-                }
+        if(mem[address >> 20] == NULL) {
+            uint8_t* ptr = new uint8_t[1024*1024];
+            for(uint32_t i = 0;i < 1024*1024;i+=4) {
+                ptr[i + 0] = 0xFF;
+                ptr[i + 1] = 0xFF;
+                ptr[i + 2] = 0xFF;
+                ptr[i + 3] = 0xFF;
             }
+            mem[address >> 20] = ptr;
+        }
+        return &mem[address >> 20][address & 0xFFFFF];
+    }
 
-            if ((inst != 0) && ((inst % 4) == 3))
-            {
-                ofs << inst << std::endl;
-            }
+    void read(uint32_t address,uint32_t length, uint8_t *data){
+        for(int i = 0;i < length;i++){
+            data[i] = (*this)[address + i];
         }
     }
 
-    ofs.close();
-    ifs.close();
+    void write(uint32_t address,uint32_t length, uint8_t *data){
+        for(int i = 0;i < length;i++){
+            (*this)[address + i] = data[i];
+        }
+    }
 
+    uint8_t& operator [](uint32_t address) {
+        return *get(address);
+    }
+
+};
+
+
+void loadHexImpl(string path,Memory* mem) {
+    FILE *fp = fopen(&path[0], "r");
+    if(fp == 0){
+        cout << path << " not found" << endl;
+    }
+    //Preload 0x0 <-> 0x80000000 jumps
+    ((uint32_t*)mem->get(0))[0] = 0x800000b7;
+    ((uint32_t*)mem->get(0))[1] = 0x000080e7;
+    ((uint32_t*)mem->get(0x80000000))[0] = 0x00000097;
+
+    fseek(fp, 0, SEEK_END);
+    uint32_t size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    char* content = new char[size];
+    fread(content, 1, size, fp);
+
+    int offset = 0;
+    char* line = content;
+    while (1) {
+        if (line[0] == ':') {
+            uint32_t byteCount = hToI(line + 1, 2);
+            uint32_t nextAddr = hToI(line + 3, 4) + offset;
+            uint32_t key = hToI(line + 7, 2);
+            switch (key) {
+            case 0:
+                for (uint32_t i = 0; i < byteCount; i++) {
+                    *(mem->get(nextAddr + i)) = hToI(line + 9 + i * 2, 2);
+                }
+                break;
+            case 2:
+//              cout << offset << endl;
+                offset = hToI(line + 9, 4) << 4;
+                break;
+            case 4:
+//              cout << offset << endl;
+                offset = hToI(line + 9, 4) << 16;
+                break;
+            default:
+//              cout << "??? " << key << endl;
+                break;
+            }
+        }
+
+        while (*line != '\n' && size != 0) {
+            line++;
+            size--;
+        }
+        if (size <= 1)
+            break;
+        line++;
+        size--;
+    }
+
+    delete content;
+}
+
+uint32_t hti(char c) {
+    if (c >= 'A' && c <= 'F')
+        return c - 'A' + 10;
+    if (c >= 'a' && c <= 'f')
+        return c - 'a' + 10;
+    return c - '0';
+}
+
+uint32_t hToI(char *c, uint32_t size) {
+    uint32_t value = 0;
+    for (uint32_t i = 0; i < size; i++) {
+        value += hti(c[i]) << ((size - i - 1) * 4);
+    }
+    return value;
 }

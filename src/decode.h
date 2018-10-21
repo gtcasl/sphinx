@@ -46,6 +46,8 @@ struct RegisterFile
 			starting->next = FALSE;
 		};
 
+		// registers.write(REG(2), ch_bit<32>(0x0f0), starting);
+
 		registers.write(io.in_rd, io.in_data, ((io.in_write_register) && (io.in_rd.as_uint() != 0)));
 
 		io.out_src1_data = ch_sel(io.in_src1.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.read(io.in_src1));
