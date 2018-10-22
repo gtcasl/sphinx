@@ -1,7 +1,7 @@
 #include <cash.h>
 #include <ioport.h>
 #include "define.h"
-#include <htl/decoupled.h>
+#include "buses.h"
 
 using namespace ch::core;
 using namespace ch::sim;
@@ -13,8 +13,8 @@ struct Fetch
 {
 	__io(
 		// Communication with HOST
-		(ch_enq_io<ch_bit<32>>) in_ibus_data,
-		(ch_deq_io<ch_bit<32>>) out_ibus_address,
+		
+		(IBUS_io) IBUS,
 
 		__in(ch_bit<1>) in_branch_dir,
 		__in(ch_bit<32>) in_branch_dest,
@@ -31,15 +31,15 @@ struct Fetch
 	{
 
 		ch_reg<ch_bit<32>> PC(0);
-		io.in_ibus_data.ready = io.in_ibus_data.valid;
+		io.IBUS.in_data.ready = io.IBUS.in_data.valid;
 		
 		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL);
-		io.out_instruction = ch_sel(stall, CH_ZERO(32), io.in_ibus_data.data);
+		io.out_instruction = ch_sel(stall, CH_ZERO(32), io.IBUS.in_data.data);
 
 
 		ch_bit<32> out_PC = ch_sel(io.in_jal == JUMP, io.in_jal_dest, ch_sel(io.in_branch_dir == TAKEN, io.in_branch_dest, PC));
-		io.out_ibus_address.data = out_PC;
-		io.out_ibus_address.valid = TRUE;
+		io.IBUS.out_address.data = out_PC;
+		io.IBUS.out_address.valid = TRUE;
 
 
 		io.out_PC_next = out_PC.as_uint() + 4;
@@ -47,7 +47,7 @@ struct Fetch
 		PC->next       = ch_sel(stall, out_PC, io.out_PC_next);
 
 
-		ch_print("Inst_in: {0}", io.in_ibus_data.data);
+		ch_print("Inst_in: {0}", io.IBUS.in_data.data);
 		ch_print("JAL: {0}\tBRANCH_DIR: {1}", io.in_jal, io.in_branch_dir);
 		ch_print("BRANCH DEST: {0}", io.in_branch_dest);
 		ch_print("io.in_branch_stall IS: {0}\tio.in_fwd_stall IS: {1}", io.in_branch_stall, io.in_fwd_stall);

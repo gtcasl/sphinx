@@ -63,6 +63,19 @@ public:
 
     }
 
+    void writeWord(uint32_t address, uint32_t * data)
+    {
+        uint32_t data_to_write = *data;
+
+        uint32_t byte_mask = 0x000000FF;
+
+        for (int i = 0; i < 4; i++)
+        {
+            (*this)[address + i] = data_to_write && byte_mask;
+            data_to_write        = data_to_write >> 8;
+        }
+    }
+
     uint8_t& operator [](uint32_t address) {
         return *get(address);
     }

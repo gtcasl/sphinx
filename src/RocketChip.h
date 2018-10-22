@@ -16,6 +16,7 @@
 #include "m_w_register.h"
 #include "write_back.h"
 #include "forwarding.h"
+#include "buses.h"
 #include "define.h"
 
 
@@ -43,8 +44,8 @@ struct Pipeline
 {
 
   __io(
-    (ch_enq_io<ch_bit<32>>) in_ibus_data,
-    (ch_deq_io<ch_bit<32>>) out_ibus_address,
+    (IBUS_io) IBUS,
+    (DBUS_io) DBUS,
 
     __out(ch_bool) out_fwd_stall, // DInst counting
     __out(ch_bool) out_branch_stall, // DInst counting
@@ -60,9 +61,10 @@ struct Pipeline
     io.out_fwd_stall    = forwarding.io.out_fwd_stall;
 
     // IBUS I/O
-    fetch.io.in_ibus_data(io.in_ibus_data);
-    fetch.io.out_ibus_address(io.out_ibus_address);
+    fetch.io.IBUS(io.IBUS);
 
+    // DBUS I/O
+    memory.io.DBUS(io.DBUS);
 
 
 
@@ -286,10 +288,6 @@ void RocketChip::ProcessFile(void)
         std::cout << std::setfill('0');
         std::cout << std::hex << new_address << ": " << std::hex << std::setw(8) << curr_word;
         std::cout << std::endl;
-        // std::cout << std::hex << (new_address + (address&0xffffff00)) << ": " << std::setw(2) << (unsigned) data[new_address + 3] << std::setw(2) << (unsigned) data[new_address + 2];
-        // std::cout << std::setw(2) << (unsigned) data[new_address + 1] << std::setw(2) << (unsigned) data[new_address + 0] << std::endl;
-
-        // std::cout << "total words: " << total_words << std::endl;
 
     }
 
@@ -303,6 +301,7 @@ void RocketChip::simulate(void) {
     std::cout << "***********************************" << std::endl;
     uint32_t curr_inst;
     unsigned new_PC;
+    uint32_t data_read;
 
     clock_time start_time = std::chrono::high_resolution_clock::now();
     sim.run([&](ch_tick t)->bool {        
@@ -312,7 +311,74 @@ void RocketChip::simulate(void) {
         static bool stop = false;
         static int count = 0;
 
-        // STATS START
+
+
+        ////////////////////// IBUS //////////////////////
+        ram.getWord(new_PC, &curr_inst);
+
+        pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
+        new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
+        pipeline.io.IBUS.in_data.data      = curr_inst;
+        pipeline.io.IBUS.in_data.valid     = true;
+        //////////////////////////////////////////////////
+
+
+        ////////////////////// DBUS //////////////////////
+        pipeline.io.DBUS.out_data.ready    = pipeline.io.DBUS.out_data.valid;
+        pipeline.io.DBUS.out_address.ready = pipeline.io.DBUS.out_address.valid;
+        pipeline.io.DBUS.out_control.ready = pipeline.io.DBUS.out_control.valid;
+
+        bool valid_address = false;
+        if (pipeline.io.DBUS.out_address.valid)
+        {
+            valid_address = true;
+        }
+
+        bool read_data  = false;
+        bool write_data = false;
+
+        if (pipeline.io.DBUS.out_control.ready && pipeline.io.DBUS.out_control.valid)
+        {
+            if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int)
+            {
+                if (pipeline.io.DBUS.in_data.ready)
+                {
+                    read_data = true;
+                }
+            }
+
+            if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int)
+            {
+                if (pipeline.io.DBUS.out_data.valid)
+                {
+                    write_data = true;
+                }
+            }
+        }
+
+        if (read_data && valid_address)
+        {
+            ram.getWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_read);
+            pipeline.io.DBUS.in_data.data = data_read;
+            pipeline.io.DBUS.in_data.valid = true;
+        } else
+        {
+            pipeline.io.DBUS.in_data.data  = 0x123;
+            pipeline.io.DBUS.in_data.valid = false;
+        }
+
+
+        if (write_data && valid_address)
+        {
+            uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
+            ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
+        }
+        
+        //////////////////////////////////////////////////
+
+
+
+        ////////////////////// STATS //////////////////////
         if (pipeline.io.out_fwd_stall || pipeline.io.out_branch_stall)
         {
             --stats_dynamic_inst;
@@ -321,17 +387,6 @@ void RocketChip::simulate(void) {
             if (pipeline.io.out_branch_stall) ++this->stats_branch_stalls;
         }
         ++stats_total_cycles;
-        // STATS END
-
-        pipeline.io.out_ibus_address.ready = pipeline.io.out_ibus_address.valid;
-
-        new_PC = (unsigned) pipeline.io.out_ibus_address.data;
-
-
-        ram.getWord(new_PC, &curr_inst);
-        pipeline.io.in_ibus_data.data  = curr_inst;
-        pipeline.io.in_ibus_data.valid = true;
-
 
         std::cout << "\nStep: " << t/2 << std::endl;
         std::cout << "new_PC: " << new_PC << std::endl;
@@ -346,9 +401,11 @@ void RocketChip::simulate(void) {
             stop = true;
         }
 
-            std::cout << "------------------------------------------";
-            std::cout << std::endl << std::endl << std::endl << std::endl;
-            
+        std::cout << "------------------------------------------";
+        std::cout << std::endl << std::endl << std::endl << std::endl;
+        ///////////////////////////////////////////////////
+
+
             return !stop;
             // return (new_PC < (this->inst_vec.size() + 6));
     });
