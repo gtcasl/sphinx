@@ -60,7 +60,8 @@ struct Execute
 		ch_bit<32> upper_immed = ch_cat(io.in_upper_immed, CH_ZERO(12));
 
 		io.out_branch_dest = (io.in_PC_next.as_int() - 4) + (se_itype_immed.as_int() << 1);
-
+		ch_print("BRANCH_DEST: {0} = {1} + {2}", io.out_branch_dest, (io.in_PC_next.as_int() - 4), (se_itype_immed.as_int() << 1));
+		ch_print("BRANCH ITYPE_IMMED: {0}", io.in_itype_immed);
 
 		__switch(io.in_alu_op.as_uint())
 			__case(ADD_int)

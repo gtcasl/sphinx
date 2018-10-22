@@ -1,6 +1,9 @@
 //
 #include <cash.h>
 #include <ioport.h>
+#include <htl/queue.h>
+#include <htl/decoupled.h>
+
 
 // Pipeline Hardware definitions
 #include "fetch.h"
@@ -32,19 +35,19 @@
 
 using namespace ch::core;
 using namespace ch::sim;
+using namespace ch::htl;
 
 bool debug = true;
-
+#define IBUS_WIDTH 32
 struct Pipeline
 {
 
   __io(
-    __in(ch_bit<32>) in_din,
-    __in(ch_bool) in_push,
+    (ch_enq_io<ch_bit<32>>) in_ibus_data,
+    (ch_deq_io<ch_bit<32>>) out_ibus_address,
 
     __out(ch_bool) out_fwd_stall, // DInst counting
-    __out(ch_bool) out_branch_stall,
-    __out(ch_bit<32>) PC,
+    __out(ch_bool) out_branch_stall, // DInst counting
     __out(ch_bit<32>) actual_change
   );
 
@@ -56,13 +59,12 @@ struct Pipeline
     io.out_branch_stall = decode.io.out_branch_stall;
     io.out_fwd_stall    = forwarding.io.out_fwd_stall;
 
-    // Host to fetch
-    fetch.io.in_din(io.in_din);
-    fetch.io.in_push(io.in_push);
+    // IBUS I/O
+    fetch.io.in_ibus_data(io.in_ibus_data);
+    fetch.io.out_ibus_address(io.out_ibus_address);
 
 
-    // FETCH TO HOST
-    fetch.io.out_PC(io.PC);
+
 
     // EXE TO FETCH
     fetch.io.in_branch_dir(execute.io.out_branch_dir);
@@ -245,7 +247,7 @@ class RocketChip
 };
 
 
-RocketChip::RocketChip(std::string instruction_file_name) : stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0),
+RocketChip::RocketChip(std::string instruction_file_name) : start_pc(0), stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0),
                                                                 stats_fwd_stalls(0), stats_branch_stalls(0)
 {
     system("rm ../Workspace/*");
@@ -266,93 +268,88 @@ void RocketChip::ProcessFile(void)
     loadHexImpl(this->instruction_file_name, &this->ram);
 
     // Printing state
-    uint32_t address = 0;
-    uint8_t word[4];
-    this->ram.read(address, 4, word);
 
-    std::cout << std::setfill('0');
-    std::cout << std::hex << address << ": " << std::setw(2) << (unsigned) word[3] << std::setw(2) << (unsigned) word[2];
-    std::cout << std::setw(2) << (unsigned) word[1] << std::setw(2) << (unsigned) word[0] << std::endl;
+    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
 
-    address += 4;
-    this->ram.read(address, 4, word);
+    uint32_t address = 0x80000038;
+    // uint32_t * data = new uint32_t[64];
+    // ram.getBlock(address,data);
 
-    std::cout << std::setfill('0');
-    std::cout << std::hex << address << ": " << std::setw(2) << (unsigned) word[3] << std::setw(2) << (unsigned) word[2];
-    std::cout << std::setw(2) << (unsigned) word[1] << std::setw(2) << (unsigned) word[0] << std::endl;
+    std::cout << "GOT BLOCK" << std::endl;
 
-    for (address = 0x80000000; address < 0x80001047; address+= 4)
+    for (uint32_t new_address = (address&0xffffff00); new_address < ((address&0xffffff00) + 256); new_address += 4 )
     {
-        uint8_t word[4];
-        this->ram.read(address, 4, word);
+
+        uint32_t curr_word;
+        ram.getWord(new_address, &curr_word);
 
         std::cout << std::setfill('0');
-        std::cout << std::hex << address << ": " << std::setw(2) << (unsigned) word[3] << std::setw(2) << (unsigned) word[2];
-        std::cout << std::setw(2) << (unsigned) word[1] << std::setw(2) << (unsigned) word[0] << std::endl;
+        std::cout << std::hex << new_address << ": " << std::hex << std::setw(8) << curr_word;
+        std::cout << std::endl;
+        // std::cout << std::hex << (new_address + (address&0xffffff00)) << ": " << std::setw(2) << (unsigned) data[new_address + 3] << std::setw(2) << (unsigned) data[new_address + 2];
+        // std::cout << std::setw(2) << (unsigned) data[new_address + 1] << std::setw(2) << (unsigned) data[new_address + 0] << std::endl;
+
+        // std::cout << "total words: " << total_words << std::endl;
+
     }
 
 
-    exit(1);
+    std::cout << "***********************" << std::endl;
+
 }
 
 void RocketChip::simulate(void) {
 
     std::cout << "***********************************" << std::endl;
+    uint32_t curr_inst;
+    unsigned new_PC;
 
     clock_time start_time = std::chrono::high_resolution_clock::now();
     sim.run([&](ch_tick t)->bool {        
 
-        unsigned new_PC = (int) pipeline.io.PC;
+
+
         static bool stop = false;
         static int count = 0;
+
+        // STATS START
+        if (pipeline.io.out_fwd_stall || pipeline.io.out_branch_stall)
+        {
+            --stats_dynamic_inst;
+            if (count > 0) --count;
+            if (pipeline.io.out_fwd_stall) ++this->stats_fwd_stalls;
+            if (pipeline.io.out_branch_stall) ++this->stats_branch_stalls;
+        }
+        ++stats_total_cycles;
+        // STATS END
+
+        pipeline.io.out_ibus_address.ready = pipeline.io.out_ibus_address.valid;
+
+        new_PC = (unsigned) pipeline.io.out_ibus_address.data;
+
+
+        ram.getWord(new_PC, &curr_inst);
+        pipeline.io.in_ibus_data.data  = curr_inst;
+        pipeline.io.in_ibus_data.valid = true;
+
 
         std::cout << "\nStep: " << t/2 << std::endl;
         std::cout << "new_PC: " << new_PC << std::endl;
 
-
-        if (t == 0)
+        if ((curr_inst != 0) || (curr_inst != 0xffffffff))
         {
-            std::cout << "SETTING START PC: " << start_pc << std::endl;
-            pipeline.io.in_din = start_pc;
-            pipeline.io.in_push = true;
-        }
-        else
+            ++stats_dynamic_inst;
+            if (debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << curr_inst << std::endl;
+            stop = false;
+        } else
         {
-
-
-            if (pipeline.io.out_fwd_stall || pipeline.io.out_branch_stall)
-            {
-                --stats_dynamic_inst;
-                if (count > 0) --count;
-                if (pipeline.io.out_fwd_stall) ++this->stats_fwd_stalls;
-                if (pipeline.io.out_branch_stall) ++this->stats_branch_stalls;
-            }
-
-            ++stats_total_cycles;
-
-            if ((this->inst_map.find(new_PC) != this->inst_map.end()) && !stop)
-            {
-                ++stats_dynamic_inst;
-                if (debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << this->inst_map[new_PC] << std::endl;
-                pipeline.io.in_din = this->inst_map[new_PC];
-                pipeline.io.in_push = false;
-            }
-            else
-            {
-
-                if(debug) std::cout << "shutting down! PC: " << std::hex << new_PC << std::endl;
-                stop = true;
-                ++count;
-
-                pipeline.io.in_din = 0x00000000;
-                pipeline.io.in_push = false;
-            }
+            stop = true;
         }
 
             std::cout << "------------------------------------------";
             std::cout << std::endl << std::endl << std::endl << std::endl;
             
-            return (count < 5);
+            return !stop;
             // return (new_PC < (this->inst_vec.size() + 6));
     });
     {

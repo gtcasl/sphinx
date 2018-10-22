@@ -304,6 +304,7 @@ struct Decode
 						io.out_branch_type = NO_BRANCH; 
 					};
 
+					ch_print("THIS IS A PRINT AND IMMED: {0}", io.out_itype_immed);
 
 			}
 			__case(LUI_INST)
@@ -348,6 +349,7 @@ struct Decode
 				ch_bit<32> actual_pc = (io.in_PC_next.as_int() - 4); 
 
 				io.out_jal_dest = actual_pc.as_int() + offset.as_int(); 
+
 
 			}
 			__case(JALR_INST)

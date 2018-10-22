@@ -29,6 +29,7 @@ public:
     void read(uint32_t address,uint32_t length, uint8_t *data){
         for(unsigned i = 0;i < length;i++){
             data[i] = (*this)[address + i];
+            std::cout << "READING ADDRESS: " << std::hex << address + i << std::endl;
         }
     }
 
@@ -36,6 +37,30 @@ public:
         for(unsigned i = 0;i < length;i++){
             (*this)[address + i] = data[i];
         }
+    }
+
+    void getBlock(uint32_t address, uint8_t *data)
+    {
+        uint32_t block_number = address & 0xffffff00; // To zero out block offset
+        uint32_t bytes_num    = 256;
+
+        this->read(block_number, bytes_num, data);
+    }
+
+    void getWord(uint32_t address, uint32_t * data)
+    {
+        data[0] = 0;
+
+        uint8_t first  = *get(address + 0);
+        uint8_t second = *get(address + 1);
+        uint8_t third  = *get(address + 2);
+        uint8_t fourth = *get(address + 3);
+
+        data[0] = (data[0] << 0) | fourth;
+        data[0] = (data[0] << 8) | third;
+        data[0] = (data[0] << 8) | second;
+        data[0] = (data[0] << 8) | first;
+
     }
 
     uint8_t& operator [](uint32_t address) {
@@ -102,7 +127,6 @@ void loadHexImpl(std::string path,RAM* mem) {
                     *(mem->get(add)) = hToI(line + 9 + i * 2, 2);
                     // std::cout << "Address: " << std::hex <<(add + i) << "\tValue: " << std::hex << hToI(line + 9 + i * 2, 2) << std::endl;
                 }
-                std::cout << "********" << std::endl;
                 break;
             case 2:
 //              cout << offset << endl;
