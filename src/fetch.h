@@ -16,15 +16,17 @@ struct Fetch
 		
 		(IBUS_io) IBUS,
 
-		__in(ch_bit<1>) in_branch_dir,
-		__in(ch_bit<32>) in_branch_dest,
-		__in(ch_bit<1>) in_branch_stall,
-		__in(ch_bit<1>) in_fwd_stall,
-		__in(ch_bit<1>) in_jal,
-		__in(ch_bit<32>) in_jal_dest,
+		__in(ch_bit<1>)   in_branch_dir,
+		__in(ch_bit<32>)  in_branch_dest,
+		__in(ch_bit<1>)   in_branch_stall,
+		__in(ch_bit<1>)   in_fwd_stall,
+		__in(ch_bit<1>)   in_jal,
+		__in(ch_bit<32>)  in_jal_dest,
+		__in(ch_bool)     in_interrupt,
+		__in(ch_bit<32>)  in_interrupt_pc,
 
 		__out(ch_bit<32>) out_instruction,
-		__out(ch_bit<32>)  out_PC_next
+		__out(ch_bit<32>) out_PC_next
 	);
 
 	void describe()
@@ -37,7 +39,9 @@ struct Fetch
 		io.out_instruction = ch_sel(stall, CH_ZERO(32), io.IBUS.in_data.data);
 
 
-		ch_bit<32> out_PC = ch_sel(io.in_jal == JUMP, io.in_jal_dest, ch_sel(io.in_branch_dir == TAKEN, io.in_branch_dest, PC));
+		ch_bit<32> temp_PC = ch_sel(io.in_jal == JUMP, io.in_jal_dest, ch_sel(io.in_branch_dir == TAKEN, io.in_branch_dest, PC));
+		ch_bit<32> out_PC  = ch_sel(io.in_interrupt, io.in_interrupt_pc, temp_PC);
+
 		io.IBUS.out_address.data = out_PC;
 		io.IBUS.out_address.valid = TRUE;
 

@@ -19,6 +19,8 @@
 #include "buses.h"
 #include "define.h"
 
+// INTERRUPTS
+#include "interrupt_handler.h"
 
 // C++ libraries
 #include <utility> 
@@ -34,6 +36,9 @@
 // RAM
 #include "ram.h"
 
+// JTAG
+#include "JTAG/jtag.h"
+
 using namespace ch::core;
 using namespace ch::sim;
 using namespace ch::htl;
@@ -44,11 +49,13 @@ struct Pipeline
 {
 
   __io(
-    (IBUS_io) IBUS,
-    (DBUS_io) DBUS,
+    (IBUS_io)         IBUS,
+    (DBUS_io)         DBUS,
+    (INTERRUPT_io)    INTERRUPT,
+    (JTAG_io)         jtag,
 
-    __out(ch_bool) out_fwd_stall, // DInst counting
-    __out(ch_bool) out_branch_stall, // DInst counting
+    __out(ch_bool)    out_fwd_stall, // DInst counting
+    __out(ch_bool)    out_branch_stall, // DInst counting
     __out(ch_bit<32>) actual_change
   );
 
@@ -66,6 +73,15 @@ struct Pipeline
     // DBUS I/O
     memory.io.DBUS(io.DBUS);
 
+    // JTAG I/O
+    jtag_handler.io.JTAG(io.jtag);
+
+    // Interrupt I/O
+    interrupt_handler.io.INTERRUPT(io.INTERRUPT);
+
+    // interrupt handler to FETCH
+    fetch.io.in_interrupt(interrupt_handler.io.out_interrupt);
+    fetch.io.in_interrupt_pc(interrupt_handler.io.out_interrupt_pc);
 
 
     // EXE TO FETCH
@@ -218,6 +234,8 @@ struct Pipeline
   ch_module<M_W_Register> m_w_register;
   ch_module<Write_Back> write_back;
   ch_module<Forwarding> forwarding;
+  ch_module<Interrupt_Handler> interrupt_handler;
+  ch_module<JTAG> jtag_handler;
 };
 
 
@@ -233,11 +251,19 @@ class RocketChip
         void ProcessFile(void);
         void print_stats(void);
 
+
+        bool ibus_driver(ch_device<Pipeline> &);
+        void dbus_driver(ch_device<Pipeline> &);
+        void interrupt_driver(ch_device<Pipeline> &);
+        void jtag_driver(ch_device<Pipeline> &);
+
         std::map<unsigned,unsigned> inst_map;
         RAM ram;
 
         unsigned start_pc;
+
         ch_device<Pipeline> pipeline;
+
         ch_tracer sim;
         std::string instruction_file_name;
         int stats_static_inst;
@@ -296,119 +322,162 @@ void RocketChip::ProcessFile(void)
 
 }
 
+bool RocketChip::ibus_driver(ch_device<Pipeline> & pipeline)
+{
+    ////////////////////// IBUS //////////////////////
+    unsigned new_PC;
+    bool stop = false;
+    uint32_t curr_inst = 0xdeadbeef;
+
+
+    pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
+    new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
+    ram.getWord(new_PC, &curr_inst);
+    pipeline.io.IBUS.in_data.data      = curr_inst;
+    pipeline.io.IBUS.in_data.valid     = true;
+
+    ////////////////////// IBUS //////////////////////
+
+    ////////////////////// STATS //////////////////////
+    if (pipeline.io.out_fwd_stall || pipeline.io.out_branch_stall)
+    {
+        --stats_dynamic_inst;
+        if (pipeline.io.out_fwd_stall) ++this->stats_fwd_stalls;
+        if (pipeline.io.out_branch_stall) ++this->stats_branch_stalls;
+    }
+    ++stats_total_cycles;
+
+    std::cout << "new_PC: " << new_PC << std::endl;
+
+    if ((curr_inst != 0) && (curr_inst != 0xffffffff))
+    {
+        ++stats_dynamic_inst;
+        if (debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << curr_inst << std::endl;
+        stop = false;
+    } else
+    {
+        stop = true;
+    }
+
+    std::cout << "------------------------------------------";
+    std::cout << std::endl << std::endl << std::endl << std::endl;
+   ////////////////////// STATS //////////////////////
+
+    return stop;
+
+}
+
+void RocketChip::dbus_driver(ch_device<Pipeline> & pipeline)
+{
+    uint32_t data_read;
+    ////////////////////// DBUS //////////////////////
+    pipeline.io.DBUS.out_data.ready    = pipeline.io.DBUS.out_data.valid;
+    pipeline.io.DBUS.out_address.ready = pipeline.io.DBUS.out_address.valid;
+    pipeline.io.DBUS.out_control.ready = pipeline.io.DBUS.out_control.valid;
+
+    bool valid_address = false;
+    if (pipeline.io.DBUS.out_address.valid)
+    {
+        valid_address = true;
+    }
+
+    bool read_data  = false;
+    bool write_data = false;
+
+    if (pipeline.io.DBUS.out_control.ready && pipeline.io.DBUS.out_control.valid)
+    {
+        if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int)
+        {
+            if (pipeline.io.DBUS.in_data.ready)
+            {
+                read_data = true;
+            }
+        }
+
+        if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int)
+        {
+            if (pipeline.io.DBUS.out_data.valid)
+            {
+                write_data = true;
+            }
+        }
+    }
+
+    if (read_data && valid_address)
+    {
+        ram.getWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_read);
+        pipeline.io.DBUS.in_data.data = data_read;
+        pipeline.io.DBUS.in_data.valid = true;
+    } else
+    {
+        pipeline.io.DBUS.in_data.data  = 0x123;
+        pipeline.io.DBUS.in_data.valid = false;
+    }
+
+
+    if (write_data && valid_address)
+    {
+        uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
+        ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
+    }
+    ////////////////////// DBUS //////////////////////
+}
+
+void RocketChip::interrupt_driver(ch_device<Pipeline> & pipeline)
+{
+
+    ////////////////////// INTERRUPT //////////////////////
+
+    pipeline.io.INTERRUPT.in_interrupt_id.valid = false;
+    pipeline.io.INTERRUPT.in_interrupt_id.data  = 0;
+
+    ////////////////////// INTERRUPT //////////////////////
+
+}
+
+void RocketChip::jtag_driver(ch_device<Pipeline> & pipeline)
+{
+
+    ////////////////////// JATG //////////////////////
+
+    pipeline.io.jtag.JTAG_TAP.in_mode_select.valid = false;
+    pipeline.io.jtag.JTAG_TAP.in_mode_select.data  = 0;
+
+    pipeline.io.jtag.JTAG_TAP.in_clock.valid       = false;
+    pipeline.io.jtag.JTAG_TAP.in_clock.data        = 0;
+
+    pipeline.io.jtag.JTAG_TAP.in_reset.valid       = false;
+    pipeline.io.jtag.JTAG_TAP.in_reset.data        = 0;
+
+    pipeline.io.jtag.in_data.valid                 = false;
+    pipeline.io.jtag.in_data.data                  = 0;
+
+    pipeline.io.jtag.out_data.ready                = false;
+
+    ////////////////////// JATG //////////////////////
+
+}
+
 void RocketChip::simulate(void) {
 
-    std::cout << "***********************************" << std::endl;
-    uint32_t curr_inst;
-    unsigned new_PC;
-    uint32_t data_read;
 
     clock_time start_time = std::chrono::high_resolution_clock::now();
-    sim.run([&](ch_tick t)->bool {        
 
+    sim.run([&](ch_tick t)->bool {
+
+        std::cout << "Cycle: " << t/2 << std::endl;
 
 
         static bool stop = false;
-        static int count = 0;
 
+        stop = ibus_driver(pipeline);
+               dbus_driver(pipeline);
+               interrupt_driver(pipeline);
+               jtag_driver(pipeline);
 
-
-        ////////////////////// IBUS //////////////////////
-        ram.getWord(new_PC, &curr_inst);
-
-        pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
-        new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
-        pipeline.io.IBUS.in_data.data      = curr_inst;
-        pipeline.io.IBUS.in_data.valid     = true;
-        //////////////////////////////////////////////////
-
-
-        ////////////////////// DBUS //////////////////////
-        pipeline.io.DBUS.out_data.ready    = pipeline.io.DBUS.out_data.valid;
-        pipeline.io.DBUS.out_address.ready = pipeline.io.DBUS.out_address.valid;
-        pipeline.io.DBUS.out_control.ready = pipeline.io.DBUS.out_control.valid;
-
-        bool valid_address = false;
-        if (pipeline.io.DBUS.out_address.valid)
-        {
-            valid_address = true;
-        }
-
-        bool read_data  = false;
-        bool write_data = false;
-
-        if (pipeline.io.DBUS.out_control.ready && pipeline.io.DBUS.out_control.valid)
-        {
-            if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int)
-            {
-                if (pipeline.io.DBUS.in_data.ready)
-                {
-                    read_data = true;
-                }
-            }
-
-            if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int)
-            {
-                if (pipeline.io.DBUS.out_data.valid)
-                {
-                    write_data = true;
-                }
-            }
-        }
-
-        if (read_data && valid_address)
-        {
-            ram.getWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_read);
-            pipeline.io.DBUS.in_data.data = data_read;
-            pipeline.io.DBUS.in_data.valid = true;
-        } else
-        {
-            pipeline.io.DBUS.in_data.data  = 0x123;
-            pipeline.io.DBUS.in_data.valid = false;
-        }
-
-
-        if (write_data && valid_address)
-        {
-            uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
-            ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
-        }
-        
-        //////////////////////////////////////////////////
-
-
-
-        ////////////////////// STATS //////////////////////
-        if (pipeline.io.out_fwd_stall || pipeline.io.out_branch_stall)
-        {
-            --stats_dynamic_inst;
-            if (count > 0) --count;
-            if (pipeline.io.out_fwd_stall) ++this->stats_fwd_stalls;
-            if (pipeline.io.out_branch_stall) ++this->stats_branch_stalls;
-        }
-        ++stats_total_cycles;
-
-        std::cout << "\nStep: " << t/2 << std::endl;
-        std::cout << "new_PC: " << new_PC << std::endl;
-
-        if ((curr_inst != 0) || (curr_inst != 0xffffffff))
-        {
-            ++stats_dynamic_inst;
-            if (debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << curr_inst << std::endl;
-            stop = false;
-        } else
-        {
-            stop = true;
-        }
-
-        std::cout << "------------------------------------------";
-        std::cout << std::endl << std::endl << std::endl << std::endl;
-        ///////////////////////////////////////////////////
-
-
-            return !stop;
-            // return (new_PC < (this->inst_vec.size() + 6));
+        return !stop;
     });
+
     {
         using namespace std::chrono;
         this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
