@@ -19,8 +19,9 @@
 #include "buses.h"
 #include "define.h"
 
-// INTERRUPTS
+// Handlers
 #include "interrupt_handler.h"
+#include "csr_handler.h"
 
 // C++ libraries
 #include <utility> 
@@ -98,6 +99,14 @@ struct Pipeline
     // f_d_register to decode
     decode.io.in_instruction(f_d_register.io.out_instruction);
     decode.io.in_PC_next(f_d_register.io.out_PC_next);
+    decode.io.in_csr_data(csr_handler.io.out_decode_csr_data);
+
+    // CSR HANDLER
+    csr_handler.io.in_decode_csr_address(decode.io.out_csr_address);
+    csr_handler.io.in_mem_csr_address(e_m_register.io.out_csr_address);
+    csr_handler.io.in_mem_is_csr(e_m_register.io.out_is_csr);
+    csr_handler.io.in_mem_csr_result(e_m_register.io.out_csr_result);
+
 
     // decode to d_e_register
     d_e_register.io.in_rd(decode.io.out_rd);
@@ -114,6 +123,10 @@ struct Pipeline
     d_e_register.io.in_mem_write(decode.io.out_mem_write);
     d_e_register.io.in_branch_type(decode.io.out_branch_type); // branch type
     d_e_register.io.in_upper_immed(decode.io.out_upper_immed);
+    d_e_register.io.in_csr_address(decode.io.out_csr_address);
+    d_e_register.io.in_is_csr(decode.io.out_is_csr);
+    d_e_register.io.in_csr_data(decode.io.out_csr_data);
+    d_e_register.io.in_csr_mask(decode.io.out_csr_mask);
     // d_e_register.io(decode.io);
 
 
@@ -138,6 +151,10 @@ struct Pipeline
     execute.io.in_mem_write(d_e_register.io.out_mem_write);
     execute.io.in_branch_type(d_e_register.io.out_branch_type);
     execute.io.in_upper_immed(d_e_register.io.out_upper_immed);
+    execute.io.in_csr_address(d_e_register.io.out_csr_address);
+    execute.io.in_is_csr(d_e_register.io.out_is_csr);
+    execute.io.in_csr_data(d_e_register.io.out_csr_data);
+    execute.io.in_csr_mask(d_e_register.io.out_csr_mask);
 
     // execute to e_m_register
     e_m_register.io.in_alu_result(execute.io.out_alu_result);
@@ -150,6 +167,9 @@ struct Pipeline
     e_m_register.io.in_wb(execute.io.out_wb);
     e_m_register.io.in_mem_read(execute.io.out_mem_read);
     e_m_register.io.in_mem_write(execute.io.out_mem_write);
+    e_m_register.io.in_csr_address(execute.io.out_csr_address);
+    e_m_register.io.in_is_csr(execute.io.out_is_csr);
+    e_m_register.io.in_csr_result(execute.io.out_csr_result);
 
     // e_m_regsiter to memory
     memory.io.in_alu_result(e_m_register.io.out_alu_result);
@@ -191,17 +211,24 @@ struct Pipeline
     // Forwarding unit
     forwarding.io.in_decode_src1(decode.io.out_rs1);
     forwarding.io.in_decode_src2(decode.io.out_rs2);
+    forwarding.io.in_decode_csr_address(decode.io.out_csr_address);
 
     forwarding.io.in_execute_dest(execute.io.out_rd);
     forwarding.io.in_execute_wb(execute.io.out_wb);
     forwarding.io.in_execute_alu_result(execute.io.out_alu_result);
     forwarding.io.in_execute_PC_next(execute.io.out_PC_next);
+    forwarding.io.in_execute_is_csr(execute.io.out_is_csr);
+    forwarding.io.in_execute_csr_address(execute.io.out_csr_address);
+    forwarding.io.in_execute_csr_result(execute.io.out_csr_result);
 
     forwarding.io.in_memory_dest(memory.io.out_rd);
     forwarding.io.in_memory_wb(memory.io.out_wb);
     forwarding.io.in_memory_alu_result(memory.io.out_alu_result);
     forwarding.io.in_memory_mem_data(memory.io.out_mem_result);
     forwarding.io.in_memory_PC_next(memory.io.out_PC_next);
+    forwarding.io.in_memory_is_csr(e_m_register.io.out_is_csr);
+    forwarding.io.in_memory_csr_address(e_m_register.io.out_csr_address);
+    forwarding.io.in_memory_csr_result(e_m_register.io.out_csr_result);
 
     forwarding.io.in_writeback_dest(m_w_register.io.out_rd);
     forwarding.io.in_writeback_wb(m_w_register.io.out_wb);
@@ -213,6 +240,8 @@ struct Pipeline
     decode.io.in_src1_fwd_data(forwarding.io.out_src1_fwd_data);
     decode.io.in_src2_fwd(forwarding.io.out_src2_fwd);
     decode.io.in_src2_fwd_data(forwarding.io.out_src2_fwd_data);
+    decode.io.in_csr_fwd(forwarding.io.out_csr_fwd);
+    decode.io.in_csr_fwd_data(forwarding.io.out_csr_fwd_data);
 
     f_d_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
     d_e_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
@@ -236,6 +265,7 @@ struct Pipeline
   ch_module<Forwarding> forwarding;
   ch_module<Interrupt_Handler> interrupt_handler;
   ch_module<JTAG> jtag_handler;
+  ch_module<CSR_Handler> csr_handler;
 };
 
 

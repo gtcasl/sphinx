@@ -21,38 +21,46 @@ using namespace ch::sim;
 struct D_E_Register
 {
 	__io(
-		__in(ch_bit<5>) in_rd,
-		__in(ch_bit<5>) in_rs1,
-		__in(ch_bit<32>)in_rd1,
-		__in(ch_bit<5>) in_rs2,
-		__in(ch_bit<32>)in_rd2,
-		__in(ch_bit<4>) in_alu_op,
-		__in(ch_bit<2>) in_wb,
-		__in(ch_bit<1>) in_rs2_src, // NEW
+		__in(ch_bit<5>)  in_rd,
+		__in(ch_bit<5>)  in_rs1,
+		__in(ch_bit<32>) in_rd1,
+		__in(ch_bit<5>)  in_rs2,
+		__in(ch_bit<32>) in_rd2,
+		__in(ch_bit<4>)  in_alu_op,
+		__in(ch_bit<2>)  in_wb,
+		__in(ch_bit<1>)  in_rs2_src, // NEW
 		__in(ch_bit<12>) in_itype_immed, // new
-		__in(ch_bit<3>) in_mem_read, // NEW
-		__in(ch_bit<3>) in_mem_write,
+		__in(ch_bit<3>)  in_mem_read, // NEW
+		__in(ch_bit<3>)  in_mem_write,
 		__in(ch_bit<32>) in_PC_next,
-		__in(ch_bit<3>) in_branch_type,
-		__in(ch_bit<1>) in_fwd_stall,
+		__in(ch_bit<3>)  in_branch_type,
+		__in(ch_bit<1>)  in_fwd_stall,
 		__in(ch_bit<20>) in_upper_immed,
+		__in(ch_bit<12>) in_csr_address, // done
+		__in(ch_bit<1>)  in_is_csr, // done
+		__in(ch_bit<32>) in_csr_data, // done
+		__in(ch_bit<32>) in_csr_mask, // done
+
 
          // (ch_flip_io<decode_io>) in,
-
-		__out(ch_bit<5>) out_rd,
-		__out(ch_bit<5>) out_rs1,
-		__out(ch_bit<32>)out_rd1,
-		__out(ch_bit<5>) out_rs2,
-		__out(ch_bit<32>)out_rd2,
-		__out(ch_bit<4>) out_alu_op,
-		__out(ch_bit<2>) out_wb,
-		__out(ch_bit<1>) out_rs2_src, // NEW
+		__out(ch_bit<12>) out_csr_address, // done
+		__out(ch_bit<1>)  out_is_csr, // done
+		__out(ch_bit<32>) out_csr_data, // done
+		__out(ch_bit<32>) out_csr_mask, // done
+		__out(ch_bit<5>)  out_rd,
+		__out(ch_bit<5>)  out_rs1,
+		__out(ch_bit<32>) out_rd1,
+		__out(ch_bit<5>)  out_rs2,
+		__out(ch_bit<32>) out_rd2,
+		__out(ch_bit<4>)  out_alu_op,
+		__out(ch_bit<2>)  out_wb,
+		__out(ch_bit<1>)  out_rs2_src, // NEW
 		__out(ch_bit<12>) out_itype_immed, // new
-		__out(ch_bit<3>) out_mem_read,
-		__out(ch_bit<3>) out_mem_write,
-		__out(ch_bit<3>) out_branch_type,
+		__out(ch_bit<3>)  out_mem_read,
+		__out(ch_bit<3>)  out_mem_write,
+		__out(ch_bit<3>)  out_branch_type,
 		__out(ch_bit<20>) out_upper_immed,
-		__out(ch_bit<32>)   out_PC_next
+		__out(ch_bit<32>) out_PC_next
 	);
 
 	void describe()
@@ -72,6 +80,10 @@ struct D_E_Register
 		ch_reg<ch_bit<3>>  mem_write(0);
 		ch_reg<ch_bit<3>>  branch_type(0);
 		ch_reg<ch_bit<20>> upper_immed(0);
+		ch_reg<ch_bit<12>> csr_address(0);
+		ch_reg<ch_bit<1>>  is_csr(0);
+		ch_reg<ch_bit<32>> csr_data(0);
+		ch_reg<ch_bit<32>> csr_mask(0);
 
 		io.out_rd          = rd;
 		io.out_rs1         = rs1;
@@ -87,6 +99,10 @@ struct D_E_Register
 		io.out_mem_write   = mem_write;
 		io.out_branch_type = branch_type;
 		io.out_upper_immed = upper_immed;
+		io.out_csr_address = csr_address;
+		io.out_is_csr      = is_csr;
+		io.out_csr_data    = csr_data;
+		io.out_csr_mask    = csr_mask;
 
 		// rd->next          = io.in_rd;
 		// rs1->next         = io.in_rs1;
@@ -102,22 +118,27 @@ struct D_E_Register
 		// mem_write->next   = io.in_mem_write;
 		// branch_type->next = io.in_branch_type;
 
+		ch_bool stalling = io.in_fwd_stall == STALL;
 
 
-		rd->next          = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5)  , io.in_rd);
-		rs1->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5)  , io.in_rs1);
-		rd1->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32) , io.in_rd1);
-		rs2->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(5)  , io.in_rs2);
-		rd2->next         = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32) , io.in_rd2);
-		alu_op->next      = ch_sel(io.in_fwd_stall == STALL, NO_ALU      , io.in_alu_op);
-		wb->next          = ch_sel(io.in_fwd_stall == STALL, NO_WB       , io.in_wb);
-		PC_next_out->next = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(32) , io.in_PC_next);
-		rs2_src->next     = ch_sel(io.in_fwd_stall == STALL, RS2_REG     , io.in_rs2_src);
-		itype_immed->next = ch_sel(io.in_fwd_stall == STALL, anything    , io.in_itype_immed);
-		mem_read->next    = ch_sel(io.in_fwd_stall == STALL, NO_MEM_READ , io.in_mem_read);
-		mem_write->next   = ch_sel(io.in_fwd_stall == STALL, NO_MEM_WRITE, io.in_mem_write);
-		branch_type->next = ch_sel(io.in_fwd_stall == STALL, NO_BRANCH   , io.in_branch_type);
-		upper_immed->next = ch_sel(io.in_fwd_stall == STALL, CH_ZERO(20) , io.in_upper_immed);
+		rd->next          = ch_sel(stalling, CH_ZERO(5)  , io.in_rd);
+		rs1->next         = ch_sel(stalling, CH_ZERO(5)  , io.in_rs1);
+		rd1->next         = ch_sel(stalling, CH_ZERO(32) , io.in_rd1);
+		rs2->next         = ch_sel(stalling, CH_ZERO(5)  , io.in_rs2);
+		rd2->next         = ch_sel(stalling, CH_ZERO(32) , io.in_rd2);
+		alu_op->next      = ch_sel(stalling, NO_ALU      , io.in_alu_op);
+		wb->next          = ch_sel(stalling, NO_WB       , io.in_wb);
+		PC_next_out->next = ch_sel(stalling, CH_ZERO(32) , io.in_PC_next);
+		rs2_src->next     = ch_sel(stalling, RS2_REG     , io.in_rs2_src);
+		itype_immed->next = ch_sel(stalling, anything    , io.in_itype_immed);
+		mem_read->next    = ch_sel(stalling, NO_MEM_READ , io.in_mem_read);
+		mem_write->next   = ch_sel(stalling, NO_MEM_WRITE, io.in_mem_write);
+		branch_type->next = ch_sel(stalling, NO_BRANCH   , io.in_branch_type);
+		upper_immed->next = ch_sel(stalling, CH_ZERO(20) , io.in_upper_immed);
+		csr_address->next = ch_sel(stalling, CH_ZERO(12) , io.in_csr_address);
+		is_csr->next      = ch_sel(stalling, CH_ZERO(1)  , io.in_is_csr);
+		csr_data->next    = ch_sel(stalling, CH_ZERO(32) , io.in_csr_data);
+		csr_mask->next    = ch_sel(stalling, CH_ZERO(32) , io.in_csr_mask);
 
 
 	}

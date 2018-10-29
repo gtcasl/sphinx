@@ -28,6 +28,7 @@
 #define AUIPC_INST 23
 #define JAL_INST 111
 #define JALR_INST 103
+#define SYS_INST 115
 
 
 
@@ -85,6 +86,10 @@
 #define SUBU ch_bit<4>(10)
 #define LUI_ALU ch_bit<4>(11)
 #define AUIPC_ALU ch_bit<4>(12)
+#define CSR_ALU_RW ch_bit<4>(13)
+#define CSR_ALU_RS ch_bit<4>(14)
+#define CSR_ALU_RC ch_bit<4>(15)
+
 
 #define NO_ALU_int (15)
 #define ADD_int (0)
@@ -100,7 +105,9 @@
 #define SUBU_int (10)
 #define LUI_ALU_int (11)
 #define AUIPC_ALU_int (12)
-
+#define CSR_ALU_RW_int (13)
+#define CSR_ALU_RS_int (14)
+#define CSR_ALU_RC_int (15)
 
 // WRITEBACK
 #define WB_ALU ch_bit<2>(1)
@@ -145,7 +152,7 @@
 #define anything ch_bit<12>(123)
 #define anything32 ch_bit<32>(123)
 #define anything20 ch_bit<20>(123)
-
+#define INT_MAX    0xFFFFFFFF
 
 // MEMORY
 
