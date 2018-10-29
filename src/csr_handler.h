@@ -30,6 +30,7 @@ struct CSR_Handler
 		};
 
 		CSR.write(0xf14, ch_bit<32>(0), first_cycle);
+		CSR.write(0x301, ch_bit<32>(0), first_cycle);
 
 		io.out_decode_csr_data = CSR.read(io.in_decode_csr_address);
 

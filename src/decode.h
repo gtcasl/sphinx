@@ -165,6 +165,7 @@ struct Decode
 		ch_bool is_auipc;
 		ch_bool is_csr;
 		ch_bool is_csr_immed;
+		ch_bool is_e_inst;
 
 		ch_bool write_register = ch_sel(io.in_wb.as_uint() != NO_WB_int, TRUE, FALSE);
 
@@ -204,13 +205,14 @@ struct Decode
 		is_auipc     = (curr_opcode == AUIPC_INST);
 		is_csr       = (curr_opcode == SYS_INST) && (func3 != 0);
 		is_csr_immed = (is_csr) && (func3[2] == 1);
+		is_e_inst    = (curr_opcode == SYS_INST) && (func3 == 0);
 
 		io.out_is_csr   = is_csr.as_uint();
 		io.out_csr_mask = ch_sel(is_csr_immed, ch_pad<32>(io.out_rs2), io.out_rd2); 
 		io.out_csr_data = ch_sel(io.in_csr_fwd.as_uint() == 1, io.in_csr_fwd_data, io.in_csr_data);
 
 
-		io.out_wb      = ch_sel((is_jal || is_jalr) && valid, WB_JAL,
+		io.out_wb      = ch_sel((is_jal || is_jalr || is_e_inst) && valid, WB_JAL,
 			                   ch_sel(is_linst && valid, WB_MEM, 
 			                   	     ch_sel((is_itype || is_rtype || is_lui || is_auipc || is_csr) && valid, WB_ALU,
 			                   	     	    NO_WB)));
@@ -345,8 +347,8 @@ struct Decode
 				io.out_jal_dest     = anything32;
 				io.out_upper_immed  = anything20;
 
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
+				// io.out_csr_address  = anything;
+				// io.out_is_csr       = TRUE;
 
 				__switch(func3.as_uint())
 					__case(0)
@@ -357,7 +359,7 @@ struct Decode
 					__default
 					{
 						io.out_csr_address  = ch_slice<12>(io.in_instruction >> 20);
-						io.out_is_csr       = FALSE;
+						io.out_is_csr       = TRUE;
 					};
 
 			}
