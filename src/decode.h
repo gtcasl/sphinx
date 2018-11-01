@@ -177,6 +177,7 @@ struct Decode
 		io.out_rs2       = ch_slice<5>(io.in_instruction >> 20);
 		ch_bit<3> func3  = ch_slice<3>(io.in_instruction >> 12);
 		ch_bit<7> func7  = ch_slice<7>(io.in_instruction >> 25);
+		ch_bit<12> u_12  = ch_slice<12>(io.in_instruction >> 20);
 		io.out_PC_next   = io.in_PC_next;
 
 
@@ -340,12 +341,7 @@ struct Decode
 			}
 			__case(SYS_INST)
 			{
-				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
-				io.out_itype_immed  = anything;
-				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
-				io.out_upper_immed  = anything20;
+
 
 				// io.out_csr_address  = anything;
 				// io.out_is_csr       = TRUE;
@@ -353,11 +349,36 @@ struct Decode
 				__switch(func3.as_uint())
 					__case(0)
 					{
-						io.out_csr_address  = anything;
-						io.out_is_csr       = FALSE;
+						__if(u_12.as_uint() < 2)
+						{
+							io.out_jal          = JUMP;
+							io.out_branch_type  = NO_BRANCH;
+							io.out_branch_stall = NO_STALL;
+							io.out_itype_immed  = anything;
+							io.out_upper_immed  = anything20;
+							io.out_csr_address  = anything;
+							io.out_is_csr       = FALSE;
+							io.out_jal_dest     = ch_bit<32>(0x12345678);
+						} __else
+						{
+							io.out_branch_type  = NO_BRANCH;
+							io.out_branch_stall = NO_STALL;
+							io.out_itype_immed  = anything;
+							io.out_jal          = NO_JUMP;
+							io.out_jal_dest     = anything32;
+							io.out_upper_immed  = anything20;
+							io.out_csr_address  = ch_slice<12>(io.in_instruction >> 20);
+							io.out_is_csr       = TRUE;
+						};
 					}
 					__default
 					{
+						io.out_branch_type  = NO_BRANCH;
+						io.out_branch_stall = NO_STALL;
+						io.out_itype_immed  = anything;
+						io.out_jal          = NO_JUMP;
+						io.out_jal_dest     = anything32;
+						io.out_upper_immed  = anything20;
 						io.out_csr_address  = ch_slice<12>(io.in_instruction >> 20);
 						io.out_is_csr       = TRUE;
 					};

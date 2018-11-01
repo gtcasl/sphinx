@@ -126,7 +126,6 @@ struct Cache
 
 		// 	mem_module.write(writing_address, writing_data, should_write);
 
-		// io.out_data = mem_result;
 
 		io.DBUS.in_data.ready     = (io.in_mem_read == LW_MEM_READ);
 
@@ -134,6 +133,7 @@ struct Cache
 		io.DBUS.out_data.data     = io.in_data;
 		io.DBUS.out_data.valid    = (io.in_mem_write == SW_MEM_WRITE);
 
+		//  READING MEMORY
 		io.DBUS.out_address.data  = io.in_address;
 		io.DBUS.out_address.valid = (io.in_mem_read == LW_MEM_READ) || (io.in_mem_write == SW_MEM_WRITE);
 

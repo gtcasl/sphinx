@@ -11,6 +11,17 @@ public:
         for(uint32_t i = 0;i < (1 << 12);i++) if(mem[i]) delete mem[i];
     }
 
+    void clear(){
+        for(uint32_t i = 0;i < (1 << 12);i++)
+        {
+            if(mem[i])
+            { 
+                delete mem[i];
+                mem[i] = NULL;
+            }
+        }
+    }
+
     uint8_t* get(uint32_t address){
 
         if(mem[address >> 20] == NULL) {
@@ -104,6 +115,7 @@ uint32_t hToI(char *c, uint32_t size) {
 
 
 void loadHexImpl(std::string path,RAM* mem) {
+    mem->clear();
     FILE *fp = fopen(&path[0], "r");
     if(fp == 0){
         std::cout << path << " not found" << std::endl;

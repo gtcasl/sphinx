@@ -140,8 +140,32 @@ struct Execute
 			__case(SUBU_int)
 			{
 				//ch_print("SUBU");
-				io.out_alu_result = ALU_in1.as_uint() - ALU_in2.as_uint();
+					
+
+
+				// ch_bit<32> use1 = ch_sel((ALU_in1[31] == 1), -ALU_in1.as_uint(), (1-ALU_in1.as_uint()));
+				// ch_bit<32> use2 = ch_sel((ALU_in2[31] == 1), -ALU_in2.as_uint(), (1-ALU_in2.as_uint()));
+
+				// // ch_print("SUBU signed: {0} - {1} = {2}", ALU_in1, ALU_in2, ALU_in1.as_int() - ALU_in2.as_int());
+
+				// ch_print("SUBU unsigned: {0} - {1} = {2}", ALU_in1, ALU_in2, ALU_in1.as_uint() - ALU_in2.as_uint());
+				// ch_print("SUBU vodo: {0} - {1} = {2}", use1, use2, use1.as_int() - use2.as_int());
+
+				ch_print("SUBU: {0} < {1}", ALU_in1.as_uint(), ALU_in2.as_uint());
+
+				__if(ALU_in1.as_uint() > ALU_in2.as_uint())
+				{
+					ch_print("\t=0xFFFFFF");
+					io.out_alu_result = 0x0;
+				} __else
+				{
+					ch_print("\t=0x0");
+					io.out_alu_result = 0xffffffff;
+				};
+
+				// io.out_alu_result = ALU_in1.as_uint() - ALU_in2.as_uint();
 				io.out_csr_result = anything32;
+
 			}
 			__case(LUI_ALU_int)
 			{
@@ -206,7 +230,7 @@ struct Execute
 			__case(BLTU_int)
 			{
 				io.out_branch_dir = ch_sel(io.out_alu_result[31] == 0, NOT_TAKEN, TAKEN);
-				ch_print("BLTU_int");
+				ch_print("BLTU_int: {0}", io.out_branch_dir);
 			}
 			__case(BGTU_int)
 			{

@@ -44,7 +44,7 @@ using namespace ch::core;
 using namespace ch::sim;
 using namespace ch::htl;
 
-bool debug = true;
+bool debug = false;
 #define IBUS_WIDTH 32
 struct Pipeline
 {
@@ -272,9 +272,9 @@ struct Pipeline
 class RocketChip
 {
     public:
-        RocketChip(std::string);
+        RocketChip();
         ~RocketChip();
-        void simulate();
+        void simulate(std::string);
         void export_model(void);
     private:
 
@@ -296,6 +296,7 @@ class RocketChip
 
         ch_tracer sim;
         std::string instruction_file_name;
+        std::ofstream results;
         int stats_static_inst;
         int stats_dynamic_inst;
         int stats_total_cycles;
@@ -305,19 +306,16 @@ class RocketChip
 };
 
 
-RocketChip::RocketChip(std::string instruction_file_name) : start_pc(0), stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0),
+RocketChip::RocketChip() : start_pc(0), stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0),
                                                                 stats_fwd_stalls(0), stats_branch_stalls(0)
 {
-    system("rm ../Workspace/*");
-
-    sim = ch_tracer(this->pipeline);
-    this->instruction_file_name = instruction_file_name;
-    this->ProcessFile();
+    this->sim = ch_tracer(this->pipeline);
+    this->results.open("../results/results.txt");
 }
 
 RocketChip::~RocketChip()
 {
-    // system("rm ../Workspace/*");
+    this->results.close();
 }
 
 void RocketChip::ProcessFile(void)
@@ -327,13 +325,13 @@ void RocketChip::ProcessFile(void)
 
     // Printing state
 
-    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+    if(debug) std::cout << "$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
 
     uint32_t address = 0x80000038;
     // uint32_t * data = new uint32_t[64];
     // ram.getBlock(address,data);
 
-    std::cout << "GOT BLOCK" << std::endl;
+    if(debug) std::cout << "GOT BLOCK" << std::endl;
 
     for (uint32_t new_address = (address&0xffffff00); new_address < ((address&0xffffff00) + 256); new_address += 4 )
     {
@@ -341,14 +339,14 @@ void RocketChip::ProcessFile(void)
         uint32_t curr_word;
         ram.getWord(new_address, &curr_word);
 
-        std::cout << std::setfill('0');
-        std::cout << std::hex << new_address << ": " << std::hex << std::setw(8) << curr_word;
-        std::cout << std::endl;
+        if(debug) std::cout << std::setfill('0');
+        if(debug) std::cout << std::hex << new_address << ": " << std::hex << std::setw(8) << curr_word;
+        if(debug) std::cout << std::endl;
 
     }
 
 
-    std::cout << "***********************" << std::endl;
+    if(debug) std::cout << "***********************" << std::endl;
 
 }
 
@@ -359,12 +357,18 @@ bool RocketChip::ibus_driver(ch_device<Pipeline> & pipeline)
     bool stop = false;
     uint32_t curr_inst = 0xdeadbeef;
 
+    static uint32_t current  = 0xdeadbeef;
+    static uint32_t previous = 0xdeadbeef;
+
+    previous = current;
 
     pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
     new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
     ram.getWord(new_PC, &curr_inst);
     pipeline.io.IBUS.in_data.data      = curr_inst;
     pipeline.io.IBUS.in_data.valid     = true;
+
+    current = new_PC;
 
     ////////////////////// IBUS //////////////////////
 
@@ -377,21 +381,27 @@ bool RocketChip::ibus_driver(ch_device<Pipeline> & pipeline)
     }
     ++stats_total_cycles;
 
-    std::cout << "new_PC: " << new_PC << std::endl;
+    if(debug) std::cout << "new_PC: " << new_PC << std::endl;
 
     if ((curr_inst != 0) && (curr_inst != 0xffffffff))
     {
         ++stats_dynamic_inst;
-        if (debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << curr_inst << std::endl;
+        if(debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << curr_inst << std::endl;
         stop = false;
     } else
     {
         stop = true;
     }
 
-    std::cout << "------------------------------------------";
-    std::cout << std::endl << std::endl << std::endl << std::endl;
+    if(debug) std::cout << "------------------------------------------";
+    if(debug) std::cout << std::endl << std::endl << std::endl << std::endl;
    ////////////////////// STATS //////////////////////
+
+    if (stop)
+    {
+        this->results << std::left;
+        this->results << std::setw(24) << "Last executed address:" << "0x" << std::hex << previous << "\n";
+    }
 
     return stop;
 
@@ -488,14 +498,18 @@ void RocketChip::jtag_driver(ch_device<Pipeline> & pipeline)
 
 }
 
-void RocketChip::simulate(void) {
+void RocketChip::simulate(std::string file_to_simulate) {
 
+    this->instruction_file_name = file_to_simulate;
+    this->results << "\n****************\t" << file_to_simulate << "\t****************\n";
+
+    this->ProcessFile();
 
     clock_time start_time = std::chrono::high_resolution_clock::now();
 
     sim.run([&](ch_tick t)->bool {
 
-        std::cout << "Cycle: " << t/2 << std::endl;
+        if(debug) std::cout << "Cycle: " << t/2 << std::endl;
 
 
         static bool stop = false;
@@ -518,14 +532,21 @@ void RocketChip::simulate(void) {
 
 void RocketChip::print_stats(void)
 {
-    std::cout << std::left;
-    // std::cout << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
-    std::cout << std::setw(24) << "# Dynamic Instructions:" << std::dec << this->stats_dynamic_inst << std::endl;
-    std::cout << std::setw(24) << "# of total cycles:" << std::dec << this->stats_total_cycles << std::endl;
-    std::cout << std::setw(24) << "# of forwarding stalls:" << std::dec << this->stats_fwd_stalls << std::endl;
-    std::cout << std::setw(24) << "# of branch stalls:" << std::dec << this->stats_branch_stalls << std::endl;
-    std::cout << std::setw(24) << "# CPI:" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
-    std::cout << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time.count() << " ms" << std::endl;
+    this->results << std::left;
+    // this->results << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
+    this->results << std::setw(24) << "# Dynamic Instructions:" << std::dec << this->stats_dynamic_inst << std::endl;
+    this->results << std::setw(24) << "# of total cycles:" << std::dec << this->stats_total_cycles << std::endl;
+    this->results << std::setw(24) << "# of forwarding stalls:" << std::dec << this->stats_fwd_stalls << std::endl;
+    this->results << std::setw(24) << "# of branch stalls:" << std::dec << this->stats_branch_stalls << std::endl;
+    this->results << std::setw(24) << "# CPI:" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
+    this->results << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time.count() << " ms" << std::endl;
+
+    this->stats_static_inst   =  0;
+    this->stats_dynamic_inst  = -1;
+    this->stats_total_cycles  =  0;
+    this->stats_fwd_stalls    =  0;
+    this->stats_branch_stalls =  0;
+
 }
 
 void RocketChip::export_model()
