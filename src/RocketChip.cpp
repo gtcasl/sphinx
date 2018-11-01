@@ -79,6 +79,8 @@ int main()
 	// rocketchip.simulate("../tests/rv32um-p-remu.hex");
 	// rocketchip.simulate("../tests/testA.hex");
 
+	rocketchip.export_model();
+
 
 
 }
