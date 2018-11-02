@@ -372,7 +372,7 @@ struct Decode
 							io.out_upper_immed  = anything20;
 							io.out_csr_address  = anything;
 							io.out_is_csr       = FALSE;
-							io.out_jal_dest     = ch_bit<32>(0x12345678);
+							io.out_jal_dest     = ch_bit<32>(0xb0000000);
 						} __else
 						{
 							io.out_branch_type  = NO_BRANCH;

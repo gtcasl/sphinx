@@ -29,52 +29,80 @@ struct Cache
 
 		// ch_mem<ch_bit<32>, 16777216> mem_module;
 
-		// ch_bit<32> mem_result(0);
 
-		// __switch(io.in_mem_read.as_uint())
-		// 	__case(0) 
-		// 	{
-		// 		ch_bit<24> ones(ONES_24BITS);
-		// 		ch_bit<24> zeros(ZERO);
-				
-		// 		// LB sign extend
-		// 		ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<24>(io.in_address)));
-		// 		mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_cat(zeros, byte));
-		// 	}
-		// 	__case(1)
-		// 	{
-		// 		// LH sign extend
-		// 		ch_bit<16> ones(ONES_16BITS);
-		// 		ch_bit<16> zeros(ZERO);
-				
-		// 		ch_bit<16> half = ch_slice<16>(mem_module.read(ch_slice<24>(io.in_address)));
-		// 		mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_cat(zeros, half));
-		// 	}
-		// 	__case(2)
-		// 	{
-		// 		// LW
-		// 		mem_result = mem_module.read(ch_slice<24>(io.in_address));
-		// 		ch_print("Reading Addr: {0}, Value: {1}", io.in_address, mem_result);
-		// 	}
-		// 	__case(4)
-		// 	{
-		// 		ch_bit<24> zeros(ZERO);
-		// 		// LBU
-		// 		ch_bit<8> byte = ch_slice<8>(mem_module.read(ch_slice<24>(io.in_address)));
-		// 		mem_result = ch_cat(zeros, byte);
-		// 	}
-		// 	__case(5)
-		// 	{
-		// 		ch_bit<16> zeros(0);
 
-		// 		// LHU
-		// 		ch_bit<16> half = ch_slice<16>(mem_module.read(ch_slice<24>(io.in_address)));
-		// 		mem_result = ch_cat(zeros, half);
-		// 	}
-		// 	__default
-		// 	{
-		// 		mem_result = ch_bit<32>(0); 
-		// 	};
+
+
+
+
+		//  READING MEMORY
+		io.DBUS.out_address.data  = io.in_address;
+		io.DBUS.out_address.valid = (io.in_mem_read.as_uint() < NO_MEM_WRITE_int) || (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
+
+
+		ch_bool read_word_enable  = (io.in_mem_read.as_uint()  <  NO_MEM_READ_int);
+
+		ch_bool write_word_enable = (io.in_mem_write.as_uint() == SW_MEM_WRITE_int);
+		ch_bool write_byte_enable = (io.in_mem_write.as_uint() == SB_MEM_WRITE_int);
+		ch_bool write_half_enable = (io.in_mem_write.as_uint() == SH_MEM_WRITE_int);
+
+		ch_bool no_rw_enable      = (io.in_mem_read.as_uint()  == NO_MEM_READ_int) && (io.in_mem_write.as_uint() == NO_MEM_WRITE_int);
+		
+		io.DBUS.out_control.data  = ch_sel(read_word_enable, DBUS_READ,
+			                               ch_sel(write_word_enable, DBUS_WRITE,
+			                                      ch_sel(no_rw_enable, DBUS_NONE, DBUS_RW)));
+		io.DBUS.out_control.valid = TRUE;
+
+		io.DBUS.in_data.ready     = read_word_enable || (!no_rw_enable && !write_word_enable);
+
+
+		ch_bit<32> mem_result;
+		__switch(io.in_mem_read.as_uint())
+			__case(0) 
+			{
+				ch_bit<24> ones(ONES_24BITS);
+				ch_bit<24> zeros(ZERO);
+				
+				// LB sign extend
+				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
+				mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_cat(zeros, byte));
+			}
+			__case(1)
+			{
+				// LH sign extend
+				ch_bit<16> ones(ONES_16BITS);
+				ch_bit<16> zeros(ZERO);
+				
+				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
+				mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_cat(zeros, half));
+			}
+			__case(2)
+			{
+				// LW
+				mem_result = io.DBUS.in_data.data;
+				ch_print("Reading Addr: {0}, Value: {1}", io.in_address, mem_result);
+			}
+			__case(4)
+			{
+				ch_bit<24> zeros(ZERO);
+				// LBU
+				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
+				mem_result = ch_cat(zeros, byte);
+			}
+			__case(5)
+			{
+				ch_bit<16> zeros(0);
+
+				// LHU
+				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
+				mem_result = ch_cat(zeros, half);
+			}
+			__default
+			{
+				mem_result = ch_bit<32>(0); 
+			};
+
+		io.out_data = mem_result;
 
 		// ch_bit<24> writing_address(0);
 		// ch_bit<32> writing_data(0);
@@ -86,25 +114,21 @@ struct Cache
 		// 		// SB
 		// 		ch_bit<24> zeros(0);
 
-		// 		writing_data    = ch_cat(zeros, ch_slice<8>(io.in_data)) | mem_module.read(ch_slice<24>(io.in_address));
+		// 		writing_data    = ch_cat(zeros, ch_slice<8>(io.in_data)) | io.DBUS.in_data.data;
 		// 		writing_address = ch_slice<24>(io.in_address); 
 		// 		should_write    = TRUE;       
 
-		// 		//mem_module.write(address.as_uint(), word, TRUE);
-		// 		ch_print("!!!!!!!!!!WARNING");
 		// 	}
 		// 	__case(1)
 		// 	{
 		// 		// SH
 		// 		ch_bit<16> zeros(0);
 				
-		// 		writing_data    = ch_cat(zeros, ch_slice<16>(io.in_data)) | mem_module.read(ch_slice<24>(io.in_address));
+		// 		writing_data    = ch_cat(zeros, ch_slice<16>(io.in_data)) | io.DBUS.in_data.data;
 		// 		writing_address = ch_slice<24>(io.in_address);
 		// 		should_write    = TRUE;
 				
 
-		// 		//mem_module.write(ch_slice<24>(io.in_address), word, TRUE);
-		// 		ch_print("!!!!!!!!!!WARNING");
 		// 	}
 		// 	__case(2)
 		// 	{
@@ -114,7 +138,6 @@ struct Cache
 		// 		writing_address = ch_slice<24>(io.in_address);
 		// 		should_write    = TRUE;;
 
-		// 		//mem_module.write(ch_slice<24>(io.in_address), io.in_data, TRUE);
 		// 		ch_print("Storing in address: {0}, value: {1}", ch_slice<24>(io.in_address), io.in_data);
 		// 		ch_print("!!!!!!!!!!WARNING");
 		// 	}
@@ -124,27 +147,9 @@ struct Cache
 		// 		ch_print("$$$$$$$$$$$WARNING");
 		// 	};
 
-		// 	mem_module.write(writing_address, writing_data, should_write);
-
-
-		io.DBUS.in_data.ready     = (io.in_mem_read == LW_MEM_READ);
-
 
 		io.DBUS.out_data.data     = io.in_data;
-		io.DBUS.out_data.valid    = (io.in_mem_write == SW_MEM_WRITE);
-
-		//  READING MEMORY
-		io.DBUS.out_address.data  = io.in_address;
-		io.DBUS.out_address.valid = (io.in_mem_read == LW_MEM_READ) || (io.in_mem_write == SW_MEM_WRITE);
-
-
-
-		io.DBUS.out_control.data  = ch_sel(io.in_mem_read.as_uint() == LW_MEM_READ_int, DBUS_READ,
-			                               ch_sel(io.in_mem_write.as_uint() < NO_MEM_WRITE_int, DBUS_WRITE,
-			                               DBUS_NONE));
-		io.DBUS.out_control.valid = TRUE;
-
-		io.out_data = io.DBUS.in_data.data;
+		io.DBUS.out_data.valid    = (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
 
 	}
 };

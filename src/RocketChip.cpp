@@ -16,6 +16,56 @@ int main()
 
     RocketChip rocketchip;
 
+    bool passed = true;
+	
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-add.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-addi.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-and.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-andi.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-auipc.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-beq.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-bge.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-bgeu.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-blt.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-bltu.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-bne.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-jal.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-jalr.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-lb.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-lbu.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-lh.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-lhu.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-lui.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-lui.hex.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-lw.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-or.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-ori.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sb.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sh.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-simple.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sll.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-slli.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-slt.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-slti.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sltiu.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sltu.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sra.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-srai.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-srl.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-srli.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sub.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-sw.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-xor.hex");
+	passed = passed && rocketchip.simulate("../tests/rv32ui-p-xori.hex");
+
+
+	rocketchip.export_model();
+
+	if (passed) return 0;
+	return -1;
+
+
+
 	// rocketchip.simulate("../tests/debugPluginExternal.hex");
 	// rocketchip.simulate("../tests/debugPlugin.hex");
 	// rocketchip.simulate("../tests/dhrystoneO3C.hex");
@@ -27,47 +77,8 @@ int main()
 	// rocketchip.simulate("../tests/machineCsr.hex");
 	// rocketchip.simulate("../tests/mmu.hex");
 	// rocketchip.simulate("../tests/rv32uc-p-rvc.hex");
-	
-	rocketchip.simulate("../tests/rv32ui-p-add.hex");
-	rocketchip.simulate("../tests/rv32ui-p-addi.hex");
-	rocketchip.simulate("../tests/rv32ui-p-and.hex");
-	rocketchip.simulate("../tests/rv32ui-p-andi.hex");
-	rocketchip.simulate("../tests/rv32ui-p-auipc.hex");
-	rocketchip.simulate("../tests/rv32ui-p-beq.hex");
-	rocketchip.simulate("../tests/rv32ui-p-bge.hex");
-	rocketchip.simulate("../tests/rv32ui-p-bgeu.hex");
-	rocketchip.simulate("../tests/rv32ui-p-blt.hex");
-	rocketchip.simulate("../tests/rv32ui-p-bltu.hex");
-	rocketchip.simulate("../tests/rv32ui-p-bne.hex");
-	rocketchip.simulate("../tests/rv32ui-p-fence_i.hex");
-	rocketchip.simulate("../tests/rv32ui-p-jal.hex");
-	rocketchip.simulate("../tests/rv32ui-p-jalr.hex");
-	rocketchip.simulate("../tests/rv32ui-p-lb.hex");
-	rocketchip.simulate("../tests/rv32ui-p-lbu.hex");
-	rocketchip.simulate("../tests/rv32ui-p-lh.hex");
-	rocketchip.simulate("../tests/rv32ui-p-lhu.hex");
-	rocketchip.simulate("../tests/rv32ui-p-lui.hex");
-	rocketchip.simulate("../tests/rv32ui-p-lui.hex.hex");
-	rocketchip.simulate("../tests/rv32ui-p-lw.hex");
-	rocketchip.simulate("../tests/rv32ui-p-or.hex");
-	rocketchip.simulate("../tests/rv32ui-p-ori.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sb.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sh.hex");
-	rocketchip.simulate("../tests/rv32ui-p-simple.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sll.hex");
-	rocketchip.simulate("../tests/rv32ui-p-slli.hex");
-	rocketchip.simulate("../tests/rv32ui-p-slt.hex");
-	rocketchip.simulate("../tests/rv32ui-p-slti.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sltiu.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sltu.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sra.hex");
-	rocketchip.simulate("../tests/rv32ui-p-srai.hex");
-	rocketchip.simulate("../tests/rv32ui-p-srl.hex");
-	rocketchip.simulate("../tests/rv32ui-p-srli.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sub.hex");
-	rocketchip.simulate("../tests/rv32ui-p-sw.hex");
-	rocketchip.simulate("../tests/rv32ui-p-xor.hex");
-	rocketchip.simulate("../tests/rv32ui-p-xori.hex");
+	// rocketchip.simulate("../tests/rv32ui-p-fence_i.hex");
+
 
 	// rocketchip.simulate("../tests/rv32um-p-div.hex");
 	// rocketchip.simulate("../tests/rv32um-p-divu.hex");
@@ -78,10 +89,6 @@ int main()
 	// rocketchip.simulate("../tests/rv32um-p-rem.hex");
 	// rocketchip.simulate("../tests/rv32um-p-remu.hex");
 	// rocketchip.simulate("../tests/testA.hex");
-
-	rocketchip.export_model();
-
-
 
 }
 

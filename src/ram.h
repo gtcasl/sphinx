@@ -136,6 +136,8 @@ void loadHexImpl(std::string path,RAM* mem) {
     ((uint32_t*)mem->get(0))[1] = 0x000080e7;
     ((uint32_t*)mem->get(0x80000000))[0] = 0x00000097;
 
+    ((uint32_t*)mem->get(0xb0000000))[0] = 0x01C02023;
+
     fseek(fp, 0, SEEK_END);
     uint32_t size = ftell(fp);
     fseek(fp, 0, SEEK_SET);

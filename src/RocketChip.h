@@ -274,7 +274,7 @@ class RocketChip
     public:
         RocketChip();
         ~RocketChip();
-        void simulate(std::string);
+        bool simulate(std::string);
         void export_model(void);
     private:
 
@@ -357,18 +357,12 @@ bool RocketChip::ibus_driver(ch_device<Pipeline> & pipeline)
     bool stop = false;
     uint32_t curr_inst = 0xdeadbeef;
 
-    static uint32_t current  = 0xdeadbeef;
-    static uint32_t previous = 0xdeadbeef;
-
-    previous = current;
 
     pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
     new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
     ram.getWord(new_PC, &curr_inst);
     pipeline.io.IBUS.in_data.data      = curr_inst;
     pipeline.io.IBUS.in_data.valid     = true;
-
-    current = new_PC;
 
     ////////////////////// IBUS //////////////////////
 
@@ -397,12 +391,6 @@ bool RocketChip::ibus_driver(ch_device<Pipeline> & pipeline)
     if(debug) std::cout << std::endl << std::endl << std::endl << std::endl;
    ////////////////////// STATS //////////////////////
 
-    if (stop)
-    {
-        this->results << std::left;
-        this->results << std::setw(24) << "Last executed address:" << "0x" << std::hex << previous << "\n";
-    }
-
     return stop;
 
 }
@@ -426,7 +414,7 @@ void RocketChip::dbus_driver(ch_device<Pipeline> & pipeline)
 
     if (pipeline.io.DBUS.out_control.ready && pipeline.io.DBUS.out_control.valid)
     {
-        if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int)
+        if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
         {
             if (pipeline.io.DBUS.in_data.ready)
             {
@@ -434,7 +422,7 @@ void RocketChip::dbus_driver(ch_device<Pipeline> & pipeline)
             }
         }
 
-        if (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int)
+        if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
         {
             if (pipeline.io.DBUS.out_data.valid)
             {
@@ -500,7 +488,7 @@ void RocketChip::jtag_driver(ch_device<Pipeline> & pipeline)
 
 }
 
-void RocketChip::simulate(std::string file_to_simulate) {
+bool RocketChip::simulate(std::string file_to_simulate) {
 
     this->instruction_file_name = file_to_simulate;
     this->results << "\n****************\t" << file_to_simulate << "\t****************\n";
@@ -514,21 +502,37 @@ void RocketChip::simulate(std::string file_to_simulate) {
         if(debug) std::cout << "Cycle: " << t/2 << std::endl;
 
 
-        static bool stop = false;
+        static bool stop      = false;
+        static int counter    = 0;
 
         stop = ibus_driver(pipeline);
                dbus_driver(pipeline);
                interrupt_driver(pipeline);
                jtag_driver(pipeline);
 
-        return !stop;
+        if (stop)
+        {
+            counter++;
+        } else
+        {
+            counter = 0;
+        }
+
+
+        // RETURNS FALSE TO STOP
+        return !(stop && (counter > 5));
     });
 
     {
         using namespace std::chrono;
         this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
     }
+
+    uint32_t status;
+    ram.getWord(0, &status);
+
     this->print_stats();
+    return (status == 1);
 }
 
 
@@ -542,6 +546,18 @@ void RocketChip::print_stats(void)
     this->results << std::setw(24) << "# of branch stalls:" << std::dec << this->stats_branch_stalls << std::endl;
     this->results << std::setw(24) << "# CPI:" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
     this->results << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time.count() << " ms" << std::endl;
+
+
+    uint32_t status;
+    ram.getWord(0, &status);
+
+    if (status == 1)
+    {
+        this->results << std::setw(24) << "# GRADE:" << " PASSING\n";
+    } else
+    {
+        this->results << std::setw(24) << "# GRADE:" << " Failed on test: " << status << "\n";
+    }
 
     this->stats_static_inst   =  0;
     this->stats_dynamic_inst  = -1;
