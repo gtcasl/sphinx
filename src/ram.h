@@ -40,7 +40,6 @@ public:
     void read(uint32_t address,uint32_t length, uint8_t *data){
         for(unsigned i = 0;i < length;i++){
             data[i] = (*this)[address + i];
-            std::cout << "READING ADDRESS: " << std::hex << address + i << std::endl;
         }
     }
 
@@ -67,6 +66,15 @@ public:
         uint8_t third  = *get(address + 2);
         uint8_t fourth = *get(address + 3);
 
+        // uint8_t hi = (uint8_t) *get(address + 0);
+        // std::cout << "RAM: READING ADDRESS " << address + 0 << " DATA: " << hi << "\n";
+        // hi = (uint8_t) *get(address + 1);
+        // std::cout << "RAM: READING ADDRESS " << address + 1 << " DATA: " << hi << "\n";
+        // hi = (uint8_t) *get(address + 2);
+        // std::cout << "RAM: READING ADDRESS " << address + 2 << " DATA: " << hi << "\n";
+        // hi = (uint8_t) *get(address + 3);
+        // std::cout << "RAM: READING ADDRESS " << address + 3 << " DATA: " << hi << "\n";
+
         data[0] = (data[0] << 0) | fourth;
         data[0] = (data[0] << 8) | third;
         data[0] = (data[0] << 8) | second;
@@ -78,11 +86,14 @@ public:
     {
         uint32_t data_to_write = *data;
 
-        uint32_t byte_mask = 0x000000FF;
+        uint32_t byte_mask = 0xFF;
 
         for (int i = 0; i < 4; i++)
         {
-            (*this)[address + i] = data_to_write && byte_mask;
+            // std::cout << "RAM: DATA TO WRITE " << data_to_write << "\n";
+            // std::cout << "RAM: DATA TO MASK  " << byte_mask << "\n";
+            // std::cout << "RAM: WRITING ADDRESS " << address + i << " DATA: " << (data_to_write & byte_mask) << "\n";
+            (*this)[address + i] = data_to_write & byte_mask;
             data_to_write        = data_to_write >> 8;
         }
     }

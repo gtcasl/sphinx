@@ -139,8 +139,8 @@ struct Cache
 
 
 
-		io.DBUS.out_control.data  = ch_sel(io.in_mem_read == LW_MEM_READ, DBUS_READ,
-			                               ch_sel(io.in_mem_write == SW_MEM_WRITE, DBUS_WRITE,
+		io.DBUS.out_control.data  = ch_sel(io.in_mem_read.as_uint() == LW_MEM_READ_int, DBUS_READ,
+			                               ch_sel(io.in_mem_write.as_uint() < NO_MEM_WRITE_int, DBUS_WRITE,
 			                               DBUS_NONE));
 		io.DBUS.out_control.valid = TRUE;
 

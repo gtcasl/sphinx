@@ -48,7 +48,6 @@ struct Execute
 
 	void describe()
 	{
-
 		ch_print("****************");
 		ch_print("EXECUTE");
 		ch_print("****************");		
@@ -88,6 +87,7 @@ struct Execute
 				//ch_print("SUB_int");
 				io.out_alu_result = ALU_in1.as_int() - ALU_in2.as_int();
 				io.out_csr_result = anything32;
+				ch_print("SUB_int: {0} - {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
 			}
 			__case(SLLA_int)
 			{
@@ -98,14 +98,17 @@ struct Execute
 			__case(SLT_int)
 			{
 				//ch_print("SLT_int");
-				io.out_alu_result = ch_sel(ALU_in1.as_int() < ALU_in2.as_int(), ch_bit<32>(0), ch_bit<32>(1));
+				io.out_alu_result = ch_sel(ALU_in1.as_int() < ALU_in2.as_int(), ch_bit<32>(1), ch_bit<32>(0));
 				io.out_csr_result = anything32;
 			}
 			__case(SLTU_int)
 			{
 				//ch_print("SLTU_int");
-				io.out_alu_result = ch_sel(ALU_in1.as_uint() < ALU_in2.as_uint(), ch_bit<32>(0), ch_bit<32>(1));
-				io.out_csr_result = anything32;
+				ch_uint<32> ALU_in1_int  = ALU_in1.as_uint();
+				ch_uint<32> ALU_in2_int  = ALU_in2.as_uint();
+				io.out_alu_result      = ch_sel(ALU_in1_int < ALU_in2_int, ch_bit<32>(1), ch_bit<32>(0));
+				io.out_csr_result      = anything32;
+				ch_print("SLT: {0} < {1}? {2}", ALU_in1_int, ALU_in2_int, io.out_alu_result);
 			}
 			__case(XOR_int)
 			{
@@ -122,8 +125,10 @@ struct Execute
 			__case(SRA_int)
 			{
 				//ch_print("SRA");
-				io.out_alu_result  = ALU_in1.as_int()  >> ALU_in2.as_uint();
-				io.out_csr_result = anything32;
+				ch_int32 ALU_in1_int = ALU_in1.as_int();
+				io.out_alu_result    = ALU_in1_int  >> ALU_in2.as_uint();
+				io.out_csr_result    = anything32;
+				ch_print("STA: {0} >> {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
 			}
 			__case(OR_int)
 			{
@@ -153,7 +158,7 @@ struct Execute
 
 				ch_print("SUBU: {0} < {1}", ALU_in1.as_uint(), ALU_in2.as_uint());
 
-				__if(ALU_in1.as_uint() > ALU_in2.as_uint())
+				__if(ALU_in1.as_uint() >= ALU_in2.as_uint())
 				{
 					ch_print("\t=0xFFFFFF");
 					io.out_alu_result = 0x0;
@@ -235,7 +240,7 @@ struct Execute
 			__case(BGTU_int)
 			{
 				io.out_branch_dir = ch_sel(io.out_alu_result[31] == 0, TAKEN, NOT_TAKEN);
-				ch_print("BGTU_int");
+				ch_print("BGTU_int: RESULT: {0}", io.out_branch_dir);
 			}
 			__case(NO_BRANCH_int)
 			{

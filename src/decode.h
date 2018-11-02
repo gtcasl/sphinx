@@ -34,42 +34,56 @@ struct RegisterFile
 	void describe()
 	{
 		ch_mem<ch_bit<32>, 32> registers;
-		registers.write(REG(0), ch_bit<32>(0), TRUE);
+		// registers.write(REG(0), ch_bit<32>(0), TRUE);
 
 
-		ch_reg<ch_bool> starting(false);
+		ch_reg<ch_bool> starting(true);
 
 		__if(starting == TRUE)
 		{
-			// registers.write(REG(2), ch_bit<32>(0x0f0), TRUE);
 			ch_print("DONT SETTING");
 			starting->next = FALSE;
 		};
 
-		// registers.write(REG(2), ch_bit<32>(0x0f0), starting);
 
-		registers.write(io.in_rd, io.in_data, ((io.in_write_register) && (io.in_rd.as_uint() != 0)));
+		ch_bit<32> write_data;
+		ch_bit<5> write_register;
+		ch_bool enable;
+
+		__if(starting)
+		{
+			write_data     = ch_bit<32>(0);
+			write_register = REG(0);
+			enable         = TRUE;
+		} __else
+		{
+			write_data     = io.in_data;
+			write_register = io.in_rd;
+			enable         = ((io.in_write_register) && (io.in_rd.as_uint() != 0));
+		};
+
+		registers.write(write_register, write_data, enable);
 
 		io.out_src1_data = ch_sel(io.in_src1.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.read(io.in_src1));
 		io.out_src2_data = ch_sel(io.in_src2.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.read(io.in_src2));
 
 
 		// ch_print("Reg 0: {0}", registers.read(ch_bit<5>(0)));
-		// ch_print("Reg 1: {0}", registers.read(ch_bit<5>(1)));
+		ch_print("Reg 1: {0}", registers.read(ch_bit<5>(1)));
 		ch_print("Reg 2: {0}", registers.read(ch_bit<5>(2)));
-		// ch_print("Reg 3: {0}", registers.read(ch_bit<5>(3)));
+		ch_print("Reg 3: {0}", registers.read(ch_bit<5>(3)));
 		// ch_print("Reg 4: {0}", registers.read(ch_bit<5>(4)));
 		// ch_print("Reg 5: {0}", registers.read(ch_bit<5>(5)));
 		// ch_print("Reg 6: {0}", registers.read(ch_bit<5>(6)));
 		// ch_print("Reg 7: {0}", registers.read(ch_bit<5>(7)));
-		ch_print("Reg 8: {0}", registers.read(ch_bit<5>(8)));
+		// ch_print("Reg 8: {0}", registers.read(ch_bit<5>(8)));
 		// ch_print("Reg 9: {0}", registers.read(ch_bit<5>(9)));
 		// ch_print("Reg 10: {0}", registers.read(ch_bit<5>(10)));
 		// ch_print("Reg 11: {0}", registers.read(ch_bit<5>(11)));
 		// ch_print("Reg 12: {0}", registers.read(ch_bit<5>(12)));
 		// ch_print("Reg 13: {0}", registers.read(ch_bit<5>(13)));
-		ch_print("Reg 14: {0}", registers.read(ch_bit<5>(14)));
-		ch_print("Reg 15: {0}", registers.read(ch_bit<5>(15)));
+		// ch_print("Reg 14: {0}", registers.read(ch_bit<5>(14)));
+		// ch_print("Reg 15: {0}", registers.read(ch_bit<5>(15)));
 		// ch_print("Reg 16: {0}", registers.read(ch_bit<5>(16)));
 		// ch_print("Reg 17: {0}", registers.read(ch_bit<5>(17)));
 		// ch_print("Reg 18: {0}", registers.read(ch_bit<5>(18)));
@@ -82,8 +96,8 @@ struct RegisterFile
 		// ch_print("Reg 25: {0}", registers.read(ch_bit<5>(25)));
 		// ch_print("Reg 26: {0}", registers.read(ch_bit<5>(26)));
 		// ch_print("Reg 27: {0}", registers.read(ch_bit<5>(27)));
-		// ch_print("Reg 28: {0}", registers.read(ch_bit<5>(28)));
-		// ch_print("Reg 29: {0}", registers.read(ch_bit<5>(29)));
+		ch_print("Reg 28: {0}", registers.read(ch_bit<5>(28)));
+		ch_print("Reg 29: {0}", registers.read(ch_bit<5>(29)));
 		// ch_print("Reg 30: {0}", registers.read(ch_bit<5>(30)));
 		// ch_print("Reg 31: {0}", registers.read(ch_bit<5>(31)));
 

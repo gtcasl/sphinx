@@ -184,10 +184,12 @@
 #define DBUS_NONE ch_bit<2>(0)
 #define DBUS_READ ch_bit<2>(1)
 #define DBUS_WRITE ch_bit<2>(2)
+#define DBUS_RW ch_bit<2>(3)
 
 #define DBUS_NONE_int (0)
 #define DBUS_READ_int (1)
 #define DBUS_WRITE_int (2)
+#define DBUS_RW_int (3)
 
 // REG
 #define ZERO_REG ch_bit<5>(0)

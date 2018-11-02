@@ -327,26 +327,26 @@ void RocketChip::ProcessFile(void)
 
     if(debug) std::cout << "$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
 
-    uint32_t address = 0x80000038;
-    // uint32_t * data = new uint32_t[64];
-    // ram.getBlock(address,data);
+    // uint32_t address = 0x80000038;
+    // // uint32_t * data = new uint32_t[64];
+    // // ram.getBlock(address,data);
 
-    if(debug) std::cout << "GOT BLOCK" << std::endl;
+    // if(debug) std::cout << "GOT BLOCK" << std::endl;
 
-    for (uint32_t new_address = (address&0xffffff00); new_address < ((address&0xffffff00) + 256); new_address += 4 )
-    {
+    // for (uint32_t new_address = (address&0xffffff00); new_address < ((address&0xffffff00) + 256); new_address += 4 )
+    // {
 
-        uint32_t curr_word;
-        ram.getWord(new_address, &curr_word);
+    //     uint32_t curr_word;
+    //     ram.getWord(new_address, &curr_word);
 
-        if(debug) std::cout << std::setfill('0');
-        if(debug) std::cout << std::hex << new_address << ": " << std::hex << std::setw(8) << curr_word;
-        if(debug) std::cout << std::endl;
+    //     if(debug) std::cout << std::setfill('0');
+    //     if(debug) std::cout << std::hex << new_address << ": " << std::hex << std::setw(8) << curr_word;
+    //     if(debug) std::cout << std::endl;
 
-    }
+    // }
 
 
-    if(debug) std::cout << "***********************" << std::endl;
+    // if(debug) std::cout << "***********************" << std::endl;
 
 }
 
@@ -446,6 +446,7 @@ void RocketChip::dbus_driver(ch_device<Pipeline> & pipeline)
     if (read_data && valid_address)
     {
         ram.getWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_read);
+        if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << " read from data: " << data_read << "\n";
         pipeline.io.DBUS.in_data.data = data_read;
         pipeline.io.DBUS.in_data.valid = true;
     } else
@@ -457,6 +458,7 @@ void RocketChip::dbus_driver(ch_device<Pipeline> & pipeline)
 
     if (write_data && valid_address)
     {
+        if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
         uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
         ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
     }
