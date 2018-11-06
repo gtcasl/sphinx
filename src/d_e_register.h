@@ -35,6 +35,7 @@ struct D_E_Register
 		__in(ch_bit<32>) in_PC_next,
 		__in(ch_bit<3>)  in_branch_type,
 		__in(ch_bit<1>)  in_fwd_stall,
+		__in(ch_bit<1>)  in_branch_stall,
 		__in(ch_bit<20>) in_upper_immed,
 		__in(ch_bit<12>) in_csr_address, // done
 		__in(ch_bit<1>)  in_is_csr, // done
@@ -130,7 +131,7 @@ struct D_E_Register
 		// mem_write->next   = io.in_mem_write;
 		// branch_type->next = io.in_branch_type;
 
-		ch_bool stalling = io.in_fwd_stall == STALL;
+		ch_bool stalling = (io.in_fwd_stall == STALL) || (io.in_branch_stall == STALL);
 
 
 		rd->next          = ch_sel(stalling, CH_ZERO(5)  , io.in_rd);

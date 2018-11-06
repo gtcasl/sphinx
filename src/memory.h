@@ -161,24 +161,28 @@ struct Memory
 		(DBUS_io) DBUS,
 
 
-		__in(ch_bit<32>) in_alu_result,
-		__in(ch_bit<3>) in_mem_read, 
-		__in(ch_bit<3>) in_mem_write,
-		__in(ch_bit<5>) in_rd,
-		__in(ch_bit<2>) in_wb,
-		__in(ch_bit<5>) in_rs1,
-		__in(ch_bit<32>) in_rd1,
-		__in(ch_bit<5>) in_rs2,
-		__in(ch_bit<32>) in_rd2,
-		__in(ch_bit<32>)   in_PC_next,
+		__in(ch_bit<32>)  in_alu_result,
+		__in(ch_bit<3>)   in_mem_read, 
+		__in(ch_bit<3>)   in_mem_write,
+		__in(ch_bit<5>)   in_rd,
+		__in(ch_bit<2>)   in_wb,
+		__in(ch_bit<5>)   in_rs1,
+		__in(ch_bit<32>)  in_rd1,
+		__in(ch_bit<5>)   in_rs2,
+		__in(ch_bit<32>)  in_rd2,
+		__in(ch_bit<32>)  in_PC_next,
+		__in(ch_bit<32>)  in_curr_PC,
+		__in(ch_bit<32>)  in_branch_offset,
+		__in(ch_bit<3>)   in_branch_type, 
 
 		__out(ch_bit<32>) out_alu_result,
 		__out(ch_bit<32>) out_mem_result,
-		__out(ch_bit<5>) out_rd,
-		__out(ch_bit<2>) out_wb,
-		__out(ch_bit<5>) out_rs1,
-		__out(ch_bit<5>) out_rs2,
-
+		__out(ch_bit<5>)  out_rd,
+		__out(ch_bit<2>)  out_wb,
+		__out(ch_bit<5>)  out_rs1,
+		__out(ch_bit<5>)  out_rs2,
+		__out(ch_bit<1>)  out_branch_dir,
+		__out(ch_bit<32>) out_branch_dest,
 
 
 		__out(ch_bit<32>)   out_PC_next
@@ -213,6 +217,54 @@ struct Memory
 		io.out_PC_next = io.in_PC_next;
 
 
+		io.out_branch_dest = io.in_curr_PC.as_int() + (io.in_branch_offset.as_int() << 1);
+		__switch(io.in_branch_type.as_uint())
+			__case(BEQ_int)
+			{
+				//ch_print("BEQ INSTRUCTION IN EXE");
+				//ch_print("RS1: {0}, RD1: {1}", io.in_rs1, io.in_rd1);
+				//ch_print("RS2: {0}, RD2: {1}", io.in_rs2, io.in_rd2);
+				//ch_print("ALU Result: {0}", io.out_alu_result);
+
+				io.out_branch_dir = ch_sel(io.in_alu_result.as_uint() == 0, TAKEN, NOT_TAKEN);
+				//ch_print("BEQ_int");
+			}
+			__case(BNE_int)
+			{
+				io.out_branch_dir = ch_sel(io.in_alu_result.as_uint() == 0, NOT_TAKEN, TAKEN);
+			}
+			__case(BLT_int)
+			{
+				io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, NOT_TAKEN, TAKEN);
+				//ch_print("BRANCH: is {0} < {1}? The answer is: {2}, ALU_RESULT: {3}", ALU_in1, ALU_in2, io.out_branch_dir, io.in_alu_result);
+			}
+			__case(BGT_int)
+			{
+				io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, TAKEN, NOT_TAKEN);
+				//ch_print("BGT_int");
+				//ch_print("BRANCH: sr1 {0}, src2: {1}", io.in_rs1, io.in_rs2);
+				//ch_print("BRANCH: is {0} > {1}? The answer is: {2}, ALU_RESULT: {3}", ALU_in1, ALU_in2, io.out_branch_dir, io.in_alu_result);
+			}
+			__case(BLTU_int)
+			{
+				io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, NOT_TAKEN, TAKEN);
+				//ch_print("BLTU_int: {0}", io.out_branch_dir);
+			}
+			__case(BGTU_int)
+			{
+				io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, TAKEN, NOT_TAKEN);
+				//ch_print("BGTU_int: RESULT: {0}", io.out_branch_dir);
+			}
+			__case(NO_BRANCH_int)
+			{
+				io.out_branch_dir = NOT_TAKEN;
+				//ch_print("NO_B_int");
+			}
+			__default
+			{
+				io.out_branch_dir = NOT_TAKEN;
+				//ch_print("Default_b_int");
+			};
 	}
 
 	ch_module<Cache> cache;

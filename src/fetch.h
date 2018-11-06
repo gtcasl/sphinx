@@ -20,6 +20,7 @@ struct Fetch
 		__in(ch_bit<32>)  in_branch_dest,
 		__in(ch_bit<1>)   in_branch_stall,
 		__in(ch_bit<1>)   in_fwd_stall,
+		__in(ch_bit<1>)   in_branch_stall_exe,
 		__in(ch_bit<1>)   in_jal,
 		__in(ch_bit<32>)  in_jal_dest,
 		__in(ch_bool)     in_interrupt,
@@ -36,7 +37,7 @@ struct Fetch
 		ch_reg<ch_bit<32>> PC(0);
 		io.IBUS.in_data.ready = io.IBUS.in_data.valid;
 		
-		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL);
+		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL) || (io.in_branch_stall_exe);
 		io.out_instruction = ch_sel(stall, CH_ZERO(32), io.IBUS.in_data.data);
 
 

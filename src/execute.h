@@ -43,10 +43,10 @@ struct Execute
 		__out(ch_bit<32>) out_rd2,
 		__out(ch_bit<3>)  out_mem_read,
 		__out(ch_bit<3>)  out_mem_write,
-		__out(ch_bit<1>)  out_branch_dir,
-		__out(ch_bit<32>) out_branch_dest,
 		__out(ch_bit<1>)  out_jal,
 		__out(ch_bit<32>) out_jal_dest,
+		__out(ch_bit<32>) out_branch_offset,
+		__out(ch_bit<1>)  out_branch_stall,
 		__out(ch_bit<32>) out_PC_next
 	);
 
@@ -62,6 +62,7 @@ struct Execute
 
 		ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_cat(CH_ZERO(20), io.in_itype_immed));
 
+		io.out_branch_offset = se_itype_immed;
 
 		ch_bit<32> ALU_in1 = io.in_rd1;
 
@@ -71,9 +72,7 @@ struct Execute
 
 		ch_bit<32> upper_immed = ch_cat(io.in_upper_immed, CH_ZERO(12));
 
-		io.out_branch_dest = io.in_curr_PC.as_int() + (se_itype_immed.as_int() << 1);
-		// ch_print("BRANCH_DEST: {0} = {1} + {2}", io.out_branch_dest, io.in_curr_PC.as_int(), (se_itype_immed.as_int() << 1));
-		// ch_print("BRANCH ITYPE_IMMED: {0}", io.in_itype_immed);
+	
 
 
 		io.out_jal_dest = io.in_rd1.as_int() + io.in_jal_offset.as_int();
@@ -213,54 +212,7 @@ struct Execute
 			};
 
 
-
-		__switch(io.in_branch_type.as_uint())
-			__case(BEQ_int)
-			{
-				//ch_print("BEQ INSTRUCTION IN EXE");
-				//ch_print("RS1: {0}, RD1: {1}", io.in_rs1, io.in_rd1);
-				//ch_print("RS2: {0}, RD2: {1}", io.in_rs2, io.in_rd2);
-				//ch_print("ALU Result: {0}", io.out_alu_result);
-
-				io.out_branch_dir = ch_sel(io.out_alu_result.as_uint() == 0, TAKEN, NOT_TAKEN);
-				ch_print("BEQ_int");
-			}
-			__case(BNE_int)
-			{
-				io.out_branch_dir = ch_sel(io.out_alu_result.as_uint() == 0, NOT_TAKEN, TAKEN);
-			}
-			__case(BLT_int)
-			{
-				io.out_branch_dir = ch_sel(io.out_alu_result[31] == 0, NOT_TAKEN, TAKEN);
-				ch_print("BRANCH: is {0} < {1}? The answer is: {2}, ALU_RESULT: {3}", ALU_in1, ALU_in2, io.out_branch_dir, io.out_alu_result);
-			}
-			__case(BGT_int)
-			{
-				io.out_branch_dir = ch_sel(io.out_alu_result[31] == 0, TAKEN, NOT_TAKEN);
-				ch_print("BGT_int");
-				ch_print("BRANCH: sr1 {0}, src2: {1}", io.in_rs1, io.in_rs2);
-				ch_print("BRANCH: is {0} > {1}? The answer is: {2}, ALU_RESULT: {3}", ALU_in1, ALU_in2, io.out_branch_dir, io.out_alu_result);
-			}
-			__case(BLTU_int)
-			{
-				io.out_branch_dir = ch_sel(io.out_alu_result[31] == 0, NOT_TAKEN, TAKEN);
-				ch_print("BLTU_int: {0}", io.out_branch_dir);
-			}
-			__case(BGTU_int)
-			{
-				io.out_branch_dir = ch_sel(io.out_alu_result[31] == 0, TAKEN, NOT_TAKEN);
-				ch_print("BGTU_int: RESULT: {0}", io.out_branch_dir);
-			}
-			__case(NO_BRANCH_int)
-			{
-				io.out_branch_dir = NOT_TAKEN;
-				ch_print("NO_B_int");
-			}
-			__default
-			{
-				io.out_branch_dir = NOT_TAKEN;
-				ch_print("Default_b_int");
-			};
+		io.out_branch_stall = ch_sel(io.in_branch_type.as_uint() != NO_BRANCH_int, STALL, NO_STALL);
 
 		io.out_rd = io.in_rd;
 		io.out_wb = io.in_wb;

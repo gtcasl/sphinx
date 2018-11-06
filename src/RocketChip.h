@@ -65,7 +65,7 @@ struct Pipeline
 
 
     // DYNAMIC INSTRUCTION COUNTING:
-    io.out_branch_stall = decode.io.out_branch_stall;
+    io.out_branch_stall = decode.io.out_branch_stall || execute.io.out_branch_stall;
     io.out_fwd_stall    = forwarding.io.out_fwd_stall;
 
     // IBUS I/O
@@ -86,8 +86,8 @@ struct Pipeline
 
 
     // EXE TO FETCH
-    fetch.io.in_branch_dir(execute.io.out_branch_dir);
-    fetch.io.in_branch_dest(execute.io.out_branch_dest);
+    fetch.io.in_branch_dir(memory.io.out_branch_dir);
+    fetch.io.in_branch_dest(memory.io.out_branch_dest);
     // DECODE TO FETCH
     fetch.io.in_jal(execute.io.out_jal);
     fetch.io.in_jal_dest(execute.io.out_jal_dest);
@@ -179,6 +179,9 @@ struct Pipeline
     e_m_register.io.in_csr_address(execute.io.out_csr_address);
     e_m_register.io.in_is_csr(execute.io.out_is_csr);
     e_m_register.io.in_csr_result(execute.io.out_csr_result);
+    e_m_register.io.in_curr_PC(d_e_register.io.out_curr_PC);
+    e_m_register.io.in_branch_type(d_e_register.io.out_branch_type);
+    e_m_register.io.in_branch_offset(execute.io.out_branch_offset);
 
     // e_m_regsiter to memory
     memory.io.in_alu_result(e_m_register.io.out_alu_result);
@@ -191,6 +194,9 @@ struct Pipeline
     memory.io.in_wb(e_m_register.io.out_wb);
     memory.io.in_mem_read(e_m_register.io.out_mem_read);
     memory.io.in_mem_write(e_m_register.io.out_mem_write);
+    memory.io.in_curr_PC(e_m_register.io.out_curr_PC);
+    memory.io.in_branch_offset(e_m_register.io.out_branch_offset);
+    memory.io.in_branch_type(e_m_register.io.out_branch_type);
 
 
     // memory to m_w_register
@@ -253,9 +259,12 @@ struct Pipeline
     decode.io.in_csr_fwd_data(forwarding.io.out_csr_fwd_data);
 
     f_d_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
+    f_d_register.io.in_branch_stall_exe(execute.io.out_branch_stall);
     d_e_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
+    d_e_register.io.in_branch_stall(execute.io.out_branch_stall);
     fetch.io.in_fwd_stall(forwarding.io.out_fwd_stall);
-    decode.io.in_stall = (forwarding.io.out_fwd_stall == STALL);
+    fetch.io.in_branch_stall_exe(execute.io.out_branch_stall);
+    decode.io.in_stall = (forwarding.io.out_fwd_stall == STALL) || (execute.io.out_branch_stall == STALL);
 
     // debugging registers
     decode.io.actual_change(io.actual_change);
