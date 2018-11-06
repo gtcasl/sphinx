@@ -289,7 +289,7 @@ struct Decode
 				ch_print("S_TYPE rs1: {0}\trs2: {1}", io.out_rs1, io.out_rs2);
 				ch_print("S_TYPE rd1: {0}\trd2: {1}", io.out_rd1, io.out_rd2);
 				ch_print("S_TYPE IMMEDIATE: {0}", io.out_itype_immed);
-				ch_print("Will store @ : {0} with value {1}", io.out_rd1.as_int() + io.out_itype_immed.as_int(), io.out_rd2);
+				// ch_print("Will store @ : {0} with value {1}", io.out_rd1.as_int() + io.out_itype_immed.as_int(), io.out_rd2);
 			}
 			__case(L_INST)
 			{
