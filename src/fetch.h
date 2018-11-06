@@ -26,6 +26,7 @@ struct Fetch
 		__in(ch_bit<32>)  in_interrupt_pc,
 
 		__out(ch_bit<32>) out_instruction,
+		__out(ch_bit<32>) out_curr_PC,
 		__out(ch_bit<32>) out_PC_next
 	);
 
@@ -45,7 +46,7 @@ struct Fetch
 		io.IBUS.out_address.data = out_PC;
 		io.IBUS.out_address.valid = TRUE;
 
-
+		io.out_curr_PC = out_PC;
 		io.out_PC_next = out_PC.as_uint() + 4;
 		
 		PC->next       = ch_sel(stall, out_PC, io.out_PC_next);

@@ -61,6 +61,9 @@ int main()
 
 	rocketchip.export_model();
 
+	if(passed) std::cout << "PASSED ALL TESTS\n";
+	if(!passed) std::cout << "Failed a test\n";
+
 	if (passed) return 0;
 	return -1;
 

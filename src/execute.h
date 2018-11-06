@@ -27,6 +27,9 @@ struct Execute
 		__in(ch_bit<1>)   in_is_csr, // done
 		__in(ch_bit<32>)  in_csr_data, // done
 		__in(ch_bit<32>)  in_csr_mask, // done
+		__in(ch_bit<1>)   in_jal,
+		__in(ch_bit<32>)  in_jal_offset,
+		__in(ch_bit<32>)  in_curr_PC,
 
 		__out(ch_bit<12>) out_csr_address,
 		__out(ch_bit<1>)  out_is_csr,
@@ -42,6 +45,8 @@ struct Execute
 		__out(ch_bit<3>)  out_mem_write,
 		__out(ch_bit<1>)  out_branch_dir,
 		__out(ch_bit<32>) out_branch_dest,
+		__out(ch_bit<1>)  out_jal,
+		__out(ch_bit<32>) out_jal_dest,
 		__out(ch_bit<32>) out_PC_next
 	);
 
@@ -57,19 +62,22 @@ struct Execute
 
 		ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_cat(CH_ZERO(20), io.in_itype_immed));
 
-		//ch_print("Decode: Immediate: {0}, SIGNEXTENDED: {0}", io.in_itype_immed.as_uint(), se_itype_immed);
 
 		ch_bit<32> ALU_in1 = io.in_rd1;
 
-		ch_bool which_in2 = io.in_rs2_src == RS2_IMMED_int;
+		ch_bool which_in2  = io.in_rs2_src == RS2_IMMED_int;
 		ch_bit<32> ALU_in2 = ch_sel(which_in2, se_itype_immed, io.in_rd2);
 
 
 		ch_bit<32> upper_immed = ch_cat(io.in_upper_immed, CH_ZERO(12));
 
-		io.out_branch_dest = (io.in_PC_next.as_int() - 4) + (se_itype_immed.as_int() << 1);
-		ch_print("BRANCH_DEST: {0} = {1} + {2}", io.out_branch_dest, (io.in_PC_next.as_int() - 4), (se_itype_immed.as_int() << 1));
-		ch_print("BRANCH ITYPE_IMMED: {0}", io.in_itype_immed);
+		io.out_branch_dest = io.in_curr_PC.as_int() + (se_itype_immed.as_int() << 1);
+		// ch_print("BRANCH_DEST: {0} = {1} + {2}", io.out_branch_dest, io.in_curr_PC.as_int(), (se_itype_immed.as_int() << 1));
+		// ch_print("BRANCH ITYPE_IMMED: {0}", io.in_itype_immed);
+
+
+		io.out_jal_dest = io.in_rd1.as_int() + io.in_jal_offset.as_int();
+		io.out_jal      = io.in_jal;
 
 		__switch(io.in_alu_op.as_uint())
 			__case(ADD_int)
@@ -179,7 +187,7 @@ struct Execute
 			}
 			__case(AUIPC_ALU_int)
 			{
-				io.out_alu_result = (io.in_PC_next.as_int() - 4) + upper_immed.as_int();
+				io.out_alu_result = io.in_curr_PC.as_int() + upper_immed.as_int();
 				io.out_csr_result = anything32;
 			}
 			__case(CSR_ALU_RW_int)
@@ -203,6 +211,7 @@ struct Execute
 				io.out_alu_result = 0;
 				io.out_csr_result = anything32;
 			};
+
 
 
 		__switch(io.in_branch_type.as_uint())

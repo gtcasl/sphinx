@@ -40,6 +40,9 @@ struct D_E_Register
 		__in(ch_bit<1>)  in_is_csr, // done
 		__in(ch_bit<32>) in_csr_data, // done
 		__in(ch_bit<32>) in_csr_mask, // done
+		__in(ch_bit<32>) in_curr_PC,
+		__in(ch_bit<1>)  in_jal,
+		__in(ch_bit<32>) in_jal_offset,
 
 
          // (ch_flip_io<decode_io>) in,
@@ -60,6 +63,9 @@ struct D_E_Register
 		__out(ch_bit<3>)  out_mem_write,
 		__out(ch_bit<3>)  out_branch_type,
 		__out(ch_bit<20>) out_upper_immed,
+		__out(ch_bit<32>) out_curr_PC,
+		__out(ch_bit<1>)  out_jal,
+		__out(ch_bit<32>) out_jal_offset,
 		__out(ch_bit<32>) out_PC_next
 	);
 
@@ -72,18 +78,21 @@ struct D_E_Register
 		ch_reg<ch_bit<5>>  rs2(0);
 		ch_reg<ch_bit<32>> rd2(0);
 		ch_reg<ch_bit<4>>  alu_op(0);
-		ch_reg<ch_bit<2>>  wb(0);
+		ch_reg<ch_bit<2>>  wb(NO_WB_int);
 		ch_reg<ch_bit<32>> PC_next_out(0);
 		ch_reg<ch_bit<1>>  rs2_src(0);
 		ch_reg<ch_bit<12>> itype_immed(0);
-		ch_reg<ch_bit<3>>  mem_read(0);
-		ch_reg<ch_bit<3>>  mem_write(0);
-		ch_reg<ch_bit<3>>  branch_type(0);
+		ch_reg<ch_bit<3>>  mem_read(NO_MEM_READ_int);
+		ch_reg<ch_bit<3>>  mem_write(NO_MEM_WRITE_int);
+		ch_reg<ch_bit<3>>  branch_type(NO_BRANCH_int);
 		ch_reg<ch_bit<20>> upper_immed(0);
 		ch_reg<ch_bit<12>> csr_address(0);
 		ch_reg<ch_bit<1>>  is_csr(0);
 		ch_reg<ch_bit<32>> csr_data(0);
 		ch_reg<ch_bit<32>> csr_mask(0);
+		ch_reg<ch_bit<32>> curr_PC(0);
+		ch_reg<ch_bit<1>>  jal(NO_JUMP_int);
+		ch_reg<ch_bit<32>> jal_offset(0);
 
 		io.out_rd          = rd;
 		io.out_rs1         = rs1;
@@ -103,6 +112,9 @@ struct D_E_Register
 		io.out_is_csr      = is_csr;
 		io.out_csr_data    = csr_data;
 		io.out_csr_mask    = csr_mask;
+		io.out_jal         = jal;
+		io.out_jal_offset  = jal_offset;
+		io.out_curr_PC     = curr_PC;
 
 		// rd->next          = io.in_rd;
 		// rs1->next         = io.in_rs1;
@@ -139,6 +151,9 @@ struct D_E_Register
 		is_csr->next      = ch_sel(stalling, CH_ZERO(1)  , io.in_is_csr);
 		csr_data->next    = ch_sel(stalling, CH_ZERO(32) , io.in_csr_data);
 		csr_mask->next    = ch_sel(stalling, CH_ZERO(32) , io.in_csr_mask);
+		jal->next         = ch_sel(stalling, NO_JUMP     , io.in_jal);
+		jal_offset->next  = ch_sel(stalling, CH_ZERO(32) , io.in_jal_offset);
+		curr_PC->next     = ch_sel(stalling, CH_ZERO(32) , io.in_curr_PC);
 
 
 	}

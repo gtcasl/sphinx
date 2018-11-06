@@ -112,6 +112,7 @@ struct Decode
 		// Fetch Inputs
 		__in(ch_bit<32>)  in_instruction,
 		__in(ch_bit<32>)  in_PC_next,
+		__in(ch_bit<32>)  in_curr_PC,
 		__in(ch_bool)     in_stall,
 		// WriteBack inputs
 		__in(ch_bit<32>)  in_write_data,
@@ -153,7 +154,7 @@ struct Decode
 		__out(ch_bit<3>)  out_branch_type,
 		__out(ch_bit<1>)  out_branch_stall,
 		__out(ch_bit<1>)  out_jal,
-		__out(ch_bit<32>) out_jal_dest,
+		__out(ch_bit<32>) out_jal_offset,
 		__out(ch_bit<20>) out_upper_immed,
 		__out(ch_bit<32>) out_PC_next
 	);
@@ -185,7 +186,10 @@ struct Decode
 
 		ch_bool valid = !io.in_stall;
 
-		curr_opcode      = ch_sel(valid, ch_slice<7>(io.in_instruction), CH_ZERO(7));		
+		curr_opcode      = ch_sel(valid, ch_slice<7>(io.in_instruction), CH_ZERO(7));
+
+
+
 		io.out_rd        = ch_sel(valid, ch_slice<5>(io.in_instruction >> 7), CH_ZERO(5));
 		io.out_rs1       = ch_slice<5>(io.in_instruction >> 15);
 		io.out_rs2       = ch_slice<5>(io.in_instruction >> 20);
@@ -205,8 +209,6 @@ struct Decode
 		rd2_register                      = registerfile.io.out_src2_data;
 
 
-		io.out_rd1 = ch_sel(io.in_src1_fwd == FWD, io.in_src1_fwd_data, rd1_register);
-		io.out_rd2 = ch_sel(io.in_src2_fwd == FWD, io.in_src2_fwd_data, rd2_register);
 
 		// Write Back sigal
 		is_rtype     = (curr_opcode == R_INST);
@@ -221,6 +223,15 @@ struct Decode
 		is_csr       = (curr_opcode == SYS_INST) && (func3 != 0);
 		is_csr_immed = (is_csr) && (func3[2] == 1);
 		is_e_inst    = (curr_opcode == SYS_INST) && (func3 == 0);
+
+
+
+
+		io.out_rd1 = ch_sel(is_jal, io.in_curr_PC,
+					                ch_sel(io.in_src1_fwd == FWD, io.in_src1_fwd_data, rd1_register));
+		io.out_rd2 = ch_sel(io.in_src2_fwd == FWD, io.in_src2_fwd_data, rd2_register);
+
+
 
 		io.out_is_csr   = is_csr.as_uint();
 		io.out_csr_mask = ch_sel(is_csr_immed, ch_pad<32>(io.out_rs2), io.out_rd2); 
@@ -251,7 +262,7 @@ struct Decode
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_upper_immed  = anything20;
 				io.out_csr_address  = anything;
 				io.out_is_csr       = FALSE;
@@ -269,7 +280,7 @@ struct Decode
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_upper_immed  = anything20;
 				io.out_csr_address  = anything;
 				io.out_is_csr       = FALSE;
@@ -279,7 +290,7 @@ struct Decode
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_upper_immed  = anything20;
 				io.out_csr_address  = anything;
 				io.out_is_csr       = FALSE;
@@ -296,7 +307,7 @@ struct Decode
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_upper_immed  = anything20;
 				io.out_itype_immed  = ch_slice<12>(io.in_instruction >> 20);
 				io.out_csr_address  = anything;
@@ -305,7 +316,7 @@ struct Decode
 			__case(B_INST)
 			{
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_branch_stall = STALL;
 				io.out_upper_immed  = anything20;
 				io.out_csr_address  = anything;
@@ -372,14 +383,14 @@ struct Decode
 							io.out_upper_immed  = anything20;
 							io.out_csr_address  = anything;
 							io.out_is_csr       = FALSE;
-							io.out_jal_dest     = ch_bit<32>(0xb0000000);
+							io.out_jal_offset   = ch_bit<32>(0xb0000000);
 						} __else
 						{
 							io.out_branch_type  = NO_BRANCH;
 							io.out_branch_stall = NO_STALL;
 							io.out_itype_immed  = anything;
 							io.out_jal          = NO_JUMP;
-							io.out_jal_dest     = anything32;
+							io.out_jal_offset   = anything32;
 							io.out_upper_immed  = anything20;
 							io.out_csr_address  = ch_slice<12>(io.in_instruction >> 20);
 							io.out_is_csr       = TRUE;
@@ -391,7 +402,7 @@ struct Decode
 						io.out_branch_stall = NO_STALL;
 						io.out_itype_immed  = anything;
 						io.out_jal          = NO_JUMP;
-						io.out_jal_dest     = anything32;
+						io.out_jal_offset   = anything32;
 						io.out_upper_immed  = anything20;
 						io.out_csr_address  = ch_slice<12>(io.in_instruction >> 20);
 						io.out_is_csr       = TRUE;
@@ -403,7 +414,7 @@ struct Decode
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_itype_immed  = anything;
 				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
 				io.out_csr_address  = anything;
@@ -416,7 +427,7 @@ struct Decode
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
 				io.out_csr_address  = anything;
 				io.out_is_csr       = FALSE;
@@ -425,7 +436,7 @@ struct Decode
 			{
 				io.out_jal          = JUMP;
 				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
+				io.out_branch_stall = STALL;
 				io.out_itype_immed  = anything;
 				io.out_upper_immed  = anything20;
 				io.out_csr_address  = anything;
@@ -442,10 +453,7 @@ struct Decode
 
 				ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_cat(CH_ZERO(11), unsigned_offset));
 
-
-				ch_bit<32> actual_pc = (io.in_PC_next.as_int() - 4); 
-
-				io.out_jal_dest = actual_pc.as_int() + offset.as_int(); 
+				io.out_jal_offset = offset;
 
 
 			}
@@ -453,7 +461,7 @@ struct Decode
 			{
 				io.out_jal          = JUMP;
 				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
+				io.out_branch_stall = STALL;
 				io.out_itype_immed  = anything;
 				io.out_upper_immed  = anything20;
 				io.out_csr_address  = anything;
@@ -462,7 +470,8 @@ struct Decode
 				ch_bit<12> jalr_immed = ch_cat(func7, io.out_rs2);
 				ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_cat(CH_ZERO(20), jalr_immed));
 
-				io.out_jal_dest = io.out_rd1.as_int() + offset.as_int();
+				io.out_jal_offset = offset;
+
 			}
 			__default
 			{
@@ -470,7 +479,7 @@ struct Decode
 				io.out_branch_stall = NO_STALL;
 				io.out_itype_immed  = anything;
 				io.out_jal          = NO_JUMP;
-				io.out_jal_dest     = anything32;
+				io.out_jal_offset   = anything32;
 				io.out_upper_immed  = anything20;
 				io.out_csr_address  = anything;
 				io.out_is_csr       = FALSE;
