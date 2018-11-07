@@ -43,7 +43,7 @@ struct F_D_Register
 			curr_PC->next      = io.in_curr_PC;
 		} __else
 		{
-			ch_print("STALLING F_D_Register");
+			// ch_print("STALLING F_D_Register");
 			instruction->next = instruction.as_uint();
 			PC_next->next     = PC_next.as_uint();
 			curr_PC->next     = curr_PC.as_uint();

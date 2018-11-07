@@ -20,37 +20,40 @@ struct CSR_Handler
 
 	void describe()
 	{
-		ch_mem<ch_bit<32>, 4096> CSR;
+		ch_mem<ch_bit<12>, 4096> CSR;
 
 		ch_reg<ch_bit<2>> curr_state(0);
 
-		ch_bit<32> write_data;
+		ch_bit<12> write_data;
 		ch_bit<12> write_register;
 		ch_bool enable;
 
 		__if(curr_state == 0)
 		{
-			write_data        = ch_bit<32>(0);
+			write_data        = ch_bit<12>(0);
 			write_register   = 0xf14;
 			enable     = TRUE;
 			curr_state->next = 1;
 
 		} __elif (curr_state == 1)
 		{
-			write_data        = ch_bit<32>(0);
+			write_data        = ch_bit<12>(0);
 			write_register   = 0x301;
 			enable     = TRUE;
 			curr_state->next = 3;
 		} __else
 		{
-			write_data     = io.in_mem_csr_result;
+			write_data     = ch_slice<12>(io.in_mem_csr_result);
 			write_register = io.in_mem_csr_address;
-			enable   = io.in_mem_is_csr.as_uint() == 1;
+			enable         = io.in_mem_is_csr.as_uint() == 1;
 		};
 
 		CSR.write(write_register, write_data, enable);
 
-		io.out_decode_csr_data = CSR.read(io.in_decode_csr_address);
+		io.out_decode_csr_data = ch_pad<32>(CSR.read(io.in_decode_csr_address));
+
+
+		// io.out_decode_csr_data = ch_bit<32>(0x0);
 
 	}
 

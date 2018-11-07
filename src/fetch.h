@@ -34,6 +34,7 @@ struct Fetch
 	void describe()
 	{
 
+
 		ch_reg<ch_bit<32>> PC(0);
 		io.IBUS.in_data.ready = io.IBUS.in_data.valid;
 		
@@ -53,10 +54,10 @@ struct Fetch
 		PC->next       = ch_sel(stall, out_PC, io.out_PC_next);
 
 
-		ch_print("Inst_in: {0}", io.IBUS.in_data.data);
-		ch_print("JAL: {0}\tBRANCH_DIR: {1}", io.in_jal, io.in_branch_dir);
-		ch_print("BRANCH DEST: {0}", io.in_branch_dest);
-		ch_print("io.in_branch_stall IS: {0}\tio.in_fwd_stall IS: {1}", io.in_branch_stall, io.in_fwd_stall);
+		// ch_print("Inst_in: {0}", io.IBUS.in_data.data);
+		// ch_print("JAL: {0}\tBRANCH_DIR: {1}", io.in_jal, io.in_branch_dir);
+		// ch_print("BRANCH DEST: {0}", io.in_branch_dest);
+		// ch_print("io.in_branch_stall IS: {0}\tio.in_fwd_stall IS: {1}", io.in_branch_stall, io.in_fwd_stall);
 
 	}
 

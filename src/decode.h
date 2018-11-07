@@ -41,7 +41,7 @@ struct RegisterFile
 
 		__if(starting == TRUE)
 		{
-			ch_print("DONT SETTING");
+			// ch_print("DONT SETTING");
 			starting->next = FALSE;
 		};
 
@@ -69,9 +69,9 @@ struct RegisterFile
 
 
 		// ch_print("Reg 0: {0}", registers.read(ch_bit<5>(0)));
-		ch_print("Reg 1: {0}", registers.read(ch_bit<5>(1)));
-		ch_print("Reg 2: {0}", registers.read(ch_bit<5>(2)));
-		ch_print("Reg 3: {0}", registers.read(ch_bit<5>(3)));
+		// ch_print("Reg 1: {0}", registers.read(ch_bit<5>(1)));
+		// ch_print("Reg 2: {0}", registers.read(ch_bit<5>(2)));
+		// ch_print("Reg 3: {0}", registers.read(ch_bit<5>(3)));
 		// ch_print("Reg 4: {0}", registers.read(ch_bit<5>(4)));
 		// ch_print("Reg 5: {0}", registers.read(ch_bit<5>(5)));
 		// ch_print("Reg 6: {0}", registers.read(ch_bit<5>(6)));
@@ -96,8 +96,8 @@ struct RegisterFile
 		// ch_print("Reg 25: {0}", registers.read(ch_bit<5>(25)));
 		// ch_print("Reg 26: {0}", registers.read(ch_bit<5>(26)));
 		// ch_print("Reg 27: {0}", registers.read(ch_bit<5>(27)));
-		ch_print("Reg 28: {0}", registers.read(ch_bit<5>(28)));
-		ch_print("Reg 29: {0}", registers.read(ch_bit<5>(29)));
+		// ch_print("Reg 28: {0}", registers.read(ch_bit<5>(28)));
+		// ch_print("Reg 29: {0}", registers.read(ch_bit<5>(29)));
 		// ch_print("Reg 30: {0}", registers.read(ch_bit<5>(30)));
 		// ch_print("Reg 31: {0}", registers.read(ch_bit<5>(31)));
 
@@ -134,9 +134,6 @@ struct Decode
 		__out(ch_bit<1>)  out_is_csr, // done
 		__out(ch_bit<32>) out_csr_data, // done
 		__out(ch_bit<32>) out_csr_mask, // done
-
-		// Debugging outputs
-		__out(ch_bit<32>) actual_change,
 
 		// Outputs
 		// (decode_io) out
@@ -184,13 +181,10 @@ struct Decode
 
 		ch_bool write_register = ch_sel(io.in_wb.as_uint() != NO_WB_int, TRUE, FALSE);
 
-		ch_bool valid = !io.in_stall;
-
-		curr_opcode      = ch_sel(valid, ch_slice<7>(io.in_instruction), CH_ZERO(7));
+		curr_opcode      = ch_slice<7>(io.in_instruction);
 
 
-
-		io.out_rd        = ch_sel(valid, ch_slice<5>(io.in_instruction >> 7), CH_ZERO(5));
+		io.out_rd        = ch_slice<5>(io.in_instruction >> 7);
 		io.out_rs1       = ch_slice<5>(io.in_instruction >> 15);
 		io.out_rs2       = ch_slice<5>(io.in_instruction >> 20);
 		ch_bit<3> func3  = ch_slice<3>(io.in_instruction >> 12);
@@ -238,21 +232,21 @@ struct Decode
 		io.out_csr_data = ch_sel(io.in_csr_fwd.as_uint() == 1, io.in_csr_fwd_data, io.in_csr_data);
 
 
-		io.out_wb      = ch_sel((is_jal || is_jalr || is_e_inst) && valid, WB_JAL,
-			                   ch_sel(is_linst && valid, WB_MEM, 
-			                   	     ch_sel((is_itype || is_rtype || is_lui || is_auipc || is_csr) && valid, WB_ALU,
+		io.out_wb      = ch_sel((is_jal || is_jalr || is_e_inst), WB_JAL,
+			                   ch_sel(is_linst, WB_MEM, 
+			                   	     ch_sel((is_itype || is_rtype || is_lui || is_auipc || is_csr), WB_ALU,
 			                   	     	    NO_WB)));
 		io.out_rs2_src = ch_sel(is_itype || is_stype, RS2_IMMED, RS2_REG);
 		// MEM signals 
-		io.out_mem_read  = ch_sel(is_linst && valid, func3, NO_MEM_READ);
-		io.out_mem_write = ch_sel(is_stype && valid, func3, NO_MEM_WRITE);
+		io.out_mem_read  = ch_sel(is_linst, func3, NO_MEM_READ);
+		io.out_mem_write = ch_sel(is_stype, func3, NO_MEM_WRITE);
 
-		ch_print("****************");
-		ch_print("DECODE");
-		ch_print("****************");
+		// ch_print("****************");
+		// ch_print("DECODE");
+		// ch_print("****************");
 
-		ch_print("Curr_inst: {0} , FWD for src1: {1} d: {2}, FWD for src2: {3} , d: {4}", io.in_instruction, io.in_src1_fwd, io.out_rd1, io.in_src2_fwd, io.out_rd2);
-		ch_print("src1: {0}, src2: {1}, rd: {2}", io.out_rs1, io.out_rs2, io.out_rd);
+		// ch_print("Curr_inst: {0} , FWD for src1: {1} d: {2}, FWD for src2: {3} , d: {4}", io.in_instruction, io.in_src1_fwd, io.out_rd1, io.in_src2_fwd, io.out_rd2);
+		// ch_print("src1: {0}, src2: {1}, rd: {2}", io.out_rs1, io.out_rs2, io.out_rd);
 
 
 
@@ -268,7 +262,7 @@ struct Decode
 				io.out_is_csr       = FALSE;
 
 				ch_bool shift_i = (func3 == 1) || (func3 == 5);
-				ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2); // out_rs2 represents shamt
+				ch_bit<12> shift_i_immediate = ch_pad<12>(io.out_rs2);
 
 				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
 				//ch_print("EXE; ALU_INST with Immediate: {0}", io.out_itype_immed.as_uint());
@@ -296,10 +290,10 @@ struct Decode
 				io.out_is_csr       = FALSE;
 
 				io.out_itype_immed = ch_cat(func7, io.out_rd);
-				ch_print("\nS_TYPE INST: {0}", io.in_instruction);
-				ch_print("S_TYPE rs1: {0}\trs2: {1}", io.out_rs1, io.out_rs2);
-				ch_print("S_TYPE rd1: {0}\trd2: {1}", io.out_rd1, io.out_rd2);
-				ch_print("S_TYPE IMMEDIATE: {0}", io.out_itype_immed);
+				// ch_print("\nS_TYPE INST: {0}", io.in_instruction);
+				// ch_print("S_TYPE rs1: {0}\trs2: {1}", io.out_rs1, io.out_rs2);
+				// ch_print("S_TYPE rd1: {0}\trd2: {1}", io.out_rd1, io.out_rd2);
+				// ch_print("S_TYPE IMMEDIATE: {0}", io.out_itype_immed);
 				// ch_print("Will store @ : {0} with value {1}", io.out_rd1.as_int() + io.out_itype_immed.as_int(), io.out_rd2);
 			}
 			__case(L_INST)
@@ -361,7 +355,7 @@ struct Decode
 						io.out_branch_type = NO_BRANCH; 
 					};
 
-					ch_print("THIS IS A PRINT AND IMMED: {0}", io.out_itype_immed);
+					// ch_print("THIS IS A PRINT AND IMMED: {0}", io.out_itype_immed);
 
 			}
 			__case(SYS_INST)
@@ -451,7 +445,7 @@ struct Decode
 
 				ch_bit<21> unsigned_offset = ch_cat(b_20, b_19_to_12, b_11, b_10_to_1, b_0);
 
-				ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_cat(CH_ZERO(11), unsigned_offset));
+				ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_pad<32>(unsigned_offset));
 
 				io.out_jal_offset = offset;
 
@@ -468,7 +462,7 @@ struct Decode
 				io.out_is_csr       = FALSE;
 
 				ch_bit<12> jalr_immed = ch_cat(func7, io.out_rs2);
-				ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_cat(CH_ZERO(20), jalr_immed));
+				ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_pad<32>(jalr_immed));
 
 				io.out_jal_offset = offset;
 
@@ -536,9 +530,6 @@ struct Decode
 							  	     ch_sel(is_auipc, AUIPC_ALU,
 							  	     	    ch_sel(is_csr, csr_alu,
 							  	     	           ch_sel(is_stype || is_linst, ADD, alu_op)))));
-
-		// Debugging outputs
-		io.actual_change = ch_bit<32>(1);
 
 
 	}

@@ -53,6 +53,8 @@ struct Forwarding
 	void describe()
 	{
 
+
+
 		ch_bool exe_mem_read = (io.in_execute_wb.as_uint()   == WB_MEM_int);
 		ch_bool mem_mem_read = (io.in_memory_wb.as_uint()    == WB_MEM_int);
 		ch_bool wb_mem_read  = (io.in_writeback_wb.as_uint() == WB_MEM_int);
@@ -82,12 +84,12 @@ struct Forwarding
 			                      (!src1_mem_fwd));
 
 
-		io.out_src1_fwd  = src1_exe_fwd || src1_mem_fwd || src1_wb_fwd;
+		io.out_src1_fwd  = src1_exe_fwd || src1_mem_fwd || src1_wb_fwd; // COMMENT
 
 		io.out_src1_fwd_data = ch_sel( src1_exe_fwd, ch_sel(exe_jal, io.in_execute_PC_next, io.in_execute_alu_result),
 			                        ch_sel( src1_mem_fwd, ch_sel(mem_jal, io.in_memory_PC_next, ch_sel(mem_mem_read, io.in_memory_mem_data, io.in_memory_alu_result)),
 									    ch_sel( src1_wb_fwd,  ch_sel(wb_jal, io.in_writeback_PC_next, ch_sel(wb_mem_read,  io.in_writeback_mem_data, io.in_writeback_alu_result)),
-										 	anything32)));
+										 	anything32))); // COMMENT
 
 
 		// SRC2
@@ -107,30 +109,36 @@ struct Forwarding
 			                      (!src2_mem_fwd));
 
 
-		io.out_src2_fwd  = src2_exe_fwd || src2_mem_fwd || src2_wb_fwd;
+		io.out_src2_fwd  = src2_exe_fwd || src2_mem_fwd || src2_wb_fwd; // COMMENT
 
 		io.out_src2_fwd_data = ch_sel( src2_exe_fwd, ch_sel(exe_jal, io.in_execute_PC_next, io.in_execute_alu_result),
 			                        ch_sel( src2_mem_fwd, ch_sel(mem_jal, io.in_memory_PC_next, ch_sel(mem_mem_read, io.in_memory_mem_data, io.in_memory_alu_result)),
 									    ch_sel( src2_wb_fwd,  ch_sel(wb_jal, io.in_writeback_PC_next, ch_sel(wb_mem_read,  io.in_writeback_mem_data, io.in_writeback_alu_result)),
-										 	anything32)));
+										 	anything32))); // COMMENT
 
 
 		// CSR
 		ch_bool csr_exe_fwd = (io.in_decode_csr_address.as_uint() == io.in_execute_csr_address.as_uint()) && exe_csr;
 		ch_bool csr_mem_fwd = (io.in_decode_csr_address.as_uint() == io.in_memory_csr_address.as_uint())  && mem_csr && !csr_exe_fwd;
 
-		io.out_csr_fwd      = csr_exe_fwd || csr_mem_fwd;
+		io.out_csr_fwd      = csr_exe_fwd || csr_mem_fwd; // COMMENT
 		io.out_csr_fwd_data = ch_sel(csr_exe_fwd, io.in_execute_alu_result,
 									 ch_sel(csr_mem_fwd, io.in_memory_csr_result,
-									 	    anything32)); 
+									 	    anything32)); // COMMENT
 
 
-		io.out_fwd_stall = ch_sel((src1_exe_fwd || src2_exe_fwd) && exe_mem_read, STALL, NO_STALL);
+		io.out_fwd_stall = ch_sel((src1_exe_fwd || src2_exe_fwd) && exe_mem_read, STALL, NO_STALL); // comment 
 
-		__if(io.out_fwd_stall.as_uint() == STALL)
-		{
-			ch_print("###############FWD STALL");
-		};
+
+		// io.out_src1_fwd = FALSE;
+		// io.out_src1_fwd_data = ch_bit<32>(0);
+		// io.out_src2_fwd = FALSE;
+		// io.out_src2_fwd_data = ch_bit<32>(0);
+		// io.out_csr_fwd = FALSE;
+		// io.out_csr_fwd_data = ch_bit<32>(0);
+		// io.out_fwd_stall = src1_exe_fwd || src1_mem_fwd || src1_wb_fwd || src2_exe_fwd || src2_mem_fwd || src2_wb_fwd || csr_exe_fwd || csr_mem_fwd;
+
+
 
 	}
 

@@ -56,8 +56,7 @@ struct Pipeline
     (JTAG_io)         jtag,
 
     __out(ch_bool)    out_fwd_stall, // DInst counting
-    __out(ch_bool)    out_branch_stall, // DInst counting
-    __out(ch_bit<32>) actual_change
+    __out(ch_bool)    out_branch_stall // DInst counting
   );
 
   void describe()
@@ -266,8 +265,6 @@ struct Pipeline
     fetch.io.in_branch_stall_exe(execute.io.out_branch_stall);
     decode.io.in_stall = (forwarding.io.out_fwd_stall == STALL) || (execute.io.out_branch_stall == STALL);
 
-    // debugging registers
-    decode.io.actual_change(io.actual_change);
 
   }
 

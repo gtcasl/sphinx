@@ -23,9 +23,9 @@ struct Cache
 	{
 
 
-		ch_print("****************");
-		ch_print("CACHE");
-		ch_print("****************");		
+		// ch_print("****************");
+		// ch_print("CACHE");
+		// ch_print("****************");		
 
 		// ch_mem<ch_bit<32>, 16777216> mem_module;
 
@@ -65,7 +65,7 @@ struct Cache
 				
 				// LB sign extend
 				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
-				mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_cat(zeros, byte));
+				mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_pad<32>(byte));
 			}
 			__case(1)
 			{
@@ -74,20 +74,20 @@ struct Cache
 				ch_bit<16> zeros(ZERO);
 				
 				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
-				mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_cat(zeros, half));
+				mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_pad<32>(half));
 			}
 			__case(2)
 			{
 				// LW
 				mem_result = io.DBUS.in_data.data;
-				ch_print("Reading Addr: {0}, Value: {1}", io.in_address, mem_result);
+				// ch_print("Reading Addr: {0}, Value: {1}", io.in_address, mem_result);
 			}
 			__case(4)
 			{
 				ch_bit<24> zeros(ZERO);
 				// LBU
 				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
-				mem_result = ch_cat(zeros, byte);
+				mem_result = ch_pad<32>(byte);
 			}
 			__case(5)
 			{
@@ -95,7 +95,7 @@ struct Cache
 
 				// LHU
 				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
-				mem_result = ch_cat(zeros, half);
+				mem_result = ch_pad<32>(half);
 			}
 			__default
 			{
@@ -191,12 +191,12 @@ struct Memory
 	void describe()
 	{
 
-		ch_print("****************");
-		ch_print("MEMORY");
-		ch_print("****************");		
+		// ch_print("****************");
+		// ch_print("MEMORY");
+		// ch_print("****************");		
 
 
-		ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3}, mem_write: {4}, mem_read: {5}", io.in_rd, io.in_alu_result, io.out_mem_result, io.in_rd2, io.in_mem_write, io.in_mem_read);
+		// ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3}, mem_write: {4}, mem_read: {5}", io.in_rd, io.in_alu_result, io.out_mem_result, io.in_rd2, io.in_mem_write, io.in_mem_read);
 
 		cache.io.DBUS(io.DBUS);
 		cache.io.in_address = io.in_alu_result.as_uint();

@@ -53,14 +53,14 @@ struct Execute
 
 	void describe()
 	{
-		ch_print("****************");
-		ch_print("EXECUTE");
-		ch_print("****************");		
+		// ch_print("****************");
+		// ch_print("EXECUTE");
+		// ch_print("****************");		
 
 		io.out_is_csr      = io.in_is_csr;
 		io.out_csr_address = io.in_csr_address;
 
-		ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_cat(CH_ZERO(20), io.in_itype_immed));
+		ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_pad<32>(io.in_itype_immed));
 
 		io.out_branch_offset = se_itype_immed;
 
@@ -84,17 +84,17 @@ struct Execute
 				//ch_print("ADD_int");
 				io.out_alu_result = ALU_in1.as_int() + ALU_in2.as_int();
 				io.out_csr_result = anything32;
-				ch_print("ADD_int: Immediate: {0}, RS2_SRC: {1}, rs1_reg#: {2}", io.in_itype_immed, io.in_rs2_src, io.in_rs1);
-				ch_print("Adding {0} + {1}", ALU_in1.as_int(), ALU_in2.as_int());
-				ch_print("alu_result = {0}", io.out_alu_result);
-				ch_print("Going to DEST: {0}", io.in_rd);
+				// ch_print("ADD_int: Immediate: {0}, RS2_SRC: {1}, rs1_reg#: {2}", io.in_itype_immed, io.in_rs2_src, io.in_rs1);
+				// ch_print("Adding {0} + {1}", ALU_in1.as_int(), ALU_in2.as_int());
+				// ch_print("alu_result = {0}", io.out_alu_result);
+				// ch_print("Going to DEST: {0}", io.in_rd);
 			}
 			__case(SUB_int)
 			{
 				//ch_print("SUB_int");
 				io.out_alu_result = ALU_in1.as_int() - ALU_in2.as_int();
 				io.out_csr_result = anything32;
-				ch_print("SUB_int: {0} - {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
+				// ch_print("SUB_int: {0} - {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
 			}
 			__case(SLLA_int)
 			{
@@ -115,7 +115,7 @@ struct Execute
 				ch_uint<32> ALU_in2_int  = ALU_in2.as_uint();
 				io.out_alu_result      = ch_sel(ALU_in1_int < ALU_in2_int, ch_bit<32>(1), ch_bit<32>(0));
 				io.out_csr_result      = anything32;
-				ch_print("SLT: {0} < {1}? {2}", ALU_in1_int, ALU_in2_int, io.out_alu_result);
+				// ch_print("SLT: {0} < {1}? {2}", ALU_in1_int, ALU_in2_int, io.out_alu_result);
 			}
 			__case(XOR_int)
 			{
@@ -135,7 +135,7 @@ struct Execute
 				ch_int32 ALU_in1_int = ALU_in1.as_int();
 				io.out_alu_result    = ALU_in1_int  >> ALU_in2.as_uint();
 				io.out_csr_result    = anything32;
-				ch_print("STA: {0} >> {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
+				// ch_print("STA: {0} >> {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
 			}
 			__case(OR_int)
 			{
@@ -163,15 +163,15 @@ struct Execute
 				// ch_print("SUBU unsigned: {0} - {1} = {2}", ALU_in1, ALU_in2, ALU_in1.as_uint() - ALU_in2.as_uint());
 				// ch_print("SUBU vodo: {0} - {1} = {2}", use1, use2, use1.as_int() - use2.as_int());
 
-				ch_print("SUBU: {0} < {1}", ALU_in1.as_uint(), ALU_in2.as_uint());
+				// ch_print("SUBU: {0} < {1}", ALU_in1.as_uint(), ALU_in2.as_uint());
 
 				__if(ALU_in1.as_uint() >= ALU_in2.as_uint())
 				{
-					ch_print("\t=0xFFFFFF");
+					// ch_print("\t=0xFFFFFF");
 					io.out_alu_result = 0x0;
 				} __else
 				{
-					ch_print("\t=0x0");
+					// ch_print("\t=0x0");
 					io.out_alu_result = 0xffffffff;
 				};
 
