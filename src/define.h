@@ -139,6 +139,31 @@
 #define NO_FWD ch_bit<1>(0)
 #define FWD ch_bit<1>(1)
 
+
+// FORWARDING CODES
+#define NO_FWD_ ch_bit<4>(0)
+#define EXE_PC_NEXT ch_bit<4>(1)
+#define EXE_ALU ch_bit<4>(2)
+#define MEM_PC_NEXT ch_bit<4>(3)
+#define MEM_MEM_DATA ch_bit<4>(4)
+#define MEM_ALU ch_bit<4>(5)
+#define WB_PC_NEXT ch_bit<4>(6)
+#define WB_MEM_DATA ch_bit<4>(7)
+#define WB_ALU_ ch_bit<4>(8)
+
+
+#define NO_FWD_int (0)
+#define EXE_PC_NEXT_int (1)
+#define EXE_ALU_int (2)
+#define MEM_PC_NEXT_int (3)
+#define MEM_MEM_DATA_int (4)
+#define MEM_ALU_int (5)
+#define WB_PC_NEXT_int (6)
+#define WB_MEM_DATA_int (7)
+#define WB_ALU_int_ (8)
+
+
+
 // Registers
 #define REG(x) ch_bit<5>(x)
 

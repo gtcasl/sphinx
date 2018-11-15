@@ -91,6 +91,41 @@ struct Forwarding
 									    ch_sel( src1_wb_fwd,  ch_sel(wb_jal, io.in_writeback_PC_next, ch_sel(wb_mem_read,  io.in_writeback_mem_data, io.in_writeback_alu_result)),
 										 	anything32))); // COMMENT
 
+		// ch_bit<4> fwd1_sel  = ch_sel( src1_exe_fwd, ch_sel(exe_jal, EXE_PC_NEXT, EXE_ALU),
+		// 	                        ch_sel( src1_mem_fwd, ch_sel(mem_jal, MEM_PC_NEXT, ch_sel(mem_mem_read, MEM_MEM_DATA, MEM_ALU)),
+		// 							    ch_sel( src1_wb_fwd,  ch_sel(wb_jal, WB_PC_NEXT, ch_sel(wb_mem_read,  WB_MEM_DATA, WB_ALU_)),
+		// 								 	NO_FWD_))); // COMMENT
+
+		// __switch(fwd1_sel.as_uint())
+		// 	__case(EXE_PC_NEXT_int)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_execute_PC_next;
+		// 	}__case(EXE_ALU_int)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_execute_alu_result;
+		// 	}__case(MEM_PC_NEXT_int)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_memory_PC_next;
+		// 	}__case(MEM_MEM_DATA_int)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_memory_mem_data;
+		// 	}__case(MEM_ALU_int)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_memory_alu_result;
+		// 	}__case(WB_PC_NEXT_int)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_writeback_PC_next;
+		// 	}__case(WB_MEM_DATA_int)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_writeback_mem_data;
+		// 	}__case(WB_ALU_int_)
+		// 	{
+		// 		io.out_src1_fwd_data = io.in_writeback_alu_result;
+		// 	} __default
+		// 	{
+		// 		io.out_src1_fwd_data = anything32;
+		// 	};
+
 
 		// SRC2
 		ch_bool src2_exe_fwd = ((io.in_decode_src2.as_uint() == io.in_execute_dest.as_uint()) && 
@@ -115,6 +150,41 @@ struct Forwarding
 			                        ch_sel( src2_mem_fwd, ch_sel(mem_jal, io.in_memory_PC_next, ch_sel(mem_mem_read, io.in_memory_mem_data, io.in_memory_alu_result)),
 									    ch_sel( src2_wb_fwd,  ch_sel(wb_jal, io.in_writeback_PC_next, ch_sel(wb_mem_read,  io.in_writeback_mem_data, io.in_writeback_alu_result)),
 										 	anything32))); // COMMENT
+
+		// ch_bit<4> fwd2_sel  = ch_sel( src2_exe_fwd, ch_sel(exe_jal, EXE_PC_NEXT, EXE_ALU),
+		// 	                        ch_sel( src2_mem_fwd, ch_sel(mem_jal, MEM_PC_NEXT, ch_sel(mem_mem_read, MEM_MEM_DATA, MEM_ALU)),
+		// 							    ch_sel( src2_wb_fwd,  ch_sel(wb_jal, WB_PC_NEXT, ch_sel(wb_mem_read,  WB_MEM_DATA, WB_ALU_)),
+		// 								 	NO_FWD_))); // COMMENT
+
+		// __switch(fwd2_sel.as_uint())
+		// 	__case(EXE_PC_NEXT_int)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_execute_PC_next;
+		// 	}__case(EXE_ALU_int)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_execute_alu_result;
+		// 	}__case(MEM_PC_NEXT_int)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_memory_PC_next;
+		// 	}__case(MEM_MEM_DATA_int)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_memory_mem_data;
+		// 	}__case(MEM_ALU_int)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_memory_alu_result;
+		// 	}__case(WB_PC_NEXT_int)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_writeback_PC_next;
+		// 	}__case(WB_MEM_DATA_int)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_writeback_mem_data;
+		// 	}__case(WB_ALU_int_)
+		// 	{
+		// 		io.out_src2_fwd_data = io.in_writeback_alu_result;
+		// 	} __default
+		// 	{
+		// 		io.out_src2_fwd_data = anything32;
+		// 	};
 
 
 		// CSR
