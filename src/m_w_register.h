@@ -2,8 +2,8 @@
 #include <ioport.h>
 
 
-using namespace ch::sim;
-using namespace ch::core;
+using namespace ch::system;
+using namespace ch::logic;
 
 struct M_W_Register
 {

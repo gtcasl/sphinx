@@ -3,8 +3,8 @@
 #include "define.h"
 #include "buses.h"
 
-using namespace ch::core;
-using namespace ch::sim;
+using namespace ch::logic;
+using namespace ch::system;
 using namespace ch::htl;
 
 

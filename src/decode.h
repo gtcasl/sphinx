@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "define.h"
 
-using namespace ch::core;
-using namespace ch::sim;
+using namespace ch::logic;
+using namespace ch::system;
 
 
 // __inout(decode_io, (
@@ -64,8 +64,8 @@ struct RegisterFile
 
 		registers.write(write_register, write_data, enable);
 
-		io.out_src1_data = ch_sel(io.in_src1.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.read(io.in_src1));
-		io.out_src2_data = ch_sel(io.in_src2.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.read(io.in_src2));
+    io.out_src1_data = ch_sel(io.in_src1.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.aread(io.in_src1));
+    io.out_src2_data = ch_sel(io.in_src2.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.aread(io.in_src2));
 
 
 		// ch_print("Reg 0: {0}", registers.read(ch_bit<5>(0)));
@@ -228,7 +228,7 @@ struct Decode
 
 
 		io.out_is_csr   = is_csr.as_uint();
-		io.out_csr_mask = ch_sel(is_csr_immed, ch_pad<32>(io.out_rs2), io.out_rd2); 
+    io.out_csr_mask = ch_sel(is_csr_immed, ch_resize<32>(io.out_rs2), io.out_rd2);
 		io.out_csr_data = ch_sel(io.in_csr_fwd.as_uint() == 1, io.in_csr_fwd_data, io.in_csr_data);
 
 
@@ -262,7 +262,7 @@ struct Decode
 				io.out_is_csr       = FALSE;
 
 				ch_bool shift_i = (func3 == 1) || (func3 == 5);
-				ch_bit<12> shift_i_immediate = ch_pad<12>(io.out_rs2);
+        ch_bit<12> shift_i_immediate = ch_resize<12>(io.out_rs2);
 
 				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
 				//ch_print("EXE; ALU_INST with Immediate: {0}", io.out_itype_immed.as_uint());
@@ -445,7 +445,7 @@ struct Decode
 
 				ch_bit<21> unsigned_offset = ch_cat(b_20, b_19_to_12, b_11, b_10_to_1, b_0);
 
-				ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_pad<32>(unsigned_offset));
+        ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_resize<32>(unsigned_offset));
 
 				io.out_jal_offset = offset;
 
@@ -462,7 +462,7 @@ struct Decode
 				io.out_is_csr       = FALSE;
 
 				ch_bit<12> jalr_immed = ch_cat(func7, io.out_rs2);
-				ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_pad<32>(jalr_immed));
+        ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_resize<32>(jalr_immed));
 
 				io.out_jal_offset = offset;
 
