@@ -5,5 +5,5 @@
 # of forwarding stalls: 0
 # of branch stalls:     1
 # CPI:                  -8
-# time to simulate:     0.003673 ms
+# time to simulate:     0.006745 ms
 # GRADE:                 Failed on test: 2147483831

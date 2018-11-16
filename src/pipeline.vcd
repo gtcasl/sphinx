@@ -77,9 +77,9 @@ b10 io_DBUS_out_control_data
 1io_jtag_JTAG_TAP_in_clock_ready
 1io_jtag_JTAG_TAP_in_reset_ready
 1io_jtag_in_data_ready
-0io_jtag_out_data_data
-0io_jtag_out_data_valid
-0io_out_fwd_stall
+1io_jtag_out_data_data
+1io_jtag_out_data_valid
+1io_out_fwd_stall
 1io_out_branch_stall
 #1
 b10110011101100111011001110110011 io_IBUS_in_data_data

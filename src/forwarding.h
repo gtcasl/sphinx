@@ -207,10 +207,6 @@ struct Forwarding
 		// io.out_csr_fwd = FALSE;
 		// io.out_csr_fwd_data = ch_bit<32>(0);
 		// io.out_fwd_stall = src1_exe_fwd || src1_mem_fwd || src1_wb_fwd || src2_exe_fwd || src2_mem_fwd || src2_wb_fwd || csr_exe_fwd || csr_mem_fwd;
-
-
-
 	}
-
 };
 
