@@ -26,9 +26,15 @@ struct Interrupt_Handler
 
 		ch_rom<ch_bit<32>, 2> ivt({0xdeadbeef, 0xdeadbeef});
 
+		__if(io.INTERRUPT.in_interrupt_id.valid)
+		{
+			io.out_interrupt_pc = ivt.read(io.INTERRUPT.in_interrupt_id.data);
+		} __else
+		{
+			io.out_interrupt_pc = ch_bit<32>(0xdeadbeef);
+		};
 
 		io.out_interrupt    = io.INTERRUPT.in_interrupt_id.valid;
-		io.out_interrupt_pc = ivt.read(io.INTERRUPT.in_interrupt_id.data);
 
 	}
 
