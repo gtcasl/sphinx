@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "buses.h"
 
-using namespace ch::core;
-using namespace ch::sim;
+using namespace ch::logic;
+using namespace ch::system;
 
 
 struct Cache
@@ -65,7 +65,7 @@ struct Cache
 				
 				// LB sign extend
 				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
-				mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_pad<32>(byte));
+        mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_resize<32>(byte));
 			}
 			__case(1)
 			{
@@ -74,7 +74,7 @@ struct Cache
 				ch_bit<16> zeros(ZERO);
 				
 				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
-				mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_pad<32>(half));
+        mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_resize<32>(half));
 			}
 			__case(2)
 			{
@@ -87,7 +87,7 @@ struct Cache
 				ch_bit<24> zeros(ZERO);
 				// LBU
 				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
-				mem_result = ch_pad<32>(byte);
+        mem_result = ch_resize<32>(byte);
 			}
 			__case(5)
 			{
@@ -95,7 +95,7 @@ struct Cache
 
 				// LHU
 				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
-				mem_result = ch_pad<32>(half);
+        mem_result = ch_resize<32>(half);
 			}
 			__default
 			{

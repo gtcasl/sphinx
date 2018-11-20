@@ -8,7 +8,7 @@ public:
         for(uint32_t i = 0;i < (1 << 12);i++) mem[i] = NULL;
     }
     ~RAM(){
-        for(uint32_t i = 0;i < (1 << 12);i++) if(mem[i]) delete mem[i];
+        for(uint32_t i = 0;i < (1 << 12);i++) if(mem[i]) delete [] mem[i];
     }
 
     void clear(){
@@ -190,5 +190,5 @@ void loadHexImpl(std::string path,RAM* mem) {
         size--;
     }
 
-    delete content;
+    delete [] content;
 }

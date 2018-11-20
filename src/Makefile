@@ -1,7 +1,7 @@
 #CXX = clang-5.0
-#CXXFLAGS += -std=c++17 -O3 -DNDEBUG -Wall -Wextra -pedantic
-CXXFLAGS += -std=c++17 -O0 -g -Wall -Wextra -pedantic -fmax-errors=1
-LDFLAGS += -lcash -lstdc++
+#CXXFLAGS += -std=c++17 -O3 -DNDEBUG -I$(CASH_HOME)/include -Wall -Wextra -pedantic
+CXXFLAGS += -std=c++17 -O0 -g -I$(CASH_HOME)/include -Wall -Wextra -pedantic -fmax-errors=1
+LDFLAGS += -lcash -lstdc++ -L$(CASH_HOME)/build/lib
 
 SRCS = RocketChip.cpp
 

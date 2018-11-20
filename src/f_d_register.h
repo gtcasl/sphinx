@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "define.h"
 
-using namespace ch::core;
-using namespace ch::sim;
+using namespace ch::logic;
+using namespace ch::system;
 
 
 struct F_D_Register

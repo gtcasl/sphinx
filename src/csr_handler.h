@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "define.h"
 
-using namespace ch::core;
-using namespace ch::sim;
+using namespace ch::logic;
+using namespace ch::system;
 
 
 struct CSR_Handler
@@ -50,7 +50,7 @@ struct CSR_Handler
 
 		CSR.write(write_register, write_data, enable);
 
-		io.out_decode_csr_data = ch_pad<32>(CSR.read(io.in_decode_csr_address));
+    io.out_decode_csr_data = ch_resize<32>(CSR.aread(io.in_decode_csr_address));
 
 
 		// io.out_decode_csr_data = ch_bit<32>(0x0);
