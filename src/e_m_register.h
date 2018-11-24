@@ -1,8 +1,8 @@
 #include <cash.h>
 #include <ioport.h>
 
-using namespace ch::logic;
-using namespace ch::system;
+// using namespace ch::logic;
+// using namespace ch::system;
 
 
 struct E_M_Register

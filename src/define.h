@@ -4,7 +4,8 @@
 #define __DEFINITIONS__
 
 
-
+// OPTIONS
+// #define FORWARDING
 
 // SIZES
 #define INST_SIZE 32
@@ -220,6 +221,13 @@
 #define ZERO_REG ch_bit<5>(0)
 #define ZERO_REG_int (0)
 
+
+// COLORS
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define DEFAULT "\033[39m"
+
+#define NUM_TESTS 39
 
 #include <chrono> 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> clock_time;

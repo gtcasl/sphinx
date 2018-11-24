@@ -6,8 +6,8 @@
 
 #include "jtag_define.h"
 
-using namespace ch::logic;
-using namespace ch::system;
+// using namespace ch::logic;
+// using namespace ch::system;
 using namespace ch::htl;
 
 

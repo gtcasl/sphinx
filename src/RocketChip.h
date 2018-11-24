@@ -40,8 +40,8 @@
 // JTAG
 #include "JTAG/jtag.h"
 
-using namespace ch::logic;
-using namespace ch::system;
+using namespace ch::core;
+using namespace ch::sim;
 using namespace ch::htl;
 
 bool debug = false;
@@ -250,20 +250,27 @@ struct Pipeline
     forwarding.io.in_writeback_mem_data(m_w_register.io.out_mem_result);
     forwarding.io.in_writeback_PC_next(m_w_register.io.out_PC_next);
 
-    decode.io.in_src1_fwd(forwarding.io.out_src1_fwd);
-    decode.io.in_src1_fwd_data(forwarding.io.out_src1_fwd_data);
-    decode.io.in_src2_fwd(forwarding.io.out_src2_fwd);
-    decode.io.in_src2_fwd_data(forwarding.io.out_src2_fwd_data);
-    decode.io.in_csr_fwd(forwarding.io.out_csr_fwd);
-    decode.io.in_csr_fwd_data(forwarding.io.out_csr_fwd_data);
+    #ifdef FORWARDING
+        decode.io.in_src1_fwd(forwarding.io.out_src1_fwd);
+        decode.io.in_src2_fwd(forwarding.io.out_src2_fwd);
+        decode.io.in_csr_fwd(forwarding.io.out_csr_fwd);
+        decode.io.in_src1_fwd_data(forwarding.io.out_src1_fwd_data);
+        decode.io.in_src2_fwd_data(forwarding.io.out_src2_fwd_data);
+        decode.io.in_csr_fwd_data(forwarding.io.out_csr_fwd_data);
+    #endif
 
-    f_d_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
-    f_d_register.io.in_branch_stall_exe(execute.io.out_branch_stall);
-    d_e_register.io.in_fwd_stall(forwarding.io.out_fwd_stall);
-    d_e_register.io.in_branch_stall(execute.io.out_branch_stall);
-    fetch.io.in_fwd_stall(forwarding.io.out_fwd_stall);
+    decode.io.in_stall = (execute.io.out_branch_stall == STALL);
+
+
     fetch.io.in_branch_stall_exe(execute.io.out_branch_stall);
-    decode.io.in_stall = (forwarding.io.out_fwd_stall == STALL) || (execute.io.out_branch_stall == STALL);
+    f_d_register.io.in_branch_stall_exe(execute.io.out_branch_stall);
+    d_e_register.io.in_branch_stall(execute.io.out_branch_stall);
+
+    
+
+    fetch.io.in_fwd_stall        = forwarding.io.out_fwd_stall;
+    f_d_register.io.in_fwd_stall = forwarding.io.out_fwd_stall;  
+    d_e_register.io.in_fwd_stall = forwarding.io.out_fwd_stall;
 
 
   }

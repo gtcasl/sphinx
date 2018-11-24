@@ -20,67 +20,35 @@ module Fetch(
   output wire[31:0] io_out_curr_PC,
   output wire[31:0] io_out_PC_next
 );
-  wire[31:0] io_IBUS_out_address_data83; // fetch.h(12:0)
-  wire io_IBUS_out_address_valid86; // fetch.h(12:0)
-  wire[31:0] io_out_instruction99; // fetch.h(12:0)
-  wire[31:0] io_out_curr_PC102; // fetch.h(12:0)
-  wire[31:0] io_out_PC_next105; // fetch.h(12:0)
-  wire[31:0] proxy111; // fetch.h(38:0)
-  reg[31:0] reg112; // fetch.h(38:0)
-  wire eq120; // fetch.h(41:1)
-  wire eq124; // fetch.h(41:3)
-  wire orl126; // fetch.h(41:3)
-  wire orl128; // fetch.h(41:3)
-  wire[31:0] sel131; // fetch.h(42:0)
-  wire[31:0] proxy132; // fetch.h(42:0)
-  wire eq135; // fetch.h(45:3)
-  wire[31:0] sel137; // fetch.h(45:1)
-  wire eq141; // fetch.h(45:5)
-  wire[31:0] sel143; // fetch.h(45:0)
-  wire[31:0] sel145; // fetch.h(46:0)
-  wire[31:0] proxy146; // fetch.h(46:0)
-  wire proxy147; // fetch.h(49:0)
-  wire[31:0] add150; // fetch.h(46:0)
-  wire[31:0] proxy151; // fetch.h(46:0)
-  wire[31:0] sel152; // fetch.h(54:0)
-  wire[31:0] proxy153; // fetch.h(54:0)
+  reg[31:0] reg113;
+  wire eq120, eq124, orl126, orl128, eq135, eq141;
+  wire[31:0] sel131, sel137, sel143, sel145, add150, sel152;
 
-  assign io_IBUS_out_address_data83 = proxy146;
-  assign io_IBUS_out_address_valid86 = proxy147;
-  assign io_out_instruction99 = proxy132;
-  assign io_out_curr_PC102 = proxy146;
-  assign io_out_PC_next105 = proxy151;
-  assign proxy111 = proxy153;
   always @ (posedge clk) begin
     if (reset)
-      reg112 <= 32'h0;
+      reg113 <= 32'h0;
     else
-      reg112 <= proxy111;
+      reg113 <= sel152;
   end
   assign eq120 = io_in_fwd_stall == 1'h1;
   assign eq124 = io_in_branch_stall == 1'h1;
-  assign orl126 = eq124 || eq120;
-  assign orl128 = orl126 || io_in_branch_stall_exe;
+  assign orl126 = eq124 | eq120;
+  assign orl128 = orl126 | io_in_branch_stall_exe;
   assign sel131 = orl128 ? 32'h0 : io_IBUS_in_data_data;
-  assign proxy132 = sel131;
   assign eq135 = io_in_branch_dir == 1'h1;
-  assign sel137 = eq135 ? io_in_branch_dest : reg112;
+  assign sel137 = eq135 ? io_in_branch_dest : reg113;
   assign eq141 = io_in_jal == 1'h1;
   assign sel143 = eq141 ? io_in_jal_dest : sel137;
   assign sel145 = io_in_interrupt ? io_in_interrupt_pc : sel143;
-  assign proxy146 = sel145;
-  assign proxy147 = 1'h1;
-  assign add150 = proxy146 + 32'h4;
-  assign proxy151 = add150;
-  assign sel152 = orl128 ? proxy146 : io_out_PC_next105;
-  assign proxy153 = sel152;
+  assign add150 = sel145 + 32'h4;
+  assign sel152 = orl128 ? sel145 : add150;
 
   assign io_IBUS_in_data_ready = io_IBUS_in_data_valid;
-  assign io_IBUS_out_address_data = io_IBUS_out_address_data83;
-  assign io_IBUS_out_address_valid = io_IBUS_out_address_valid86;
-  assign io_out_instruction = io_out_instruction99;
-  assign io_out_curr_PC = io_out_curr_PC102;
-  assign io_out_PC_next = io_out_PC_next105;
+  assign io_IBUS_out_address_data = sel145;
+  assign io_IBUS_out_address_valid = 1'h1;
+  assign io_out_instruction = sel131;
+  assign io_out_curr_PC = sel145;
+  assign io_out_PC_next = add150;
 
 endmodule
 
@@ -97,58 +65,41 @@ module F_D_Register(
   output wire[31:0] io_out_curr_PC,
   output wire[31:0] io_out_PC_next
 );
-  wire[31:0] io_out_instruction221; // f_d_register.h(9:0)
-  wire[31:0] io_out_curr_PC224; // f_d_register.h(9:0)
-  wire[31:0] io_out_PC_next227; // f_d_register.h(9:0)
-  wire[31:0] proxy232; // f_d_register.h(28:0)
-  reg[31:0] reg234; // f_d_register.h(28:0)
-  wire[31:0] proxy241; // f_d_register.h(29:0)
-  reg[31:0] reg243; // f_d_register.h(29:0)
-  wire[31:0] proxy247; // f_d_register.h(30:0)
-  reg[31:0] reg249; // f_d_register.h(30:0)
-  wire eq271; // f_d_register.h(39:2)
-  wire[31:0] sel273; // f_d_register.h(39:0)
-  wire[31:0] sel274; // f_d_register.h(39:0)
-  wire[31:0] sel275; // f_d_register.h(39:0)
+  reg[31:0] reg235, reg244, reg250;
+  wire eq271;
+  wire[31:0] sel273, sel274, sel275;
 
-  assign io_out_instruction221 = proxy232;
-  assign io_out_curr_PC224 = proxy247;
-  assign io_out_PC_next227 = proxy241;
-  assign proxy232 = reg234;
   always @ (posedge clk) begin
     if (reset)
-      reg234 <= 32'h0;
+      reg235 <= 32'h0;
     else
-      reg234 <= sel274;
+      reg235 <= sel274;
   end
-  assign proxy241 = reg243;
   always @ (posedge clk) begin
     if (reset)
-      reg243 <= 32'h0;
+      reg244 <= 32'h0;
     else
-      reg243 <= sel275;
+      reg244 <= sel275;
   end
-  assign proxy247 = reg249;
   always @ (posedge clk) begin
     if (reset)
-      reg249 <= 32'h0;
+      reg250 <= 32'h0;
     else
-      reg249 <= sel273;
+      reg250 <= sel273;
   end
   assign eq271 = io_in_fwd_stall == 1'h0;
-  assign sel273 = eq271 ? io_in_curr_PC : proxy247;
-  assign sel274 = eq271 ? io_in_instruction : proxy232;
-  assign sel275 = eq271 ? io_in_PC_next : proxy241;
+  assign sel273 = eq271 ? io_in_curr_PC : reg250;
+  assign sel274 = eq271 ? io_in_instruction : reg235;
+  assign sel275 = eq271 ? io_in_PC_next : reg244;
 
-  assign io_out_instruction = io_out_instruction221;
-  assign io_out_curr_PC = io_out_curr_PC224;
-  assign io_out_PC_next = io_out_PC_next227;
+  assign io_out_instruction = reg235;
+  assign io_out_curr_PC = reg250;
+  assign io_out_PC_next = reg244;
 
 endmodule
 
 module RegisterFile(
   input wire clk,
-  input wire reset,
   input wire io_in_write_register,
   input wire[4:0] io_in_rd,
   input wire[31:0] io_in_data,
@@ -157,67 +108,29 @@ module RegisterFile(
   output wire[31:0] io_out_src1_data,
   output wire[31:0] io_out_src2_data
 );
-  wire[31:0] io_out_src1_data389; // decode.h(21:0)
-  wire[31:0] io_out_src2_data392; // decode.h(21:0)
-  reg[31:0] mem394 [0:31]; // decode.h(36:0)
-  wire proxy398; // decode.h(40:0)
-  reg reg400; // decode.h(40:0)
-  wire proxy406; // decode.h(42:2)
-  wire eq407; // decode.h(42:2)
-  wire sel411; // decode.h(42:0)
-  wire ne424; // decode.h(21:0)
-  wire andl427; // decode.h(62:1)
-  wire sel429; // decode.h(53:0)
-  wire[31:0] sel430; // decode.h(53:0)
-  wire[4:0] sel431; // decode.h(53:0)
-  wire[31:0] marport433; // decode.h(67:1)
-  wire eq437; // decode.h(21:0)
-  wire[31:0] sel439; // decode.h(67:0)
-  wire[31:0] proxy440; // decode.h(67:0)
-  wire[31:0] marport441; // decode.h(68:1)
-  wire eq445; // decode.h(21:0)
-  wire[31:0] sel447; // decode.h(68:0)
-  wire[31:0] proxy448; // decode.h(68:0)
+  reg[31:0] mem388 [0:31];
+  wire[31:0] mrport399, sel408, mrport410, sel417;
+  wire eq406, eq415;
 
-  assign io_out_src1_data389 = proxy440;
-  assign io_out_src2_data392 = proxy448;
-  assign marport433 = mem394[io_in_src1];
-  assign marport441 = mem394[io_in_src2];
   always @ (posedge clk) begin
-    if (sel429) begin
-      mem394[sel431] <= sel430;
+    if (io_in_write_register) begin
+      mem388[io_in_rd] <= io_in_data;
     end
   end
-  assign proxy398 = reg400;
-  always @ (posedge clk) begin
-    if (reset)
-      reg400 <= 1'h1;
-    else
-      reg400 <= sel411;
-  end
-  assign proxy406 = proxy398;
-  assign eq407 = proxy406 == 1'h1;
-  assign sel411 = eq407 ? 1'h0 : proxy398;
-  assign ne424 = io_in_rd != 5'h0;
-  assign andl427 = io_in_write_register && ne424;
-  assign sel429 = proxy398 ? 1'h1 : andl427;
-  assign sel430 = proxy398 ? 32'h0 : io_in_data;
-  assign sel431 = proxy398 ? 5'h0 : io_in_rd;
-  assign eq437 = io_in_src1 == 5'h0;
-  assign sel439 = eq437 ? 32'h0 : marport433;
-  assign proxy440 = sel439;
-  assign eq445 = io_in_src2 == 5'h0;
-  assign sel447 = eq445 ? 32'h0 : marport441;
-  assign proxy448 = sel447;
+  assign mrport399 = mem388[io_in_src1];
+  assign mrport410 = mem388[io_in_src2];
+  assign eq406 = io_in_src1 == 5'h0;
+  assign sel408 = eq406 ? 32'h0 : mrport399;
+  assign eq415 = io_in_src2 == 5'h0;
+  assign sel417 = eq415 ? 32'h0 : mrport410;
 
-  assign io_out_src1_data = io_out_src1_data389;
-  assign io_out_src2_data = io_out_src2_data392;
+  assign io_out_src1_data = sel408;
+  assign io_out_src2_data = sel417;
 
 endmodule
 
 module Decode(
   input wire clk,
-  input wire reset,
   input wire[31:0] io_in_instruction,
   input wire[31:0] io_in_PC_next,
   input wire[31:0] io_in_curr_PC,
@@ -225,12 +138,6 @@ module Decode(
   input wire[31:0] io_in_write_data,
   input wire[4:0] io_in_rd,
   input wire[1:0] io_in_wb,
-  input wire io_in_src1_fwd,
-  input wire[31:0] io_in_src1_fwd_data,
-  input wire io_in_src2_fwd,
-  input wire[31:0] io_in_src2_fwd_data,
-  input wire io_in_csr_fwd,
-  input wire[31:0] io_in_csr_fwd_data,
   input wire[31:0] io_in_csr_data,
   output wire[11:0] io_out_csr_address,
   output wire io_out_is_csr,
@@ -254,695 +161,230 @@ module Decode(
   output wire[19:0] io_out_upper_immed,
   output wire[31:0] io_out_PC_next
 );
-  wire[31:0] io_out_csr_data327; // decode.h(109:0)
-  wire[31:0] io_out_csr_mask330; // decode.h(109:0)
-  wire[4:0] io_out_rd333; // decode.h(109:0)
-  wire[4:0] io_out_rs1336; // decode.h(109:0)
-  wire[31:0] io_out_rd1339; // decode.h(109:0)
-  wire[4:0] io_out_rs2342; // decode.h(109:0)
-  wire[31:0] io_out_rd2345; // decode.h(109:0)
-  wire[1:0] io_out_wb348; // decode.h(109:0)
-  wire[3:0] io_out_alu_op351; // decode.h(109:0)
-  wire io_out_rs2_src354; // decode.h(109:0)
-  wire[2:0] io_out_mem_read360; // decode.h(109:0)
-  wire[2:0] io_out_mem_write363; // decode.h(109:0)
-  wire proxy450; // decode.h(109:1)
-  wire RegisterFile451_clk; // decode.h(109:1)
-  wire RegisterFile451_reset; // decode.h(109:1)
-  wire RegisterFile451_io_in_write_register; // decode.h(109:1)
-  wire[4:0] RegisterFile451_io_in_rd; // decode.h(109:1)
-  wire[31:0] RegisterFile451_io_in_data; // decode.h(109:1)
-  wire[4:0] proxy465; // decode.h(109:1)
-  wire[4:0] RegisterFile451_io_in_src1; // decode.h(109:1)
-  wire[4:0] proxy468; // decode.h(109:1)
-  wire[4:0] RegisterFile451_io_in_src2; // decode.h(109:1)
-  wire[31:0] proxy471; // decode.h(109:1)
-  wire[31:0] RegisterFile451_io_out_src1_data; // decode.h(109:1)
-  wire[31:0] proxy474; // decode.h(109:1)
-  wire[31:0] RegisterFile451_io_out_src2_data; // decode.h(109:1)
-  wire[6:0] proxy477; // decode.h(163:0)
-  wire[31:0] proxy483; // decode.h(166:0)
-  wire[31:0] proxy485; // decode.h(167:0)
-  wire proxy487; // decode.h(169:0)
-  wire proxy489; // decode.h(170:0)
-  wire proxy491; // decode.h(171:0)
-  wire proxy493; // decode.h(172:0)
-  wire proxy495; // decode.h(173:0)
-  wire proxy497; // decode.h(174:0)
-  wire proxy499; // decode.h(175:0)
-  wire proxy501; // decode.h(176:0)
-  wire proxy503; // decode.h(177:0)
-  wire proxy505; // decode.h(178:0)
-  wire proxy507; // decode.h(179:0)
-  wire proxy509; // decode.h(180:0)
-  wire ne516; // decode.h(109:0)
-  wire sel518; // decode.h(182:0)
-  wire proxy519; // decode.h(182:0)
-  wire[6:0] proxy521; // decode.h(184:0)
-  wire[31:0] shr525; // decode.h(187:1)
-  wire[31:0] proxy526; // decode.h(187:1)
-  wire[4:0] proxy528; // decode.h(187:0)
-  wire[31:0] shr532; // decode.h(188:1)
-  wire[31:0] proxy533; // decode.h(188:1)
-  wire[4:0] proxy535; // decode.h(188:0)
-  wire[31:0] shr539; // decode.h(189:1)
-  wire[31:0] proxy540; // decode.h(189:1)
-  wire[4:0] proxy542; // decode.h(189:0)
-  wire[31:0] shr546; // decode.h(190:1)
-  wire[31:0] proxy547; // decode.h(190:1)
-  wire[2:0] proxy549; // decode.h(190:0)
-  wire[31:0] shr553; // decode.h(191:1)
-  wire[31:0] proxy554; // decode.h(191:1)
-  wire[6:0] proxy556; // decode.h(191:0)
-  wire[31:0] shr559; // decode.h(192:1)
-  wire[31:0] proxy560; // decode.h(192:1)
-  wire[11:0] proxy562; // decode.h(192:0)
-  wire[6:0] proxy565; // decode.h(208:1)
-  wire eq566; // decode.h(208:1)
-  wire proxy567; // decode.h(208:1)
-  wire[6:0] proxy570; // decode.h(209:1)
-  wire eq571; // decode.h(209:1)
-  wire proxy572; // decode.h(209:1)
-  wire[6:0] proxy575; // decode.h(210:1)
-  wire eq576; // decode.h(210:1)
-  wire orl578; // decode.h(210:1)
-  wire proxy579; // decode.h(210:1)
-  wire[6:0] proxy582; // decode.h(211:1)
-  wire eq583; // decode.h(211:1)
-  wire proxy584; // decode.h(211:1)
-  wire[6:0] proxy587; // decode.h(212:1)
-  wire eq588; // decode.h(212:1)
-  wire proxy589; // decode.h(212:1)
-  wire[6:0] proxy592; // decode.h(213:1)
-  wire eq593; // decode.h(213:1)
-  wire proxy594; // decode.h(213:1)
-  wire[6:0] proxy597; // decode.h(214:1)
-  wire eq598; // decode.h(214:1)
-  wire proxy599; // decode.h(214:1)
-  wire[6:0] proxy602; // decode.h(215:1)
-  wire eq603; // decode.h(215:1)
-  wire proxy604; // decode.h(215:1)
-  wire[6:0] proxy607; // decode.h(216:1)
-  wire eq608; // decode.h(216:1)
-  wire proxy609; // decode.h(216:1)
-  wire[2:0] proxy612; // decode.h(217:1)
-  wire ne613; // decode.h(217:1)
-  wire[6:0] proxy617; // decode.h(217:3)
-  wire eq618; // decode.h(217:3)
-  wire andl620; // decode.h(217:3)
-  wire proxy621; // decode.h(217:3)
-  wire proxy623; // decode.h(218:1)
-  wire eq624; // decode.h(218:1)
-  wire proxy626; // decode.h(218:2)
-  wire andl627; // decode.h(218:2)
-  wire proxy628; // decode.h(218:2)
-  wire[2:0] proxy630; // decode.h(219:1)
-  wire eq631; // decode.h(219:1)
-  wire[6:0] proxy634; // decode.h(219:3)
-  wire eq635; // decode.h(219:3)
-  wire andl637; // decode.h(219:3)
-  wire proxy638; // decode.h(219:3)
-  wire eq641; // decode.h(225:3)
-  wire[31:0] sel643; // decode.h(225:1)
-  wire[31:0] sel645; // decode.h(225:0)
-  wire[31:0] proxy646; // decode.h(225:0)
-  wire eq649; // decode.h(226:2)
-  wire[31:0] sel651; // decode.h(226:0)
-  wire[31:0] proxy652; // decode.h(226:0)
-  wire[31:0] pad653; // decode.h(231:1)
-  wire[31:0] sel654; // decode.h(231:0)
-  wire[31:0] proxy655; // decode.h(231:0)
-  wire eq657; // decode.h(109:0)
-  wire[31:0] sel659; // decode.h(232:0)
-  wire[31:0] proxy660; // decode.h(232:0)
-  wire proxy664; // decode.h(237:1)
-  wire orl665; // decode.h(237:1)
-  wire orl667; // decode.h(237:1)
-  wire orl669; // decode.h(237:1)
-  wire orl671; // decode.h(237:1)
-  wire[1:0] sel673; // decode.h(238:2)
-  wire[1:0] sel677; // decode.h(238:1)
-  wire proxy681; // decode.h(235:1)
-  wire orl682; // decode.h(235:1)
-  wire orl684; // decode.h(235:1)
-  wire[1:0] sel686; // decode.h(238:0)
-  wire[1:0] proxy687; // decode.h(238:0)
-  wire proxy690; // decode.h(239:3)
-  wire orl691; // decode.h(239:3)
-  wire sel693; // decode.h(239:0)
-  wire proxy694; // decode.h(239:0)
-  wire[2:0] sel697; // decode.h(241:0)
-  wire[2:0] proxy698; // decode.h(241:0)
-  wire[2:0] sel700; // decode.h(242:0)
-  wire[2:0] proxy701; // decode.h(242:0)
-  wire[2:0] proxy714; // decode.h(264:1)
-  wire eq715; // decode.h(264:1)
-  wire[2:0] proxy719; // decode.h(264:3)
-  wire eq720; // decode.h(264:3)
-  wire orl722; // decode.h(264:3)
-  wire[11:0] pad724; // decode.h(265:0)
-  wire[31:0] shr727; // decode.h(267:2)
-  wire[31:0] proxy728; // decode.h(267:2)
-  wire[11:0] proxy730; // decode.h(267:1)
-  wire[11:0] sel731; // decode.h(267:0)
-  wire[11:0] proxy749; // decode.h(292:0)
-  wire[6:0] proxy750; // /home/blaise/dev/cash/include/logic.h(180:1)
-  wire[31:0] shr758; // decode.h(306:1)
-  wire[31:0] proxy759; // decode.h(306:1)
-  wire[11:0] proxy761; // decode.h(306:0)
-  wire proxy771; // decode.h(319:0)
-  wire proxy773; // decode.h(320:0)
-  wire[31:0] shr777; // decode.h(321:1)
-  wire[31:0] proxy778; // decode.h(321:1)
-  wire[3:0] proxy780; // decode.h(321:0)
-  wire[31:0] shr783; // decode.h(322:1)
-  wire[31:0] proxy784; // decode.h(322:1)
-  wire[5:0] proxy786; // decode.h(322:0)
-  wire[11:0] proxy788; // decode.h(324:0)
-  wire[3:0] proxy789; // /home/blaise/dev/cash/include/logic.h(180:2)
-  wire[5:0] proxy790; // /home/blaise/dev/cash/include/logic.h(180:3)
-  wire proxy791; // /home/blaise/dev/cash/include/logic.h(180:4)
-  wire proxy792; // /home/blaise/dev/cash/include/logic.h(180:5)
-  wire lt806; // decode.h(192:0)
-  wire[31:0] shr825; // decode.h(389:1)
-  wire[31:0] proxy826; // decode.h(389:1)
-  wire[11:0] proxy828; // decode.h(389:0)
-  wire[31:0] shr838; // decode.h(401:1)
-  wire[31:0] proxy839; // decode.h(401:1)
-  wire[11:0] proxy841; // decode.h(401:0)
-  wire[19:0] proxy849; // decode.h(413:0)
-  wire[2:0] proxy850; // /home/blaise/dev/cash/include/logic.h(180:6)
-  wire[6:0] proxy851; // /home/blaise/dev/cash/include/logic.h(180:9)
-  wire[19:0] proxy860; // decode.h(425:0)
-  wire[2:0] proxy861; // /home/blaise/dev/cash/include/logic.h(180:10)
-  wire[6:0] proxy862; // /home/blaise/dev/cash/include/logic.h(180:13)
-  wire[31:0] shr874; // decode.h(439:1)
-  wire[31:0] proxy875; // decode.h(439:1)
-  wire[7:0] proxy877; // decode.h(439:0)
-  wire proxy879; // decode.h(440:0)
-  wire[31:0] shr883; // decode.h(441:1)
-  wire[31:0] proxy884; // decode.h(441:1)
-  wire[9:0] proxy886; // decode.h(441:0)
-  wire proxy888; // decode.h(442:0)
-  wire proxy889; // decode.h(444:0)
-  wire[20:0] proxy891; // decode.h(446:0)
-  wire proxy892; // /home/blaise/dev/cash/include/logic.h(180:14)
-  wire[9:0] proxy893; // /home/blaise/dev/cash/include/logic.h(180:15)
-  wire proxy894; // /home/blaise/dev/cash/include/logic.h(180:16)
-  wire[7:0] proxy895; // /home/blaise/dev/cash/include/logic.h(180:17)
-  wire proxy896; // /home/blaise/dev/cash/include/logic.h(180:18)
-  wire[31:0] pad897; // decode.h(448:1)
-  wire[10:0] proxy899; // decode.h(448:3)
-  wire[31:0] proxy901; // decode.h(448:2)
-  wire[20:0] proxy902; // /home/blaise/dev/cash/include/logic.h(180:19)
-  wire[10:0] proxy903; // /home/blaise/dev/cash/include/logic.h(180:20)
-  wire eq905; // decode.h(442:0)
-  wire[31:0] sel907; // decode.h(448:0)
-  wire[11:0] proxy917; // decode.h(464:0)
-  wire[6:0] proxy918; // /home/blaise/dev/cash/include/logic.h(180:22)
-  wire[31:0] pad919; // decode.h(465:1)
-  wire[19:0] proxy921; // decode.h(465:3)
-  wire[31:0] proxy923; // decode.h(465:2)
-  wire[11:0] proxy924; // /home/blaise/dev/cash/include/logic.h(180:23)
-  wire[19:0] proxy925; // /home/blaise/dev/cash/include/logic.h(180:24)
-  wire proxy927; // decode.h(465:5)
-  wire eq928; // decode.h(465:5)
-  wire[31:0] sel930; // decode.h(465:0)
-  wire[11:0] sel940; // decode.h(371:0)
-  wire[11:0] sel941; // decode.h(368:0)
-  reg[11:0] sel942; // decode.h(253:0)
-  wire sel943; // decode.h(371:0)
-  wire sel944; // decode.h(368:0)
-  reg sel945; // decode.h(253:0)
-  wire sel946; // decode.h(371:0)
-  wire sel947; // decode.h(368:0)
-  reg sel948; // decode.h(253:0)
-  reg[2:0] sel949; // decode.h(328:0)
-  wire[2:0] sel950; // decode.h(371:0)
-  wire[2:0] sel951; // decode.h(368:0)
-  reg[2:0] sel952; // decode.h(253:0)
-  wire[31:0] sel953; // decode.h(371:0)
-  wire[31:0] sel954; // decode.h(368:0)
-  reg[31:0] sel955; // decode.h(253:0)
-  wire[19:0] sel956; // decode.h(371:0)
-  wire[19:0] sel957; // decode.h(368:0)
-  reg[19:0] sel958; // decode.h(253:0)
-  wire sel959; // decode.h(371:0)
-  wire sel960; // decode.h(368:0)
-  reg sel961; // decode.h(253:0)
-  wire[11:0] sel962; // decode.h(371:0)
-  wire[11:0] sel963; // decode.h(368:0)
-  reg[11:0] sel964; // decode.h(253:0)
-  wire[6:0] proxy966; // decode.h(486:1)
-  wire eq967; // decode.h(486:1)
-  wire eq974; // decode.h(191:0)
-  wire[3:0] sel976; // decode.h(487:1)
-  wire[3:0] sel979; // decode.h(487:0)
-  wire eq994; // decode.h(191:0)
-  wire[3:0] sel996; // decode.h(507:0)
-  reg[3:0] sel1004; // decode.h(483:0)
-  wire[1:0] proxy1006; // decode.h(522:0)
-  wire[1:0] proxy1010; // decode.h(525:2)
-  wire eq1011; // decode.h(525:2)
-  wire[3:0] sel1013; // decode.h(526:2)
-  wire[1:0] proxy1018; // decode.h(524:2)
-  wire eq1019; // decode.h(524:2)
-  wire[3:0] sel1021; // decode.h(526:1)
-  wire[1:0] proxy1026; // decode.h(523:2)
-  wire eq1027; // decode.h(523:2)
-  wire[3:0] sel1029; // decode.h(526:0)
-  wire proxy1032; // decode.h(532:6)
-  wire orl1033; // decode.h(532:6)
-  wire[3:0] sel1035; // decode.h(532:4)
-  wire[3:0] sel1037; // decode.h(532:3)
-  wire[3:0] sel1041; // decode.h(532:2)
-  wire[3:0] sel1045; // decode.h(532:1)
-  wire lt1051; // decode.h(109:0)
-  wire[3:0] sel1053; // decode.h(528:0)
-  wire[3:0] sel1055; // decode.h(532:0)
-  wire[3:0] proxy1056; // decode.h(532:0)
+  wire bindin424, bindin425, ne485, sel487, eq535, eq540, eq545, orl547, eq552, eq557, eq562, eq567, eq572, eq577, ne582, eq587, andl589, proxy592, eq593, andl596, eq600, andl606, orl618, orl620, orl622, orl624, orl635, orl637, orl644, sel646, proxy672, proxy680, eq698, proxy715, eq716, eq722, lt726, andl729, sel741, ne744, ge747, eq750, andl761, andl763, eq770, eq775, orl777, proxy799, eq851, eq888, eq896, eq904, orl910, lt928;
+  wire[4:0] bindin428, bindin434, bindin437, proxy497, proxy504, proxy511;
+  wire[31:0] bindin431, bindout440, bindout443, shr494, shr501, shr508, shr515, shr522, sel608, pad610, sel612, shr676, pad689, proxy694, sel700, pad706, proxy711, sel718, sel739, shr803;
+  wire[2:0] proxy518, sel650, sel653;
+  wire[6:0] proxy525;
+  wire[1:0] sel626, sel630, sel639, proxy883;
+  wire[19:0] proxy656;
+  reg[19:0] sel665;
+  wire[7:0] proxy671;
+  wire[9:0] proxy679;
+  wire[20:0] proxy683;
+  wire[11:0] proxy704, sel765, pad779, sel787, proxy790, proxy814;
+  reg[31:0] sel740;
+  reg sel742, sel841;
+  wire[3:0] proxy806, sel853, sel856, sel873, sel890, sel898, sel906, sel912, sel914, sel918, sel922, sel930, sel932;
+  wire[5:0] proxy812;
+  reg[11:0] sel820;
+  reg[2:0] sel839, sel840;
+  reg[3:0] sel881;
 
-  assign io_out_csr_data327 = proxy660;
-  assign io_out_csr_mask330 = proxy655;
-  assign io_out_rd333 = proxy528;
-  assign io_out_rs1336 = proxy535;
-  assign io_out_rd1339 = proxy646;
-  assign io_out_rs2342 = proxy542;
-  assign io_out_rd2345 = proxy652;
-  assign io_out_wb348 = proxy687;
-  assign io_out_alu_op351 = proxy1056;
-  assign io_out_rs2_src354 = proxy694;
-  assign io_out_mem_read360 = proxy698;
-  assign io_out_mem_write363 = proxy701;
-  assign proxy450 = proxy519;
-  assign RegisterFile451_clk = clk;
-  assign RegisterFile451_reset = reset;
-  RegisterFile RegisterFile451(.clk(RegisterFile451_clk), .reset(RegisterFile451_reset), .io_in_write_register(RegisterFile451_io_in_write_register), .io_in_rd(RegisterFile451_io_in_rd), .io_in_data(RegisterFile451_io_in_data), .io_in_src1(RegisterFile451_io_in_src1), .io_in_src2(RegisterFile451_io_in_src2), .io_out_src1_data(RegisterFile451_io_out_src1_data), .io_out_src2_data(RegisterFile451_io_out_src2_data));
-  assign RegisterFile451_io_in_write_register = proxy450;
-  assign RegisterFile451_io_in_rd = io_in_rd;
-  assign RegisterFile451_io_in_data = io_in_write_data;
-  assign proxy465 = io_out_rs1336;
-  assign RegisterFile451_io_in_src1 = proxy465;
-  assign proxy468 = io_out_rs2342;
-  assign RegisterFile451_io_in_src2 = proxy468;
-  assign proxy471 = RegisterFile451_io_out_src1_data;
-  assign proxy474 = RegisterFile451_io_out_src2_data;
-  assign proxy477 = proxy521;
-  assign proxy483 = proxy471;
-  assign proxy485 = proxy474;
-  assign proxy487 = proxy579;
-  assign proxy489 = proxy567;
-  assign proxy491 = proxy584;
-  assign proxy493 = proxy589;
-  assign proxy495 = proxy572;
-  assign proxy497 = proxy594;
-  assign proxy499 = proxy599;
-  assign proxy501 = proxy604;
-  assign proxy503 = proxy609;
-  assign proxy505 = proxy621;
-  assign proxy507 = proxy628;
-  assign proxy509 = proxy638;
-  assign ne516 = io_in_wb != 2'h0;
-  assign sel518 = ne516 ? 1'h1 : 1'h0;
-  assign proxy519 = sel518;
-  assign proxy521 = io_in_instruction[6:0];
-  assign shr525 = io_in_instruction >> 32'h7;
-  assign proxy526 = shr525;
-  assign proxy528 = proxy526[4:0];
-  assign shr532 = io_in_instruction >> 32'hf;
-  assign proxy533 = shr532;
-  assign proxy535 = proxy533[4:0];
-  assign shr539 = io_in_instruction >> 32'h14;
-  assign proxy540 = shr539;
-  assign proxy542 = proxy540[4:0];
-  assign shr546 = io_in_instruction >> 32'hc;
-  assign proxy547 = shr546;
-  assign proxy549 = proxy547[2:0];
-  assign shr553 = io_in_instruction >> 32'h19;
-  assign proxy554 = shr553;
-  assign proxy556 = proxy554[6:0];
-  assign shr559 = io_in_instruction >> 32'h14;
-  assign proxy560 = shr559;
-  assign proxy562 = proxy560[11:0];
-  assign proxy565 = proxy477;
-  assign eq566 = proxy565 == 7'h33;
-  assign proxy567 = eq566;
-  assign proxy570 = proxy477;
-  assign eq571 = proxy570 == 7'h3;
-  assign proxy572 = eq571;
-  assign proxy575 = proxy477;
-  assign eq576 = proxy575 == 7'h13;
-  assign orl578 = eq576 || proxy495;
-  assign proxy579 = orl578;
-  assign proxy582 = proxy477;
-  assign eq583 = proxy582 == 7'h23;
-  assign proxy584 = eq583;
-  assign proxy587 = proxy477;
-  assign eq588 = proxy587 == 7'h63;
-  assign proxy589 = eq588;
-  assign proxy592 = proxy477;
-  assign eq593 = proxy592 == 7'h6f;
-  assign proxy594 = eq593;
-  assign proxy597 = proxy477;
-  assign eq598 = proxy597 == 7'h67;
-  assign proxy599 = eq598;
-  assign proxy602 = proxy477;
-  assign eq603 = proxy602 == 7'h37;
-  assign proxy604 = eq603;
-  assign proxy607 = proxy477;
-  assign eq608 = proxy607 == 7'h17;
-  assign proxy609 = eq608;
-  assign proxy612 = proxy549;
-  assign ne613 = proxy612 != 3'h0;
-  assign proxy617 = proxy477;
-  assign eq618 = proxy617 == 7'h73;
-  assign andl620 = eq618 && ne613;
-  assign proxy621 = andl620;
-  assign proxy623 = proxy549[2];
-  assign eq624 = proxy623 == 1'h1;
-  assign proxy626 = proxy505;
-  assign andl627 = proxy626 && eq624;
-  assign proxy628 = andl627;
-  assign proxy630 = proxy549;
-  assign eq631 = proxy630 == 3'h0;
-  assign proxy634 = proxy477;
-  assign eq635 = proxy634 == 7'h73;
-  assign andl637 = eq635 && eq631;
-  assign proxy638 = andl637;
-  assign eq641 = io_in_src1_fwd == 1'h1;
-  assign sel643 = eq641 ? io_in_src1_fwd_data : proxy483;
-  assign sel645 = proxy497 ? io_in_curr_PC : sel643;
-  assign proxy646 = sel645;
-  assign eq649 = io_in_src2_fwd == 1'h1;
-  assign sel651 = eq649 ? io_in_src2_fwd_data : proxy485;
-  assign proxy652 = sel651;
-  assign pad653 = {{27{1'b0}}, io_out_rs2342};
-  assign sel654 = proxy507 ? pad653 : io_out_rd2345;
-  assign proxy655 = sel654;
-  assign eq657 = io_in_csr_fwd == 1'h1;
-  assign sel659 = eq657 ? io_in_csr_fwd_data : io_in_csr_data;
-  assign proxy660 = sel659;
-  assign proxy664 = proxy487;
-  assign orl665 = proxy664 || proxy489;
-  assign orl667 = orl665 || proxy501;
-  assign orl669 = orl667 || proxy503;
-  assign orl671 = orl669 || proxy505;
-  assign sel673 = orl671 ? 2'h1 : 2'h0;
-  assign sel677 = proxy495 ? 2'h2 : sel673;
-  assign proxy681 = proxy497;
-  assign orl682 = proxy681 || proxy499;
-  assign orl684 = orl682 || proxy509;
-  assign sel686 = orl684 ? 2'h3 : sel677;
-  assign proxy687 = sel686;
-  assign proxy690 = proxy487;
-  assign orl691 = proxy690 || proxy491;
-  assign sel693 = orl691 ? 1'h1 : 1'h0;
-  assign proxy694 = sel693;
-  assign sel697 = proxy495 ? proxy549 : 3'h7;
-  assign proxy698 = sel697;
-  assign sel700 = proxy491 ? proxy549 : 3'h7;
-  assign proxy701 = sel700;
-  assign proxy714 = proxy549;
-  assign eq715 = proxy714 == 3'h5;
-  assign proxy719 = proxy549;
-  assign eq720 = proxy719 == 3'h1;
-  assign orl722 = eq720 || eq715;
-  assign pad724 = {{7{1'b0}}, io_out_rs2342};
-  assign shr727 = io_in_instruction >> 32'h14;
-  assign proxy728 = shr727;
-  assign proxy730 = proxy728[11:0];
-  assign sel731 = orl722 ? pad724 : proxy730;
-  assign proxy749 = {proxy750, io_out_rd333};
-  assign proxy750 = proxy556;
-  assign shr758 = io_in_instruction >> 32'h14;
-  assign proxy759 = shr758;
-  assign proxy761 = proxy759[11:0];
-  assign proxy771 = io_in_instruction[31];
-  assign proxy773 = io_in_instruction[7];
-  assign shr777 = io_in_instruction >> 32'h8;
-  assign proxy778 = shr777;
-  assign proxy780 = proxy778[3:0];
-  assign shr783 = io_in_instruction >> 32'h19;
-  assign proxy784 = shr783;
-  assign proxy786 = proxy784[5:0];
-  assign proxy788 = {proxy792, proxy791, proxy790, proxy789};
-  assign proxy789 = proxy780;
-  assign proxy790 = proxy786;
-  assign proxy791 = proxy773;
-  assign proxy792 = proxy771;
-  assign lt806 = proxy562 < 12'h2;
-  assign shr825 = io_in_instruction >> 32'h14;
-  assign proxy826 = shr825;
-  assign proxy828 = proxy826[11:0];
-  assign shr838 = io_in_instruction >> 32'h14;
-  assign proxy839 = shr838;
-  assign proxy841 = proxy839[11:0];
-  assign proxy849 = {proxy851, io_out_rs2342, io_out_rs1336, proxy850};
-  assign proxy850 = proxy549;
-  assign proxy851 = proxy556;
-  assign proxy860 = {proxy862, io_out_rs2342, io_out_rs1336, proxy861};
-  assign proxy861 = proxy549;
-  assign proxy862 = proxy556;
-  assign shr874 = io_in_instruction >> 32'hc;
-  assign proxy875 = shr874;
-  assign proxy877 = proxy875[7:0];
-  assign proxy879 = io_in_instruction[20];
-  assign shr883 = io_in_instruction >> 32'h15;
-  assign proxy884 = shr883;
-  assign proxy886 = proxy884[9:0];
-  assign proxy888 = io_in_instruction[31];
-  assign proxy889 = 1'h0;
-  assign proxy891 = {proxy896, proxy895, proxy894, proxy893, proxy892};
-  assign proxy892 = proxy889;
-  assign proxy893 = proxy886;
-  assign proxy894 = proxy879;
-  assign proxy895 = proxy877;
-  assign proxy896 = proxy888;
-  assign pad897 = {{11{1'b0}}, proxy891};
-  assign proxy899 = 11'h7ff;
-  assign proxy901 = {proxy903, proxy902};
-  assign proxy902 = proxy891;
-  assign proxy903 = proxy899;
-  assign eq905 = proxy888 == 1'h1;
-  assign sel907 = eq905 ? proxy901 : pad897;
-  assign proxy917 = {proxy918, io_out_rs2342};
-  assign proxy918 = proxy556;
-  assign pad919 = {{20{1'b0}}, proxy917};
-  assign proxy921 = 20'hfffff;
-  assign proxy923 = {proxy925, proxy924};
-  assign proxy924 = proxy917;
-  assign proxy925 = proxy921;
-  assign proxy927 = proxy917[11];
-  assign eq928 = proxy927 == 1'h1;
-  assign sel930 = eq928 ? proxy923 : pad919;
-  assign sel940 = lt806 ? 12'h7b : 12'h7b;
-  assign sel941 = (proxy549 == 3'h0) ? sel940 : 12'h7b;
+  assign bindin424 = clk;
+  RegisterFile __module5__(.clk(bindin424), .io_in_write_register(bindin425), .io_in_rd(bindin428), .io_in_data(bindin431), .io_in_src1(bindin434), .io_in_src2(bindin437), .io_out_src1_data(bindout440), .io_out_src2_data(bindout443));
+  assign bindin425 = sel487;
+  assign bindin428 = io_in_rd;
+  assign bindin431 = io_in_write_data;
+  assign bindin434 = proxy504;
+  assign bindin437 = proxy511;
+  assign ne485 = io_in_wb != 2'h0;
+  assign sel487 = ne485 ? 1'h1 : 1'h0;
+  assign shr494 = io_in_instruction >> 32'h7;
+  assign proxy497 = shr494[4:0];
+  assign shr501 = io_in_instruction >> 32'hf;
+  assign proxy504 = shr501[4:0];
+  assign shr508 = io_in_instruction >> 32'h14;
+  assign proxy511 = shr508[4:0];
+  assign shr515 = io_in_instruction >> 32'hc;
+  assign proxy518 = shr515[2:0];
+  assign shr522 = io_in_instruction >> 32'h19;
+  assign proxy525 = shr522[6:0];
+  assign eq535 = io_in_instruction[6:0] == 7'h33;
+  assign eq540 = io_in_instruction[6:0] == 7'h3;
+  assign eq545 = io_in_instruction[6:0] == 7'h13;
+  assign orl547 = eq545 | eq540;
+  assign eq552 = io_in_instruction[6:0] == 7'h23;
+  assign eq557 = io_in_instruction[6:0] == 7'h63;
+  assign eq562 = io_in_instruction[6:0] == 7'h6f;
+  assign eq567 = io_in_instruction[6:0] == 7'h67;
+  assign eq572 = io_in_instruction[6:0] == 7'h37;
+  assign eq577 = io_in_instruction[6:0] == 7'h17;
+  assign ne582 = proxy518 != 3'h0;
+  assign eq587 = io_in_instruction[6:0] == 7'h73;
+  assign andl589 = eq587 & ne582;
+  assign proxy592 = proxy518[2];
+  assign eq593 = proxy592 == 1'h1;
+  assign andl596 = andl589 & eq593;
+  assign eq600 = proxy518 == 3'h0;
+  assign andl606 = eq587 & eq600;
+  assign sel608 = eq562 ? io_in_curr_PC : bindout440;
+  assign pad610 = {{27{1'b0}}, proxy504};
+  assign sel612 = andl596 ? pad610 : sel608;
+  assign orl618 = orl547 | eq535;
+  assign orl620 = orl618 | eq572;
+  assign orl622 = orl620 | eq577;
+  assign orl624 = orl622 | andl589;
+  assign sel626 = orl624 ? 2'h1 : 2'h0;
+  assign sel630 = eq540 ? 2'h2 : sel626;
+  assign orl635 = eq562 | eq567;
+  assign orl637 = orl635 | andl606;
+  assign sel639 = orl637 ? 2'h3 : sel630;
+  assign orl644 = orl547 | eq552;
+  assign sel646 = orl644 ? 1'h1 : 1'h0;
+  assign sel650 = eq540 ? proxy518 : 3'h7;
+  assign sel653 = eq552 ? proxy518 : 3'h7;
+  assign proxy656 = {proxy525, proxy511, proxy504, proxy518};
   always @(*) begin
-    case (proxy477)
-      7'h13: sel942 = sel731;
-      7'h33: sel942 = 12'h7b;
-      7'h23: sel942 = proxy749;
-      7'h03: sel942 = proxy761;
-      7'h63: sel942 = proxy788;
-      7'h73: sel942 = sel941;
-      7'h37: sel942 = 12'h7b;
-      7'h17: sel942 = 12'h7b;
-      7'h6f: sel942 = 12'h7b;
-      7'h67: sel942 = 12'h7b;
-      default: sel942 = 12'h7b;
+    case (io_in_instruction[6:0])
+      7'h37: sel665 = proxy656;
+      7'h17: sel665 = proxy656;
+      default: sel665 = 20'h7b;
     endcase
   end
-  assign sel943 = lt806 ? 1'h0 : 1'h1;
-  assign sel944 = (proxy549 == 3'h0) ? sel943 : 1'h1;
+  assign proxy671 = shr515[7:0];
+  assign proxy672 = io_in_instruction[20];
+  assign shr676 = io_in_instruction >> 32'h15;
+  assign proxy679 = shr676[9:0];
+  assign proxy680 = io_in_instruction[31];
+  assign proxy683 = {proxy680, proxy671, proxy672, proxy679, 1'h0};
+  assign pad689 = {{11{1'b0}}, proxy683};
+  assign proxy694 = {11'h7ff, proxy683};
+  assign eq698 = proxy680 == 1'h1;
+  assign sel700 = eq698 ? proxy694 : pad689;
+  assign proxy704 = {proxy525, proxy511};
+  assign pad706 = {{20{1'b0}}, proxy704};
+  assign proxy711 = {20'hfffff, proxy704};
+  assign proxy715 = proxy704[11];
+  assign eq716 = proxy715 == 1'h1;
+  assign sel718 = eq716 ? proxy711 : pad706;
+  assign eq722 = proxy518 == 3'h0;
+  assign lt726 = shr508[11:0] < 12'h2;
+  assign andl729 = eq722 & lt726;
+  assign sel739 = andl729 ? 32'hb0000000 : 32'h7b;
   always @(*) begin
-    case (proxy477)
-      7'h13: sel945 = 1'h0;
-      7'h33: sel945 = 1'h0;
-      7'h23: sel945 = 1'h0;
-      7'h03: sel945 = 1'h0;
-      7'h63: sel945 = 1'h0;
-      7'h73: sel945 = sel944;
-      7'h37: sel945 = 1'h0;
-      7'h17: sel945 = 1'h0;
-      7'h6f: sel945 = 1'h0;
-      7'h67: sel945 = 1'h0;
-      default: sel945 = 1'h0;
+    case (io_in_instruction[6:0])
+      7'h6f: sel740 = sel700;
+      7'h67: sel740 = sel718;
+      7'h73: sel740 = sel739;
+      default: sel740 = 32'h7b;
     endcase
   end
-  assign sel946 = lt806 ? 1'h0 : 1'h0;
-  assign sel947 = (proxy549 == 3'h0) ? sel946 : 1'h0;
+  assign sel741 = andl729 ? 1'h1 : 1'h0;
   always @(*) begin
-    case (proxy477)
-      7'h13: sel948 = 1'h0;
-      7'h33: sel948 = 1'h0;
-      7'h23: sel948 = 1'h0;
-      7'h03: sel948 = 1'h0;
-      7'h63: sel948 = 1'h1;
-      7'h73: sel948 = sel947;
-      7'h37: sel948 = 1'h0;
-      7'h17: sel948 = 1'h0;
-      7'h6f: sel948 = 1'h1;
-      7'h67: sel948 = 1'h1;
-      default: sel948 = 1'h0;
+    case (io_in_instruction[6:0])
+      7'h6f: sel742 = 1'h1;
+      7'h67: sel742 = 1'h1;
+      7'h73: sel742 = sel741;
+      default: sel742 = 1'h0;
+    endcase
+  end
+  assign ne744 = proxy518 != 3'h0;
+  assign ge747 = shr508[11:0] >= 12'h2;
+  assign eq750 = io_in_instruction[6:0] == io_in_instruction[6:0];
+  assign andl761 = ne744 & ge747;
+  assign andl763 = andl761 & eq750;
+  assign sel765 = andl763 ? shr508[11:0] : 12'h7b;
+  assign eq770 = proxy518 == 3'h5;
+  assign eq775 = proxy518 == 3'h1;
+  assign orl777 = eq775 | eq770;
+  assign pad779 = {{7{1'b0}}, proxy511};
+  assign sel787 = orl777 ? pad779 : shr508[11:0];
+  assign proxy790 = {proxy525, proxy497};
+  assign proxy799 = io_in_instruction[7];
+  assign shr803 = io_in_instruction >> 32'h8;
+  assign proxy806 = shr803[3:0];
+  assign proxy812 = shr522[5:0];
+  assign proxy814 = {proxy680, proxy799, proxy812, proxy806};
+  always @(*) begin
+    case (io_in_instruction[6:0])
+      7'h13: sel820 = sel787;
+      7'h23: sel820 = proxy790;
+      7'h03: sel820 = shr508[11:0];
+      7'h63: sel820 = proxy814;
+      default: sel820 = 12'h7b;
     endcase
   end
   always @(*) begin
-    case (proxy549)
-      3'h0: sel949 = 3'h1;
-      3'h1: sel949 = 3'h2;
-      3'h4: sel949 = 3'h3;
-      3'h5: sel949 = 3'h4;
-      3'h6: sel949 = 3'h5;
-      3'h7: sel949 = 3'h6;
-      default: sel949 = 3'h0;
+    case (proxy518)
+      3'h0: sel839 = 3'h1;
+      3'h1: sel839 = 3'h2;
+      3'h4: sel839 = 3'h3;
+      3'h5: sel839 = 3'h4;
+      3'h6: sel839 = 3'h5;
+      3'h7: sel839 = 3'h6;
+      default: sel839 = 3'h0;
     endcase
   end
-  assign sel950 = lt806 ? 3'h0 : 3'h0;
-  assign sel951 = (proxy549 == 3'h0) ? sel950 : 3'h0;
   always @(*) begin
-    case (proxy477)
-      7'h13: sel952 = 3'h0;
-      7'h33: sel952 = 3'h0;
-      7'h23: sel952 = 3'h0;
-      7'h03: sel952 = 3'h0;
-      7'h63: sel952 = sel949;
-      7'h73: sel952 = sel951;
-      7'h37: sel952 = 3'h0;
-      7'h17: sel952 = 3'h0;
-      7'h6f: sel952 = 3'h0;
-      7'h67: sel952 = 3'h0;
-      default: sel952 = 3'h0;
+    case (io_in_instruction[6:0])
+      7'h63: sel840 = sel839;
+      7'h6f: sel840 = 3'h0;
+      7'h67: sel840 = 3'h0;
+      default: sel840 = 3'h0;
     endcase
   end
-  assign sel953 = lt806 ? 32'hb0000000 : 32'h7b;
-  assign sel954 = (proxy549 == 3'h0) ? sel953 : 32'h7b;
   always @(*) begin
-    case (proxy477)
-      7'h13: sel955 = 32'h7b;
-      7'h33: sel955 = 32'h7b;
-      7'h23: sel955 = 32'h7b;
-      7'h03: sel955 = 32'h7b;
-      7'h63: sel955 = 32'h7b;
-      7'h73: sel955 = sel954;
-      7'h37: sel955 = 32'h7b;
-      7'h17: sel955 = 32'h7b;
-      7'h6f: sel955 = sel907;
-      7'h67: sel955 = sel930;
-      default: sel955 = 32'h7b;
+    case (io_in_instruction[6:0])
+      7'h63: sel841 = 1'h1;
+      7'h6f: sel841 = 1'h1;
+      7'h67: sel841 = 1'h1;
+      default: sel841 = 1'h0;
     endcase
   end
-  assign sel956 = lt806 ? 20'h7b : 20'h7b;
-  assign sel957 = (proxy549 == 3'h0) ? sel956 : 20'h7b;
+  assign eq851 = proxy525 == 7'h0;
+  assign sel853 = eq851 ? 4'h0 : 4'h1;
+  assign sel856 = eq545 ? 4'h0 : sel853;
+  assign sel873 = eq851 ? 4'h6 : 4'h7;
   always @(*) begin
-    case (proxy477)
-      7'h13: sel958 = 20'h7b;
-      7'h33: sel958 = 20'h7b;
-      7'h23: sel958 = 20'h7b;
-      7'h03: sel958 = 20'h7b;
-      7'h63: sel958 = 20'h7b;
-      7'h73: sel958 = sel957;
-      7'h37: sel958 = proxy849;
-      7'h17: sel958 = proxy860;
-      7'h6f: sel958 = 20'h7b;
-      7'h67: sel958 = 20'h7b;
-      default: sel958 = 20'h7b;
+    case (proxy518)
+      3'h0: sel881 = sel856;
+      3'h1: sel881 = 4'h2;
+      3'h2: sel881 = 4'h3;
+      3'h3: sel881 = 4'h4;
+      3'h4: sel881 = 4'h5;
+      3'h5: sel881 = sel873;
+      3'h6: sel881 = 4'h8;
+      3'h7: sel881 = 4'h9;
+      default: sel881 = 4'hf;
     endcase
   end
-  assign sel959 = lt806 ? 1'h1 : 1'h0;
-  assign sel960 = (proxy549 == 3'h0) ? sel959 : 1'h0;
-  always @(*) begin
-    case (proxy477)
-      7'h13: sel961 = 1'h0;
-      7'h33: sel961 = 1'h0;
-      7'h23: sel961 = 1'h0;
-      7'h03: sel961 = 1'h0;
-      7'h63: sel961 = 1'h0;
-      7'h73: sel961 = sel960;
-      7'h37: sel961 = 1'h0;
-      7'h17: sel961 = 1'h0;
-      7'h6f: sel961 = 1'h1;
-      7'h67: sel961 = 1'h1;
-      default: sel961 = 1'h0;
-    endcase
-  end
-  assign sel962 = lt806 ? 12'h7b : proxy828;
-  assign sel963 = (proxy549 == 3'h0) ? sel962 : proxy841;
-  always @(*) begin
-    case (proxy477)
-      7'h13: sel964 = 12'h7b;
-      7'h33: sel964 = 12'h7b;
-      7'h23: sel964 = 12'h7b;
-      7'h03: sel964 = 12'h7b;
-      7'h63: sel964 = 12'h7b;
-      7'h73: sel964 = sel963;
-      7'h37: sel964 = 12'h7b;
-      7'h17: sel964 = 12'h7b;
-      7'h6f: sel964 = 12'h7b;
-      7'h67: sel964 = 12'h7b;
-      default: sel964 = 12'h7b;
-    endcase
-  end
-  assign proxy966 = proxy477;
-  assign eq967 = proxy966 == 7'h13;
-  assign eq974 = proxy556 == 7'h0;
-  assign sel976 = eq974 ? 4'h0 : 4'h1;
-  assign sel979 = eq967 ? 4'h0 : sel976;
-  assign eq994 = proxy556 == 7'h0;
-  assign sel996 = eq994 ? 4'h6 : 4'h7;
-  always @(*) begin
-    case (proxy549)
-      3'h0: sel1004 = sel979;
-      3'h1: sel1004 = 4'h2;
-      3'h2: sel1004 = 4'h3;
-      3'h3: sel1004 = 4'h4;
-      3'h4: sel1004 = 4'h5;
-      3'h5: sel1004 = sel996;
-      3'h6: sel1004 = 4'h8;
-      3'h7: sel1004 = 4'h9;
-      default: sel1004 = 4'hf;
-    endcase
-  end
-  assign proxy1006 = proxy549[1:0];
-  assign proxy1010 = proxy1006;
-  assign eq1011 = proxy1010 == 2'h3;
-  assign sel1013 = eq1011 ? 4'hf : 4'hf;
-  assign proxy1018 = proxy1006;
-  assign eq1019 = proxy1018 == 2'h2;
-  assign sel1021 = eq1019 ? 4'he : sel1013;
-  assign proxy1026 = proxy1006;
-  assign eq1027 = proxy1026 == 2'h1;
-  assign sel1029 = eq1027 ? 4'hd : sel1021;
-  assign proxy1032 = proxy491;
-  assign orl1033 = proxy1032 || proxy495;
-  assign sel1035 = orl1033 ? 4'h0 : sel1004;
-  assign sel1037 = proxy505 ? sel1029 : sel1035;
-  assign sel1041 = proxy503 ? 4'hc : sel1037;
-  assign sel1045 = proxy501 ? 4'hb : sel1041;
-  assign lt1051 = sel952 < 3'h5;
-  assign sel1053 = lt1051 ? 4'h1 : 4'ha;
-  assign sel1055 = proxy493 ? sel1053 : sel1045;
-  assign proxy1056 = sel1055;
+  assign proxy883 = proxy518[1:0];
+  assign eq888 = proxy883 == 2'h3;
+  assign sel890 = eq888 ? 4'hf : 4'hf;
+  assign eq896 = proxy883 == 2'h2;
+  assign sel898 = eq896 ? 4'he : sel890;
+  assign eq904 = proxy883 == 2'h1;
+  assign sel906 = eq904 ? 4'hd : sel898;
+  assign orl910 = eq552 | eq540;
+  assign sel912 = orl910 ? 4'h0 : sel881;
+  assign sel914 = andl589 ? sel906 : sel912;
+  assign sel918 = eq577 ? 4'hc : sel914;
+  assign sel922 = eq572 ? 4'hb : sel918;
+  assign lt928 = sel840 < 3'h5;
+  assign sel930 = lt928 ? 4'h1 : 4'ha;
+  assign sel932 = eq557 ? sel930 : sel922;
 
-  assign io_out_csr_address = sel964;
-  assign io_out_is_csr = sel945;
-  assign io_out_csr_data = io_out_csr_data327;
-  assign io_out_csr_mask = io_out_csr_mask330;
-  assign io_out_rd = io_out_rd333;
-  assign io_out_rs1 = io_out_rs1336;
-  assign io_out_rd1 = io_out_rd1339;
-  assign io_out_rs2 = io_out_rs2342;
-  assign io_out_rd2 = io_out_rd2345;
-  assign io_out_wb = io_out_wb348;
-  assign io_out_alu_op = io_out_alu_op351;
-  assign io_out_rs2_src = io_out_rs2_src354;
-  assign io_out_itype_immed = sel942;
-  assign io_out_mem_read = io_out_mem_read360;
-  assign io_out_mem_write = io_out_mem_write363;
-  assign io_out_branch_type = sel952;
-  assign io_out_branch_stall = sel948;
-  assign io_out_jal = sel961;
-  assign io_out_jal_offset = sel955;
-  assign io_out_upper_immed = sel958;
+  assign io_out_csr_address = sel765;
+  assign io_out_is_csr = andl589;
+  assign io_out_csr_data = io_in_csr_data;
+  assign io_out_csr_mask = sel612;
+  assign io_out_rd = proxy497;
+  assign io_out_rs1 = proxy504;
+  assign io_out_rd1 = sel608;
+  assign io_out_rs2 = proxy511;
+  assign io_out_rd2 = bindout443;
+  assign io_out_wb = sel639;
+  assign io_out_alu_op = sel932;
+  assign io_out_rs2_src = sel646;
+  assign io_out_itype_immed = sel820;
+  assign io_out_mem_read = sel650;
+  assign io_out_mem_write = sel653;
+  assign io_out_branch_type = sel840;
+  assign io_out_branch_stall = sel841;
+  assign io_out_jal = sel742;
+  assign io_out_jal_offset = sel740;
+  assign io_out_upper_immed = sel665;
   assign io_out_PC_next = io_in_PC_next;
 
 endmodule
@@ -995,392 +437,195 @@ module D_E_Register(
   output wire[31:0] io_out_jal_offset,
   output wire[31:0] io_out_PC_next
 );
-  wire[11:0] io_out_csr_address1189; // d_e_register.h(21:0)
-  wire io_out_is_csr1192; // d_e_register.h(21:0)
-  wire[31:0] io_out_csr_data1195; // d_e_register.h(21:0)
-  wire[31:0] io_out_csr_mask1198; // d_e_register.h(21:0)
-  wire[4:0] io_out_rd1201; // d_e_register.h(21:0)
-  wire[4:0] io_out_rs11204; // d_e_register.h(21:0)
-  wire[31:0] io_out_rd11207; // d_e_register.h(21:0)
-  wire[4:0] io_out_rs21210; // d_e_register.h(21:0)
-  wire[31:0] io_out_rd21213; // d_e_register.h(21:0)
-  wire[3:0] io_out_alu_op1216; // d_e_register.h(21:0)
-  wire[1:0] io_out_wb1219; // d_e_register.h(21:0)
-  wire io_out_rs2_src1222; // d_e_register.h(21:0)
-  wire[11:0] io_out_itype_immed1225; // d_e_register.h(21:0)
-  wire[2:0] io_out_mem_read1228; // d_e_register.h(21:0)
-  wire[2:0] io_out_mem_write1231; // d_e_register.h(21:0)
-  wire[2:0] io_out_branch_type1234; // d_e_register.h(21:0)
-  wire[19:0] io_out_upper_immed1237; // d_e_register.h(21:0)
-  wire[31:0] io_out_curr_PC1240; // d_e_register.h(21:0)
-  wire io_out_jal1243; // d_e_register.h(21:0)
-  wire[31:0] io_out_jal_offset1246; // d_e_register.h(21:0)
-  wire[31:0] io_out_PC_next1249; // d_e_register.h(21:0)
-  wire[4:0] proxy1254; // d_e_register.h(76:0)
-  wire[4:0] proxy1255; // d_e_register.h(76:0)
-  reg[4:0] reg1256; // d_e_register.h(76:0)
-  wire[4:0] proxy1263; // d_e_register.h(77:0)
-  wire[4:0] proxy1264; // d_e_register.h(77:0)
-  reg[4:0] reg1265; // d_e_register.h(77:0)
-  wire[31:0] proxy1270; // d_e_register.h(78:0)
-  wire[31:0] proxy1271; // d_e_register.h(78:0)
-  reg[31:0] reg1272; // d_e_register.h(78:0)
-  wire[4:0] proxy1276; // d_e_register.h(79:0)
-  wire[4:0] proxy1277; // d_e_register.h(79:0)
-  reg[4:0] reg1278; // d_e_register.h(79:0)
-  wire[31:0] proxy1282; // d_e_register.h(80:0)
-  wire[31:0] proxy1283; // d_e_register.h(80:0)
-  reg[31:0] reg1284; // d_e_register.h(80:0)
-  wire[3:0] proxy1289; // d_e_register.h(81:0)
-  wire[3:0] proxy1290; // d_e_register.h(81:0)
-  reg[3:0] reg1291; // d_e_register.h(81:0)
-  wire[1:0] proxy1296; // d_e_register.h(82:0)
-  wire[1:0] proxy1297; // d_e_register.h(82:0)
-  reg[1:0] reg1298; // d_e_register.h(82:0)
-  wire[31:0] proxy1302; // d_e_register.h(83:0)
-  wire[31:0] proxy1303; // d_e_register.h(83:0)
-  reg[31:0] reg1304; // d_e_register.h(83:0)
-  wire proxy1309; // d_e_register.h(84:0)
-  wire proxy1310; // d_e_register.h(84:0)
-  reg reg1311; // d_e_register.h(84:0)
-  wire[11:0] proxy1316; // d_e_register.h(85:0)
-  wire[11:0] proxy1317; // d_e_register.h(85:0)
-  reg[11:0] reg1318; // d_e_register.h(85:0)
-  wire[2:0] proxy1323; // d_e_register.h(86:0)
-  wire[2:0] proxy1324; // d_e_register.h(86:0)
-  reg[2:0] reg1325; // d_e_register.h(86:0)
-  wire[2:0] proxy1329; // d_e_register.h(87:0)
-  wire[2:0] proxy1330; // d_e_register.h(87:0)
-  reg[2:0] reg1331; // d_e_register.h(87:0)
-  wire[2:0] proxy1336; // d_e_register.h(88:0)
-  wire[2:0] proxy1337; // d_e_register.h(88:0)
-  reg[2:0] reg1338; // d_e_register.h(88:0)
-  wire[19:0] proxy1343; // d_e_register.h(89:0)
-  wire[19:0] proxy1344; // d_e_register.h(89:0)
-  reg[19:0] reg1345; // d_e_register.h(89:0)
-  wire[11:0] proxy1349; // d_e_register.h(90:0)
-  wire[11:0] proxy1350; // d_e_register.h(90:0)
-  reg[11:0] reg1351; // d_e_register.h(90:0)
-  wire proxy1355; // d_e_register.h(91:0)
-  wire proxy1356; // d_e_register.h(91:0)
-  reg reg1357; // d_e_register.h(91:0)
-  wire[31:0] proxy1361; // d_e_register.h(92:0)
-  wire[31:0] proxy1362; // d_e_register.h(92:0)
-  reg[31:0] reg1363; // d_e_register.h(92:0)
-  wire[31:0] proxy1367; // d_e_register.h(93:0)
-  wire[31:0] proxy1368; // d_e_register.h(93:0)
-  reg[31:0] reg1369; // d_e_register.h(93:0)
-  wire[31:0] proxy1373; // d_e_register.h(94:0)
-  wire[31:0] proxy1374; // d_e_register.h(94:0)
-  reg[31:0] reg1375; // d_e_register.h(94:0)
-  wire proxy1379; // d_e_register.h(95:0)
-  wire proxy1380; // d_e_register.h(95:0)
-  reg reg1381; // d_e_register.h(95:0)
-  wire[31:0] proxy1385; // d_e_register.h(96:0)
-  wire[31:0] proxy1386; // d_e_register.h(96:0)
-  reg[31:0] reg1387; // d_e_register.h(96:0)
-  wire eq1392; // d_e_register.h(134:1)
-  wire eq1396; // d_e_register.h(134:3)
-  wire orl1398; // d_e_register.h(134:3)
-  wire[4:0] sel1401; // d_e_register.h(137:0)
-  wire[4:0] proxy1402; // d_e_register.h(137:0)
-  wire[4:0] sel1404; // d_e_register.h(138:0)
-  wire[4:0] proxy1405; // d_e_register.h(138:0)
-  wire[31:0] sel1407; // d_e_register.h(139:0)
-  wire[31:0] proxy1408; // d_e_register.h(139:0)
-  wire[4:0] sel1410; // d_e_register.h(140:0)
-  wire[4:0] proxy1411; // d_e_register.h(140:0)
-  wire[31:0] sel1413; // d_e_register.h(141:0)
-  wire[31:0] proxy1414; // d_e_register.h(141:0)
-  wire[3:0] sel1417; // d_e_register.h(142:0)
-  wire[3:0] proxy1418; // d_e_register.h(142:0)
-  wire[1:0] sel1420; // d_e_register.h(143:0)
-  wire[1:0] proxy1421; // d_e_register.h(143:0)
-  wire[31:0] sel1423; // d_e_register.h(144:0)
-  wire[31:0] proxy1424; // d_e_register.h(144:0)
-  wire sel1426; // d_e_register.h(145:0)
-  wire proxy1427; // d_e_register.h(145:0)
-  wire[11:0] sel1430; // d_e_register.h(146:0)
-  wire[11:0] proxy1431; // d_e_register.h(146:0)
-  wire[2:0] sel1433; // d_e_register.h(147:0)
-  wire[2:0] proxy1434; // d_e_register.h(147:0)
-  wire[2:0] sel1436; // d_e_register.h(148:0)
-  wire[2:0] proxy1437; // d_e_register.h(148:0)
-  wire[2:0] sel1439; // d_e_register.h(149:0)
-  wire[2:0] proxy1440; // d_e_register.h(149:0)
-  wire[19:0] sel1442; // d_e_register.h(150:0)
-  wire[19:0] proxy1443; // d_e_register.h(150:0)
-  wire[11:0] sel1445; // d_e_register.h(151:0)
-  wire[11:0] proxy1446; // d_e_register.h(151:0)
-  wire sel1448; // d_e_register.h(152:0)
-  wire proxy1449; // d_e_register.h(152:0)
-  wire[31:0] sel1451; // d_e_register.h(153:0)
-  wire[31:0] proxy1452; // d_e_register.h(153:0)
-  wire[31:0] sel1454; // d_e_register.h(154:0)
-  wire[31:0] proxy1455; // d_e_register.h(154:0)
-  wire sel1457; // d_e_register.h(155:0)
-  wire proxy1458; // d_e_register.h(155:0)
-  wire[31:0] sel1460; // d_e_register.h(156:0)
-  wire[31:0] proxy1461; // d_e_register.h(156:0)
-  wire[31:0] sel1463; // d_e_register.h(157:0)
-  wire[31:0] proxy1464; // d_e_register.h(157:0)
+  reg[4:0] reg1115, reg1124, reg1137;
+  reg[31:0] reg1131, reg1143, reg1163, reg1222, reg1228, reg1234, reg1246;
+  reg[3:0] reg1150;
+  reg[1:0] reg1157;
+  reg reg1170, reg1216, reg1240;
+  reg[11:0] reg1177, reg1210;
+  reg[2:0] reg1184, reg1190, reg1197;
+  reg[19:0] reg1204;
+  wire eq1250, eq1254, orl1256, sel1284, sel1306, sel1315;
+  wire[4:0] sel1259, sel1262, sel1268;
+  wire[31:0] sel1265, sel1271, sel1281, sel1309, sel1312, sel1318, sel1321;
+  wire[3:0] sel1275;
+  wire[1:0] sel1278;
+  wire[11:0] sel1288, sel1303;
+  wire[2:0] sel1291, sel1294, sel1297;
+  wire[19:0] sel1300;
 
-  assign io_out_csr_address1189 = proxy1349;
-  assign io_out_is_csr1192 = proxy1355;
-  assign io_out_csr_data1195 = proxy1361;
-  assign io_out_csr_mask1198 = proxy1367;
-  assign io_out_rd1201 = proxy1254;
-  assign io_out_rs11204 = proxy1263;
-  assign io_out_rd11207 = proxy1270;
-  assign io_out_rs21210 = proxy1276;
-  assign io_out_rd21213 = proxy1282;
-  assign io_out_alu_op1216 = proxy1289;
-  assign io_out_wb1219 = proxy1296;
-  assign io_out_rs2_src1222 = proxy1309;
-  assign io_out_itype_immed1225 = proxy1316;
-  assign io_out_mem_read1228 = proxy1323;
-  assign io_out_mem_write1231 = proxy1329;
-  assign io_out_branch_type1234 = proxy1336;
-  assign io_out_upper_immed1237 = proxy1343;
-  assign io_out_curr_PC1240 = proxy1373;
-  assign io_out_jal1243 = proxy1379;
-  assign io_out_jal_offset1246 = proxy1385;
-  assign io_out_PC_next1249 = proxy1302;
-  assign proxy1254 = reg1256;
-  assign proxy1255 = proxy1402;
   always @ (posedge clk) begin
     if (reset)
-      reg1256 <= 5'h0;
+      reg1115 <= 5'h0;
     else
-      reg1256 <= proxy1255;
+      reg1115 <= sel1259;
   end
-  assign proxy1263 = reg1265;
-  assign proxy1264 = proxy1405;
   always @ (posedge clk) begin
     if (reset)
-      reg1265 <= 5'h0;
+      reg1124 <= 5'h0;
     else
-      reg1265 <= proxy1264;
+      reg1124 <= sel1262;
   end
-  assign proxy1270 = reg1272;
-  assign proxy1271 = proxy1408;
   always @ (posedge clk) begin
     if (reset)
-      reg1272 <= 32'h0;
+      reg1131 <= 32'h0;
     else
-      reg1272 <= proxy1271;
+      reg1131 <= sel1265;
   end
-  assign proxy1276 = reg1278;
-  assign proxy1277 = proxy1411;
   always @ (posedge clk) begin
     if (reset)
-      reg1278 <= 5'h0;
+      reg1137 <= 5'h0;
     else
-      reg1278 <= proxy1277;
+      reg1137 <= sel1268;
   end
-  assign proxy1282 = reg1284;
-  assign proxy1283 = proxy1414;
   always @ (posedge clk) begin
     if (reset)
-      reg1284 <= 32'h0;
+      reg1143 <= 32'h0;
     else
-      reg1284 <= proxy1283;
+      reg1143 <= sel1271;
   end
-  assign proxy1289 = reg1291;
-  assign proxy1290 = proxy1418;
   always @ (posedge clk) begin
     if (reset)
-      reg1291 <= 4'h0;
+      reg1150 <= 4'h0;
     else
-      reg1291 <= proxy1290;
+      reg1150 <= sel1275;
   end
-  assign proxy1296 = reg1298;
-  assign proxy1297 = proxy1421;
   always @ (posedge clk) begin
     if (reset)
-      reg1298 <= 2'h0;
+      reg1157 <= 2'h0;
     else
-      reg1298 <= proxy1297;
+      reg1157 <= sel1278;
   end
-  assign proxy1302 = reg1304;
-  assign proxy1303 = proxy1424;
   always @ (posedge clk) begin
     if (reset)
-      reg1304 <= 32'h0;
+      reg1163 <= 32'h0;
     else
-      reg1304 <= proxy1303;
+      reg1163 <= sel1281;
   end
-  assign proxy1309 = reg1311;
-  assign proxy1310 = proxy1427;
   always @ (posedge clk) begin
     if (reset)
-      reg1311 <= 1'h0;
+      reg1170 <= 1'h0;
     else
-      reg1311 <= proxy1310;
+      reg1170 <= sel1284;
   end
-  assign proxy1316 = reg1318;
-  assign proxy1317 = proxy1431;
   always @ (posedge clk) begin
     if (reset)
-      reg1318 <= 12'h0;
+      reg1177 <= 12'h0;
     else
-      reg1318 <= proxy1317;
+      reg1177 <= sel1288;
   end
-  assign proxy1323 = reg1325;
-  assign proxy1324 = proxy1434;
   always @ (posedge clk) begin
     if (reset)
-      reg1325 <= 3'h7;
+      reg1184 <= 3'h7;
     else
-      reg1325 <= proxy1324;
+      reg1184 <= sel1291;
   end
-  assign proxy1329 = reg1331;
-  assign proxy1330 = proxy1437;
   always @ (posedge clk) begin
     if (reset)
-      reg1331 <= 3'h7;
+      reg1190 <= 3'h7;
     else
-      reg1331 <= proxy1330;
+      reg1190 <= sel1294;
   end
-  assign proxy1336 = reg1338;
-  assign proxy1337 = proxy1440;
   always @ (posedge clk) begin
     if (reset)
-      reg1338 <= 3'h0;
+      reg1197 <= 3'h0;
     else
-      reg1338 <= proxy1337;
+      reg1197 <= sel1297;
   end
-  assign proxy1343 = reg1345;
-  assign proxy1344 = proxy1443;
   always @ (posedge clk) begin
     if (reset)
-      reg1345 <= 20'h0;
+      reg1204 <= 20'h0;
     else
-      reg1345 <= proxy1344;
+      reg1204 <= sel1300;
   end
-  assign proxy1349 = reg1351;
-  assign proxy1350 = proxy1446;
   always @ (posedge clk) begin
     if (reset)
-      reg1351 <= 12'h0;
+      reg1210 <= 12'h0;
     else
-      reg1351 <= proxy1350;
+      reg1210 <= sel1303;
   end
-  assign proxy1355 = reg1357;
-  assign proxy1356 = proxy1449;
   always @ (posedge clk) begin
     if (reset)
-      reg1357 <= 1'h0;
+      reg1216 <= 1'h0;
     else
-      reg1357 <= proxy1356;
+      reg1216 <= sel1306;
   end
-  assign proxy1361 = reg1363;
-  assign proxy1362 = proxy1452;
   always @ (posedge clk) begin
     if (reset)
-      reg1363 <= 32'h0;
+      reg1222 <= 32'h0;
     else
-      reg1363 <= proxy1362;
+      reg1222 <= sel1309;
   end
-  assign proxy1367 = reg1369;
-  assign proxy1368 = proxy1455;
   always @ (posedge clk) begin
     if (reset)
-      reg1369 <= 32'h0;
+      reg1228 <= 32'h0;
     else
-      reg1369 <= proxy1368;
+      reg1228 <= sel1312;
   end
-  assign proxy1373 = reg1375;
-  assign proxy1374 = proxy1464;
   always @ (posedge clk) begin
     if (reset)
-      reg1375 <= 32'h0;
+      reg1234 <= 32'h0;
     else
-      reg1375 <= proxy1374;
+      reg1234 <= sel1321;
   end
-  assign proxy1379 = reg1381;
-  assign proxy1380 = proxy1458;
   always @ (posedge clk) begin
     if (reset)
-      reg1381 <= 1'h0;
+      reg1240 <= 1'h0;
     else
-      reg1381 <= proxy1380;
+      reg1240 <= sel1315;
   end
-  assign proxy1385 = reg1387;
-  assign proxy1386 = proxy1461;
   always @ (posedge clk) begin
     if (reset)
-      reg1387 <= 32'h0;
+      reg1246 <= 32'h0;
     else
-      reg1387 <= proxy1386;
+      reg1246 <= sel1318;
   end
-  assign eq1392 = io_in_branch_stall == 1'h1;
-  assign eq1396 = io_in_fwd_stall == 1'h1;
-  assign orl1398 = eq1396 || eq1392;
-  assign sel1401 = orl1398 ? 5'h0 : io_in_rd;
-  assign proxy1402 = sel1401;
-  assign sel1404 = orl1398 ? 5'h0 : io_in_rs1;
-  assign proxy1405 = sel1404;
-  assign sel1407 = orl1398 ? 32'h0 : io_in_rd1;
-  assign proxy1408 = sel1407;
-  assign sel1410 = orl1398 ? 5'h0 : io_in_rs2;
-  assign proxy1411 = sel1410;
-  assign sel1413 = orl1398 ? 32'h0 : io_in_rd2;
-  assign proxy1414 = sel1413;
-  assign sel1417 = orl1398 ? 4'hf : io_in_alu_op;
-  assign proxy1418 = sel1417;
-  assign sel1420 = orl1398 ? 2'h0 : io_in_wb;
-  assign proxy1421 = sel1420;
-  assign sel1423 = orl1398 ? 32'h0 : io_in_PC_next;
-  assign proxy1424 = sel1423;
-  assign sel1426 = orl1398 ? 1'h0 : io_in_rs2_src;
-  assign proxy1427 = sel1426;
-  assign sel1430 = orl1398 ? 12'h7b : io_in_itype_immed;
-  assign proxy1431 = sel1430;
-  assign sel1433 = orl1398 ? 3'h7 : io_in_mem_read;
-  assign proxy1434 = sel1433;
-  assign sel1436 = orl1398 ? 3'h7 : io_in_mem_write;
-  assign proxy1437 = sel1436;
-  assign sel1439 = orl1398 ? 3'h0 : io_in_branch_type;
-  assign proxy1440 = sel1439;
-  assign sel1442 = orl1398 ? 20'h0 : io_in_upper_immed;
-  assign proxy1443 = sel1442;
-  assign sel1445 = orl1398 ? 12'h0 : io_in_csr_address;
-  assign proxy1446 = sel1445;
-  assign sel1448 = orl1398 ? 1'h0 : io_in_is_csr;
-  assign proxy1449 = sel1448;
-  assign sel1451 = orl1398 ? 32'h0 : io_in_csr_data;
-  assign proxy1452 = sel1451;
-  assign sel1454 = orl1398 ? 32'h0 : io_in_csr_mask;
-  assign proxy1455 = sel1454;
-  assign sel1457 = orl1398 ? 1'h0 : io_in_jal;
-  assign proxy1458 = sel1457;
-  assign sel1460 = orl1398 ? 32'h0 : io_in_jal_offset;
-  assign proxy1461 = sel1460;
-  assign sel1463 = orl1398 ? 32'h0 : io_in_curr_PC;
-  assign proxy1464 = sel1463;
+  assign eq1250 = io_in_branch_stall == 1'h1;
+  assign eq1254 = io_in_fwd_stall == 1'h1;
+  assign orl1256 = eq1254 | eq1250;
+  assign sel1259 = orl1256 ? 5'h0 : io_in_rd;
+  assign sel1262 = orl1256 ? 5'h0 : io_in_rs1;
+  assign sel1265 = orl1256 ? 32'h0 : io_in_rd1;
+  assign sel1268 = orl1256 ? 5'h0 : io_in_rs2;
+  assign sel1271 = orl1256 ? 32'h0 : io_in_rd2;
+  assign sel1275 = orl1256 ? 4'hf : io_in_alu_op;
+  assign sel1278 = orl1256 ? 2'h0 : io_in_wb;
+  assign sel1281 = orl1256 ? 32'h0 : io_in_PC_next;
+  assign sel1284 = orl1256 ? 1'h0 : io_in_rs2_src;
+  assign sel1288 = orl1256 ? 12'h7b : io_in_itype_immed;
+  assign sel1291 = orl1256 ? 3'h7 : io_in_mem_read;
+  assign sel1294 = orl1256 ? 3'h7 : io_in_mem_write;
+  assign sel1297 = orl1256 ? 3'h0 : io_in_branch_type;
+  assign sel1300 = orl1256 ? 20'h0 : io_in_upper_immed;
+  assign sel1303 = orl1256 ? 12'h0 : io_in_csr_address;
+  assign sel1306 = orl1256 ? 1'h0 : io_in_is_csr;
+  assign sel1309 = orl1256 ? 32'h0 : io_in_csr_data;
+  assign sel1312 = orl1256 ? 32'h0 : io_in_csr_mask;
+  assign sel1315 = orl1256 ? 1'h0 : io_in_jal;
+  assign sel1318 = orl1256 ? 32'h0 : io_in_jal_offset;
+  assign sel1321 = orl1256 ? 32'h0 : io_in_curr_PC;
 
-  assign io_out_csr_address = io_out_csr_address1189;
-  assign io_out_is_csr = io_out_is_csr1192;
-  assign io_out_csr_data = io_out_csr_data1195;
-  assign io_out_csr_mask = io_out_csr_mask1198;
-  assign io_out_rd = io_out_rd1201;
-  assign io_out_rs1 = io_out_rs11204;
-  assign io_out_rd1 = io_out_rd11207;
-  assign io_out_rs2 = io_out_rs21210;
-  assign io_out_rd2 = io_out_rd21213;
-  assign io_out_alu_op = io_out_alu_op1216;
-  assign io_out_wb = io_out_wb1219;
-  assign io_out_rs2_src = io_out_rs2_src1222;
-  assign io_out_itype_immed = io_out_itype_immed1225;
-  assign io_out_mem_read = io_out_mem_read1228;
-  assign io_out_mem_write = io_out_mem_write1231;
-  assign io_out_branch_type = io_out_branch_type1234;
-  assign io_out_upper_immed = io_out_upper_immed1237;
-  assign io_out_curr_PC = io_out_curr_PC1240;
-  assign io_out_jal = io_out_jal1243;
-  assign io_out_jal_offset = io_out_jal_offset1246;
-  assign io_out_PC_next = io_out_PC_next1249;
+  assign io_out_csr_address = reg1210;
+  assign io_out_is_csr = reg1216;
+  assign io_out_csr_data = reg1222;
+  assign io_out_csr_mask = reg1228;
+  assign io_out_rd = reg1115;
+  assign io_out_rs1 = reg1124;
+  assign io_out_rd1 = reg1131;
+  assign io_out_rs2 = reg1137;
+  assign io_out_rd2 = reg1143;
+  assign io_out_alu_op = reg1150;
+  assign io_out_wb = reg1157;
+  assign io_out_rs2_src = reg1170;
+  assign io_out_itype_immed = reg1177;
+  assign io_out_mem_read = reg1184;
+  assign io_out_mem_write = reg1190;
+  assign io_out_branch_type = reg1197;
+  assign io_out_upper_immed = reg1204;
+  assign io_out_curr_PC = reg1234;
+  assign io_out_jal = reg1240;
+  assign io_out_jal_offset = reg1246;
+  assign io_out_PC_next = reg1163;
 
 endmodule
 
@@ -1424,150 +669,85 @@ module Execute(
   output wire io_out_branch_stall,
   output wire[31:0] io_out_PC_next
 );
-  wire[31:0] io_out_jal_dest1661; // execute.h(9:0)
-  wire[31:0] io_out_branch_offset1664; // execute.h(9:0)
-  wire io_out_branch_stall1667; // execute.h(9:0)
-  wire[31:0] pad1672; // execute.h(63:1)
-  wire[19:0] proxy1674; // execute.h(63:3)
-  wire[31:0] proxy1676; // execute.h(63:2)
-  wire[11:0] io_in_itype_immed1677; // /home/blaise/dev/cash/include/ioport.h(75:0)
-  wire[19:0] proxy1678; // /home/blaise/dev/cash/include/logic.h(180:25)
-  wire eq1683; // execute.h(63:5)
-  wire[31:0] sel1685; // execute.h(63:0)
-  wire[31:0] proxy1686; // execute.h(63:0)
-  wire[31:0] io_in_rd11687; // execute.h(67:0)
-  wire eq1690; // execute.h(69:1)
-  wire[31:0] sel1692; // execute.h(70:0)
-  wire[31:0] proxy1693; // execute.h(70:0)
-  wire[11:0] proxy1695; // execute.h(73:1)
-  wire[31:0] proxy1697; // execute.h(73:0)
-  wire[11:0] proxy1698; // /home/blaise/dev/cash/include/logic.h(180:26)
-  wire[19:0] io_in_upper_immed1699; // /home/blaise/dev/cash/include/ioport.h(75:1)
-  wire[31:0] add1700; // execute.h(9:0)
-  wire[31:0] proxy1701; // execute.h(9:0)
-  wire[31:0] add1703; // execute.h(67:0)
-  wire[31:0] sub1708; // execute.h(67:0)
-  wire[31:0] shl1712; // execute.h(67:0)
-  wire lt1720; // execute.h(67:0)
-  wire[31:0] sel1722; // execute.h(108:0)
-  wire[31:0] io_in_rd11728; // execute.h(116:3)
-  wire lt1729; // execute.h(116:3)
-  wire[31:0] sel1731; // execute.h(116:0)
-  wire[31:0] io_in_rd11735; // execute.h(123:0)
-  wire[31:0] xorb1736; // execute.h(123:0)
-  wire[31:0] shr1740; // execute.h(67:0)
-  wire[31:0] io_in_rd11744; // execute.h(136:0)
-  wire[31:0] shr1745; // execute.h(136:0)
-  wire[31:0] io_in_rd11749; // execute.h(143:0)
-  wire[31:0] orb1750; // execute.h(143:0)
-  wire[31:0] proxy1754; // execute.h(149:0)
-  wire[31:0] andb1755; // execute.h(149:0)
-  wire ge1759; // execute.h(67:0)
-  wire[31:0] add1768; // execute.h(9:0)
-  wire[31:0] orb1774; // execute.h(200:0)
-  wire[31:0] sub1778; // execute.h(205:0)
-  wire[31:0] andb1781; // execute.h(205:1)
-  reg[31:0] sel1785; // execute.h(81:0)
-  wire[31:0] sel1786; // execute.h(168:0)
-  reg[31:0] sel1787; // execute.h(81:0)
-  wire ne1793; // execute.h(9:0)
-  wire sel1795; // execute.h(215:0)
-  wire proxy1796; // execute.h(215:0)
+  wire[31:0] pad1530, proxy1535, sel1543, sel1550, proxy1555, add1558, add1561, sub1566, shl1570, sel1580, sel1589, xorl1594, shr1598, shr1603, orl1608, andl1613, add1626, orl1632, sub1636, andl1639, sel1644;
+  wire eq1541, eq1548, lt1578, lt1587, ge1617, ne1652, sel1654;
+  reg[31:0] sel1643, sel1645;
 
-  assign io_out_jal_dest1661 = proxy1701;
-  assign io_out_branch_offset1664 = proxy1686;
-  assign io_out_branch_stall1667 = proxy1796;
-  assign pad1672 = {{20{1'b0}}, io_in_itype_immed};
-  assign proxy1674 = 20'hfffff;
-  assign proxy1676 = {proxy1678, io_in_itype_immed1677};
-  assign io_in_itype_immed1677 = io_in_itype_immed;
-  assign proxy1678 = proxy1674;
-  assign eq1683 = io_in_itype_immed[11] == 1'h1;
-  assign sel1685 = eq1683 ? proxy1676 : pad1672;
-  assign proxy1686 = sel1685;
-  assign io_in_rd11687 = io_in_rd1;
-  assign eq1690 = io_in_rs2_src == 1'h1;
-  assign sel1692 = eq1690 ? proxy1686 : io_in_rd2;
-  assign proxy1693 = sel1692;
-  assign proxy1695 = 12'h0;
-  assign proxy1697 = {io_in_upper_immed1699, proxy1698};
-  assign proxy1698 = proxy1695;
-  assign io_in_upper_immed1699 = io_in_upper_immed;
-  assign add1700 = $signed(io_in_rd1) + $signed(io_in_jal_offset);
-  assign proxy1701 = add1700;
-  assign add1703 = $signed(io_in_rd11687) + $signed(proxy1693);
-  assign sub1708 = $signed(io_in_rd11687) - $signed(proxy1693);
-  assign shl1712 = io_in_rd11687 << proxy1693;
-  assign lt1720 = $signed(io_in_rd11687) < $signed(proxy1693);
-  assign sel1722 = lt1720 ? 32'h1 : 32'h0;
-  assign io_in_rd11728 = io_in_rd11687;
-  assign lt1729 = io_in_rd11728 < proxy1693;
-  assign sel1731 = lt1729 ? 32'h1 : 32'h0;
-  assign io_in_rd11735 = io_in_rd11687;
-  assign xorb1736 = io_in_rd11735 ^ proxy1693;
-  assign shr1740 = io_in_rd11687 >> proxy1693;
-  assign io_in_rd11744 = io_in_rd11687;
-  assign shr1745 = $signed(io_in_rd11744) >> proxy1693;
-  assign io_in_rd11749 = io_in_rd11687;
-  assign orb1750 = io_in_rd11749 | proxy1693;
-  assign proxy1754 = proxy1693;
-  assign andb1755 = proxy1754 & io_in_rd11687;
-  assign ge1759 = io_in_rd11687 >= proxy1693;
-  assign add1768 = $signed(io_in_curr_PC) + $signed(proxy1697);
-  assign orb1774 = io_in_csr_data | io_in_csr_mask;
-  assign sub1778 = 32'hffffffff - io_in_csr_mask;
-  assign andb1781 = io_in_csr_data & sub1778;
+  assign pad1530 = {{20{1'b0}}, io_in_itype_immed};
+  assign proxy1535 = {20'hfffff, io_in_itype_immed};
+  assign eq1541 = io_in_itype_immed[11] == 1'h1;
+  assign sel1543 = eq1541 ? proxy1535 : pad1530;
+  assign eq1548 = io_in_rs2_src == 1'h1;
+  assign sel1550 = eq1548 ? sel1543 : io_in_rd2;
+  assign proxy1555 = {io_in_upper_immed, 12'h0};
+  assign add1558 = $signed(io_in_rd1) + $signed(io_in_jal_offset);
+  assign add1561 = $signed(io_in_rd1) + $signed(sel1550);
+  assign sub1566 = $signed(io_in_rd1) - $signed(sel1550);
+  assign shl1570 = io_in_rd1 << sel1550;
+  assign lt1578 = $signed(io_in_rd1) < $signed(sel1550);
+  assign sel1580 = lt1578 ? 32'h1 : 32'h0;
+  assign lt1587 = io_in_rd1 < sel1550;
+  assign sel1589 = lt1587 ? 32'h1 : 32'h0;
+  assign xorl1594 = io_in_rd1 ^ sel1550;
+  assign shr1598 = io_in_rd1 >> sel1550;
+  assign shr1603 = $signed(io_in_rd1) >> sel1550;
+  assign orl1608 = io_in_rd1 | sel1550;
+  assign andl1613 = sel1550 & io_in_rd1;
+  assign ge1617 = io_in_rd1 >= sel1550;
+  assign add1626 = $signed(io_in_curr_PC) + $signed(proxy1555);
+  assign orl1632 = io_in_csr_data | io_in_csr_mask;
+  assign sub1636 = 32'hffffffff - io_in_csr_mask;
+  assign andl1639 = io_in_csr_data & sub1636;
   always @(*) begin
     case (io_in_alu_op)
-      4'h0: sel1785 = 32'h7b;
-      4'h1: sel1785 = 32'h7b;
-      4'h2: sel1785 = 32'h7b;
-      4'h3: sel1785 = 32'h7b;
-      4'h4: sel1785 = 32'h7b;
-      4'h5: sel1785 = 32'h7b;
-      4'h6: sel1785 = 32'h7b;
-      4'h7: sel1785 = 32'h7b;
-      4'h8: sel1785 = 32'h7b;
-      4'h9: sel1785 = 32'h7b;
-      4'ha: sel1785 = 32'h7b;
-      4'hb: sel1785 = 32'h7b;
-      4'hc: sel1785 = 32'h7b;
-      4'hd: sel1785 = io_in_csr_mask;
-      4'he: sel1785 = orb1774;
-      4'hf: sel1785 = andb1781;
-      default: sel1785 = 32'h7b;
+      4'h0: sel1643 = 32'h7b;
+      4'h1: sel1643 = 32'h7b;
+      4'h2: sel1643 = 32'h7b;
+      4'h3: sel1643 = 32'h7b;
+      4'h4: sel1643 = 32'h7b;
+      4'h5: sel1643 = 32'h7b;
+      4'h6: sel1643 = 32'h7b;
+      4'h7: sel1643 = 32'h7b;
+      4'h8: sel1643 = 32'h7b;
+      4'h9: sel1643 = 32'h7b;
+      4'ha: sel1643 = 32'h7b;
+      4'hb: sel1643 = 32'h7b;
+      4'hc: sel1643 = 32'h7b;
+      4'hd: sel1643 = io_in_csr_mask;
+      4'he: sel1643 = orl1632;
+      4'hf: sel1643 = andl1639;
+      default: sel1643 = 32'h7b;
     endcase
   end
-  assign sel1786 = ge1759 ? 32'h0 : 32'hffffffff;
+  assign sel1644 = ge1617 ? 32'h0 : 32'hffffffff;
   always @(*) begin
     case (io_in_alu_op)
-      4'h0: sel1787 = add1703;
-      4'h1: sel1787 = sub1708;
-      4'h2: sel1787 = shl1712;
-      4'h3: sel1787 = sel1722;
-      4'h4: sel1787 = sel1731;
-      4'h5: sel1787 = xorb1736;
-      4'h6: sel1787 = shr1740;
-      4'h7: sel1787 = shr1745;
-      4'h8: sel1787 = orb1750;
-      4'h9: sel1787 = andb1755;
-      4'ha: sel1787 = sel1786;
-      4'hb: sel1787 = proxy1697;
-      4'hc: sel1787 = add1768;
-      4'hd: sel1787 = io_in_csr_data;
-      4'he: sel1787 = io_in_csr_data;
-      4'hf: sel1787 = io_in_csr_data;
-      default: sel1787 = 32'h0;
+      4'h0: sel1645 = add1561;
+      4'h1: sel1645 = sub1566;
+      4'h2: sel1645 = shl1570;
+      4'h3: sel1645 = sel1580;
+      4'h4: sel1645 = sel1589;
+      4'h5: sel1645 = xorl1594;
+      4'h6: sel1645 = shr1598;
+      4'h7: sel1645 = shr1603;
+      4'h8: sel1645 = orl1608;
+      4'h9: sel1645 = andl1613;
+      4'ha: sel1645 = sel1644;
+      4'hb: sel1645 = proxy1555;
+      4'hc: sel1645 = add1626;
+      4'hd: sel1645 = io_in_csr_data;
+      4'he: sel1645 = io_in_csr_data;
+      4'hf: sel1645 = io_in_csr_data;
+      default: sel1645 = 32'h0;
     endcase
   end
-  assign ne1793 = io_in_branch_type != 3'h0;
-  assign sel1795 = ne1793 ? 1'h1 : 1'h0;
-  assign proxy1796 = sel1795;
+  assign ne1652 = io_in_branch_type != 3'h0;
+  assign sel1654 = ne1652 ? 1'h1 : 1'h0;
 
   assign io_out_csr_address = io_in_csr_address;
   assign io_out_is_csr = io_in_is_csr;
-  assign io_out_csr_result = sel1785;
-  assign io_out_alu_result = sel1787;
+  assign io_out_csr_result = sel1643;
+  assign io_out_alu_result = sel1645;
   assign io_out_rd = io_in_rd;
   assign io_out_wb = io_in_wb;
   assign io_out_rs1 = io_in_rs1;
@@ -1577,9 +757,9 @@ module Execute(
   assign io_out_mem_read = io_in_mem_read;
   assign io_out_mem_write = io_in_mem_write;
   assign io_out_jal = io_in_jal;
-  assign io_out_jal_dest = io_out_jal_dest1661;
-  assign io_out_branch_offset = io_out_branch_offset1664;
-  assign io_out_branch_stall = io_out_branch_stall1667;
+  assign io_out_jal_dest = add1558;
+  assign io_out_branch_offset = sel1543;
+  assign io_out_branch_stall = sel1654;
   assign io_out_PC_next = io_in_PC_next;
 
 endmodule
@@ -1620,200 +800,126 @@ module E_M_Register(
   output wire[2:0] io_out_branch_type,
   output wire[31:0] io_out_PC_next
 );
-  wire[11:0] io_out_csr_address1929; // e_m_register.h(8:0)
-  wire io_out_is_csr1932; // e_m_register.h(8:0)
-  wire[31:0] io_out_csr_result1935; // e_m_register.h(8:0)
-  wire[31:0] io_out_alu_result1938; // e_m_register.h(8:0)
-  wire[4:0] io_out_rd1941; // e_m_register.h(8:0)
-  wire[1:0] io_out_wb1944; // e_m_register.h(8:0)
-  wire[4:0] io_out_rs11947; // e_m_register.h(8:0)
-  wire[31:0] io_out_rd11950; // e_m_register.h(8:0)
-  wire[31:0] io_out_rd21953; // e_m_register.h(8:0)
-  wire[4:0] io_out_rs21956; // e_m_register.h(8:0)
-  wire[2:0] io_out_mem_read1959; // e_m_register.h(8:0)
-  wire[2:0] io_out_mem_write1962; // e_m_register.h(8:0)
-  wire[31:0] io_out_curr_PC1965; // e_m_register.h(8:0)
-  wire[31:0] io_out_branch_offset1968; // e_m_register.h(8:0)
-  wire[2:0] io_out_branch_type1971; // e_m_register.h(8:0)
-  wire[31:0] io_out_PC_next1974; // e_m_register.h(8:0)
-  wire[31:0] proxy1979; // e_m_register.h(49:0)
-  reg[31:0] reg1981; // e_m_register.h(49:0)
-  wire[4:0] proxy1989; // e_m_register.h(50:0)
-  reg[4:0] reg1991; // e_m_register.h(50:0)
-  wire[4:0] proxy1995; // e_m_register.h(51:0)
-  reg[4:0] reg1997; // e_m_register.h(51:0)
-  wire[31:0] proxy2001; // e_m_register.h(52:0)
-  reg[31:0] reg2003; // e_m_register.h(52:0)
-  wire[4:0] proxy2007; // e_m_register.h(53:0)
-  reg[4:0] reg2009; // e_m_register.h(53:0)
-  wire[31:0] proxy2013; // e_m_register.h(54:0)
-  reg[31:0] reg2015; // e_m_register.h(54:0)
-  wire[1:0] proxy2020; // e_m_register.h(55:0)
-  reg[1:0] reg2022; // e_m_register.h(55:0)
-  wire[31:0] proxy2026; // e_m_register.h(56:0)
-  reg[31:0] reg2028; // e_m_register.h(56:0)
-  wire[2:0] proxy2033; // e_m_register.h(57:0)
-  reg[2:0] reg2035; // e_m_register.h(57:0)
-  wire[2:0] proxy2039; // e_m_register.h(58:0)
-  reg[2:0] reg2041; // e_m_register.h(58:0)
-  wire[11:0] proxy2046; // e_m_register.h(59:0)
-  reg[11:0] reg2048; // e_m_register.h(59:0)
-  wire proxy2053; // e_m_register.h(60:0)
-  reg reg2055; // e_m_register.h(60:0)
-  wire[31:0] proxy2059; // e_m_register.h(61:0)
-  reg[31:0] reg2061; // e_m_register.h(61:0)
-  wire[31:0] proxy2065; // e_m_register.h(62:0)
-  reg[31:0] reg2067; // e_m_register.h(62:0)
-  wire[31:0] proxy2071; // e_m_register.h(63:0)
-  reg[31:0] reg2073; // e_m_register.h(63:0)
-  wire[2:0] proxy2077; // e_m_register.h(64:0)
-  reg[2:0] reg2079; // e_m_register.h(64:0)
+  reg[31:0] reg1841, reg1863, reg1875, reg1888, reg1921, reg1927, reg1933;
+  reg[4:0] reg1851, reg1857, reg1869;
+  reg[1:0] reg1882;
+  reg[2:0] reg1895, reg1901, reg1939;
+  reg[11:0] reg1908;
+  reg reg1915;
 
-  assign io_out_csr_address1929 = proxy2046;
-  assign io_out_is_csr1932 = proxy2053;
-  assign io_out_csr_result1935 = proxy2059;
-  assign io_out_alu_result1938 = proxy1979;
-  assign io_out_rd1941 = proxy1989;
-  assign io_out_wb1944 = proxy2020;
-  assign io_out_rs11947 = proxy1995;
-  assign io_out_rd11950 = proxy2001;
-  assign io_out_rd21953 = proxy2013;
-  assign io_out_rs21956 = proxy2007;
-  assign io_out_mem_read1959 = proxy2033;
-  assign io_out_mem_write1962 = proxy2039;
-  assign io_out_curr_PC1965 = proxy2065;
-  assign io_out_branch_offset1968 = proxy2071;
-  assign io_out_branch_type1971 = proxy2077;
-  assign io_out_PC_next1974 = proxy2026;
-  assign proxy1979 = reg1981;
   always @ (posedge clk) begin
     if (reset)
-      reg1981 <= 32'h0;
+      reg1841 <= 32'h0;
     else
-      reg1981 <= io_in_alu_result;
+      reg1841 <= io_in_alu_result;
   end
-  assign proxy1989 = reg1991;
   always @ (posedge clk) begin
     if (reset)
-      reg1991 <= 5'h0;
+      reg1851 <= 5'h0;
     else
-      reg1991 <= io_in_rd;
+      reg1851 <= io_in_rd;
   end
-  assign proxy1995 = reg1997;
   always @ (posedge clk) begin
     if (reset)
-      reg1997 <= 5'h0;
+      reg1857 <= 5'h0;
     else
-      reg1997 <= io_in_rs1;
+      reg1857 <= io_in_rs1;
   end
-  assign proxy2001 = reg2003;
   always @ (posedge clk) begin
     if (reset)
-      reg2003 <= 32'h0;
+      reg1863 <= 32'h0;
     else
-      reg2003 <= io_in_rd1;
+      reg1863 <= io_in_rd1;
   end
-  assign proxy2007 = reg2009;
   always @ (posedge clk) begin
     if (reset)
-      reg2009 <= 5'h0;
+      reg1869 <= 5'h0;
     else
-      reg2009 <= io_in_rs2;
+      reg1869 <= io_in_rs2;
   end
-  assign proxy2013 = reg2015;
   always @ (posedge clk) begin
     if (reset)
-      reg2015 <= 32'h0;
+      reg1875 <= 32'h0;
     else
-      reg2015 <= io_in_rd2;
+      reg1875 <= io_in_rd2;
   end
-  assign proxy2020 = reg2022;
   always @ (posedge clk) begin
     if (reset)
-      reg2022 <= 2'h0;
+      reg1882 <= 2'h0;
     else
-      reg2022 <= io_in_wb;
+      reg1882 <= io_in_wb;
   end
-  assign proxy2026 = reg2028;
   always @ (posedge clk) begin
     if (reset)
-      reg2028 <= 32'h0;
+      reg1888 <= 32'h0;
     else
-      reg2028 <= io_in_PC_next;
+      reg1888 <= io_in_PC_next;
   end
-  assign proxy2033 = reg2035;
   always @ (posedge clk) begin
     if (reset)
-      reg2035 <= 3'h0;
+      reg1895 <= 3'h0;
     else
-      reg2035 <= io_in_mem_read;
+      reg1895 <= io_in_mem_read;
   end
-  assign proxy2039 = reg2041;
   always @ (posedge clk) begin
     if (reset)
-      reg2041 <= 3'h0;
+      reg1901 <= 3'h0;
     else
-      reg2041 <= io_in_mem_write;
+      reg1901 <= io_in_mem_write;
   end
-  assign proxy2046 = reg2048;
   always @ (posedge clk) begin
     if (reset)
-      reg2048 <= 12'h0;
+      reg1908 <= 12'h0;
     else
-      reg2048 <= io_in_csr_address;
+      reg1908 <= io_in_csr_address;
   end
-  assign proxy2053 = reg2055;
   always @ (posedge clk) begin
     if (reset)
-      reg2055 <= 1'h0;
+      reg1915 <= 1'h0;
     else
-      reg2055 <= io_in_is_csr;
+      reg1915 <= io_in_is_csr;
   end
-  assign proxy2059 = reg2061;
   always @ (posedge clk) begin
     if (reset)
-      reg2061 <= 32'h0;
+      reg1921 <= 32'h0;
     else
-      reg2061 <= io_in_csr_result;
+      reg1921 <= io_in_csr_result;
   end
-  assign proxy2065 = reg2067;
   always @ (posedge clk) begin
     if (reset)
-      reg2067 <= 32'h0;
+      reg1927 <= 32'h0;
     else
-      reg2067 <= io_in_curr_PC;
+      reg1927 <= io_in_curr_PC;
   end
-  assign proxy2071 = reg2073;
   always @ (posedge clk) begin
     if (reset)
-      reg2073 <= 32'h0;
+      reg1933 <= 32'h0;
     else
-      reg2073 <= io_in_branch_offset;
+      reg1933 <= io_in_branch_offset;
   end
-  assign proxy2077 = reg2079;
   always @ (posedge clk) begin
     if (reset)
-      reg2079 <= 3'h0;
+      reg1939 <= 3'h0;
     else
-      reg2079 <= io_in_branch_type;
+      reg1939 <= io_in_branch_type;
   end
 
-  assign io_out_csr_address = io_out_csr_address1929;
-  assign io_out_is_csr = io_out_is_csr1932;
-  assign io_out_csr_result = io_out_csr_result1935;
-  assign io_out_alu_result = io_out_alu_result1938;
-  assign io_out_rd = io_out_rd1941;
-  assign io_out_wb = io_out_wb1944;
-  assign io_out_rs1 = io_out_rs11947;
-  assign io_out_rd1 = io_out_rd11950;
-  assign io_out_rd2 = io_out_rd21953;
-  assign io_out_rs2 = io_out_rs21956;
-  assign io_out_mem_read = io_out_mem_read1959;
-  assign io_out_mem_write = io_out_mem_write1962;
-  assign io_out_curr_PC = io_out_curr_PC1965;
-  assign io_out_branch_offset = io_out_branch_offset1968;
-  assign io_out_branch_type = io_out_branch_type1971;
-  assign io_out_PC_next = io_out_PC_next1974;
+  assign io_out_csr_address = reg1908;
+  assign io_out_is_csr = reg1915;
+  assign io_out_csr_result = reg1921;
+  assign io_out_alu_result = reg1841;
+  assign io_out_rd = reg1851;
+  assign io_out_wb = reg1882;
+  assign io_out_rs1 = reg1857;
+  assign io_out_rd1 = reg1863;
+  assign io_out_rd2 = reg1875;
+  assign io_out_rs2 = reg1869;
+  assign io_out_mem_read = reg1895;
+  assign io_out_mem_write = reg1901;
+  assign io_out_curr_PC = reg1927;
+  assign io_out_branch_offset = reg1933;
+  assign io_out_branch_type = reg1939;
+  assign io_out_PC_next = reg1888;
 
 endmodule
 
@@ -1836,139 +942,58 @@ module Cache(
   input wire[31:0] io_in_data,
   output wire[31:0] io_out_data
 );
-  wire io_DBUS_in_data_ready2249; // memory.h(9:0)
-  wire io_DBUS_out_data_valid2255; // memory.h(9:0)
-  wire io_DBUS_out_address_valid2262; // memory.h(9:0)
-  wire[1:0] io_DBUS_out_control_data2266; // memory.h(9:0)
-  wire io_DBUS_out_control_valid2269; // memory.h(9:0)
-  wire[31:0] io_out_data2277; // memory.h(9:0)
-  wire lt2281; // memory.h(9:0)
-  wire lt2284; // memory.h(9:0)
-  wire orl2286; // memory.h(9:0)
-  wire proxy2287; // memory.h(9:0)
-  wire lt2289; // memory.h(9:0)
-  wire proxy2290; // memory.h(9:0)
-  wire eq2293; // memory.h(9:0)
-  wire proxy2294; // memory.h(9:0)
-  wire eq2304; // memory.h(9:0)
-  wire eq2307; // memory.h(9:0)
-  wire andl2309; // memory.h(9:0)
-  wire proxy2310; // memory.h(9:0)
-  wire[1:0] sel2315; // memory.h(53:2)
-  wire[1:0] sel2319; // memory.h(53:1)
-  wire[1:0] sel2323; // memory.h(53:0)
-  wire[1:0] proxy2324; // memory.h(53:0)
-  wire proxy2326; // memory.h(54:0)
-  wire proxy2327; // memory.h(56:0)
-  wire notl2328; // memory.h(56:0)
-  wire proxy2330; // memory.h(56:1)
-  wire notl2331; // memory.h(56:1)
-  wire andl2333; // memory.h(56:1)
-  wire proxy2335; // memory.h(56:2)
-  wire orl2336; // memory.h(56:2)
-  wire proxy2337; // memory.h(56:2)
-  wire[31:0] proxy2339; // memory.h(59:0)
-  wire[23:0] proxy2341; // memory.h(63:0)
-  wire[7:0] proxy2345; // memory.h(67:0)
-  wire[31:0] pad2346; // memory.h(68:1)
-  wire[31:0] proxy2348; // memory.h(68:2)
-  wire[7:0] proxy2349; // /home/blaise/dev/cash/include/logic.h(180:27)
-  wire[23:0] proxy2350; // /home/blaise/dev/cash/include/logic.h(180:28)
-  wire proxy2352; // memory.h(68:4)
-  wire eq2353; // memory.h(68:4)
-  wire[31:0] sel2355; // memory.h(68:0)
-  wire[15:0] proxy2358; // memory.h(73:0)
-  wire[15:0] proxy2362; // memory.h(76:0)
-  wire[31:0] pad2363; // memory.h(77:1)
-  wire[31:0] proxy2365; // memory.h(77:2)
-  wire[15:0] proxy2366; // /home/blaise/dev/cash/include/logic.h(180:29)
-  wire[15:0] proxy2367; // /home/blaise/dev/cash/include/logic.h(180:30)
-  wire proxy2369; // memory.h(77:4)
-  wire eq2370; // memory.h(77:4)
-  wire[31:0] sel2372; // memory.h(77:0)
-  wire[7:0] proxy2377; // memory.h(89:0)
-  wire[31:0] pad2378; // memory.h(90:0)
-  wire[15:0] proxy2382; // memory.h(97:0)
-  wire[31:0] pad2383; // memory.h(98:0)
-  reg[31:0] sel2386; // memory.h(60:0)
-  wire lt2388; // memory.h(9:0)
-  wire proxy2389; // memory.h(9:0)
+  wire lt2141, lt2144, orl2146, eq2154, eq2168, eq2172, andl2174, eq2195, eq2199, andl2201, orl2204, proxy2221, eq2222, proxy2239, eq2240;
+  wire[1:0] sel2180, sel2184, sel2188;
+  wire[7:0] proxy2213;
+  wire[31:0] pad2214, proxy2217, sel2224, pad2232, proxy2235, sel2242;
+  wire[15:0] proxy2231;
+  reg[31:0] sel2258;
 
-  assign io_DBUS_in_data_ready2249 = proxy2337;
-  assign io_DBUS_out_data_valid2255 = proxy2389;
-  assign io_DBUS_out_address_valid2262 = proxy2287;
-  assign io_DBUS_out_control_data2266 = proxy2324;
-  assign io_DBUS_out_control_valid2269 = proxy2326;
-  assign io_out_data2277 = proxy2339;
-  assign lt2281 = io_in_mem_write < 3'h7;
-  assign lt2284 = io_in_mem_read < 3'h7;
-  assign orl2286 = lt2284 || lt2281;
-  assign proxy2287 = orl2286;
-  assign lt2289 = io_in_mem_read < 3'h7;
-  assign proxy2290 = lt2289;
-  assign eq2293 = io_in_mem_write == 3'h2;
-  assign proxy2294 = eq2293;
-  assign eq2304 = io_in_mem_write == 3'h7;
-  assign eq2307 = io_in_mem_read == 3'h7;
-  assign andl2309 = eq2307 && eq2304;
-  assign proxy2310 = andl2309;
-  assign sel2315 = proxy2310 ? 2'h0 : 2'h3;
-  assign sel2319 = proxy2294 ? 2'h2 : sel2315;
-  assign sel2323 = proxy2290 ? 2'h1 : sel2319;
-  assign proxy2324 = sel2323;
-  assign proxy2326 = 1'h1;
-  assign proxy2327 = proxy2294;
-  assign notl2328 = !proxy2327;
-  assign proxy2330 = proxy2310;
-  assign notl2331 = !proxy2330;
-  assign andl2333 = notl2331 && notl2328;
-  assign proxy2335 = proxy2290;
-  assign orl2336 = proxy2335 || andl2333;
-  assign proxy2337 = orl2336;
-  assign proxy2339 = sel2386;
-  assign proxy2341 = 24'hffffff;
-  assign proxy2345 = io_DBUS_in_data_data[7:0];
-  assign pad2346 = {{24{1'b0}}, proxy2345};
-  assign proxy2348 = {proxy2350, proxy2349};
-  assign proxy2349 = proxy2345;
-  assign proxy2350 = proxy2341;
-  assign proxy2352 = proxy2345[7];
-  assign eq2353 = proxy2352 == 1'h1;
-  assign sel2355 = eq2353 ? proxy2348 : pad2346;
-  assign proxy2358 = 16'hffff;
-  assign proxy2362 = io_DBUS_in_data_data[15:0];
-  assign pad2363 = {{16{1'b0}}, proxy2362};
-  assign proxy2365 = {proxy2367, proxy2366};
-  assign proxy2366 = proxy2362;
-  assign proxy2367 = proxy2358;
-  assign proxy2369 = proxy2362[15];
-  assign eq2370 = proxy2369 == 1'h1;
-  assign sel2372 = eq2370 ? proxy2365 : pad2363;
-  assign proxy2377 = io_DBUS_in_data_data[7:0];
-  assign pad2378 = {{24{1'b0}}, proxy2377};
-  assign proxy2382 = io_DBUS_in_data_data[15:0];
-  assign pad2383 = {{16{1'b0}}, proxy2382};
+  assign lt2141 = io_in_mem_write < 3'h7;
+  assign lt2144 = io_in_mem_read < 3'h7;
+  assign orl2146 = lt2144 | lt2141;
+  assign eq2154 = io_in_mem_write == 3'h2;
+  assign eq2168 = io_in_mem_write == 3'h7;
+  assign eq2172 = io_in_mem_read == 3'h7;
+  assign andl2174 = eq2172 & eq2168;
+  assign sel2180 = andl2174 ? 2'h0 : 2'h3;
+  assign sel2184 = eq2154 ? 2'h2 : sel2180;
+  assign sel2188 = lt2144 ? 2'h1 : sel2184;
+  assign eq2195 = eq2154 == 1'h0;
+  assign eq2199 = andl2174 == 1'h0;
+  assign andl2201 = eq2199 & eq2195;
+  assign orl2204 = lt2144 | andl2201;
+  assign proxy2213 = io_DBUS_in_data_data[7:0];
+  assign pad2214 = {{24{1'b0}}, proxy2213};
+  assign proxy2217 = {24'hffffff, proxy2213};
+  assign proxy2221 = proxy2213[7];
+  assign eq2222 = proxy2221 == 1'h1;
+  assign sel2224 = eq2222 ? proxy2217 : pad2214;
+  assign proxy2231 = io_DBUS_in_data_data[15:0];
+  assign pad2232 = {{16{1'b0}}, proxy2231};
+  assign proxy2235 = {16'hffff, proxy2231};
+  assign proxy2239 = proxy2231[15];
+  assign eq2240 = proxy2239 == 1'h1;
+  assign sel2242 = eq2240 ? proxy2235 : pad2232;
   always @(*) begin
     case (io_in_mem_read)
-      3'h0: sel2386 = sel2355;
-      3'h1: sel2386 = sel2372;
-      3'h2: sel2386 = io_DBUS_in_data_data;
-      3'h4: sel2386 = pad2378;
-      3'h5: sel2386 = pad2383;
-      default: sel2386 = 32'h0;
+      3'h0: sel2258 = sel2224;
+      3'h1: sel2258 = sel2242;
+      3'h2: sel2258 = io_DBUS_in_data_data;
+      3'h4: sel2258 = pad2214;
+      3'h5: sel2258 = pad2232;
+      default: sel2258 = 32'h0;
     endcase
   end
-  assign lt2388 = io_in_mem_write < 3'h7;
-  assign proxy2389 = lt2388;
 
-  assign io_DBUS_in_data_ready = io_DBUS_in_data_ready2249;
+  assign io_DBUS_in_data_ready = orl2204;
   assign io_DBUS_out_data_data = io_in_data;
-  assign io_DBUS_out_data_valid = io_DBUS_out_data_valid2255;
+  assign io_DBUS_out_data_valid = lt2141;
   assign io_DBUS_out_address_data = io_in_address;
-  assign io_DBUS_out_address_valid = io_DBUS_out_address_valid2262;
-  assign io_DBUS_out_control_data = io_DBUS_out_control_data2266;
-  assign io_DBUS_out_control_valid = io_DBUS_out_control_valid2269;
-  assign io_out_data = io_out_data2277;
+  assign io_DBUS_out_address_valid = orl2146;
+  assign io_DBUS_out_control_data = sel2188;
+  assign io_DBUS_out_control_valid = 1'h1;
+  assign io_out_data = sel2258;
 
 endmodule
 
@@ -2008,127 +1033,58 @@ module Memory(
   output wire[31:0] io_out_branch_dest,
   output wire[31:0] io_out_PC_next
 );
-  wire io_DBUS_in_data_ready2183; // memory.h(158:0)
-  wire[31:0] io_DBUS_out_data_data2186; // memory.h(158:0)
-  wire io_DBUS_out_data_valid2189; // memory.h(158:0)
-  wire[31:0] io_DBUS_out_address_data2193; // memory.h(158:0)
-  wire io_DBUS_out_address_valid2196; // memory.h(158:0)
-  wire[1:0] io_DBUS_out_control_data2200; // memory.h(158:0)
-  wire io_DBUS_out_control_valid2203; // memory.h(158:0)
-  wire[31:0] io_out_mem_result2223; // memory.h(158:0)
-  wire[31:0] io_out_branch_dest2241; // memory.h(158:0)
-  wire[31:0] Cache2392_io_DBUS_in_data_data; // memory.h(158:1)
-  wire Cache2392_io_DBUS_in_data_valid; // memory.h(158:1)
-  wire proxy2398; // memory.h(158:1)
-  wire Cache2392_io_DBUS_in_data_ready; // memory.h(158:1)
-  wire[31:0] proxy2401; // memory.h(158:1)
-  wire[31:0] Cache2392_io_DBUS_out_data_data; // memory.h(158:1)
-  wire proxy2404; // memory.h(158:1)
-  wire Cache2392_io_DBUS_out_data_valid; // memory.h(158:1)
-  wire Cache2392_io_DBUS_out_data_ready; // memory.h(158:1)
-  wire[31:0] proxy2410; // memory.h(158:1)
-  wire[31:0] Cache2392_io_DBUS_out_address_data; // memory.h(158:1)
-  wire proxy2413; // memory.h(158:1)
-  wire Cache2392_io_DBUS_out_address_valid; // memory.h(158:1)
-  wire Cache2392_io_DBUS_out_address_ready; // memory.h(158:1)
-  wire[1:0] proxy2419; // memory.h(158:1)
-  wire[1:0] Cache2392_io_DBUS_out_control_data; // memory.h(158:1)
-  wire proxy2422; // memory.h(158:1)
-  wire Cache2392_io_DBUS_out_control_valid; // memory.h(158:1)
-  wire Cache2392_io_DBUS_out_control_ready; // memory.h(158:1)
-  wire[31:0] Cache2392_io_in_address; // memory.h(158:1)
-  wire[2:0] Cache2392_io_in_mem_read; // memory.h(158:1)
-  wire[2:0] Cache2392_io_in_mem_write; // memory.h(158:1)
-  wire[31:0] Cache2392_io_in_data; // memory.h(158:1)
-  wire[31:0] proxy2440; // memory.h(158:1)
-  wire[31:0] Cache2392_io_out_data; // memory.h(158:1)
-  wire[31:0] shl2444; // memory.h(158:0)
-  wire[31:0] add2446; // memory.h(158:0)
-  wire[31:0] proxy2447; // memory.h(158:0)
-  wire eq2455; // memory.h(158:0)
-  wire sel2457; // memory.h(229:0)
-  wire eq2463; // memory.h(158:0)
-  wire sel2465; // memory.h(234:0)
-  wire eq2473; // memory.h(238:4)
-  wire sel2475; // memory.h(238:0)
-  wire eq2483; // memory.h(243:4)
-  wire sel2485; // memory.h(243:0)
-  wire eq2493; // memory.h(250:4)
-  wire sel2495; // memory.h(250:0)
-  wire eq2503; // memory.h(255:4)
-  wire sel2505; // memory.h(255:0)
-  reg sel2510; // memory.h(221:0)
+  wire[31:0] bindin2265, bindout2274, bindout2283, bindin2301, bindin2310, bindout2313, shl2316, add2318;
+  wire bindin2268, bindout2271, bindout2277, bindin2280, bindout2286, bindin2289, bindout2295, bindin2298, eq2328, sel2330, sel2339, eq2346, sel2348, sel2357;
+  wire[1:0] bindout2292;
+  wire[2:0] bindin2304, bindin2307;
+  reg sel2380;
 
-  assign io_DBUS_in_data_ready2183 = proxy2398;
-  assign io_DBUS_out_data_data2186 = proxy2401;
-  assign io_DBUS_out_data_valid2189 = proxy2404;
-  assign io_DBUS_out_address_data2193 = proxy2410;
-  assign io_DBUS_out_address_valid2196 = proxy2413;
-  assign io_DBUS_out_control_data2200 = proxy2419;
-  assign io_DBUS_out_control_valid2203 = proxy2422;
-  assign io_out_mem_result2223 = proxy2440;
-  assign io_out_branch_dest2241 = proxy2447;
-  Cache Cache2392(.io_DBUS_in_data_data(Cache2392_io_DBUS_in_data_data), .io_DBUS_in_data_valid(Cache2392_io_DBUS_in_data_valid), .io_DBUS_out_data_ready(Cache2392_io_DBUS_out_data_ready), .io_DBUS_out_address_ready(Cache2392_io_DBUS_out_address_ready), .io_DBUS_out_control_ready(Cache2392_io_DBUS_out_control_ready), .io_in_address(Cache2392_io_in_address), .io_in_mem_read(Cache2392_io_in_mem_read), .io_in_mem_write(Cache2392_io_in_mem_write), .io_in_data(Cache2392_io_in_data), .io_DBUS_in_data_ready(Cache2392_io_DBUS_in_data_ready), .io_DBUS_out_data_data(Cache2392_io_DBUS_out_data_data), .io_DBUS_out_data_valid(Cache2392_io_DBUS_out_data_valid), .io_DBUS_out_address_data(Cache2392_io_DBUS_out_address_data), .io_DBUS_out_address_valid(Cache2392_io_DBUS_out_address_valid), .io_DBUS_out_control_data(Cache2392_io_DBUS_out_control_data), .io_DBUS_out_control_valid(Cache2392_io_DBUS_out_control_valid), .io_out_data(Cache2392_io_out_data));
-  assign Cache2392_io_DBUS_in_data_data = io_DBUS_in_data_data;
-  assign Cache2392_io_DBUS_in_data_valid = io_DBUS_in_data_valid;
-  assign proxy2398 = Cache2392_io_DBUS_in_data_ready;
-  assign proxy2401 = Cache2392_io_DBUS_out_data_data;
-  assign proxy2404 = Cache2392_io_DBUS_out_data_valid;
-  assign Cache2392_io_DBUS_out_data_ready = io_DBUS_out_data_ready;
-  assign proxy2410 = Cache2392_io_DBUS_out_address_data;
-  assign proxy2413 = Cache2392_io_DBUS_out_address_valid;
-  assign Cache2392_io_DBUS_out_address_ready = io_DBUS_out_address_ready;
-  assign proxy2419 = Cache2392_io_DBUS_out_control_data;
-  assign proxy2422 = Cache2392_io_DBUS_out_control_valid;
-  assign Cache2392_io_DBUS_out_control_ready = io_DBUS_out_control_ready;
-  assign Cache2392_io_in_address = io_in_alu_result;
-  assign Cache2392_io_in_mem_read = io_in_mem_read;
-  assign Cache2392_io_in_mem_write = io_in_mem_write;
-  assign Cache2392_io_in_data = io_in_rd2;
-  assign proxy2440 = Cache2392_io_out_data;
-  assign shl2444 = $signed(io_in_branch_offset) << 32'h1;
-  assign add2446 = $signed(io_in_curr_PC) + $signed(shl2444);
-  assign proxy2447 = add2446;
-  assign eq2455 = io_in_alu_result == 32'h0;
-  assign sel2457 = eq2455 ? 1'h1 : 1'h0;
-  assign eq2463 = io_in_alu_result == 32'h0;
-  assign sel2465 = eq2463 ? 1'h0 : 1'h1;
-  assign eq2473 = io_in_alu_result[31] == 1'h0;
-  assign sel2475 = eq2473 ? 1'h0 : 1'h1;
-  assign eq2483 = io_in_alu_result[31] == 1'h0;
-  assign sel2485 = eq2483 ? 1'h1 : 1'h0;
-  assign eq2493 = io_in_alu_result[31] == 1'h0;
-  assign sel2495 = eq2493 ? 1'h0 : 1'h1;
-  assign eq2503 = io_in_alu_result[31] == 1'h0;
-  assign sel2505 = eq2503 ? 1'h1 : 1'h0;
+  Cache __module10__(.io_DBUS_in_data_data(bindin2265), .io_DBUS_in_data_valid(bindin2268), .io_DBUS_out_data_ready(bindin2280), .io_DBUS_out_address_ready(bindin2289), .io_DBUS_out_control_ready(bindin2298), .io_in_address(bindin2301), .io_in_mem_read(bindin2304), .io_in_mem_write(bindin2307), .io_in_data(bindin2310), .io_DBUS_in_data_ready(bindout2271), .io_DBUS_out_data_data(bindout2274), .io_DBUS_out_data_valid(bindout2277), .io_DBUS_out_address_data(bindout2283), .io_DBUS_out_address_valid(bindout2286), .io_DBUS_out_control_data(bindout2292), .io_DBUS_out_control_valid(bindout2295), .io_out_data(bindout2313));
+  assign bindin2265 = io_DBUS_in_data_data;
+  assign bindin2268 = io_DBUS_in_data_valid;
+  assign bindin2280 = io_DBUS_out_data_ready;
+  assign bindin2289 = io_DBUS_out_address_ready;
+  assign bindin2298 = io_DBUS_out_control_ready;
+  assign bindin2301 = io_in_alu_result;
+  assign bindin2304 = io_in_mem_read;
+  assign bindin2307 = io_in_mem_write;
+  assign bindin2310 = io_in_rd2;
+  assign shl2316 = $signed(io_in_branch_offset) << 32'h1;
+  assign add2318 = $signed(io_in_curr_PC) + $signed(shl2316);
+  assign eq2328 = io_in_alu_result == 32'h0;
+  assign sel2330 = eq2328 ? 1'h1 : 1'h0;
+  assign sel2339 = eq2328 ? 1'h0 : 1'h1;
+  assign eq2346 = io_in_alu_result[31] == 1'h0;
+  assign sel2348 = eq2346 ? 1'h0 : 1'h1;
+  assign sel2357 = eq2346 ? 1'h1 : 1'h0;
   always @(*) begin
     case (io_in_branch_type)
-      3'h1: sel2510 = sel2457;
-      3'h2: sel2510 = sel2465;
-      3'h3: sel2510 = sel2475;
-      3'h4: sel2510 = sel2485;
-      3'h5: sel2510 = sel2495;
-      3'h6: sel2510 = sel2505;
-      3'h0: sel2510 = 1'h0;
-      default: sel2510 = 1'h0;
+      3'h1: sel2380 = sel2330;
+      3'h2: sel2380 = sel2339;
+      3'h3: sel2380 = sel2348;
+      3'h4: sel2380 = sel2357;
+      3'h5: sel2380 = sel2348;
+      3'h6: sel2380 = sel2357;
+      3'h0: sel2380 = 1'h0;
+      default: sel2380 = 1'h0;
     endcase
   end
 
-  assign io_DBUS_in_data_ready = io_DBUS_in_data_ready2183;
-  assign io_DBUS_out_data_data = io_DBUS_out_data_data2186;
-  assign io_DBUS_out_data_valid = io_DBUS_out_data_valid2189;
-  assign io_DBUS_out_address_data = io_DBUS_out_address_data2193;
-  assign io_DBUS_out_address_valid = io_DBUS_out_address_valid2196;
-  assign io_DBUS_out_control_data = io_DBUS_out_control_data2200;
-  assign io_DBUS_out_control_valid = io_DBUS_out_control_valid2203;
+  assign io_DBUS_in_data_ready = bindout2271;
+  assign io_DBUS_out_data_data = bindout2274;
+  assign io_DBUS_out_data_valid = bindout2277;
+  assign io_DBUS_out_address_data = bindout2283;
+  assign io_DBUS_out_address_valid = bindout2286;
+  assign io_DBUS_out_control_data = bindout2292;
+  assign io_DBUS_out_control_valid = bindout2295;
   assign io_out_alu_result = io_in_alu_result;
-  assign io_out_mem_result = io_out_mem_result2223;
+  assign io_out_mem_result = bindout2313;
   assign io_out_rd = io_in_rd;
   assign io_out_wb = io_in_wb;
   assign io_out_rs1 = io_in_rs1;
   assign io_out_rs2 = io_in_rs2;
-  assign io_out_branch_dir = sel2510;
-  assign io_out_branch_dest = io_out_branch_dest2241;
+  assign io_out_branch_dir = sel2380;
+  assign io_out_branch_dest = add2318;
   assign io_out_PC_next = io_in_PC_next;
 
 endmodule
@@ -2151,92 +1107,60 @@ module M_W_Register(
   output wire[4:0] io_out_rs2,
   output wire[31:0] io_out_PC_next
 );
-  wire[31:0] io_out_alu_result2622; // m_w_register.h(8:0)
-  wire[31:0] io_out_mem_result2625; // m_w_register.h(8:0)
-  wire[4:0] io_out_rd2628; // m_w_register.h(8:0)
-  wire[1:0] io_out_wb2631; // m_w_register.h(8:0)
-  wire[4:0] io_out_rs12634; // m_w_register.h(8:0)
-  wire[4:0] io_out_rs22637; // m_w_register.h(8:0)
-  wire[31:0] io_out_PC_next2640; // m_w_register.h(8:0)
-  wire[31:0] proxy2645; // m_w_register.h(31:0)
-  reg[31:0] reg2647; // m_w_register.h(31:0)
-  wire[31:0] proxy2654; // m_w_register.h(32:0)
-  reg[31:0] reg2656; // m_w_register.h(32:0)
-  wire[4:0] proxy2661; // m_w_register.h(33:0)
-  reg[4:0] reg2663; // m_w_register.h(33:0)
-  wire[4:0] proxy2667; // m_w_register.h(34:0)
-  reg[4:0] reg2669; // m_w_register.h(34:0)
-  wire[4:0] proxy2673; // m_w_register.h(35:0)
-  reg[4:0] reg2675; // m_w_register.h(35:0)
-  wire[1:0] proxy2680; // m_w_register.h(36:0)
-  reg[1:0] reg2682; // m_w_register.h(36:0)
-  wire[31:0] proxy2686; // m_w_register.h(37:0)
-  reg[31:0] reg2688; // m_w_register.h(37:0)
+  reg[31:0] reg2518, reg2527, reg2559;
+  reg[4:0] reg2534, reg2540, reg2546;
+  reg[1:0] reg2553;
 
-  assign io_out_alu_result2622 = proxy2645;
-  assign io_out_mem_result2625 = proxy2654;
-  assign io_out_rd2628 = proxy2661;
-  assign io_out_wb2631 = proxy2680;
-  assign io_out_rs12634 = proxy2667;
-  assign io_out_rs22637 = proxy2673;
-  assign io_out_PC_next2640 = proxy2686;
-  assign proxy2645 = reg2647;
   always @ (posedge clk) begin
     if (reset)
-      reg2647 <= 32'h0;
+      reg2518 <= 32'h0;
     else
-      reg2647 <= io_in_alu_result;
+      reg2518 <= io_in_alu_result;
   end
-  assign proxy2654 = reg2656;
   always @ (posedge clk) begin
     if (reset)
-      reg2656 <= 32'h0;
+      reg2527 <= 32'h0;
     else
-      reg2656 <= io_in_mem_result;
+      reg2527 <= io_in_mem_result;
   end
-  assign proxy2661 = reg2663;
   always @ (posedge clk) begin
     if (reset)
-      reg2663 <= 5'h0;
+      reg2534 <= 5'h0;
     else
-      reg2663 <= io_in_rd;
+      reg2534 <= io_in_rd;
   end
-  assign proxy2667 = reg2669;
   always @ (posedge clk) begin
     if (reset)
-      reg2669 <= 5'h0;
+      reg2540 <= 5'h0;
     else
-      reg2669 <= io_in_rs1;
+      reg2540 <= io_in_rs1;
   end
-  assign proxy2673 = reg2675;
   always @ (posedge clk) begin
     if (reset)
-      reg2675 <= 5'h0;
+      reg2546 <= 5'h0;
     else
-      reg2675 <= io_in_rs2;
+      reg2546 <= io_in_rs2;
   end
-  assign proxy2680 = reg2682;
   always @ (posedge clk) begin
     if (reset)
-      reg2682 <= 2'h0;
+      reg2553 <= 2'h0;
     else
-      reg2682 <= io_in_wb;
+      reg2553 <= io_in_wb;
   end
-  assign proxy2686 = reg2688;
   always @ (posedge clk) begin
     if (reset)
-      reg2688 <= 32'h0;
+      reg2559 <= 32'h0;
     else
-      reg2688 <= io_in_PC_next;
+      reg2559 <= io_in_PC_next;
   end
 
-  assign io_out_alu_result = io_out_alu_result2622;
-  assign io_out_mem_result = io_out_mem_result2625;
-  assign io_out_rd = io_out_rd2628;
-  assign io_out_wb = io_out_wb2631;
-  assign io_out_rs1 = io_out_rs12634;
-  assign io_out_rs2 = io_out_rs22637;
-  assign io_out_PC_next = io_out_PC_next2640;
+  assign io_out_alu_result = reg2518;
+  assign io_out_mem_result = reg2527;
+  assign io_out_rd = reg2534;
+  assign io_out_wb = reg2553;
+  assign io_out_rs1 = reg2540;
+  assign io_out_rs2 = reg2546;
+  assign io_out_PC_next = reg2559;
 
 endmodule
 
@@ -2252,21 +1176,15 @@ module Write_Back(
   output wire[4:0] io_out_rd,
   output wire[1:0] io_out_wb
 );
-  wire[31:0] io_out_write_data2743; // write_back.h(1:0)
-  wire eq2753; // write_back.h(1:0)
-  wire eq2757; // write_back.h(1:0)
-  wire[31:0] sel2759; // write_back.h(23:1)
-  wire[31:0] sel2761; // write_back.h(23:0)
-  wire[31:0] proxy2762; // write_back.h(23:0)
+  wire eq2625, eq2630;
+  wire[31:0] sel2632, sel2634;
 
-  assign io_out_write_data2743 = proxy2762;
-  assign eq2753 = io_in_wb == 2'h3;
-  assign eq2757 = io_in_wb == 2'h1;
-  assign sel2759 = eq2757 ? io_in_alu_result : io_in_mem_result;
-  assign sel2761 = eq2753 ? io_in_PC_next : sel2759;
-  assign proxy2762 = sel2761;
+  assign eq2625 = io_in_wb == 2'h3;
+  assign eq2630 = io_in_wb == 2'h1;
+  assign sel2632 = eq2630 ? io_in_alu_result : io_in_mem_result;
+  assign sel2634 = eq2625 ? io_in_PC_next : sel2632;
 
-  assign io_out_write_data = io_out_write_data2743;
+  assign io_out_write_data = sel2634;
   assign io_out_rd = io_in_rd;
   assign io_out_wb = io_in_wb;
 
@@ -2297,246 +1215,66 @@ module Forwarding(
   input wire[31:0] io_in_writeback_mem_data,
   input wire[31:0] io_in_writeback_PC_next,
   output wire io_out_src1_fwd,
-  output wire[31:0] io_out_src1_fwd_data,
   output wire io_out_src2_fwd,
-  output wire[31:0] io_out_src2_fwd_data,
   output wire io_out_csr_fwd,
-  output wire[31:0] io_out_csr_fwd_data,
   output wire io_out_fwd_stall
 );
-  wire io_out_src1_fwd2818; // forwarding.h(9:0)
-  wire[31:0] io_out_src1_fwd_data2821; // forwarding.h(9:0)
-  wire io_out_src2_fwd2824; // forwarding.h(9:0)
-  wire[31:0] io_out_src2_fwd_data2827; // forwarding.h(9:0)
-  wire io_out_csr_fwd2830; // forwarding.h(9:0)
-  wire[31:0] io_out_csr_fwd_data2833; // forwarding.h(9:0)
-  wire io_out_fwd_stall2836; // forwarding.h(9:0)
-  wire eq2840; // forwarding.h(9:0)
-  wire eq2843; // forwarding.h(9:0)
-  wire eq2846; // forwarding.h(9:0)
-  wire eq2850; // forwarding.h(9:0)
-  wire eq2853; // forwarding.h(9:0)
-  wire eq2856; // forwarding.h(9:0)
-  wire eq2861; // forwarding.h(66:1)
-  wire eq2865; // forwarding.h(67:1)
-  wire ne2869; // forwarding.h(9:0)
-  wire ne2873; // forwarding.h(9:0)
-  wire eq2875; // forwarding.h(9:0)
-  wire andl2877; // forwarding.h(9:0)
-  wire andl2879; // forwarding.h(9:0)
-  wire proxy2880; // forwarding.h(9:0)
-  wire proxy2881; // forwarding.h(78:0)
-  wire notl2882; // forwarding.h(78:0)
-  wire ne2885; // forwarding.h(9:0)
-  wire ne2888; // forwarding.h(9:0)
-  wire eq2890; // forwarding.h(9:0)
-  wire andl2892; // forwarding.h(9:0)
-  wire andl2894; // forwarding.h(9:0)
-  wire andl2896; // forwarding.h(9:0)
-  wire proxy2897; // forwarding.h(9:0)
-  wire proxy2898; // forwarding.h(84:0)
-  wire notl2899; // forwarding.h(84:0)
-  wire proxy2901; // forwarding.h(83:0)
-  wire notl2902; // forwarding.h(83:0)
-  wire ne2905; // forwarding.h(9:0)
-  wire ne2908; // forwarding.h(9:0)
-  wire eq2910; // forwarding.h(9:0)
-  wire andl2912; // forwarding.h(9:0)
-  wire andl2914; // forwarding.h(9:0)
-  wire andl2916; // forwarding.h(9:0)
-  wire andl2918; // forwarding.h(9:0)
-  wire proxy2920; // forwarding.h(87:0)
-  wire orl2921; // forwarding.h(87:0)
-  wire orl2923; // forwarding.h(87:0)
-  wire proxy2924; // forwarding.h(87:0)
-  wire[31:0] sel2927; // forwarding.h(91:1)
-  wire[31:0] sel2929; // forwarding.h(91:0)
-  wire[31:0] sel2931; // forwarding.h(92:2)
-  wire[31:0] sel2933; // forwarding.h(90:1)
-  wire[31:0] sel2935; // forwarding.h(90:0)
-  wire[31:0] sel2937; // forwarding.h(92:1)
-  wire[31:0] sel2939; // forwarding.h(89:0)
-  wire[31:0] sel2941; // forwarding.h(92:0)
-  wire[31:0] proxy2942; // forwarding.h(92:0)
-  wire ne2944; // forwarding.h(9:0)
-  wire ne2947; // forwarding.h(9:0)
-  wire eq2949; // forwarding.h(9:0)
-  wire andl2951; // forwarding.h(9:0)
-  wire andl2953; // forwarding.h(9:0)
-  wire proxy2954; // forwarding.h(9:0)
-  wire proxy2955; // forwarding.h(138:0)
-  wire notl2956; // forwarding.h(138:0)
-  wire ne2959; // forwarding.h(9:0)
-  wire ne2962; // forwarding.h(9:0)
-  wire eq2964; // forwarding.h(9:0)
-  wire andl2966; // forwarding.h(9:0)
-  wire andl2968; // forwarding.h(9:0)
-  wire andl2970; // forwarding.h(9:0)
-  wire proxy2971; // forwarding.h(9:0)
-  wire proxy2972; // forwarding.h(144:0)
-  wire notl2973; // forwarding.h(144:0)
-  wire proxy2975; // forwarding.h(143:0)
-  wire notl2976; // forwarding.h(143:0)
-  wire ne2979; // forwarding.h(9:0)
-  wire ne2982; // forwarding.h(9:0)
-  wire eq2984; // forwarding.h(9:0)
-  wire andl2986; // forwarding.h(9:0)
-  wire andl2988; // forwarding.h(9:0)
-  wire andl2990; // forwarding.h(9:0)
-  wire andl2992; // forwarding.h(9:0)
-  wire proxy2994; // forwarding.h(147:0)
-  wire orl2995; // forwarding.h(147:0)
-  wire orl2997; // forwarding.h(147:0)
-  wire proxy2998; // forwarding.h(147:0)
-  wire[31:0] sel3000; // forwarding.h(151:1)
-  wire[31:0] sel3002; // forwarding.h(151:0)
-  wire[31:0] sel3004; // forwarding.h(152:2)
-  wire[31:0] sel3006; // forwarding.h(150:1)
-  wire[31:0] sel3008; // forwarding.h(150:0)
-  wire[31:0] sel3010; // forwarding.h(152:1)
-  wire[31:0] sel3012; // forwarding.h(149:0)
-  wire[31:0] sel3014; // forwarding.h(152:0)
-  wire[31:0] proxy3015; // forwarding.h(152:0)
-  wire eq3016; // forwarding.h(9:0)
-  wire andl3018; // forwarding.h(9:0)
-  wire proxy3019; // forwarding.h(9:0)
-  wire proxy3020; // forwarding.h(192:0)
-  wire notl3021; // forwarding.h(192:0)
-  wire eq3023; // forwarding.h(9:0)
-  wire andl3025; // forwarding.h(9:0)
-  wire andl3027; // forwarding.h(9:0)
-  wire proxy3029; // forwarding.h(194:0)
-  wire orl3030; // forwarding.h(194:0)
-  wire proxy3031; // forwarding.h(194:0)
-  wire[31:0] sel3033; // forwarding.h(197:1)
-  wire[31:0] sel3035; // forwarding.h(197:0)
-  wire[31:0] proxy3036; // forwarding.h(197:0)
-  wire proxy3040; // forwarding.h(200:3)
-  wire orl3041; // forwarding.h(200:3)
-  wire andl3043; // forwarding.h(200:3)
-  wire sel3045; // forwarding.h(200:0)
-  wire proxy3046; // forwarding.h(200:0)
+  wire eq2731, eq2735, ne2740, ne2745, eq2748, andl2750, andl2752, eq2757, ne2761, eq2768, andl2770, andl2772, andl2774, eq2778, ne2786, eq2793, andl2795, andl2797, andl2799, andl2801, orl2804, orl2806, ne2814, eq2817, andl2819, andl2821, eq2825, eq2836, andl2838, andl2840, andl2842, eq2846, eq2861, andl2863, andl2865, andl2867, andl2869, orl2872, orl2874, eq2877, andl2879, eq2883, eq2886, andl2888, andl2890, orl2893, orl2900, orl2902, orl2904;
 
-  assign io_out_src1_fwd2818 = proxy2924;
-  assign io_out_src1_fwd_data2821 = proxy2942;
-  assign io_out_src2_fwd2824 = proxy2998;
-  assign io_out_src2_fwd_data2827 = proxy3015;
-  assign io_out_csr_fwd2830 = proxy3031;
-  assign io_out_csr_fwd_data2833 = proxy3036;
-  assign io_out_fwd_stall2836 = proxy3046;
-  assign eq2840 = io_in_execute_wb == 2'h2;
-  assign eq2843 = io_in_memory_wb == 2'h2;
-  assign eq2846 = io_in_writeback_wb == 2'h2;
-  assign eq2850 = io_in_execute_wb == 2'h3;
-  assign eq2853 = io_in_memory_wb == 2'h3;
-  assign eq2856 = io_in_writeback_wb == 2'h3;
-  assign eq2861 = io_in_execute_is_csr == 1'h1;
-  assign eq2865 = io_in_memory_is_csr == 1'h1;
-  assign ne2869 = io_in_execute_wb != 2'h0;
-  assign ne2873 = io_in_decode_src1 != 5'h0;
-  assign eq2875 = io_in_decode_src1 == io_in_execute_dest;
-  assign andl2877 = eq2875 && ne2873;
-  assign andl2879 = andl2877 && ne2869;
-  assign proxy2880 = andl2879;
-  assign proxy2881 = proxy2880;
-  assign notl2882 = !proxy2881;
-  assign ne2885 = io_in_memory_wb != 2'h0;
-  assign ne2888 = io_in_decode_src1 != 5'h0;
-  assign eq2890 = io_in_decode_src1 == io_in_memory_dest;
-  assign andl2892 = eq2890 && ne2888;
-  assign andl2894 = andl2892 && ne2885;
-  assign andl2896 = andl2894 && notl2882;
-  assign proxy2897 = andl2896;
-  assign proxy2898 = proxy2897;
-  assign notl2899 = !proxy2898;
-  assign proxy2901 = proxy2880;
-  assign notl2902 = !proxy2901;
-  assign ne2905 = io_in_writeback_wb != 2'h0;
-  assign ne2908 = io_in_decode_src1 != 5'h0;
-  assign eq2910 = io_in_decode_src1 == io_in_writeback_dest;
-  assign andl2912 = eq2910 && ne2908;
-  assign andl2914 = andl2912 && ne2905;
-  assign andl2916 = andl2914 && notl2902;
-  assign andl2918 = andl2916 && notl2899;
-  assign proxy2920 = proxy2880;
-  assign orl2921 = proxy2920 || proxy2897;
-  assign orl2923 = orl2921 || andl2918;
-  assign proxy2924 = orl2923;
-  assign sel2927 = eq2846 ? io_in_writeback_mem_data : io_in_writeback_alu_result;
-  assign sel2929 = eq2856 ? io_in_writeback_PC_next : sel2927;
-  assign sel2931 = andl2918 ? sel2929 : 32'h7b;
-  assign sel2933 = eq2843 ? io_in_memory_mem_data : io_in_memory_alu_result;
-  assign sel2935 = eq2853 ? io_in_memory_PC_next : sel2933;
-  assign sel2937 = proxy2897 ? sel2935 : sel2931;
-  assign sel2939 = eq2850 ? io_in_execute_PC_next : io_in_execute_alu_result;
-  assign sel2941 = proxy2880 ? sel2939 : sel2937;
-  assign proxy2942 = sel2941;
-  assign ne2944 = io_in_execute_wb != 2'h0;
-  assign ne2947 = io_in_decode_src2 != 5'h0;
-  assign eq2949 = io_in_decode_src2 == io_in_execute_dest;
-  assign andl2951 = eq2949 && ne2947;
-  assign andl2953 = andl2951 && ne2944;
-  assign proxy2954 = andl2953;
-  assign proxy2955 = proxy2954;
-  assign notl2956 = !proxy2955;
-  assign ne2959 = io_in_memory_wb != 2'h0;
-  assign ne2962 = io_in_decode_src2 != 5'h0;
-  assign eq2964 = io_in_decode_src2 == io_in_memory_dest;
-  assign andl2966 = eq2964 && ne2962;
-  assign andl2968 = andl2966 && ne2959;
-  assign andl2970 = andl2968 && notl2956;
-  assign proxy2971 = andl2970;
-  assign proxy2972 = proxy2971;
-  assign notl2973 = !proxy2972;
-  assign proxy2975 = proxy2954;
-  assign notl2976 = !proxy2975;
-  assign ne2979 = io_in_writeback_wb != 2'h0;
-  assign ne2982 = io_in_decode_src2 != 5'h0;
-  assign eq2984 = io_in_decode_src2 == io_in_writeback_dest;
-  assign andl2986 = eq2984 && ne2982;
-  assign andl2988 = andl2986 && ne2979;
-  assign andl2990 = andl2988 && notl2976;
-  assign andl2992 = andl2990 && notl2973;
-  assign proxy2994 = proxy2954;
-  assign orl2995 = proxy2994 || proxy2971;
-  assign orl2997 = orl2995 || andl2992;
-  assign proxy2998 = orl2997;
-  assign sel3000 = eq2846 ? io_in_writeback_mem_data : io_in_writeback_alu_result;
-  assign sel3002 = eq2856 ? io_in_writeback_PC_next : sel3000;
-  assign sel3004 = andl2992 ? sel3002 : 32'h7b;
-  assign sel3006 = eq2843 ? io_in_memory_mem_data : io_in_memory_alu_result;
-  assign sel3008 = eq2853 ? io_in_memory_PC_next : sel3006;
-  assign sel3010 = proxy2971 ? sel3008 : sel3004;
-  assign sel3012 = eq2850 ? io_in_execute_PC_next : io_in_execute_alu_result;
-  assign sel3014 = proxy2954 ? sel3012 : sel3010;
-  assign proxy3015 = sel3014;
-  assign eq3016 = io_in_decode_csr_address == io_in_execute_csr_address;
-  assign andl3018 = eq3016 && eq2861;
-  assign proxy3019 = andl3018;
-  assign proxy3020 = proxy3019;
-  assign notl3021 = !proxy3020;
-  assign eq3023 = io_in_decode_csr_address == io_in_memory_csr_address;
-  assign andl3025 = eq3023 && eq2865;
-  assign andl3027 = andl3025 && notl3021;
-  assign proxy3029 = proxy3019;
-  assign orl3030 = proxy3029 || andl3027;
-  assign proxy3031 = orl3030;
-  assign sel3033 = andl3027 ? io_in_memory_csr_result : 32'h7b;
-  assign sel3035 = proxy3019 ? io_in_execute_alu_result : sel3033;
-  assign proxy3036 = sel3035;
-  assign proxy3040 = proxy2880;
-  assign orl3041 = proxy3040 || proxy2954;
-  assign andl3043 = orl3041 && eq2840;
-  assign sel3045 = andl3043 ? 1'h1 : 1'h0;
-  assign proxy3046 = sel3045;
+  assign eq2731 = io_in_execute_is_csr == 1'h1;
+  assign eq2735 = io_in_memory_is_csr == 1'h1;
+  assign ne2740 = io_in_execute_wb != 2'h0;
+  assign ne2745 = io_in_decode_src1 != 5'h0;
+  assign eq2748 = io_in_decode_src1 == io_in_execute_dest;
+  assign andl2750 = eq2748 & ne2745;
+  assign andl2752 = andl2750 & ne2740;
+  assign eq2757 = andl2752 == 1'h0;
+  assign ne2761 = io_in_memory_wb != 2'h0;
+  assign eq2768 = io_in_decode_src1 == io_in_memory_dest;
+  assign andl2770 = eq2768 & ne2745;
+  assign andl2772 = andl2770 & ne2761;
+  assign andl2774 = andl2772 & eq2757;
+  assign eq2778 = andl2774 == 1'h0;
+  assign ne2786 = io_in_writeback_wb != 2'h0;
+  assign eq2793 = io_in_decode_src1 == io_in_writeback_dest;
+  assign andl2795 = eq2793 & ne2745;
+  assign andl2797 = andl2795 & ne2786;
+  assign andl2799 = andl2797 & eq2757;
+  assign andl2801 = andl2799 & eq2778;
+  assign orl2804 = andl2752 | andl2774;
+  assign orl2806 = orl2804 | andl2801;
+  assign ne2814 = io_in_decode_src2 != 5'h0;
+  assign eq2817 = io_in_decode_src2 == io_in_execute_dest;
+  assign andl2819 = eq2817 & ne2814;
+  assign andl2821 = andl2819 & ne2740;
+  assign eq2825 = andl2821 == 1'h0;
+  assign eq2836 = io_in_decode_src2 == io_in_memory_dest;
+  assign andl2838 = eq2836 & ne2814;
+  assign andl2840 = andl2838 & ne2761;
+  assign andl2842 = andl2840 & eq2825;
+  assign eq2846 = andl2842 == 1'h0;
+  assign eq2861 = io_in_decode_src2 == io_in_writeback_dest;
+  assign andl2863 = eq2861 & ne2814;
+  assign andl2865 = andl2863 & ne2786;
+  assign andl2867 = andl2865 & eq2825;
+  assign andl2869 = andl2867 & eq2846;
+  assign orl2872 = andl2821 | andl2842;
+  assign orl2874 = orl2872 | andl2869;
+  assign eq2877 = io_in_decode_csr_address == io_in_execute_csr_address;
+  assign andl2879 = eq2877 & eq2731;
+  assign eq2883 = andl2879 == 1'h0;
+  assign eq2886 = io_in_decode_csr_address == io_in_memory_csr_address;
+  assign andl2888 = eq2886 & eq2735;
+  assign andl2890 = andl2888 & eq2883;
+  assign orl2893 = andl2879 | andl2890;
+  assign orl2900 = orl2806 | andl2821;
+  assign orl2902 = orl2900 | andl2842;
+  assign orl2904 = orl2902 | andl2869;
 
-  assign io_out_src1_fwd = io_out_src1_fwd2818;
-  assign io_out_src1_fwd_data = io_out_src1_fwd_data2821;
-  assign io_out_src2_fwd = io_out_src2_fwd2824;
-  assign io_out_src2_fwd_data = io_out_src2_fwd_data2827;
-  assign io_out_csr_fwd = io_out_csr_fwd2830;
-  assign io_out_csr_fwd_data = io_out_csr_fwd_data2833;
-  assign io_out_fwd_stall = io_out_fwd_stall2836;
+  assign io_out_src1_fwd = orl2806;
+  assign io_out_src2_fwd = orl2874;
+  assign io_out_csr_fwd = orl2893;
+  assign io_out_fwd_stall = orl2904;
 
 endmodule
 
@@ -2547,36 +1285,19 @@ module Interrupt_Handler(
   output wire io_out_interrupt,
   output wire[31:0] io_out_interrupt_pc
 );
-<<<<<<< HEAD
-  reg[31:0] mem3202 [0:1];
-  wire[31:0] mrport3204, sel3208;
-=======
-  wire[31:0] io_out_interrupt_pc3147; // interrupt_handler.h(11:0)
-  reg[31:0] mem3149 [0:1]; // interrupt_handler.h(27:0)
-  wire[31:0] marport3150; // interrupt_handler.h(31:0)
-  wire[31:0] proxy3151; // interrupt_handler.h(31:0)
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  reg[31:0] mem2999 [0:1];
+  wire[31:0] mrport3001, sel3005;
 
-  assign io_out_interrupt_pc3147 = proxy3151;
   initial begin
-    mem3149[0] = 32'hdeadbeef;
-    mem3149[1] = 32'hdeadbeef;
+    mem2999[0] = 32'hdeadbeef;
+    mem2999[1] = 32'hdeadbeef;
   end
-<<<<<<< HEAD
-  assign mrport3204 = mem3202[io_INTERRUPT_in_interrupt_id_data];
-  assign sel3208 = io_INTERRUPT_in_interrupt_id_valid ? mrport3204 : 32'hdeadbeef;
+  assign mrport3001 = mem2999[io_INTERRUPT_in_interrupt_id_data];
+  assign sel3005 = io_INTERRUPT_in_interrupt_id_valid ? mrport3001 : 32'hdeadbeef;
 
   assign io_INTERRUPT_in_interrupt_id_ready = io_INTERRUPT_in_interrupt_id_valid;
   assign io_out_interrupt = io_INTERRUPT_in_interrupt_id_valid;
-  assign io_out_interrupt_pc = sel3208;
-=======
-  assign marport3150 = mem3149[io_INTERRUPT_in_interrupt_id_data];
-  assign proxy3151 = marport3150;
-
-  assign io_INTERRUPT_in_interrupt_id_ready = io_INTERRUPT_in_interrupt_id_valid;
-  assign io_out_interrupt = io_INTERRUPT_in_interrupt_id_valid;
-  assign io_out_interrupt_pc = io_out_interrupt_pc3147;
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  assign io_out_interrupt_pc = sel3005;
 
 endmodule
 
@@ -2594,163 +1315,64 @@ module TAP(
   output wire io_JTAG_TAP_in_reset_ready,
   output wire[3:0] io_out_curr_state
 );
-<<<<<<< HEAD
-  reg[3:0] reg3276, sel3366;
-  wire eq3284, andl3369, eq3373, andl3377, eq3381, andl3385;
-  wire[3:0] sel3290, sel3295, sel3301, sel3307, sel3317, sel3322, sel3326, sel3335, sel3341, sel3351, sel3356, sel3360, sel3367, sel3383, sel3384, sel3386;
-=======
-  wire[3:0] io_out_curr_state3211; // JTAG/jtag.h(16:0)
-  wire[3:0] proxy3216; // JTAG/jtag.h(31:0)
-  reg[3:0] reg3218; // JTAG/jtag.h(31:0)
-  wire io_JTAG_TAP_in_mode_select_valid3223; // JTAG/jtag.h(35:0)
-  wire eq3227; // JTAG/jtag.h(36:1)
-  wire[3:0] sel3233; // JTAG/jtag.h(45:0)
-  wire[3:0] sel3238; // JTAG/jtag.h(49:0)
-  wire[3:0] sel3244; // JTAG/jtag.h(53:0)
-  wire[3:0] sel3250; // JTAG/jtag.h(57:0)
-  wire[3:0] sel3254; // JTAG/jtag.h(61:0)
-  wire[3:0] sel3260; // JTAG/jtag.h(65:0)
-  wire[3:0] sel3265; // JTAG/jtag.h(69:0)
-  wire[3:0] sel3269; // JTAG/jtag.h(73:0)
-  wire[3:0] sel3273; // JTAG/jtag.h(77:0)
-  wire[3:0] sel3278; // JTAG/jtag.h(81:0)
-  wire[3:0] sel3284; // JTAG/jtag.h(85:0)
-  wire[3:0] sel3288; // JTAG/jtag.h(89:0)
-  wire[3:0] sel3294; // JTAG/jtag.h(93:0)
-  wire[3:0] sel3299; // JTAG/jtag.h(97:0)
-  wire[3:0] sel3303; // JTAG/jtag.h(101:0)
-  wire[3:0] sel3307; // JTAG/jtag.h(105:0)
-  reg[3:0] sel3309; // JTAG/jtag.h(42:0)
-  wire[3:0] sel3310; // JTAG/jtag.h(40:0)
-  wire io_JTAG_TAP_in_mode_select_valid3311; // JTAG/jtag.h(115:1)
-  wire andl3312; // JTAG/jtag.h(115:1)
-  wire eq3316; // JTAG/jtag.h(117:2)
-  wire io_JTAG_TAP_in_mode_select_valid3319; // JTAG/jtag.h(123:1)
-  wire andl3320; // JTAG/jtag.h(123:1)
-  wire eq3324; // JTAG/jtag.h(125:2)
-  wire[3:0] sel3326; // JTAG/jtag.h(117:0)
-  wire[3:0] sel3327; // JTAG/jtag.h(125:0)
-  wire andb3328; // JTAG/jtag.h(115:0)
-  wire[3:0] sel3329; // JTAG/jtag.h(115:0)
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  reg[3:0] reg3073, sel3163;
+  wire eq3081, andl3166, eq3170, andl3174, eq3178, andl3182;
+  wire[3:0] sel3087, sel3092, sel3098, sel3104, sel3114, sel3119, sel3123, sel3132, sel3138, sel3148, sel3153, sel3157, sel3164, sel3180, sel3181, sel3183;
 
-  assign io_out_curr_state3211 = proxy3216;
-  assign proxy3216 = reg3218;
   always @ (posedge clk) begin
     if (reset)
-<<<<<<< HEAD
-      reg3276 <= 4'h0;
+      reg3073 <= 4'h0;
     else
-      reg3276 <= sel3386;
+      reg3073 <= sel3183;
   end
-  assign eq3284 = io_JTAG_TAP_in_mode_select_data == 1'h1;
-  assign sel3290 = eq3284 ? 4'h0 : 4'h1;
-  assign sel3295 = eq3284 ? 4'h2 : 4'h1;
-  assign sel3301 = eq3284 ? 4'h9 : 4'h3;
-  assign sel3307 = eq3284 ? 4'h5 : 4'h4;
-  assign sel3317 = eq3284 ? 4'h8 : 4'h6;
-  assign sel3322 = eq3284 ? 4'h7 : 4'h6;
-  assign sel3326 = eq3284 ? 4'h4 : 4'h8;
-  assign sel3335 = eq3284 ? 4'h0 : 4'ha;
-  assign sel3341 = eq3284 ? 4'hc : 4'hb;
-  assign sel3351 = eq3284 ? 4'hf : 4'hd;
-  assign sel3356 = eq3284 ? 4'he : 4'hd;
-  assign sel3360 = eq3284 ? 4'hf : 4'hb;
+  assign eq3081 = io_JTAG_TAP_in_mode_select_data == 1'h1;
+  assign sel3087 = eq3081 ? 4'h0 : 4'h1;
+  assign sel3092 = eq3081 ? 4'h2 : 4'h1;
+  assign sel3098 = eq3081 ? 4'h9 : 4'h3;
+  assign sel3104 = eq3081 ? 4'h5 : 4'h4;
+  assign sel3114 = eq3081 ? 4'h8 : 4'h6;
+  assign sel3119 = eq3081 ? 4'h7 : 4'h6;
+  assign sel3123 = eq3081 ? 4'h4 : 4'h8;
+  assign sel3132 = eq3081 ? 4'h0 : 4'ha;
+  assign sel3138 = eq3081 ? 4'hc : 4'hb;
+  assign sel3148 = eq3081 ? 4'hf : 4'hd;
+  assign sel3153 = eq3081 ? 4'he : 4'hd;
+  assign sel3157 = eq3081 ? 4'hf : 4'hb;
   always @(*) begin
-    case (reg3276)
-      4'h0: sel3366 = sel3290;
-      4'h1: sel3366 = sel3295;
-      4'h2: sel3366 = sel3301;
-      4'h3: sel3366 = sel3307;
-      4'h4: sel3366 = sel3307;
-      4'h5: sel3366 = sel3317;
-      4'h6: sel3366 = sel3322;
-      4'h7: sel3366 = sel3326;
-      4'h8: sel3366 = sel3295;
-      4'h9: sel3366 = sel3335;
-      4'ha: sel3366 = sel3341;
-      4'hb: sel3366 = sel3341;
-      4'hc: sel3366 = sel3351;
-      4'hd: sel3366 = sel3356;
-      4'he: sel3366 = sel3360;
-      4'hf: sel3366 = sel3295;
-      default: sel3366 = reg3276;
+    case (reg3073)
+      4'h0: sel3163 = sel3087;
+      4'h1: sel3163 = sel3092;
+      4'h2: sel3163 = sel3098;
+      4'h3: sel3163 = sel3104;
+      4'h4: sel3163 = sel3104;
+      4'h5: sel3163 = sel3114;
+      4'h6: sel3163 = sel3119;
+      4'h7: sel3163 = sel3123;
+      4'h8: sel3163 = sel3092;
+      4'h9: sel3163 = sel3132;
+      4'ha: sel3163 = sel3138;
+      4'hb: sel3163 = sel3138;
+      4'hc: sel3163 = sel3148;
+      4'hd: sel3163 = sel3153;
+      4'he: sel3163 = sel3157;
+      4'hf: sel3163 = sel3092;
+      default: sel3163 = reg3073;
     endcase
   end
-  assign sel3367 = io_JTAG_TAP_in_mode_select_valid ? sel3366 : 4'h0;
-  assign andl3369 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_reset_valid;
-  assign eq3373 = io_JTAG_TAP_in_reset_data == 1'h1;
-  assign andl3377 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_clock_valid;
-  assign eq3381 = io_JTAG_TAP_in_clock_data == 1'h1;
-  assign sel3383 = eq3373 ? 4'h0 : reg3276;
-  assign sel3384 = andl3385 ? sel3367 : reg3276;
-  assign andl3385 = andl3377 & eq3381;
-  assign sel3386 = andl3369 ? sel3383 : sel3384;
-=======
-      reg3218 <= 4'h0;
-    else
-      reg3218 <= sel3329;
-  end
-  assign io_JTAG_TAP_in_mode_select_valid3223 = io_JTAG_TAP_in_mode_select_valid;
-  assign eq3227 = io_JTAG_TAP_in_mode_select_data == 1'h1;
-  assign sel3233 = eq3227 ? 4'h0 : 4'h1;
-  assign sel3238 = eq3227 ? 4'h2 : 4'h1;
-  assign sel3244 = eq3227 ? 4'h9 : 4'h3;
-  assign sel3250 = eq3227 ? 4'h5 : 4'h4;
-  assign sel3254 = eq3227 ? 4'h5 : 4'h4;
-  assign sel3260 = eq3227 ? 4'h8 : 4'h6;
-  assign sel3265 = eq3227 ? 4'h7 : 4'h6;
-  assign sel3269 = eq3227 ? 4'h4 : 4'h8;
-  assign sel3273 = eq3227 ? 4'h2 : 4'h1;
-  assign sel3278 = eq3227 ? 4'h0 : 4'ha;
-  assign sel3284 = eq3227 ? 4'hc : 4'hb;
-  assign sel3288 = eq3227 ? 4'hc : 4'hb;
-  assign sel3294 = eq3227 ? 4'hf : 4'hd;
-  assign sel3299 = eq3227 ? 4'he : 4'hd;
-  assign sel3303 = eq3227 ? 4'hf : 4'hb;
-  assign sel3307 = eq3227 ? 4'h2 : 4'h1;
-  always @(*) begin
-    case (proxy3216)
-      4'h0: sel3309 = sel3233;
-      4'h1: sel3309 = sel3238;
-      4'h2: sel3309 = sel3244;
-      4'h3: sel3309 = sel3250;
-      4'h4: sel3309 = sel3254;
-      4'h5: sel3309 = sel3260;
-      4'h6: sel3309 = sel3265;
-      4'h7: sel3309 = sel3269;
-      4'h8: sel3309 = sel3273;
-      4'h9: sel3309 = sel3278;
-      4'ha: sel3309 = sel3284;
-      4'hb: sel3309 = sel3288;
-      4'hc: sel3309 = sel3294;
-      4'hd: sel3309 = sel3299;
-      4'he: sel3309 = sel3303;
-      4'hf: sel3309 = sel3307;
-      default: sel3309 = proxy3216;
-    endcase
-  end
-  assign sel3310 = io_JTAG_TAP_in_mode_select_valid3223 ? sel3309 : 4'h0;
-  assign io_JTAG_TAP_in_mode_select_valid3311 = io_JTAG_TAP_in_mode_select_valid3223;
-  assign andl3312 = io_JTAG_TAP_in_mode_select_valid3311 && io_JTAG_TAP_in_reset_valid;
-  assign eq3316 = io_JTAG_TAP_in_reset_data == 1'h1;
-  assign io_JTAG_TAP_in_mode_select_valid3319 = io_JTAG_TAP_in_mode_select_valid3223;
-  assign andl3320 = io_JTAG_TAP_in_mode_select_valid3319 && io_JTAG_TAP_in_clock_valid;
-  assign eq3324 = io_JTAG_TAP_in_clock_data == 1'h1;
-  assign sel3326 = eq3316 ? 4'h0 : proxy3216;
-  assign sel3327 = andb3328 ? sel3310 : proxy3216;
-  assign andb3328 = andl3320 & eq3324;
-  assign sel3329 = andl3312 ? sel3326 : sel3327;
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  assign sel3164 = io_JTAG_TAP_in_mode_select_valid ? sel3163 : 4'h0;
+  assign andl3166 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_reset_valid;
+  assign eq3170 = io_JTAG_TAP_in_reset_data == 1'h1;
+  assign andl3174 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_clock_valid;
+  assign eq3178 = io_JTAG_TAP_in_clock_data == 1'h1;
+  assign sel3180 = eq3170 ? 4'h0 : reg3073;
+  assign sel3181 = andl3182 ? sel3164 : reg3073;
+  assign andl3182 = andl3174 & eq3178;
+  assign sel3183 = andl3166 ? sel3180 : sel3181;
 
   assign io_JTAG_TAP_in_mode_select_ready = io_JTAG_TAP_in_mode_select_valid;
   assign io_JTAG_TAP_in_clock_ready = io_JTAG_TAP_in_clock_valid;
   assign io_JTAG_TAP_in_reset_ready = io_JTAG_TAP_in_reset_valid;
-<<<<<<< HEAD
-  assign io_out_curr_state = reg3276;
-=======
-  assign io_out_curr_state = io_out_curr_state3211;
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  assign io_out_curr_state = reg3073;
 
 endmodule
 
@@ -2773,449 +1395,126 @@ module JTAG(
   output wire io_JTAG_out_data_valid,
   input wire io_JTAG_out_data_ready
 );
-<<<<<<< HEAD
-  wire bindin3392, bindin3394, bindin3395, bindin3398, bindout3401, bindin3404, bindin3407, bindout3410, bindin3413, bindin3416, bindout3419, eq3456, eq3465, eq3470, eq3547, andl3548, sel3550, sel3556;
-  wire[3:0] bindout3422;
-  reg[31:0] reg3430, reg3437, reg3444, reg3451, sel3549;
-  wire[31:0] sel3473, sel3475, shr3482, proxy3487, sel3542, sel3543, sel3544, sel3545, sel3546;
-  wire[30:0] proxy3485;
-  reg sel3555, sel3561;
+  wire bindin3189, bindin3191, bindin3192, bindin3195, bindout3198, bindin3201, bindin3204, bindout3207, bindin3210, bindin3213, bindout3216, eq3253, eq3262, eq3267, eq3345, andl3346, sel3347, sel3353;
+  wire[3:0] bindout3219;
+  reg[31:0] reg3227, reg3234, reg3241, reg3248, sel3343;
+  wire[31:0] sel3270, sel3272, shr3279, proxy3284, sel3339, sel3340, sel3341, sel3342, sel3344;
+  wire[30:0] proxy3282;
+  reg sel3352, sel3358;
 
-  assign bindin3392 = clk;
-  assign bindin3394 = reset;
-  TAP __module16__(.clk(bindin3392), .reset(bindin3394), .io_JTAG_TAP_in_mode_select_data(bindin3395), .io_JTAG_TAP_in_mode_select_valid(bindin3398), .io_JTAG_TAP_in_clock_data(bindin3404), .io_JTAG_TAP_in_clock_valid(bindin3407), .io_JTAG_TAP_in_reset_data(bindin3413), .io_JTAG_TAP_in_reset_valid(bindin3416), .io_JTAG_TAP_in_mode_select_ready(bindout3401), .io_JTAG_TAP_in_clock_ready(bindout3410), .io_JTAG_TAP_in_reset_ready(bindout3419), .io_out_curr_state(bindout3422));
-  assign bindin3395 = io_JTAG_JTAG_TAP_in_mode_select_data;
-  assign bindin3398 = io_JTAG_JTAG_TAP_in_mode_select_valid;
-  assign bindin3404 = io_JTAG_JTAG_TAP_in_clock_data;
-  assign bindin3407 = io_JTAG_JTAG_TAP_in_clock_valid;
-  assign bindin3413 = io_JTAG_JTAG_TAP_in_reset_data;
-  assign bindin3416 = io_JTAG_JTAG_TAP_in_reset_valid;
+  assign bindin3189 = clk;
+  assign bindin3191 = reset;
+  TAP __module16__(.clk(bindin3189), .reset(bindin3191), .io_JTAG_TAP_in_mode_select_data(bindin3192), .io_JTAG_TAP_in_mode_select_valid(bindin3195), .io_JTAG_TAP_in_clock_data(bindin3201), .io_JTAG_TAP_in_clock_valid(bindin3204), .io_JTAG_TAP_in_reset_data(bindin3210), .io_JTAG_TAP_in_reset_valid(bindin3213), .io_JTAG_TAP_in_mode_select_ready(bindout3198), .io_JTAG_TAP_in_clock_ready(bindout3207), .io_JTAG_TAP_in_reset_ready(bindout3216), .io_out_curr_state(bindout3219));
+  assign bindin3192 = io_JTAG_JTAG_TAP_in_mode_select_data;
+  assign bindin3195 = io_JTAG_JTAG_TAP_in_mode_select_valid;
+  assign bindin3201 = io_JTAG_JTAG_TAP_in_clock_data;
+  assign bindin3204 = io_JTAG_JTAG_TAP_in_clock_valid;
+  assign bindin3210 = io_JTAG_JTAG_TAP_in_reset_data;
+  assign bindin3213 = io_JTAG_JTAG_TAP_in_reset_valid;
   always @ (posedge clk) begin
     if (reset)
-      reg3430 <= 32'h0;
+      reg3227 <= 32'h0;
     else
-      reg3430 <= sel3545;
+      reg3227 <= sel3339;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg3437 <= 32'h1234;
+      reg3234 <= 32'h1234;
     else
-      reg3437 <= sel3544;
+      reg3234 <= sel3342;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg3444 <= 32'h5678;
+      reg3241 <= 32'h5678;
     else
-      reg3444 <= sel3546;
-=======
-  wire io_JTAG_JTAG_TAP_in_mode_select_ready3171; // JTAG/jtag.h(138:0)
-  wire io_JTAG_JTAG_TAP_in_clock_ready3176; // JTAG/jtag.h(138:0)
-  wire io_JTAG_JTAG_TAP_in_reset_ready3181; // JTAG/jtag.h(138:0)
-  wire TAP3332_clk; // JTAG/jtag.h(138:1)
-  wire TAP3332_reset; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_mode_select_data; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_mode_select_valid; // JTAG/jtag.h(138:1)
-  wire proxy3343; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_mode_select_ready; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_clock_data; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_clock_valid; // JTAG/jtag.h(138:1)
-  wire proxy3352; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_clock_ready; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_reset_data; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_reset_valid; // JTAG/jtag.h(138:1)
-  wire proxy3361; // JTAG/jtag.h(138:1)
-  wire TAP3332_io_JTAG_TAP_in_reset_ready; // JTAG/jtag.h(138:1)
-  wire[3:0] proxy3364; // JTAG/jtag.h(138:1)
-  wire[3:0] TAP3332_io_out_curr_state; // JTAG/jtag.h(138:1)
-  wire[31:0] proxy3367; // JTAG/jtag.h(148:1)
-  wire[31:0] proxy3368; // /home/blaise/dev/cash/include/reg.h(45:50)
-  reg[31:0] reg3372; // JTAG/jtag.h(148:0)
-  reg[31:0] reg3379; // JTAG/jtag.h(150:0)
-  reg[31:0] reg3386; // JTAG/jtag.h(151:0)
-  wire[3:0] proxy3388; // JTAG/jtag.h(157:0)
-  wire[31:0] proxy3391; // JTAG/jtag.h(159:0)
-  reg[31:0] reg3393; // JTAG/jtag.h(159:0)
-  wire eq3397; // JTAG/jtag.h(148:0)
-  wire eq3406; // JTAG/jtag.h(148:0)
-  wire eq3410; // JTAG/jtag.h(148:0)
-  wire[31:0] sel3413; // JTAG/jtag.h(178:1)
-  wire[31:0] sel3415; // JTAG/jtag.h(178:0)
-  wire proxy3420; // JTAG/jtag.h(184:0)
-  wire[31:0] proxy3421; // JTAG/jtag.h(186:2)
-  wire[31:0] shr3423; // JTAG/jtag.h(186:2)
-  wire[31:0] proxy3424; // JTAG/jtag.h(186:2)
-  wire[30:0] proxy3426; // JTAG/jtag.h(186:1)
-  wire[31:0] proxy3428; // JTAG/jtag.h(186:0)
-  wire[30:0] proxy3429; // /home/blaise/dev/cash/include/logic.h(180:31)
-  wire io_JTAG_in_data_data3430; // /home/blaise/dev/cash/include/ioport.h(75:2)
-  wire eq3433; // JTAG/jtag.h(148:0)
-  wire eq3439; // JTAG/jtag.h(148:0)
-  wire eq3442; // JTAG/jtag.h(148:0)
-  wire eq3446; // JTAG/jtag.h(148:0)
-  wire proxy3454; // JTAG/jtag.h(234:0)
-  wire[31:0] proxy3455; // JTAG/jtag.h(236:2)
-  wire[31:0] shr3457; // JTAG/jtag.h(236:2)
-  wire[31:0] proxy3458; // JTAG/jtag.h(236:2)
-  wire[30:0] proxy3460; // JTAG/jtag.h(236:1)
-  wire[31:0] proxy3462; // JTAG/jtag.h(236:0)
-  wire[30:0] proxy3463; // /home/blaise/dev/cash/include/logic.h(180:32)
-  wire io_JTAG_in_data_data3464; // /home/blaise/dev/cash/include/ioport.h(75:3)
-  wire eq3467; // JTAG/jtag.h(148:0)
-  wire eq3473; // JTAG/jtag.h(148:0)
-  wire[31:0] sel3478; // JTAG/jtag.h(161:0)
-  wire[31:0] sel3479; // JTAG/jtag.h(210:0)
-  wire[31:0] sel3480; // JTAG/jtag.h(205:0)
-  wire[31:0] sel3481; // JTAG/jtag.h(161:0)
-  reg[31:0] sel3482; // JTAG/jtag.h(161:0)
-  wire[31:0] sel3483; // JTAG/jtag.h(205:0)
-  wire eq3484; // JTAG/jtag.h(161:0)
-  wire andb3485; // JTAG/jtag.h(161:0)
-  wire sel3486; // JTAG/jtag.h(165:0)
-  wire sel3487; // JTAG/jtag.h(192:0)
-  wire sel3488; // JTAG/jtag.h(219:0)
-  wire sel3489; // JTAG/jtag.h(241:0)
-  wire sel3490; // JTAG/jtag.h(256:0)
-  reg sel3491; // JTAG/jtag.h(161:0)
-  wire sel3492; // JTAG/jtag.h(165:0)
-  wire sel3493; // JTAG/jtag.h(192:0)
-  wire sel3494; // JTAG/jtag.h(219:0)
-  wire sel3495; // JTAG/jtag.h(241:0)
-  wire sel3496; // JTAG/jtag.h(256:0)
-  reg sel3497; // JTAG/jtag.h(161:0)
-
-  assign io_JTAG_JTAG_TAP_in_mode_select_ready3171 = proxy3343;
-  assign io_JTAG_JTAG_TAP_in_clock_ready3176 = proxy3352;
-  assign io_JTAG_JTAG_TAP_in_reset_ready3181 = proxy3361;
-  assign TAP3332_clk = clk;
-  assign TAP3332_reset = reset;
-  TAP TAP3332(.clk(TAP3332_clk), .reset(TAP3332_reset), .io_JTAG_TAP_in_mode_select_data(TAP3332_io_JTAG_TAP_in_mode_select_data), .io_JTAG_TAP_in_mode_select_valid(TAP3332_io_JTAG_TAP_in_mode_select_valid), .io_JTAG_TAP_in_clock_data(TAP3332_io_JTAG_TAP_in_clock_data), .io_JTAG_TAP_in_clock_valid(TAP3332_io_JTAG_TAP_in_clock_valid), .io_JTAG_TAP_in_reset_data(TAP3332_io_JTAG_TAP_in_reset_data), .io_JTAG_TAP_in_reset_valid(TAP3332_io_JTAG_TAP_in_reset_valid), .io_JTAG_TAP_in_mode_select_ready(TAP3332_io_JTAG_TAP_in_mode_select_ready), .io_JTAG_TAP_in_clock_ready(TAP3332_io_JTAG_TAP_in_clock_ready), .io_JTAG_TAP_in_reset_ready(TAP3332_io_JTAG_TAP_in_reset_ready), .io_out_curr_state(TAP3332_io_out_curr_state));
-  assign TAP3332_io_JTAG_TAP_in_mode_select_data = io_JTAG_JTAG_TAP_in_mode_select_data;
-  assign TAP3332_io_JTAG_TAP_in_mode_select_valid = io_JTAG_JTAG_TAP_in_mode_select_valid;
-  assign proxy3343 = TAP3332_io_JTAG_TAP_in_mode_select_ready;
-  assign TAP3332_io_JTAG_TAP_in_clock_data = io_JTAG_JTAG_TAP_in_clock_data;
-  assign TAP3332_io_JTAG_TAP_in_clock_valid = io_JTAG_JTAG_TAP_in_clock_valid;
-  assign proxy3352 = TAP3332_io_JTAG_TAP_in_clock_ready;
-  assign TAP3332_io_JTAG_TAP_in_reset_data = io_JTAG_JTAG_TAP_in_reset_data;
-  assign TAP3332_io_JTAG_TAP_in_reset_valid = io_JTAG_JTAG_TAP_in_reset_valid;
-  assign proxy3361 = TAP3332_io_JTAG_TAP_in_reset_ready;
-  assign proxy3364 = TAP3332_io_out_curr_state;
-  assign proxy3367 = 32'h0;
-  assign proxy3368 = proxy3367;
-  always @ (posedge clk) begin
-    if (reset)
-      reg3372 <= proxy3368;
-    else
-      reg3372 <= sel3478;
+      reg3241 <= sel3344;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg3379 <= 32'h1234;
+      reg3248 <= 32'h0;
     else
-      reg3379 <= sel3481;
+      reg3248 <= sel3343;
   end
-  always @ (posedge clk) begin
-    if (reset)
-      reg3386 <= 32'h5678;
-    else
-      reg3386 <= sel3483;
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
-  end
-  assign proxy3388 = proxy3364;
-  assign proxy3391 = reg3393;
-  always @ (posedge clk) begin
-    if (reset)
-<<<<<<< HEAD
-      reg3451 <= 32'h0;
-    else
-      reg3451 <= sel3549;
-  end
-  assign eq3456 = reg3430 == 32'h0;
-  assign eq3465 = reg3430 == 32'h1;
-  assign eq3470 = reg3430 == 32'h2;
-  assign sel3473 = eq3470 ? reg3437 : 32'hdeadbeef;
-  assign sel3475 = eq3465 ? reg3444 : sel3473;
-  assign shr3482 = reg3451 >> 32'h1;
-  assign proxy3485 = shr3482[30:0];
-  assign proxy3487 = {io_JTAG_in_data_data, proxy3485};
-  assign sel3542 = eq3470 ? reg3451 : reg3437;
-  assign sel3543 = eq3465 ? reg3437 : sel3542;
-  assign sel3544 = (bindout3422 == 4'h8) ? sel3543 : reg3437;
-  assign sel3545 = (bindout3422 == 4'hf) ? reg3451 : reg3430;
-  assign sel3546 = andl3548 ? reg3451 : reg3444;
-  assign eq3547 = bindout3422 == 4'h8;
-  assign andl3548 = eq3547 & eq3465;
+  assign eq3253 = reg3227 == 32'h0;
+  assign eq3262 = reg3227 == 32'h1;
+  assign eq3267 = reg3227 == 32'h2;
+  assign sel3270 = eq3267 ? reg3234 : 32'hdeadbeef;
+  assign sel3272 = eq3262 ? reg3241 : sel3270;
+  assign shr3279 = reg3248 >> 32'h1;
+  assign proxy3282 = shr3279[30:0];
+  assign proxy3284 = {io_JTAG_in_data_data, proxy3282};
+  assign sel3339 = (bindout3219 == 4'hf) ? reg3248 : reg3227;
+  assign sel3340 = eq3267 ? reg3248 : reg3234;
+  assign sel3341 = eq3262 ? reg3234 : sel3340;
+  assign sel3342 = (bindout3219 == 4'h8) ? sel3341 : reg3234;
   always @(*) begin
-    case (bindout3422)
-      4'h3: sel3549 = sel3475;
-      4'h4: sel3549 = proxy3487;
-      4'ha: sel3549 = reg3430;
-      4'hb: sel3549 = proxy3487;
-      default: sel3549 = reg3451;
+    case (bindout3219)
+      4'h3: sel3343 = sel3272;
+      4'h4: sel3343 = proxy3284;
+      4'ha: sel3343 = reg3227;
+      4'hb: sel3343 = proxy3284;
+      default: sel3343 = reg3248;
     endcase
   end
-  assign sel3550 = eq3456 ? 1'h1 : 1'h0;
+  assign sel3344 = andl3346 ? reg3248 : reg3241;
+  assign eq3345 = bindout3219 == 4'h8;
+  assign andl3346 = eq3345 & eq3262;
+  assign sel3347 = eq3253 ? 1'h1 : 1'h0;
   always @(*) begin
-    case (bindout3422)
-      4'h3: sel3555 = sel3550;
-      4'h4: sel3555 = 1'h1;
-      4'h8: sel3555 = sel3550;
-      4'ha: sel3555 = sel3550;
-      4'hb: sel3555 = 1'h1;
-      4'hf: sel3555 = sel3550;
-      default: sel3555 = sel3550;
+    case (bindout3219)
+      4'h3: sel3352 = sel3347;
+      4'h4: sel3352 = 1'h1;
+      4'h8: sel3352 = sel3347;
+      4'ha: sel3352 = sel3347;
+      4'hb: sel3352 = 1'h1;
+      4'hf: sel3352 = sel3347;
+      default: sel3352 = sel3347;
     endcase
   end
-  assign sel3556 = eq3456 ? io_JTAG_in_data_data : 1'h0;
+  assign sel3353 = eq3253 ? io_JTAG_in_data_data : 1'h0;
   always @(*) begin
-    case (bindout3422)
-      4'h3: sel3561 = sel3556;
-      4'h4: sel3561 = reg3451[0];
-      4'h8: sel3561 = sel3556;
-      4'ha: sel3561 = sel3556;
-      4'hb: sel3561 = reg3451[0];
-      4'hf: sel3561 = sel3556;
-      default: sel3561 = sel3556;
+    case (bindout3219)
+      4'h3: sel3358 = sel3353;
+      4'h4: sel3358 = reg3248[0];
+      4'h8: sel3358 = sel3353;
+      4'ha: sel3358 = sel3353;
+      4'hb: sel3358 = reg3248[0];
+      4'hf: sel3358 = sel3353;
+      default: sel3358 = sel3353;
     endcase
   end
 
-  assign io_JTAG_JTAG_TAP_in_mode_select_ready = bindout3401;
-  assign io_JTAG_JTAG_TAP_in_clock_ready = bindout3410;
-  assign io_JTAG_JTAG_TAP_in_reset_ready = bindout3419;
+  assign io_JTAG_JTAG_TAP_in_mode_select_ready = bindout3198;
+  assign io_JTAG_JTAG_TAP_in_clock_ready = bindout3207;
+  assign io_JTAG_JTAG_TAP_in_reset_ready = bindout3216;
   assign io_JTAG_in_data_ready = io_JTAG_in_data_valid;
-  assign io_JTAG_out_data_data = sel3561;
-  assign io_JTAG_out_data_valid = sel3555;
-=======
-      reg3393 <= 32'h0;
-    else
-      reg3393 <= sel3482;
-  end
-  assign eq3397 = reg3372 == 32'h0;
-  assign eq3406 = reg3372 == 32'h1;
-  assign eq3410 = reg3372 == 32'h2;
-  assign sel3413 = eq3410 ? reg3379 : 32'hdeadbeef;
-  assign sel3415 = eq3406 ? reg3386 : sel3413;
-  assign proxy3420 = proxy3391[0];
-  assign proxy3421 = proxy3391;
-  assign shr3423 = proxy3421 >> 32'h1;
-  assign proxy3424 = shr3423;
-  assign proxy3426 = proxy3424[30:0];
-  assign proxy3428 = {io_JTAG_in_data_data3430, proxy3429};
-  assign proxy3429 = proxy3426;
-  assign io_JTAG_in_data_data3430 = io_JTAG_in_data_data;
-  assign eq3433 = reg3372 == 32'h0;
-  assign eq3439 = reg3372 == 32'h1;
-  assign eq3442 = reg3372 == 32'h2;
-  assign eq3446 = reg3372 == 32'h0;
-  assign proxy3454 = proxy3391[0];
-  assign proxy3455 = proxy3391;
-  assign shr3457 = proxy3455 >> 32'h1;
-  assign proxy3458 = shr3457;
-  assign proxy3460 = proxy3458[30:0];
-  assign proxy3462 = {io_JTAG_in_data_data3464, proxy3463};
-  assign proxy3463 = proxy3460;
-  assign io_JTAG_in_data_data3464 = io_JTAG_in_data_data;
-  assign eq3467 = reg3372 == 32'h0;
-  assign eq3473 = reg3372 == 32'h0;
-  assign sel3478 = (proxy3388 == 4'hf) ? proxy3391 : reg3372;
-  assign sel3479 = eq3442 ? proxy3391 : reg3379;
-  assign sel3480 = eq3439 ? reg3379 : sel3479;
-  assign sel3481 = (proxy3388 == 4'h8) ? sel3480 : reg3379;
-  always @(*) begin
-    case (proxy3388)
-      4'h3: sel3482 = sel3415;
-      4'h4: sel3482 = proxy3428;
-      4'ha: sel3482 = reg3372;
-      4'hb: sel3482 = proxy3462;
-      default: sel3482 = proxy3391;
-    endcase
-  end
-  assign sel3483 = andb3485 ? proxy3391 : reg3386;
-  assign eq3484 = proxy3388 == 4'h8;
-  assign andb3485 = eq3484 & eq3439;
-  assign sel3486 = eq3397 ? 1'h1 : 1'h0;
-  assign sel3487 = eq3433 ? 1'h1 : 1'h0;
-  assign sel3488 = eq3446 ? 1'h1 : 1'h0;
-  assign sel3489 = eq3467 ? 1'h1 : 1'h0;
-  assign sel3490 = eq3473 ? 1'h1 : 1'h0;
-  always @(*) begin
-    case (proxy3388)
-      4'h3: sel3491 = sel3486;
-      4'h4: sel3491 = 1'h1;
-      4'h8: sel3491 = sel3487;
-      4'ha: sel3491 = sel3488;
-      4'hb: sel3491 = 1'h1;
-      4'hf: sel3491 = sel3489;
-      default: sel3491 = sel3490;
-    endcase
-  end
-  assign sel3492 = eq3397 ? io_JTAG_in_data_data : 1'h0;
-  assign sel3493 = eq3433 ? io_JTAG_in_data_data : 1'h0;
-  assign sel3494 = eq3446 ? io_JTAG_in_data_data : 1'h0;
-  assign sel3495 = eq3467 ? io_JTAG_in_data_data : 1'h0;
-  assign sel3496 = eq3473 ? io_JTAG_in_data_data : 1'h0;
-  always @(*) begin
-    case (proxy3388)
-      4'h3: sel3497 = sel3492;
-      4'h4: sel3497 = proxy3420;
-      4'h8: sel3497 = sel3493;
-      4'ha: sel3497 = sel3494;
-      4'hb: sel3497 = proxy3454;
-      4'hf: sel3497 = sel3495;
-      default: sel3497 = sel3496;
-    endcase
-  end
-
-  assign io_JTAG_JTAG_TAP_in_mode_select_ready = io_JTAG_JTAG_TAP_in_mode_select_ready3171;
-  assign io_JTAG_JTAG_TAP_in_clock_ready = io_JTAG_JTAG_TAP_in_clock_ready3176;
-  assign io_JTAG_JTAG_TAP_in_reset_ready = io_JTAG_JTAG_TAP_in_reset_ready3181;
-  assign io_JTAG_in_data_ready = io_JTAG_in_data_valid;
-  assign io_JTAG_out_data_data = sel3497;
-  assign io_JTAG_out_data_valid = sel3491;
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  assign io_JTAG_out_data_data = sel3358;
+  assign io_JTAG_out_data_valid = sel3352;
 
 endmodule
 
 module CSR_Handler(
   input wire clk,
-  input wire reset,
   input wire[11:0] io_in_decode_csr_address,
   input wire[11:0] io_in_mem_csr_address,
   input wire io_in_mem_is_csr,
   input wire[31:0] io_in_mem_csr_result,
   output wire[31:0] io_out_decode_csr_data
 );
-<<<<<<< HEAD
-  reg[11:0] mem3617 [0:4095];
-  reg[1:0] reg3626, sel3662;
-  wire eq3638, eq3642, eq3660;
-  reg sel3663;
-  reg[11:0] sel3664, sel3665;
-  wire[11:0] mrport3667;
-  wire[31:0] pad3669;
-=======
-  reg[11:0] mem3553 [0:4095]; // csr_handler.h(23:0)
-  wire[1:0] proxy3557; // csr_handler.h(25:0)
-  reg[1:0] reg3559; // csr_handler.h(25:0)
-  wire[1:0] proxy3572; // csr_handler.h(38:1)
-  wire eq3573; // csr_handler.h(38:1)
-  wire[1:0] proxy3576; // csr_handler.h(31:2)
-  wire eq3577; // csr_handler.h(31:2)
-  wire eq3595; // csr_handler.h(9:0)
-  reg sel3597; // csr_handler.h(31:0)
-  reg[1:0] sel3598; // csr_handler.h(31:0)
-  reg[11:0] sel3599; // csr_handler.h(31:0)
-  reg[11:0] sel3600; // csr_handler.h(31:0)
-  wire[11:0] marport3602; // csr_handler.h(53:1)
-  wire[11:0] proxy3603; // csr_handler.h(53:1)
-  wire[31:0] pad3604; // csr_handler.h(53:0)
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  reg[11:0] mem3414 [0:4095];
+  wire[11:0] proxy3424, mrport3427;
+  wire[31:0] pad3429;
 
-  assign marport3602 = mem3553[io_in_decode_csr_address];
   always @ (posedge clk) begin
-<<<<<<< HEAD
-    if (sel3663) begin
-      mem3617[sel3665] <= sel3664;
+    if (io_in_mem_is_csr) begin
+      mem3414[io_in_mem_csr_address] <= proxy3424;
     end
   end
-  assign mrport3667 = mem3617[io_in_decode_csr_address];
-  always @ (posedge clk) begin
-    if (reset)
-      reg3626 <= 2'h0;
-    else
-      reg3626 <= sel3662;
-  end
-  assign eq3638 = reg3626 == 2'h1;
-  assign eq3642 = reg3626 == 2'h0;
-  assign eq3660 = io_in_mem_is_csr == 1'h1;
-  always @(*) begin
-    if (eq3642)
-      sel3662 = 2'h1;
-    else if (eq3638)
-      sel3662 = 2'h3;
-    else
-      sel3662 = reg3626;
-  end
-  always @(*) begin
-    if (eq3642)
-      sel3663 = 1'h1;
-    else if (eq3638)
-      sel3663 = 1'h1;
-    else
-      sel3663 = eq3660;
-  end
-  always @(*) begin
-    if (eq3642)
-      sel3664 = 12'h0;
-    else if (eq3638)
-      sel3664 = 12'h0;
-    else
-      sel3664 = io_in_mem_csr_result[11:0];
-  end
-  always @(*) begin
-    if (eq3642)
-      sel3665 = 12'hf14;
-    else if (eq3638)
-      sel3665 = 12'h301;
-    else
-      sel3665 = io_in_mem_csr_address;
-  end
-  assign pad3669 = {{20{1'b0}}, mrport3667};
+  assign mrport3427 = mem3414[io_in_decode_csr_address];
+  assign proxy3424 = io_in_mem_csr_result[11:0];
+  assign pad3429 = {{20{1'b0}}, mrport3427};
 
-  assign io_out_decode_csr_data = pad3669;
-=======
-    if (sel3597) begin
-      mem3553[sel3600] <= sel3599;
-    end
-  end
-  assign proxy3557 = reg3559;
-  always @ (posedge clk) begin
-    if (reset)
-      reg3559 <= 2'h0;
-    else
-      reg3559 <= sel3598;
-  end
-  assign proxy3572 = proxy3557;
-  assign eq3573 = proxy3572 == 2'h1;
-  assign proxy3576 = proxy3557;
-  assign eq3577 = proxy3576 == 2'h0;
-  assign eq3595 = io_in_mem_is_csr == 1'h1;
-  always @(*) begin
-    if (eq3577)
-      sel3597 = 1'h1;
-    else if (eq3573)
-      sel3597 = 1'h1;
-    else
-      sel3597 = eq3595;
-  end
-  always @(*) begin
-    if (eq3577)
-      sel3598 = 2'h1;
-    else if (eq3573)
-      sel3598 = 2'h3;
-    else
-      sel3598 = proxy3557;
-  end
-  always @(*) begin
-    if (eq3577)
-      sel3599 = 12'h0;
-    else if (eq3573)
-      sel3599 = 12'h0;
-    else
-      sel3599 = io_in_mem_csr_result[11:0];
-  end
-  always @(*) begin
-    if (eq3577)
-      sel3600 = 12'hf14;
-    else if (eq3573)
-      sel3600 = 12'h301;
-    else
-      sel3600 = io_in_mem_csr_address;
-  end
-  assign proxy3603 = marport3602;
-  assign pad3604 = {{20{1'b0}}, proxy3603};
-
-  assign io_out_decode_csr_data = pad3604;
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  assign io_out_decode_csr_data = pad3429;
 
 endmodule
 
@@ -3261,15 +1560,14 @@ module Pipeline(
   output wire io_out_fwd_stall,
   output wire io_out_branch_stall
 );
-<<<<<<< HEAD
-  wire bindin159, bindin161, bindin165, bindout168, bindout174, bindin177, bindin180, bindin186, bindin189, bindin192, bindin195, bindin201, bindin279, bindin280, bindin290, bindin293, bindin296, bindin1065, bindin1066, bindin1076, bindin1088, bindin1094, bindin1100, bindout1112, bindout1142, bindout1157, bindout1160, bindin1473, bindin1474, bindin1496, bindin1514, bindin1517, bindin1526, bindin1538, bindout1547, bindout1577, bindout1598, bindin1827, bindin1851, bindin1860, bindout1872, bindout1905, bindout1914, bindin2091, bindin2092, bindin2126, bindout2144, bindin2534, bindout2537, bindout2543, bindin2546, bindout2552, bindin2555, bindout2561, bindin2564, bindout2624, bindin2711, bindin2712, bindin3124, bindin3148, bindout3172, bindout3178, bindout3184, bindout3190, bindin3212, bindin3215, bindout3218, bindout3221, bindin3565, bindin3566, bindin3567, bindin3570, bindout3573, bindin3576, bindin3579, bindout3582, bindin3585, bindin3588, bindout3591, bindin3594, bindin3597, bindout3600, bindout3603, bindout3606, bindin3609, bindin3674, bindin3675, bindin3682, orl3690, eq3695, eq3699, orl3701;
-  wire[31:0] bindin162, bindout171, bindin183, bindin198, bindin204, bindout207, bindout210, bindout213, bindin281, bindin284, bindin287, bindout299, bindout302, bindout305, bindin1067, bindin1070, bindin1073, bindin1079, bindin1091, bindin1097, bindin1103, bindin1106, bindout1115, bindout1118, bindout1127, bindout1133, bindout1163, bindout1169, bindin1481, bindin1487, bindin1508, bindin1529, bindin1532, bindin1535, bindin1541, bindout1550, bindout1553, bindout1562, bindout1568, bindout1595, bindout1601, bindout1604, bindin1812, bindin1818, bindin1839, bindin1854, bindin1857, bindin1863, bindin1866, bindout1875, bindout1878, bindout1890, bindout1896, bindout1908, bindout1911, bindout1917, bindin2093, bindin2105, bindin2111, bindin2120, bindin2129, bindin2132, bindin2135, bindout2147, bindout2150, bindout2162, bindout2165, bindout2177, bindout2180, bindout2186, bindin2531, bindout2540, bindout2549, bindin2567, bindin2585, bindin2591, bindin2594, bindin2597, bindin2600, bindout2606, bindout2609, bindout2627, bindout2630, bindin2713, bindin2716, bindin2731, bindout2734, bindout2737, bindout2752, bindin2786, bindin2789, bindin2804, bindout2807, bindin3118, bindin3121, bindin3130, bindin3139, bindin3142, bindin3145, bindin3154, bindin3163, bindin3166, bindin3169, bindout3175, bindout3181, bindout3187, bindout3224, bindin3685, bindout3688;
-  wire[4:0] bindin1082, bindout1121, bindout1124, bindout1130, bindin1475, bindin1478, bindin1484, bindout1556, bindout1559, bindout1565, bindin1806, bindin1809, bindin1815, bindout1881, bindout1887, bindout1893, bindin2096, bindin2102, bindin2108, bindout2153, bindout2159, bindout2168, bindin2576, bindin2582, bindin2588, bindout2612, bindout2618, bindout2621, bindin2719, bindin2725, bindin2728, bindout2740, bindout2746, bindout2749, bindin2792, bindin2798, bindin2801, bindout2810, bindin3103, bindin3106, bindin3112, bindin3133, bindin3157;
-  wire[1:0] bindin1085, bindout1136, bindin1493, bindout1574, bindin1824, bindout1884, bindin2099, bindout2156, bindout2558, bindin2579, bindout2615, bindin2722, bindout2743, bindin2795, bindout2813, bindin3115, bindin3136, bindin3160;
-  wire[11:0] bindout1109, bindout1145, bindin1499, bindin1523, bindout1544, bindout1580, bindin1830, bindin1848, bindout1869, bindin2123, bindout2141, bindin3109, bindin3127, bindin3151, bindin3676, bindin3679;
-  wire[3:0] bindout1139, bindin1490, bindout1571, bindin1821;
-  wire[2:0] bindout1148, bindout1151, bindout1154, bindin1502, bindin1505, bindin1511, bindout1583, bindout1586, bindout1589, bindin1833, bindin1836, bindin1842, bindout1899, bindout1902, bindin2114, bindin2117, bindin2138, bindout2171, bindout2174, bindout2183, bindin2570, bindin2573, bindin2603;
-  wire[19:0] bindout1166, bindin1520, bindout1592, bindin1845;
+  wire bindin159, bindin161, bindin165, bindout168, bindout174, bindin177, bindin180, bindin186, bindin189, bindin192, bindin195, bindin201, bindin279, bindin280, bindin290, bindin293, bindin296, bindin937, bindin947, bindout965, bindout995, bindout1010, bindout1013, bindin1326, bindin1327, bindin1349, bindin1367, bindin1370, bindin1379, bindin1391, bindout1400, bindout1430, bindout1451, bindin1680, bindin1704, bindin1713, bindout1725, bindout1758, bindout1767, bindin1944, bindin1945, bindin1979, bindout1997, bindin2387, bindout2390, bindout2396, bindin2399, bindout2405, bindin2408, bindout2414, bindin2417, bindout2477, bindin2564, bindin2565, bindin2930, bindin2954, bindout2987, bindin3009, bindin3012, bindout3015, bindout3018, bindin3362, bindin3363, bindin3364, bindin3367, bindout3370, bindin3373, bindin3376, bindout3379, bindin3382, bindin3385, bindout3388, bindin3391, bindin3394, bindout3397, bindout3400, bindout3403, bindin3406, bindin3434, bindin3441, orl3449, eq3454;
+  wire[31:0] bindin162, bindout171, bindin183, bindin198, bindin204, bindout207, bindout210, bindout213, bindin281, bindin284, bindin287, bindout299, bindout302, bindout305, bindin938, bindin941, bindin944, bindin950, bindin959, bindout968, bindout971, bindout980, bindout986, bindout1016, bindout1022, bindin1334, bindin1340, bindin1361, bindin1382, bindin1385, bindin1388, bindin1394, bindout1403, bindout1406, bindout1415, bindout1421, bindout1448, bindout1454, bindout1457, bindin1665, bindin1671, bindin1692, bindin1707, bindin1710, bindin1716, bindin1719, bindout1728, bindout1731, bindout1743, bindout1749, bindout1761, bindout1764, bindout1770, bindin1946, bindin1958, bindin1964, bindin1973, bindin1982, bindin1985, bindin1988, bindout2000, bindout2003, bindout2015, bindout2018, bindout2030, bindout2033, bindout2039, bindin2384, bindout2393, bindout2402, bindin2420, bindin2438, bindin2444, bindin2447, bindin2450, bindin2453, bindout2459, bindout2462, bindout2480, bindout2483, bindin2566, bindin2569, bindin2584, bindout2587, bindout2590, bindout2605, bindin2639, bindin2642, bindin2657, bindout2660, bindin2924, bindin2927, bindin2936, bindin2945, bindin2948, bindin2951, bindin2960, bindin2969, bindin2972, bindin2975, bindout3021, bindin3444, bindout3447;
+  wire[4:0] bindin953, bindout974, bindout977, bindout983, bindin1328, bindin1331, bindin1337, bindout1409, bindout1412, bindout1418, bindin1659, bindin1662, bindin1668, bindout1734, bindout1740, bindout1746, bindin1949, bindin1955, bindin1961, bindout2006, bindout2012, bindout2021, bindin2429, bindin2435, bindin2441, bindout2465, bindout2471, bindout2474, bindin2572, bindin2578, bindin2581, bindout2593, bindout2599, bindout2602, bindin2645, bindin2651, bindin2654, bindout2663, bindin2909, bindin2912, bindin2918, bindin2939, bindin2963;
+  wire[1:0] bindin956, bindout989, bindin1346, bindout1427, bindin1677, bindout1737, bindin1952, bindout2009, bindout2411, bindin2432, bindout2468, bindin2575, bindout2596, bindin2648, bindout2666, bindin2921, bindin2942, bindin2966;
+  wire[11:0] bindout962, bindout998, bindin1352, bindin1376, bindout1397, bindout1433, bindin1683, bindin1701, bindout1722, bindin1976, bindout1994, bindin2915, bindin2933, bindin2957, bindin3435, bindin3438;
+  wire[3:0] bindout992, bindin1343, bindout1424, bindin1674;
+  wire[2:0] bindout1001, bindout1004, bindout1007, bindin1355, bindin1358, bindin1364, bindout1436, bindout1439, bindout1442, bindin1686, bindin1689, bindin1695, bindout1752, bindout1755, bindin1967, bindin1970, bindin1991, bindout2024, bindout2027, bindout2036, bindin2423, bindin2426, bindin2456;
+  wire[19:0] bindout1019, bindin1373, bindout1445, bindin1698;
 
   assign bindin159 = clk;
   assign bindin161 = reset;
@@ -3277,1329 +1575,204 @@ module Pipeline(
   assign bindin162 = io_IBUS_in_data_data;
   assign bindin165 = io_IBUS_in_data_valid;
   assign bindin177 = io_IBUS_out_address_ready;
-  assign bindin180 = bindout2624;
-  assign bindin183 = bindout2627;
-  assign bindin186 = bindout1157;
-  assign bindin189 = bindout3190;
-  assign bindin192 = bindout1914;
-  assign bindin195 = bindout1905;
-  assign bindin198 = bindout1908;
-  assign bindin201 = bindout3221;
-  assign bindin204 = bindout3224;
+  assign bindin180 = bindout2477;
+  assign bindin183 = bindout2480;
+  assign bindin186 = bindout1010;
+  assign bindin189 = bindout2987;
+  assign bindin192 = bindout1767;
+  assign bindin195 = bindout1758;
+  assign bindin198 = bindout1761;
+  assign bindin201 = bindout3018;
+  assign bindin204 = bindout3021;
   assign bindin279 = clk;
   assign bindin280 = reset;
   F_D_Register __module3__(.clk(bindin279), .reset(bindin280), .io_in_instruction(bindin281), .io_in_PC_next(bindin284), .io_in_curr_PC(bindin287), .io_in_branch_stall(bindin290), .io_in_branch_stall_exe(bindin293), .io_in_fwd_stall(bindin296), .io_out_instruction(bindout299), .io_out_curr_PC(bindout302), .io_out_PC_next(bindout305));
   assign bindin281 = bindout207;
   assign bindin284 = bindout213;
   assign bindin287 = bindout210;
-  assign bindin290 = bindout1157;
-  assign bindin293 = bindout1914;
-  assign bindin296 = bindout3190;
-  assign bindin1065 = clk;
-  assign bindin1066 = reset;
-  Decode __module4__(.clk(bindin1065), .reset(bindin1066), .io_in_instruction(bindin1067), .io_in_PC_next(bindin1070), .io_in_curr_PC(bindin1073), .io_in_stall(bindin1076), .io_in_write_data(bindin1079), .io_in_rd(bindin1082), .io_in_wb(bindin1085), .io_in_src1_fwd(bindin1088), .io_in_src1_fwd_data(bindin1091), .io_in_src2_fwd(bindin1094), .io_in_src2_fwd_data(bindin1097), .io_in_csr_fwd(bindin1100), .io_in_csr_fwd_data(bindin1103), .io_in_csr_data(bindin1106), .io_out_csr_address(bindout1109), .io_out_is_csr(bindout1112), .io_out_csr_data(bindout1115), .io_out_csr_mask(bindout1118), .io_out_rd(bindout1121), .io_out_rs1(bindout1124), .io_out_rd1(bindout1127), .io_out_rs2(bindout1130), .io_out_rd2(bindout1133), .io_out_wb(bindout1136), .io_out_alu_op(bindout1139), .io_out_rs2_src(bindout1142), .io_out_itype_immed(bindout1145), .io_out_mem_read(bindout1148), .io_out_mem_write(bindout1151), .io_out_branch_type(bindout1154), .io_out_branch_stall(bindout1157), .io_out_jal(bindout1160), .io_out_jal_offset(bindout1163), .io_out_upper_immed(bindout1166), .io_out_PC_next(bindout1169));
-  assign bindin1067 = bindout299;
-  assign bindin1070 = bindout305;
-  assign bindin1073 = bindout302;
-  assign bindin1076 = orl3701;
-  assign bindin1079 = bindout2807;
-  assign bindin1082 = bindout2810;
-  assign bindin1085 = bindout2813;
-  assign bindin1088 = bindout3172;
-  assign bindin1091 = bindout3175;
-  assign bindin1094 = bindout3178;
-  assign bindin1097 = bindout3181;
-  assign bindin1100 = bindout3184;
-  assign bindin1103 = bindout3187;
-  assign bindin1106 = bindout3688;
-  assign bindin1473 = clk;
-  assign bindin1474 = reset;
-  D_E_Register __module6__(.clk(bindin1473), .reset(bindin1474), .io_in_rd(bindin1475), .io_in_rs1(bindin1478), .io_in_rd1(bindin1481), .io_in_rs2(bindin1484), .io_in_rd2(bindin1487), .io_in_alu_op(bindin1490), .io_in_wb(bindin1493), .io_in_rs2_src(bindin1496), .io_in_itype_immed(bindin1499), .io_in_mem_read(bindin1502), .io_in_mem_write(bindin1505), .io_in_PC_next(bindin1508), .io_in_branch_type(bindin1511), .io_in_fwd_stall(bindin1514), .io_in_branch_stall(bindin1517), .io_in_upper_immed(bindin1520), .io_in_csr_address(bindin1523), .io_in_is_csr(bindin1526), .io_in_csr_data(bindin1529), .io_in_csr_mask(bindin1532), .io_in_curr_PC(bindin1535), .io_in_jal(bindin1538), .io_in_jal_offset(bindin1541), .io_out_csr_address(bindout1544), .io_out_is_csr(bindout1547), .io_out_csr_data(bindout1550), .io_out_csr_mask(bindout1553), .io_out_rd(bindout1556), .io_out_rs1(bindout1559), .io_out_rd1(bindout1562), .io_out_rs2(bindout1565), .io_out_rd2(bindout1568), .io_out_alu_op(bindout1571), .io_out_wb(bindout1574), .io_out_rs2_src(bindout1577), .io_out_itype_immed(bindout1580), .io_out_mem_read(bindout1583), .io_out_mem_write(bindout1586), .io_out_branch_type(bindout1589), .io_out_upper_immed(bindout1592), .io_out_curr_PC(bindout1595), .io_out_jal(bindout1598), .io_out_jal_offset(bindout1601), .io_out_PC_next(bindout1604));
-  assign bindin1475 = bindout1121;
-  assign bindin1478 = bindout1124;
-  assign bindin1481 = bindout1127;
-  assign bindin1484 = bindout1130;
-  assign bindin1487 = bindout1133;
-  assign bindin1490 = bindout1139;
-  assign bindin1493 = bindout1136;
-  assign bindin1496 = bindout1142;
-  assign bindin1499 = bindout1145;
-  assign bindin1502 = bindout1148;
-  assign bindin1505 = bindout1151;
-  assign bindin1508 = bindout1169;
-  assign bindin1511 = bindout1154;
-  assign bindin1514 = bindout3190;
-  assign bindin1517 = bindout1914;
-  assign bindin1520 = bindout1166;
-  assign bindin1523 = bindout1109;
-  assign bindin1526 = bindout1112;
-  assign bindin1529 = bindout1115;
-  assign bindin1532 = bindout1118;
-  assign bindin1535 = bindout302;
-  assign bindin1538 = bindout1160;
-  assign bindin1541 = bindout1163;
-  Execute __module7__(.io_in_rd(bindin1806), .io_in_rs1(bindin1809), .io_in_rd1(bindin1812), .io_in_rs2(bindin1815), .io_in_rd2(bindin1818), .io_in_alu_op(bindin1821), .io_in_wb(bindin1824), .io_in_rs2_src(bindin1827), .io_in_itype_immed(bindin1830), .io_in_mem_read(bindin1833), .io_in_mem_write(bindin1836), .io_in_PC_next(bindin1839), .io_in_branch_type(bindin1842), .io_in_upper_immed(bindin1845), .io_in_csr_address(bindin1848), .io_in_is_csr(bindin1851), .io_in_csr_data(bindin1854), .io_in_csr_mask(bindin1857), .io_in_jal(bindin1860), .io_in_jal_offset(bindin1863), .io_in_curr_PC(bindin1866), .io_out_csr_address(bindout1869), .io_out_is_csr(bindout1872), .io_out_csr_result(bindout1875), .io_out_alu_result(bindout1878), .io_out_rd(bindout1881), .io_out_wb(bindout1884), .io_out_rs1(bindout1887), .io_out_rd1(bindout1890), .io_out_rs2(bindout1893), .io_out_rd2(bindout1896), .io_out_mem_read(bindout1899), .io_out_mem_write(bindout1902), .io_out_jal(bindout1905), .io_out_jal_dest(bindout1908), .io_out_branch_offset(bindout1911), .io_out_branch_stall(bindout1914), .io_out_PC_next(bindout1917));
-  assign bindin1806 = bindout1556;
-  assign bindin1809 = bindout1559;
-  assign bindin1812 = bindout1562;
-  assign bindin1815 = bindout1565;
-  assign bindin1818 = bindout1568;
-  assign bindin1821 = bindout1571;
-  assign bindin1824 = bindout1574;
-  assign bindin1827 = bindout1577;
-  assign bindin1830 = bindout1580;
-  assign bindin1833 = bindout1583;
-  assign bindin1836 = bindout1586;
-  assign bindin1839 = bindout1604;
-  assign bindin1842 = bindout1589;
-  assign bindin1845 = bindout1592;
-  assign bindin1848 = bindout1544;
-  assign bindin1851 = bindout1547;
-  assign bindin1854 = bindout1550;
-  assign bindin1857 = bindout1553;
-  assign bindin1860 = bindout1598;
-  assign bindin1863 = bindout1601;
-  assign bindin1866 = bindout1595;
-  assign bindin2091 = clk;
-  assign bindin2092 = reset;
-  E_M_Register __module8__(.clk(bindin2091), .reset(bindin2092), .io_in_alu_result(bindin2093), .io_in_rd(bindin2096), .io_in_wb(bindin2099), .io_in_rs1(bindin2102), .io_in_rd1(bindin2105), .io_in_rs2(bindin2108), .io_in_rd2(bindin2111), .io_in_mem_read(bindin2114), .io_in_mem_write(bindin2117), .io_in_PC_next(bindin2120), .io_in_csr_address(bindin2123), .io_in_is_csr(bindin2126), .io_in_csr_result(bindin2129), .io_in_curr_PC(bindin2132), .io_in_branch_offset(bindin2135), .io_in_branch_type(bindin2138), .io_out_csr_address(bindout2141), .io_out_is_csr(bindout2144), .io_out_csr_result(bindout2147), .io_out_alu_result(bindout2150), .io_out_rd(bindout2153), .io_out_wb(bindout2156), .io_out_rs1(bindout2159), .io_out_rd1(bindout2162), .io_out_rd2(bindout2165), .io_out_rs2(bindout2168), .io_out_mem_read(bindout2171), .io_out_mem_write(bindout2174), .io_out_curr_PC(bindout2177), .io_out_branch_offset(bindout2180), .io_out_branch_type(bindout2183), .io_out_PC_next(bindout2186));
-  assign bindin2093 = bindout1878;
-  assign bindin2096 = bindout1881;
-  assign bindin2099 = bindout1884;
-  assign bindin2102 = bindout1887;
-  assign bindin2105 = bindout1890;
-  assign bindin2108 = bindout1893;
-  assign bindin2111 = bindout1896;
-  assign bindin2114 = bindout1899;
-  assign bindin2117 = bindout1902;
-  assign bindin2120 = bindout1917;
-  assign bindin2123 = bindout1869;
-  assign bindin2126 = bindout1872;
-  assign bindin2129 = bindout1875;
-  assign bindin2132 = bindout1595;
-  assign bindin2135 = bindout1911;
-  assign bindin2138 = bindout1589;
-  Memory __module9__(.io_DBUS_in_data_data(bindin2531), .io_DBUS_in_data_valid(bindin2534), .io_DBUS_out_data_ready(bindin2546), .io_DBUS_out_address_ready(bindin2555), .io_DBUS_out_control_ready(bindin2564), .io_in_alu_result(bindin2567), .io_in_mem_read(bindin2570), .io_in_mem_write(bindin2573), .io_in_rd(bindin2576), .io_in_wb(bindin2579), .io_in_rs1(bindin2582), .io_in_rd1(bindin2585), .io_in_rs2(bindin2588), .io_in_rd2(bindin2591), .io_in_PC_next(bindin2594), .io_in_curr_PC(bindin2597), .io_in_branch_offset(bindin2600), .io_in_branch_type(bindin2603), .io_DBUS_in_data_ready(bindout2537), .io_DBUS_out_data_data(bindout2540), .io_DBUS_out_data_valid(bindout2543), .io_DBUS_out_address_data(bindout2549), .io_DBUS_out_address_valid(bindout2552), .io_DBUS_out_control_data(bindout2558), .io_DBUS_out_control_valid(bindout2561), .io_out_alu_result(bindout2606), .io_out_mem_result(bindout2609), .io_out_rd(bindout2612), .io_out_wb(bindout2615), .io_out_rs1(bindout2618), .io_out_rs2(bindout2621), .io_out_branch_dir(bindout2624), .io_out_branch_dest(bindout2627), .io_out_PC_next(bindout2630));
-  assign bindin2531 = io_DBUS_in_data_data;
-  assign bindin2534 = io_DBUS_in_data_valid;
-  assign bindin2546 = io_DBUS_out_data_ready;
-  assign bindin2555 = io_DBUS_out_address_ready;
-  assign bindin2564 = io_DBUS_out_control_ready;
-  assign bindin2567 = bindout2150;
-  assign bindin2570 = bindout2171;
-  assign bindin2573 = bindout2174;
-  assign bindin2576 = bindout2153;
-  assign bindin2579 = bindout2156;
-  assign bindin2582 = bindout2159;
-  assign bindin2585 = bindout2162;
-  assign bindin2588 = bindout2168;
-  assign bindin2591 = bindout2165;
-  assign bindin2594 = bindout2186;
-  assign bindin2597 = bindout2177;
-  assign bindin2600 = bindout2180;
-  assign bindin2603 = bindout2183;
-  assign bindin2711 = clk;
-  assign bindin2712 = reset;
-  M_W_Register __module11__(.clk(bindin2711), .reset(bindin2712), .io_in_alu_result(bindin2713), .io_in_mem_result(bindin2716), .io_in_rd(bindin2719), .io_in_wb(bindin2722), .io_in_rs1(bindin2725), .io_in_rs2(bindin2728), .io_in_PC_next(bindin2731), .io_out_alu_result(bindout2734), .io_out_mem_result(bindout2737), .io_out_rd(bindout2740), .io_out_wb(bindout2743), .io_out_rs1(bindout2746), .io_out_rs2(bindout2749), .io_out_PC_next(bindout2752));
-  assign bindin2713 = bindout2606;
-  assign bindin2716 = bindout2609;
-  assign bindin2719 = bindout2612;
-  assign bindin2722 = bindout2615;
-  assign bindin2725 = bindout2618;
-  assign bindin2728 = bindout2621;
-  assign bindin2731 = bindout2630;
-  Write_Back __module12__(.io_in_alu_result(bindin2786), .io_in_mem_result(bindin2789), .io_in_rd(bindin2792), .io_in_wb(bindin2795), .io_in_rs1(bindin2798), .io_in_rs2(bindin2801), .io_in_PC_next(bindin2804), .io_out_write_data(bindout2807), .io_out_rd(bindout2810), .io_out_wb(bindout2813));
-  assign bindin2786 = bindout2734;
-  assign bindin2789 = bindout2737;
-  assign bindin2792 = bindout2740;
-  assign bindin2795 = bindout2743;
-  assign bindin2798 = bindout2746;
-  assign bindin2801 = bindout2749;
-  assign bindin2804 = bindout2752;
-  Forwarding __module13__(.io_in_decode_src1(bindin3103), .io_in_decode_src2(bindin3106), .io_in_decode_csr_address(bindin3109), .io_in_execute_dest(bindin3112), .io_in_execute_wb(bindin3115), .io_in_execute_alu_result(bindin3118), .io_in_execute_PC_next(bindin3121), .io_in_execute_is_csr(bindin3124), .io_in_execute_csr_address(bindin3127), .io_in_execute_csr_result(bindin3130), .io_in_memory_dest(bindin3133), .io_in_memory_wb(bindin3136), .io_in_memory_alu_result(bindin3139), .io_in_memory_mem_data(bindin3142), .io_in_memory_PC_next(bindin3145), .io_in_memory_is_csr(bindin3148), .io_in_memory_csr_address(bindin3151), .io_in_memory_csr_result(bindin3154), .io_in_writeback_dest(bindin3157), .io_in_writeback_wb(bindin3160), .io_in_writeback_alu_result(bindin3163), .io_in_writeback_mem_data(bindin3166), .io_in_writeback_PC_next(bindin3169), .io_out_src1_fwd(bindout3172), .io_out_src1_fwd_data(bindout3175), .io_out_src2_fwd(bindout3178), .io_out_src2_fwd_data(bindout3181), .io_out_csr_fwd(bindout3184), .io_out_csr_fwd_data(bindout3187), .io_out_fwd_stall(bindout3190));
-  assign bindin3103 = bindout1124;
-  assign bindin3106 = bindout1130;
-  assign bindin3109 = bindout1109;
-  assign bindin3112 = bindout1881;
-  assign bindin3115 = bindout1884;
-  assign bindin3118 = bindout1878;
-  assign bindin3121 = bindout1917;
-  assign bindin3124 = bindout1872;
-  assign bindin3127 = bindout1869;
-  assign bindin3130 = bindout1875;
-  assign bindin3133 = bindout2612;
-  assign bindin3136 = bindout2615;
-  assign bindin3139 = bindout2606;
-  assign bindin3142 = bindout2609;
-  assign bindin3145 = bindout2630;
-  assign bindin3148 = bindout2144;
-  assign bindin3151 = bindout2141;
-  assign bindin3154 = bindout2147;
-  assign bindin3157 = bindout2740;
-  assign bindin3160 = bindout2743;
-  assign bindin3163 = bindout2734;
-  assign bindin3166 = bindout2737;
-  assign bindin3169 = bindout2752;
-  Interrupt_Handler __module14__(.io_INTERRUPT_in_interrupt_id_data(bindin3212), .io_INTERRUPT_in_interrupt_id_valid(bindin3215), .io_INTERRUPT_in_interrupt_id_ready(bindout3218), .io_out_interrupt(bindout3221), .io_out_interrupt_pc(bindout3224));
-  assign bindin3212 = io_INTERRUPT_in_interrupt_id_data;
-  assign bindin3215 = io_INTERRUPT_in_interrupt_id_valid;
-  assign bindin3565 = clk;
-  assign bindin3566 = reset;
-  JTAG __module15__(.clk(bindin3565), .reset(bindin3566), .io_JTAG_JTAG_TAP_in_mode_select_data(bindin3567), .io_JTAG_JTAG_TAP_in_mode_select_valid(bindin3570), .io_JTAG_JTAG_TAP_in_clock_data(bindin3576), .io_JTAG_JTAG_TAP_in_clock_valid(bindin3579), .io_JTAG_JTAG_TAP_in_reset_data(bindin3585), .io_JTAG_JTAG_TAP_in_reset_valid(bindin3588), .io_JTAG_in_data_data(bindin3594), .io_JTAG_in_data_valid(bindin3597), .io_JTAG_out_data_ready(bindin3609), .io_JTAG_JTAG_TAP_in_mode_select_ready(bindout3573), .io_JTAG_JTAG_TAP_in_clock_ready(bindout3582), .io_JTAG_JTAG_TAP_in_reset_ready(bindout3591), .io_JTAG_in_data_ready(bindout3600), .io_JTAG_out_data_data(bindout3603), .io_JTAG_out_data_valid(bindout3606));
-  assign bindin3567 = io_jtag_JTAG_TAP_in_mode_select_data;
-  assign bindin3570 = io_jtag_JTAG_TAP_in_mode_select_valid;
-  assign bindin3576 = io_jtag_JTAG_TAP_in_clock_data;
-  assign bindin3579 = io_jtag_JTAG_TAP_in_clock_valid;
-  assign bindin3585 = io_jtag_JTAG_TAP_in_reset_data;
-  assign bindin3588 = io_jtag_JTAG_TAP_in_reset_valid;
-  assign bindin3594 = io_jtag_in_data_data;
-  assign bindin3597 = io_jtag_in_data_valid;
-  assign bindin3609 = io_jtag_out_data_ready;
-  assign bindin3674 = clk;
-  assign bindin3675 = reset;
-  CSR_Handler __module17__(.clk(bindin3674), .reset(bindin3675), .io_in_decode_csr_address(bindin3676), .io_in_mem_csr_address(bindin3679), .io_in_mem_is_csr(bindin3682), .io_in_mem_csr_result(bindin3685), .io_out_decode_csr_data(bindout3688));
-  assign bindin3676 = bindout1109;
-  assign bindin3679 = bindout2141;
-  assign bindin3682 = bindout2144;
-  assign bindin3685 = bindout2147;
-  assign orl3690 = bindout1157 | bindout1914;
-  assign eq3695 = bindout1914 == 1'h1;
-  assign eq3699 = bindout3190 == 1'h1;
-  assign orl3701 = eq3699 | eq3695;
+  assign bindin290 = bindout1010;
+  assign bindin293 = bindout1767;
+  assign bindin296 = bindout2987;
+  assign bindin937 = clk;
+  Decode __module4__(.clk(bindin937), .io_in_instruction(bindin938), .io_in_PC_next(bindin941), .io_in_curr_PC(bindin944), .io_in_stall(bindin947), .io_in_write_data(bindin950), .io_in_rd(bindin953), .io_in_wb(bindin956), .io_in_csr_data(bindin959), .io_out_csr_address(bindout962), .io_out_is_csr(bindout965), .io_out_csr_data(bindout968), .io_out_csr_mask(bindout971), .io_out_rd(bindout974), .io_out_rs1(bindout977), .io_out_rd1(bindout980), .io_out_rs2(bindout983), .io_out_rd2(bindout986), .io_out_wb(bindout989), .io_out_alu_op(bindout992), .io_out_rs2_src(bindout995), .io_out_itype_immed(bindout998), .io_out_mem_read(bindout1001), .io_out_mem_write(bindout1004), .io_out_branch_type(bindout1007), .io_out_branch_stall(bindout1010), .io_out_jal(bindout1013), .io_out_jal_offset(bindout1016), .io_out_upper_immed(bindout1019), .io_out_PC_next(bindout1022));
+  assign bindin938 = bindout299;
+  assign bindin941 = bindout305;
+  assign bindin944 = bindout302;
+  assign bindin947 = eq3454;
+  assign bindin950 = bindout2660;
+  assign bindin953 = bindout2663;
+  assign bindin956 = bindout2666;
+  assign bindin959 = bindout3447;
+  assign bindin1326 = clk;
+  assign bindin1327 = reset;
+  D_E_Register __module6__(.clk(bindin1326), .reset(bindin1327), .io_in_rd(bindin1328), .io_in_rs1(bindin1331), .io_in_rd1(bindin1334), .io_in_rs2(bindin1337), .io_in_rd2(bindin1340), .io_in_alu_op(bindin1343), .io_in_wb(bindin1346), .io_in_rs2_src(bindin1349), .io_in_itype_immed(bindin1352), .io_in_mem_read(bindin1355), .io_in_mem_write(bindin1358), .io_in_PC_next(bindin1361), .io_in_branch_type(bindin1364), .io_in_fwd_stall(bindin1367), .io_in_branch_stall(bindin1370), .io_in_upper_immed(bindin1373), .io_in_csr_address(bindin1376), .io_in_is_csr(bindin1379), .io_in_csr_data(bindin1382), .io_in_csr_mask(bindin1385), .io_in_curr_PC(bindin1388), .io_in_jal(bindin1391), .io_in_jal_offset(bindin1394), .io_out_csr_address(bindout1397), .io_out_is_csr(bindout1400), .io_out_csr_data(bindout1403), .io_out_csr_mask(bindout1406), .io_out_rd(bindout1409), .io_out_rs1(bindout1412), .io_out_rd1(bindout1415), .io_out_rs2(bindout1418), .io_out_rd2(bindout1421), .io_out_alu_op(bindout1424), .io_out_wb(bindout1427), .io_out_rs2_src(bindout1430), .io_out_itype_immed(bindout1433), .io_out_mem_read(bindout1436), .io_out_mem_write(bindout1439), .io_out_branch_type(bindout1442), .io_out_upper_immed(bindout1445), .io_out_curr_PC(bindout1448), .io_out_jal(bindout1451), .io_out_jal_offset(bindout1454), .io_out_PC_next(bindout1457));
+  assign bindin1328 = bindout974;
+  assign bindin1331 = bindout977;
+  assign bindin1334 = bindout980;
+  assign bindin1337 = bindout983;
+  assign bindin1340 = bindout986;
+  assign bindin1343 = bindout992;
+  assign bindin1346 = bindout989;
+  assign bindin1349 = bindout995;
+  assign bindin1352 = bindout998;
+  assign bindin1355 = bindout1001;
+  assign bindin1358 = bindout1004;
+  assign bindin1361 = bindout1022;
+  assign bindin1364 = bindout1007;
+  assign bindin1367 = bindout2987;
+  assign bindin1370 = bindout1767;
+  assign bindin1373 = bindout1019;
+  assign bindin1376 = bindout962;
+  assign bindin1379 = bindout965;
+  assign bindin1382 = bindout968;
+  assign bindin1385 = bindout971;
+  assign bindin1388 = bindout302;
+  assign bindin1391 = bindout1013;
+  assign bindin1394 = bindout1016;
+  Execute __module7__(.io_in_rd(bindin1659), .io_in_rs1(bindin1662), .io_in_rd1(bindin1665), .io_in_rs2(bindin1668), .io_in_rd2(bindin1671), .io_in_alu_op(bindin1674), .io_in_wb(bindin1677), .io_in_rs2_src(bindin1680), .io_in_itype_immed(bindin1683), .io_in_mem_read(bindin1686), .io_in_mem_write(bindin1689), .io_in_PC_next(bindin1692), .io_in_branch_type(bindin1695), .io_in_upper_immed(bindin1698), .io_in_csr_address(bindin1701), .io_in_is_csr(bindin1704), .io_in_csr_data(bindin1707), .io_in_csr_mask(bindin1710), .io_in_jal(bindin1713), .io_in_jal_offset(bindin1716), .io_in_curr_PC(bindin1719), .io_out_csr_address(bindout1722), .io_out_is_csr(bindout1725), .io_out_csr_result(bindout1728), .io_out_alu_result(bindout1731), .io_out_rd(bindout1734), .io_out_wb(bindout1737), .io_out_rs1(bindout1740), .io_out_rd1(bindout1743), .io_out_rs2(bindout1746), .io_out_rd2(bindout1749), .io_out_mem_read(bindout1752), .io_out_mem_write(bindout1755), .io_out_jal(bindout1758), .io_out_jal_dest(bindout1761), .io_out_branch_offset(bindout1764), .io_out_branch_stall(bindout1767), .io_out_PC_next(bindout1770));
+  assign bindin1659 = bindout1409;
+  assign bindin1662 = bindout1412;
+  assign bindin1665 = bindout1415;
+  assign bindin1668 = bindout1418;
+  assign bindin1671 = bindout1421;
+  assign bindin1674 = bindout1424;
+  assign bindin1677 = bindout1427;
+  assign bindin1680 = bindout1430;
+  assign bindin1683 = bindout1433;
+  assign bindin1686 = bindout1436;
+  assign bindin1689 = bindout1439;
+  assign bindin1692 = bindout1457;
+  assign bindin1695 = bindout1442;
+  assign bindin1698 = bindout1445;
+  assign bindin1701 = bindout1397;
+  assign bindin1704 = bindout1400;
+  assign bindin1707 = bindout1403;
+  assign bindin1710 = bindout1406;
+  assign bindin1713 = bindout1451;
+  assign bindin1716 = bindout1454;
+  assign bindin1719 = bindout1448;
+  assign bindin1944 = clk;
+  assign bindin1945 = reset;
+  E_M_Register __module8__(.clk(bindin1944), .reset(bindin1945), .io_in_alu_result(bindin1946), .io_in_rd(bindin1949), .io_in_wb(bindin1952), .io_in_rs1(bindin1955), .io_in_rd1(bindin1958), .io_in_rs2(bindin1961), .io_in_rd2(bindin1964), .io_in_mem_read(bindin1967), .io_in_mem_write(bindin1970), .io_in_PC_next(bindin1973), .io_in_csr_address(bindin1976), .io_in_is_csr(bindin1979), .io_in_csr_result(bindin1982), .io_in_curr_PC(bindin1985), .io_in_branch_offset(bindin1988), .io_in_branch_type(bindin1991), .io_out_csr_address(bindout1994), .io_out_is_csr(bindout1997), .io_out_csr_result(bindout2000), .io_out_alu_result(bindout2003), .io_out_rd(bindout2006), .io_out_wb(bindout2009), .io_out_rs1(bindout2012), .io_out_rd1(bindout2015), .io_out_rd2(bindout2018), .io_out_rs2(bindout2021), .io_out_mem_read(bindout2024), .io_out_mem_write(bindout2027), .io_out_curr_PC(bindout2030), .io_out_branch_offset(bindout2033), .io_out_branch_type(bindout2036), .io_out_PC_next(bindout2039));
+  assign bindin1946 = bindout1731;
+  assign bindin1949 = bindout1734;
+  assign bindin1952 = bindout1737;
+  assign bindin1955 = bindout1740;
+  assign bindin1958 = bindout1743;
+  assign bindin1961 = bindout1746;
+  assign bindin1964 = bindout1749;
+  assign bindin1967 = bindout1752;
+  assign bindin1970 = bindout1755;
+  assign bindin1973 = bindout1770;
+  assign bindin1976 = bindout1722;
+  assign bindin1979 = bindout1725;
+  assign bindin1982 = bindout1728;
+  assign bindin1985 = bindout1448;
+  assign bindin1988 = bindout1764;
+  assign bindin1991 = bindout1442;
+  Memory __module9__(.io_DBUS_in_data_data(bindin2384), .io_DBUS_in_data_valid(bindin2387), .io_DBUS_out_data_ready(bindin2399), .io_DBUS_out_address_ready(bindin2408), .io_DBUS_out_control_ready(bindin2417), .io_in_alu_result(bindin2420), .io_in_mem_read(bindin2423), .io_in_mem_write(bindin2426), .io_in_rd(bindin2429), .io_in_wb(bindin2432), .io_in_rs1(bindin2435), .io_in_rd1(bindin2438), .io_in_rs2(bindin2441), .io_in_rd2(bindin2444), .io_in_PC_next(bindin2447), .io_in_curr_PC(bindin2450), .io_in_branch_offset(bindin2453), .io_in_branch_type(bindin2456), .io_DBUS_in_data_ready(bindout2390), .io_DBUS_out_data_data(bindout2393), .io_DBUS_out_data_valid(bindout2396), .io_DBUS_out_address_data(bindout2402), .io_DBUS_out_address_valid(bindout2405), .io_DBUS_out_control_data(bindout2411), .io_DBUS_out_control_valid(bindout2414), .io_out_alu_result(bindout2459), .io_out_mem_result(bindout2462), .io_out_rd(bindout2465), .io_out_wb(bindout2468), .io_out_rs1(bindout2471), .io_out_rs2(bindout2474), .io_out_branch_dir(bindout2477), .io_out_branch_dest(bindout2480), .io_out_PC_next(bindout2483));
+  assign bindin2384 = io_DBUS_in_data_data;
+  assign bindin2387 = io_DBUS_in_data_valid;
+  assign bindin2399 = io_DBUS_out_data_ready;
+  assign bindin2408 = io_DBUS_out_address_ready;
+  assign bindin2417 = io_DBUS_out_control_ready;
+  assign bindin2420 = bindout2003;
+  assign bindin2423 = bindout2024;
+  assign bindin2426 = bindout2027;
+  assign bindin2429 = bindout2006;
+  assign bindin2432 = bindout2009;
+  assign bindin2435 = bindout2012;
+  assign bindin2438 = bindout2015;
+  assign bindin2441 = bindout2021;
+  assign bindin2444 = bindout2018;
+  assign bindin2447 = bindout2039;
+  assign bindin2450 = bindout2030;
+  assign bindin2453 = bindout2033;
+  assign bindin2456 = bindout2036;
+  assign bindin2564 = clk;
+  assign bindin2565 = reset;
+  M_W_Register __module11__(.clk(bindin2564), .reset(bindin2565), .io_in_alu_result(bindin2566), .io_in_mem_result(bindin2569), .io_in_rd(bindin2572), .io_in_wb(bindin2575), .io_in_rs1(bindin2578), .io_in_rs2(bindin2581), .io_in_PC_next(bindin2584), .io_out_alu_result(bindout2587), .io_out_mem_result(bindout2590), .io_out_rd(bindout2593), .io_out_wb(bindout2596), .io_out_rs1(bindout2599), .io_out_rs2(bindout2602), .io_out_PC_next(bindout2605));
+  assign bindin2566 = bindout2459;
+  assign bindin2569 = bindout2462;
+  assign bindin2572 = bindout2465;
+  assign bindin2575 = bindout2468;
+  assign bindin2578 = bindout2471;
+  assign bindin2581 = bindout2474;
+  assign bindin2584 = bindout2483;
+  Write_Back __module12__(.io_in_alu_result(bindin2639), .io_in_mem_result(bindin2642), .io_in_rd(bindin2645), .io_in_wb(bindin2648), .io_in_rs1(bindin2651), .io_in_rs2(bindin2654), .io_in_PC_next(bindin2657), .io_out_write_data(bindout2660), .io_out_rd(bindout2663), .io_out_wb(bindout2666));
+  assign bindin2639 = bindout2587;
+  assign bindin2642 = bindout2590;
+  assign bindin2645 = bindout2593;
+  assign bindin2648 = bindout2596;
+  assign bindin2651 = bindout2599;
+  assign bindin2654 = bindout2602;
+  assign bindin2657 = bindout2605;
+  Forwarding __module13__(.io_in_decode_src1(bindin2909), .io_in_decode_src2(bindin2912), .io_in_decode_csr_address(bindin2915), .io_in_execute_dest(bindin2918), .io_in_execute_wb(bindin2921), .io_in_execute_alu_result(bindin2924), .io_in_execute_PC_next(bindin2927), .io_in_execute_is_csr(bindin2930), .io_in_execute_csr_address(bindin2933), .io_in_execute_csr_result(bindin2936), .io_in_memory_dest(bindin2939), .io_in_memory_wb(bindin2942), .io_in_memory_alu_result(bindin2945), .io_in_memory_mem_data(bindin2948), .io_in_memory_PC_next(bindin2951), .io_in_memory_is_csr(bindin2954), .io_in_memory_csr_address(bindin2957), .io_in_memory_csr_result(bindin2960), .io_in_writeback_dest(bindin2963), .io_in_writeback_wb(bindin2966), .io_in_writeback_alu_result(bindin2969), .io_in_writeback_mem_data(bindin2972), .io_in_writeback_PC_next(bindin2975), .io_out_fwd_stall(bindout2987));
+  assign bindin2909 = bindout977;
+  assign bindin2912 = bindout983;
+  assign bindin2915 = bindout962;
+  assign bindin2918 = bindout1734;
+  assign bindin2921 = bindout1737;
+  assign bindin2924 = bindout1731;
+  assign bindin2927 = bindout1770;
+  assign bindin2930 = bindout1725;
+  assign bindin2933 = bindout1722;
+  assign bindin2936 = bindout1728;
+  assign bindin2939 = bindout2465;
+  assign bindin2942 = bindout2468;
+  assign bindin2945 = bindout2459;
+  assign bindin2948 = bindout2462;
+  assign bindin2951 = bindout2483;
+  assign bindin2954 = bindout1997;
+  assign bindin2957 = bindout1994;
+  assign bindin2960 = bindout2000;
+  assign bindin2963 = bindout2593;
+  assign bindin2966 = bindout2596;
+  assign bindin2969 = bindout2587;
+  assign bindin2972 = bindout2590;
+  assign bindin2975 = bindout2605;
+  Interrupt_Handler __module14__(.io_INTERRUPT_in_interrupt_id_data(bindin3009), .io_INTERRUPT_in_interrupt_id_valid(bindin3012), .io_INTERRUPT_in_interrupt_id_ready(bindout3015), .io_out_interrupt(bindout3018), .io_out_interrupt_pc(bindout3021));
+  assign bindin3009 = io_INTERRUPT_in_interrupt_id_data;
+  assign bindin3012 = io_INTERRUPT_in_interrupt_id_valid;
+  assign bindin3362 = clk;
+  assign bindin3363 = reset;
+  JTAG __module15__(.clk(bindin3362), .reset(bindin3363), .io_JTAG_JTAG_TAP_in_mode_select_data(bindin3364), .io_JTAG_JTAG_TAP_in_mode_select_valid(bindin3367), .io_JTAG_JTAG_TAP_in_clock_data(bindin3373), .io_JTAG_JTAG_TAP_in_clock_valid(bindin3376), .io_JTAG_JTAG_TAP_in_reset_data(bindin3382), .io_JTAG_JTAG_TAP_in_reset_valid(bindin3385), .io_JTAG_in_data_data(bindin3391), .io_JTAG_in_data_valid(bindin3394), .io_JTAG_out_data_ready(bindin3406), .io_JTAG_JTAG_TAP_in_mode_select_ready(bindout3370), .io_JTAG_JTAG_TAP_in_clock_ready(bindout3379), .io_JTAG_JTAG_TAP_in_reset_ready(bindout3388), .io_JTAG_in_data_ready(bindout3397), .io_JTAG_out_data_data(bindout3400), .io_JTAG_out_data_valid(bindout3403));
+  assign bindin3364 = io_jtag_JTAG_TAP_in_mode_select_data;
+  assign bindin3367 = io_jtag_JTAG_TAP_in_mode_select_valid;
+  assign bindin3373 = io_jtag_JTAG_TAP_in_clock_data;
+  assign bindin3376 = io_jtag_JTAG_TAP_in_clock_valid;
+  assign bindin3382 = io_jtag_JTAG_TAP_in_reset_data;
+  assign bindin3385 = io_jtag_JTAG_TAP_in_reset_valid;
+  assign bindin3391 = io_jtag_in_data_data;
+  assign bindin3394 = io_jtag_in_data_valid;
+  assign bindin3406 = io_jtag_out_data_ready;
+  assign bindin3434 = clk;
+  CSR_Handler __module17__(.clk(bindin3434), .io_in_decode_csr_address(bindin3435), .io_in_mem_csr_address(bindin3438), .io_in_mem_is_csr(bindin3441), .io_in_mem_csr_result(bindin3444), .io_out_decode_csr_data(bindout3447));
+  assign bindin3435 = bindout962;
+  assign bindin3438 = bindout1994;
+  assign bindin3441 = bindout1997;
+  assign bindin3444 = bindout2000;
+  assign orl3449 = bindout1010 | bindout1767;
+  assign eq3454 = bindout1767 == 1'h1;
 
   assign io_IBUS_in_data_ready = bindout168;
   assign io_IBUS_out_address_data = bindout171;
   assign io_IBUS_out_address_valid = bindout174;
-  assign io_DBUS_in_data_ready = bindout2537;
-  assign io_DBUS_out_data_data = bindout2540;
-  assign io_DBUS_out_data_valid = bindout2543;
-  assign io_DBUS_out_address_data = bindout2549;
-  assign io_DBUS_out_address_valid = bindout2552;
-  assign io_DBUS_out_control_data = bindout2558;
-  assign io_DBUS_out_control_valid = bindout2561;
-  assign io_INTERRUPT_in_interrupt_id_ready = bindout3218;
-  assign io_jtag_JTAG_TAP_in_mode_select_ready = bindout3573;
-  assign io_jtag_JTAG_TAP_in_clock_ready = bindout3582;
-  assign io_jtag_JTAG_TAP_in_reset_ready = bindout3591;
-  assign io_jtag_in_data_ready = bindout3600;
-  assign io_jtag_out_data_data = bindout3603;
-  assign io_jtag_out_data_valid = bindout3606;
-  assign io_out_fwd_stall = bindout3190;
-  assign io_out_branch_stall = orl3690;
-=======
-  wire io_IBUS_in_data_ready4; // RocketChip.h(49:0)
-  wire[31:0] io_IBUS_out_address_data7; // RocketChip.h(49:0)
-  wire io_IBUS_out_address_valid10; // RocketChip.h(49:0)
-  wire io_DBUS_in_data_ready16; // RocketChip.h(49:0)
-  wire[31:0] io_DBUS_out_data_data19; // RocketChip.h(49:0)
-  wire io_DBUS_out_data_valid22; // RocketChip.h(49:0)
-  wire[31:0] io_DBUS_out_address_data26; // RocketChip.h(49:0)
-  wire io_DBUS_out_address_valid29; // RocketChip.h(49:0)
-  wire[1:0] io_DBUS_out_control_data33; // RocketChip.h(49:0)
-  wire io_DBUS_out_control_valid36; // RocketChip.h(49:0)
-  wire io_INTERRUPT_in_interrupt_id_ready42; // RocketChip.h(49:0)
-  wire io_jtag_JTAG_TAP_in_mode_select_ready47; // RocketChip.h(49:0)
-  wire io_jtag_JTAG_TAP_in_clock_ready52; // RocketChip.h(49:0)
-  wire io_jtag_JTAG_TAP_in_reset_ready57; // RocketChip.h(49:0)
-  wire io_jtag_in_data_ready62; // RocketChip.h(49:0)
-  wire io_jtag_out_data_data65; // RocketChip.h(49:0)
-  wire io_jtag_out_data_valid68; // RocketChip.h(49:0)
-  wire io_out_fwd_stall72; // RocketChip.h(49:0)
-  wire io_out_branch_stall75; // RocketChip.h(49:0)
-  wire Fetch156_clk; // RocketChip.h(49:1)
-  wire Fetch156_reset; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_IBUS_in_data_data; // RocketChip.h(49:1)
-  wire Fetch156_io_IBUS_in_data_valid; // RocketChip.h(49:1)
-  wire proxy167; // RocketChip.h(49:1)
-  wire Fetch156_io_IBUS_in_data_ready; // RocketChip.h(49:1)
-  wire[31:0] proxy170; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_IBUS_out_address_data; // RocketChip.h(49:1)
-  wire proxy173; // RocketChip.h(49:1)
-  wire Fetch156_io_IBUS_out_address_valid; // RocketChip.h(49:1)
-  wire Fetch156_io_IBUS_out_address_ready; // RocketChip.h(49:1)
-  wire proxy179; // RocketChip.h(49:1)
-  wire Fetch156_io_in_branch_dir; // RocketChip.h(49:1)
-  wire[31:0] proxy182; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_in_branch_dest; // RocketChip.h(49:1)
-  wire proxy185; // RocketChip.h(49:1)
-  wire Fetch156_io_in_branch_stall; // RocketChip.h(49:1)
-  wire proxy188; // RocketChip.h(49:1)
-  wire Fetch156_io_in_fwd_stall; // RocketChip.h(49:1)
-  wire proxy191; // RocketChip.h(49:1)
-  wire Fetch156_io_in_branch_stall_exe; // RocketChip.h(49:1)
-  wire proxy194; // RocketChip.h(49:1)
-  wire Fetch156_io_in_jal; // RocketChip.h(49:1)
-  wire[31:0] proxy197; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_in_jal_dest; // RocketChip.h(49:1)
-  wire proxy200; // RocketChip.h(49:1)
-  wire Fetch156_io_in_interrupt; // RocketChip.h(49:1)
-  wire[31:0] proxy203; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_in_interrupt_pc; // RocketChip.h(49:1)
-  wire[31:0] proxy206; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_out_instruction; // RocketChip.h(49:1)
-  wire[31:0] proxy209; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_out_curr_PC; // RocketChip.h(49:1)
-  wire[31:0] proxy212; // RocketChip.h(49:1)
-  wire[31:0] Fetch156_io_out_PC_next; // RocketChip.h(49:1)
-  wire[31:0] proxy277; // RocketChip.h(49:2)
-  wire F_D_Register278_clk; // RocketChip.h(49:2)
-  wire F_D_Register278_reset; // RocketChip.h(49:2)
-  wire[31:0] F_D_Register278_io_in_instruction; // RocketChip.h(49:2)
-  wire[31:0] proxy283; // RocketChip.h(49:2)
-  wire[31:0] F_D_Register278_io_in_PC_next; // RocketChip.h(49:2)
-  wire[31:0] proxy286; // RocketChip.h(49:2)
-  wire[31:0] F_D_Register278_io_in_curr_PC; // RocketChip.h(49:2)
-  wire proxy289; // RocketChip.h(49:2)
-  wire F_D_Register278_io_in_branch_stall; // RocketChip.h(49:2)
-  wire proxy292; // RocketChip.h(49:2)
-  wire F_D_Register278_io_in_branch_stall_exe; // RocketChip.h(49:2)
-  wire proxy295; // RocketChip.h(49:2)
-  wire F_D_Register278_io_in_fwd_stall; // RocketChip.h(49:2)
-  wire[31:0] proxy298; // RocketChip.h(49:2)
-  wire[31:0] F_D_Register278_io_out_instruction; // RocketChip.h(49:2)
-  wire[31:0] proxy301; // RocketChip.h(49:2)
-  wire[31:0] F_D_Register278_io_out_curr_PC; // RocketChip.h(49:2)
-  wire[31:0] proxy304; // RocketChip.h(49:2)
-  wire[31:0] F_D_Register278_io_out_PC_next; // RocketChip.h(49:2)
-  wire[31:0] proxy1058; // RocketChip.h(49:3)
-  wire Decode1059_clk; // RocketChip.h(49:3)
-  wire Decode1059_reset; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_instruction; // RocketChip.h(49:3)
-  wire[31:0] proxy1064; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_PC_next; // RocketChip.h(49:3)
-  wire[31:0] proxy1067; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_curr_PC; // RocketChip.h(49:3)
-  wire proxy1070; // RocketChip.h(49:3)
-  wire Decode1059_io_in_stall; // RocketChip.h(49:3)
-  wire[31:0] proxy1073; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_write_data; // RocketChip.h(49:3)
-  wire[4:0] proxy1076; // RocketChip.h(49:3)
-  wire[4:0] Decode1059_io_in_rd; // RocketChip.h(49:3)
-  wire[1:0] proxy1079; // RocketChip.h(49:3)
-  wire[1:0] Decode1059_io_in_wb; // RocketChip.h(49:3)
-  wire proxy1082; // RocketChip.h(49:3)
-  wire Decode1059_io_in_src1_fwd; // RocketChip.h(49:3)
-  wire[31:0] proxy1085; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_src1_fwd_data; // RocketChip.h(49:3)
-  wire proxy1088; // RocketChip.h(49:3)
-  wire Decode1059_io_in_src2_fwd; // RocketChip.h(49:3)
-  wire[31:0] proxy1091; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_src2_fwd_data; // RocketChip.h(49:3)
-  wire proxy1094; // RocketChip.h(49:3)
-  wire Decode1059_io_in_csr_fwd; // RocketChip.h(49:3)
-  wire[31:0] proxy1097; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_csr_fwd_data; // RocketChip.h(49:3)
-  wire[31:0] proxy1100; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_in_csr_data; // RocketChip.h(49:3)
-  wire[11:0] proxy1103; // RocketChip.h(49:3)
-  wire[11:0] Decode1059_io_out_csr_address; // RocketChip.h(49:3)
-  wire proxy1106; // RocketChip.h(49:3)
-  wire Decode1059_io_out_is_csr; // RocketChip.h(49:3)
-  wire[31:0] proxy1109; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_out_csr_data; // RocketChip.h(49:3)
-  wire[31:0] proxy1112; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_out_csr_mask; // RocketChip.h(49:3)
-  wire[4:0] proxy1115; // RocketChip.h(49:3)
-  wire[4:0] Decode1059_io_out_rd; // RocketChip.h(49:3)
-  wire[4:0] proxy1118; // RocketChip.h(49:3)
-  wire[4:0] Decode1059_io_out_rs1; // RocketChip.h(49:3)
-  wire[31:0] proxy1121; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_out_rd1; // RocketChip.h(49:3)
-  wire[4:0] proxy1124; // RocketChip.h(49:3)
-  wire[4:0] Decode1059_io_out_rs2; // RocketChip.h(49:3)
-  wire[31:0] proxy1127; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_out_rd2; // RocketChip.h(49:3)
-  wire[1:0] proxy1130; // RocketChip.h(49:3)
-  wire[1:0] Decode1059_io_out_wb; // RocketChip.h(49:3)
-  wire[3:0] proxy1133; // RocketChip.h(49:3)
-  wire[3:0] Decode1059_io_out_alu_op; // RocketChip.h(49:3)
-  wire proxy1136; // RocketChip.h(49:3)
-  wire Decode1059_io_out_rs2_src; // RocketChip.h(49:3)
-  wire[11:0] proxy1139; // RocketChip.h(49:3)
-  wire[11:0] Decode1059_io_out_itype_immed; // RocketChip.h(49:3)
-  wire[2:0] proxy1142; // RocketChip.h(49:3)
-  wire[2:0] Decode1059_io_out_mem_read; // RocketChip.h(49:3)
-  wire[2:0] proxy1145; // RocketChip.h(49:3)
-  wire[2:0] Decode1059_io_out_mem_write; // RocketChip.h(49:3)
-  wire[2:0] proxy1148; // RocketChip.h(49:3)
-  wire[2:0] Decode1059_io_out_branch_type; // RocketChip.h(49:3)
-  wire proxy1151; // RocketChip.h(49:3)
-  wire Decode1059_io_out_branch_stall; // RocketChip.h(49:3)
-  wire proxy1154; // RocketChip.h(49:3)
-  wire Decode1059_io_out_jal; // RocketChip.h(49:3)
-  wire[31:0] proxy1157; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_out_jal_offset; // RocketChip.h(49:3)
-  wire[19:0] proxy1160; // RocketChip.h(49:3)
-  wire[19:0] Decode1059_io_out_upper_immed; // RocketChip.h(49:3)
-  wire[31:0] proxy1163; // RocketChip.h(49:3)
-  wire[31:0] Decode1059_io_out_PC_next; // RocketChip.h(49:3)
-  wire[4:0] proxy1466; // RocketChip.h(49:4)
-  wire D_E_Register1467_clk; // RocketChip.h(49:4)
-  wire D_E_Register1467_reset; // RocketChip.h(49:4)
-  wire[4:0] D_E_Register1467_io_in_rd; // RocketChip.h(49:4)
-  wire[4:0] proxy1472; // RocketChip.h(49:4)
-  wire[4:0] D_E_Register1467_io_in_rs1; // RocketChip.h(49:4)
-  wire[31:0] proxy1475; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_in_rd1; // RocketChip.h(49:4)
-  wire[4:0] proxy1478; // RocketChip.h(49:4)
-  wire[4:0] D_E_Register1467_io_in_rs2; // RocketChip.h(49:4)
-  wire[31:0] proxy1481; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_in_rd2; // RocketChip.h(49:4)
-  wire[3:0] proxy1484; // RocketChip.h(49:4)
-  wire[3:0] D_E_Register1467_io_in_alu_op; // RocketChip.h(49:4)
-  wire[1:0] proxy1487; // RocketChip.h(49:4)
-  wire[1:0] D_E_Register1467_io_in_wb; // RocketChip.h(49:4)
-  wire proxy1490; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_in_rs2_src; // RocketChip.h(49:4)
-  wire[11:0] proxy1493; // RocketChip.h(49:4)
-  wire[11:0] D_E_Register1467_io_in_itype_immed; // RocketChip.h(49:4)
-  wire[2:0] proxy1496; // RocketChip.h(49:4)
-  wire[2:0] D_E_Register1467_io_in_mem_read; // RocketChip.h(49:4)
-  wire[2:0] proxy1499; // RocketChip.h(49:4)
-  wire[2:0] D_E_Register1467_io_in_mem_write; // RocketChip.h(49:4)
-  wire[31:0] proxy1502; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_in_PC_next; // RocketChip.h(49:4)
-  wire[2:0] proxy1505; // RocketChip.h(49:4)
-  wire[2:0] D_E_Register1467_io_in_branch_type; // RocketChip.h(49:4)
-  wire proxy1508; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_in_fwd_stall; // RocketChip.h(49:4)
-  wire proxy1511; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_in_branch_stall; // RocketChip.h(49:4)
-  wire[19:0] proxy1514; // RocketChip.h(49:4)
-  wire[19:0] D_E_Register1467_io_in_upper_immed; // RocketChip.h(49:4)
-  wire[11:0] proxy1517; // RocketChip.h(49:4)
-  wire[11:0] D_E_Register1467_io_in_csr_address; // RocketChip.h(49:4)
-  wire proxy1520; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_in_is_csr; // RocketChip.h(49:4)
-  wire[31:0] proxy1523; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_in_csr_data; // RocketChip.h(49:4)
-  wire[31:0] proxy1526; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_in_csr_mask; // RocketChip.h(49:4)
-  wire[31:0] proxy1529; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_in_curr_PC; // RocketChip.h(49:4)
-  wire proxy1532; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_in_jal; // RocketChip.h(49:4)
-  wire[31:0] proxy1535; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_in_jal_offset; // RocketChip.h(49:4)
-  wire[11:0] proxy1538; // RocketChip.h(49:4)
-  wire[11:0] D_E_Register1467_io_out_csr_address; // RocketChip.h(49:4)
-  wire proxy1541; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_out_is_csr; // RocketChip.h(49:4)
-  wire[31:0] proxy1544; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_out_csr_data; // RocketChip.h(49:4)
-  wire[31:0] proxy1547; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_out_csr_mask; // RocketChip.h(49:4)
-  wire[4:0] proxy1550; // RocketChip.h(49:4)
-  wire[4:0] D_E_Register1467_io_out_rd; // RocketChip.h(49:4)
-  wire[4:0] proxy1553; // RocketChip.h(49:4)
-  wire[4:0] D_E_Register1467_io_out_rs1; // RocketChip.h(49:4)
-  wire[31:0] proxy1556; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_out_rd1; // RocketChip.h(49:4)
-  wire[4:0] proxy1559; // RocketChip.h(49:4)
-  wire[4:0] D_E_Register1467_io_out_rs2; // RocketChip.h(49:4)
-  wire[31:0] proxy1562; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_out_rd2; // RocketChip.h(49:4)
-  wire[3:0] proxy1565; // RocketChip.h(49:4)
-  wire[3:0] D_E_Register1467_io_out_alu_op; // RocketChip.h(49:4)
-  wire[1:0] proxy1568; // RocketChip.h(49:4)
-  wire[1:0] D_E_Register1467_io_out_wb; // RocketChip.h(49:4)
-  wire proxy1571; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_out_rs2_src; // RocketChip.h(49:4)
-  wire[11:0] proxy1574; // RocketChip.h(49:4)
-  wire[11:0] D_E_Register1467_io_out_itype_immed; // RocketChip.h(49:4)
-  wire[2:0] proxy1577; // RocketChip.h(49:4)
-  wire[2:0] D_E_Register1467_io_out_mem_read; // RocketChip.h(49:4)
-  wire[2:0] proxy1580; // RocketChip.h(49:4)
-  wire[2:0] D_E_Register1467_io_out_mem_write; // RocketChip.h(49:4)
-  wire[2:0] proxy1583; // RocketChip.h(49:4)
-  wire[2:0] D_E_Register1467_io_out_branch_type; // RocketChip.h(49:4)
-  wire[19:0] proxy1586; // RocketChip.h(49:4)
-  wire[19:0] D_E_Register1467_io_out_upper_immed; // RocketChip.h(49:4)
-  wire[31:0] proxy1589; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_out_curr_PC; // RocketChip.h(49:4)
-  wire proxy1592; // RocketChip.h(49:4)
-  wire D_E_Register1467_io_out_jal; // RocketChip.h(49:4)
-  wire[31:0] proxy1595; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_out_jal_offset; // RocketChip.h(49:4)
-  wire[31:0] proxy1598; // RocketChip.h(49:4)
-  wire[31:0] D_E_Register1467_io_out_PC_next; // RocketChip.h(49:4)
-  wire[4:0] proxy1798; // RocketChip.h(49:5)
-  wire[4:0] Execute1799_io_in_rd; // RocketChip.h(49:5)
-  wire[4:0] proxy1802; // RocketChip.h(49:5)
-  wire[4:0] Execute1799_io_in_rs1; // RocketChip.h(49:5)
-  wire[31:0] proxy1805; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_in_rd1; // RocketChip.h(49:5)
-  wire[4:0] proxy1808; // RocketChip.h(49:5)
-  wire[4:0] Execute1799_io_in_rs2; // RocketChip.h(49:5)
-  wire[31:0] proxy1811; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_in_rd2; // RocketChip.h(49:5)
-  wire[3:0] proxy1814; // RocketChip.h(49:5)
-  wire[3:0] Execute1799_io_in_alu_op; // RocketChip.h(49:5)
-  wire[1:0] proxy1817; // RocketChip.h(49:5)
-  wire[1:0] Execute1799_io_in_wb; // RocketChip.h(49:5)
-  wire proxy1820; // RocketChip.h(49:5)
-  wire Execute1799_io_in_rs2_src; // RocketChip.h(49:5)
-  wire[11:0] proxy1823; // RocketChip.h(49:5)
-  wire[11:0] Execute1799_io_in_itype_immed; // RocketChip.h(49:5)
-  wire[2:0] proxy1826; // RocketChip.h(49:5)
-  wire[2:0] Execute1799_io_in_mem_read; // RocketChip.h(49:5)
-  wire[2:0] proxy1829; // RocketChip.h(49:5)
-  wire[2:0] Execute1799_io_in_mem_write; // RocketChip.h(49:5)
-  wire[31:0] proxy1832; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_in_PC_next; // RocketChip.h(49:5)
-  wire[2:0] proxy1835; // RocketChip.h(49:5)
-  wire[2:0] Execute1799_io_in_branch_type; // RocketChip.h(49:5)
-  wire[19:0] proxy1838; // RocketChip.h(49:5)
-  wire[19:0] Execute1799_io_in_upper_immed; // RocketChip.h(49:5)
-  wire[11:0] proxy1841; // RocketChip.h(49:5)
-  wire[11:0] Execute1799_io_in_csr_address; // RocketChip.h(49:5)
-  wire proxy1844; // RocketChip.h(49:5)
-  wire Execute1799_io_in_is_csr; // RocketChip.h(49:5)
-  wire[31:0] proxy1847; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_in_csr_data; // RocketChip.h(49:5)
-  wire[31:0] proxy1850; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_in_csr_mask; // RocketChip.h(49:5)
-  wire proxy1853; // RocketChip.h(49:5)
-  wire Execute1799_io_in_jal; // RocketChip.h(49:5)
-  wire[31:0] proxy1856; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_in_jal_offset; // RocketChip.h(49:5)
-  wire[31:0] proxy1859; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_in_curr_PC; // RocketChip.h(49:5)
-  wire[11:0] proxy1862; // RocketChip.h(49:5)
-  wire[11:0] Execute1799_io_out_csr_address; // RocketChip.h(49:5)
-  wire proxy1865; // RocketChip.h(49:5)
-  wire Execute1799_io_out_is_csr; // RocketChip.h(49:5)
-  wire[31:0] proxy1868; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_out_csr_result; // RocketChip.h(49:5)
-  wire[31:0] proxy1871; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_out_alu_result; // RocketChip.h(49:5)
-  wire[4:0] proxy1874; // RocketChip.h(49:5)
-  wire[4:0] Execute1799_io_out_rd; // RocketChip.h(49:5)
-  wire[1:0] proxy1877; // RocketChip.h(49:5)
-  wire[1:0] Execute1799_io_out_wb; // RocketChip.h(49:5)
-  wire[4:0] proxy1880; // RocketChip.h(49:5)
-  wire[4:0] Execute1799_io_out_rs1; // RocketChip.h(49:5)
-  wire[31:0] proxy1883; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_out_rd1; // RocketChip.h(49:5)
-  wire[4:0] proxy1886; // RocketChip.h(49:5)
-  wire[4:0] Execute1799_io_out_rs2; // RocketChip.h(49:5)
-  wire[31:0] proxy1889; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_out_rd2; // RocketChip.h(49:5)
-  wire[2:0] proxy1892; // RocketChip.h(49:5)
-  wire[2:0] Execute1799_io_out_mem_read; // RocketChip.h(49:5)
-  wire[2:0] proxy1895; // RocketChip.h(49:5)
-  wire[2:0] Execute1799_io_out_mem_write; // RocketChip.h(49:5)
-  wire proxy1898; // RocketChip.h(49:5)
-  wire Execute1799_io_out_jal; // RocketChip.h(49:5)
-  wire[31:0] proxy1901; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_out_jal_dest; // RocketChip.h(49:5)
-  wire[31:0] proxy1904; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_out_branch_offset; // RocketChip.h(49:5)
-  wire proxy1907; // RocketChip.h(49:5)
-  wire Execute1799_io_out_branch_stall; // RocketChip.h(49:5)
-  wire[31:0] proxy1910; // RocketChip.h(49:5)
-  wire[31:0] Execute1799_io_out_PC_next; // RocketChip.h(49:5)
-  wire[31:0] proxy2082; // RocketChip.h(49:6)
-  wire E_M_Register2083_clk; // RocketChip.h(49:6)
-  wire E_M_Register2083_reset; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_in_alu_result; // RocketChip.h(49:6)
-  wire[4:0] proxy2088; // RocketChip.h(49:6)
-  wire[4:0] E_M_Register2083_io_in_rd; // RocketChip.h(49:6)
-  wire[1:0] proxy2091; // RocketChip.h(49:6)
-  wire[1:0] E_M_Register2083_io_in_wb; // RocketChip.h(49:6)
-  wire[4:0] proxy2094; // RocketChip.h(49:6)
-  wire[4:0] E_M_Register2083_io_in_rs1; // RocketChip.h(49:6)
-  wire[31:0] proxy2097; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_in_rd1; // RocketChip.h(49:6)
-  wire[4:0] proxy2100; // RocketChip.h(49:6)
-  wire[4:0] E_M_Register2083_io_in_rs2; // RocketChip.h(49:6)
-  wire[31:0] proxy2103; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_in_rd2; // RocketChip.h(49:6)
-  wire[2:0] proxy2106; // RocketChip.h(49:6)
-  wire[2:0] E_M_Register2083_io_in_mem_read; // RocketChip.h(49:6)
-  wire[2:0] proxy2109; // RocketChip.h(49:6)
-  wire[2:0] E_M_Register2083_io_in_mem_write; // RocketChip.h(49:6)
-  wire[31:0] proxy2112; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_in_PC_next; // RocketChip.h(49:6)
-  wire[11:0] proxy2115; // RocketChip.h(49:6)
-  wire[11:0] E_M_Register2083_io_in_csr_address; // RocketChip.h(49:6)
-  wire proxy2118; // RocketChip.h(49:6)
-  wire E_M_Register2083_io_in_is_csr; // RocketChip.h(49:6)
-  wire[31:0] proxy2121; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_in_csr_result; // RocketChip.h(49:6)
-  wire[31:0] proxy2124; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_in_curr_PC; // RocketChip.h(49:6)
-  wire[31:0] proxy2127; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_in_branch_offset; // RocketChip.h(49:6)
-  wire[2:0] proxy2130; // RocketChip.h(49:6)
-  wire[2:0] E_M_Register2083_io_in_branch_type; // RocketChip.h(49:6)
-  wire[11:0] proxy2133; // RocketChip.h(49:6)
-  wire[11:0] E_M_Register2083_io_out_csr_address; // RocketChip.h(49:6)
-  wire proxy2136; // RocketChip.h(49:6)
-  wire E_M_Register2083_io_out_is_csr; // RocketChip.h(49:6)
-  wire[31:0] proxy2139; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_out_csr_result; // RocketChip.h(49:6)
-  wire[31:0] proxy2142; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_out_alu_result; // RocketChip.h(49:6)
-  wire[4:0] proxy2145; // RocketChip.h(49:6)
-  wire[4:0] E_M_Register2083_io_out_rd; // RocketChip.h(49:6)
-  wire[1:0] proxy2148; // RocketChip.h(49:6)
-  wire[1:0] E_M_Register2083_io_out_wb; // RocketChip.h(49:6)
-  wire[4:0] proxy2151; // RocketChip.h(49:6)
-  wire[4:0] E_M_Register2083_io_out_rs1; // RocketChip.h(49:6)
-  wire[31:0] proxy2154; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_out_rd1; // RocketChip.h(49:6)
-  wire[31:0] proxy2157; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_out_rd2; // RocketChip.h(49:6)
-  wire[4:0] proxy2160; // RocketChip.h(49:6)
-  wire[4:0] E_M_Register2083_io_out_rs2; // RocketChip.h(49:6)
-  wire[2:0] proxy2163; // RocketChip.h(49:6)
-  wire[2:0] E_M_Register2083_io_out_mem_read; // RocketChip.h(49:6)
-  wire[2:0] proxy2166; // RocketChip.h(49:6)
-  wire[2:0] E_M_Register2083_io_out_mem_write; // RocketChip.h(49:6)
-  wire[31:0] proxy2169; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_out_curr_PC; // RocketChip.h(49:6)
-  wire[31:0] proxy2172; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_out_branch_offset; // RocketChip.h(49:6)
-  wire[2:0] proxy2175; // RocketChip.h(49:6)
-  wire[2:0] E_M_Register2083_io_out_branch_type; // RocketChip.h(49:6)
-  wire[31:0] proxy2178; // RocketChip.h(49:6)
-  wire[31:0] E_M_Register2083_io_out_PC_next; // RocketChip.h(49:6)
-  wire[31:0] Memory2513_io_DBUS_in_data_data; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_in_data_valid; // RocketChip.h(49:7)
-  wire proxy2519; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_in_data_ready; // RocketChip.h(49:7)
-  wire[31:0] proxy2522; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_DBUS_out_data_data; // RocketChip.h(49:7)
-  wire proxy2525; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_out_data_valid; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_out_data_ready; // RocketChip.h(49:7)
-  wire[31:0] proxy2531; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_DBUS_out_address_data; // RocketChip.h(49:7)
-  wire proxy2534; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_out_address_valid; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_out_address_ready; // RocketChip.h(49:7)
-  wire[1:0] proxy2540; // RocketChip.h(49:7)
-  wire[1:0] Memory2513_io_DBUS_out_control_data; // RocketChip.h(49:7)
-  wire proxy2543; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_out_control_valid; // RocketChip.h(49:7)
-  wire Memory2513_io_DBUS_out_control_ready; // RocketChip.h(49:7)
-  wire[31:0] proxy2549; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_in_alu_result; // RocketChip.h(49:7)
-  wire[2:0] proxy2552; // RocketChip.h(49:7)
-  wire[2:0] Memory2513_io_in_mem_read; // RocketChip.h(49:7)
-  wire[2:0] proxy2555; // RocketChip.h(49:7)
-  wire[2:0] Memory2513_io_in_mem_write; // RocketChip.h(49:7)
-  wire[4:0] proxy2558; // RocketChip.h(49:7)
-  wire[4:0] Memory2513_io_in_rd; // RocketChip.h(49:7)
-  wire[1:0] proxy2561; // RocketChip.h(49:7)
-  wire[1:0] Memory2513_io_in_wb; // RocketChip.h(49:7)
-  wire[4:0] proxy2564; // RocketChip.h(49:7)
-  wire[4:0] Memory2513_io_in_rs1; // RocketChip.h(49:7)
-  wire[31:0] proxy2567; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_in_rd1; // RocketChip.h(49:7)
-  wire[4:0] proxy2570; // RocketChip.h(49:7)
-  wire[4:0] Memory2513_io_in_rs2; // RocketChip.h(49:7)
-  wire[31:0] proxy2573; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_in_rd2; // RocketChip.h(49:7)
-  wire[31:0] proxy2576; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_in_PC_next; // RocketChip.h(49:7)
-  wire[31:0] proxy2579; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_in_curr_PC; // RocketChip.h(49:7)
-  wire[31:0] proxy2582; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_in_branch_offset; // RocketChip.h(49:7)
-  wire[2:0] proxy2585; // RocketChip.h(49:7)
-  wire[2:0] Memory2513_io_in_branch_type; // RocketChip.h(49:7)
-  wire[31:0] proxy2588; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_out_alu_result; // RocketChip.h(49:7)
-  wire[31:0] proxy2591; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_out_mem_result; // RocketChip.h(49:7)
-  wire[4:0] proxy2594; // RocketChip.h(49:7)
-  wire[4:0] Memory2513_io_out_rd; // RocketChip.h(49:7)
-  wire[1:0] proxy2597; // RocketChip.h(49:7)
-  wire[1:0] Memory2513_io_out_wb; // RocketChip.h(49:7)
-  wire[4:0] proxy2600; // RocketChip.h(49:7)
-  wire[4:0] Memory2513_io_out_rs1; // RocketChip.h(49:7)
-  wire[4:0] proxy2603; // RocketChip.h(49:7)
-  wire[4:0] Memory2513_io_out_rs2; // RocketChip.h(49:7)
-  wire proxy2606; // RocketChip.h(49:7)
-  wire Memory2513_io_out_branch_dir; // RocketChip.h(49:7)
-  wire[31:0] proxy2609; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_out_branch_dest; // RocketChip.h(49:7)
-  wire[31:0] proxy2612; // RocketChip.h(49:7)
-  wire[31:0] Memory2513_io_out_PC_next; // RocketChip.h(49:7)
-  wire[31:0] proxy2691; // RocketChip.h(49:8)
-  wire M_W_Register2692_clk; // RocketChip.h(49:8)
-  wire M_W_Register2692_reset; // RocketChip.h(49:8)
-  wire[31:0] M_W_Register2692_io_in_alu_result; // RocketChip.h(49:8)
-  wire[31:0] proxy2697; // RocketChip.h(49:8)
-  wire[31:0] M_W_Register2692_io_in_mem_result; // RocketChip.h(49:8)
-  wire[4:0] proxy2700; // RocketChip.h(49:8)
-  wire[4:0] M_W_Register2692_io_in_rd; // RocketChip.h(49:8)
-  wire[1:0] proxy2703; // RocketChip.h(49:8)
-  wire[1:0] M_W_Register2692_io_in_wb; // RocketChip.h(49:8)
-  wire[4:0] proxy2706; // RocketChip.h(49:8)
-  wire[4:0] M_W_Register2692_io_in_rs1; // RocketChip.h(49:8)
-  wire[4:0] proxy2709; // RocketChip.h(49:8)
-  wire[4:0] M_W_Register2692_io_in_rs2; // RocketChip.h(49:8)
-  wire[31:0] proxy2712; // RocketChip.h(49:8)
-  wire[31:0] M_W_Register2692_io_in_PC_next; // RocketChip.h(49:8)
-  wire[31:0] proxy2715; // RocketChip.h(49:8)
-  wire[31:0] M_W_Register2692_io_out_alu_result; // RocketChip.h(49:8)
-  wire[31:0] proxy2718; // RocketChip.h(49:8)
-  wire[31:0] M_W_Register2692_io_out_mem_result; // RocketChip.h(49:8)
-  wire[4:0] proxy2721; // RocketChip.h(49:8)
-  wire[4:0] M_W_Register2692_io_out_rd; // RocketChip.h(49:8)
-  wire[1:0] proxy2724; // RocketChip.h(49:8)
-  wire[1:0] M_W_Register2692_io_out_wb; // RocketChip.h(49:8)
-  wire[4:0] proxy2727; // RocketChip.h(49:8)
-  wire[4:0] M_W_Register2692_io_out_rs1; // RocketChip.h(49:8)
-  wire[4:0] proxy2730; // RocketChip.h(49:8)
-  wire[4:0] M_W_Register2692_io_out_rs2; // RocketChip.h(49:8)
-  wire[31:0] proxy2733; // RocketChip.h(49:8)
-  wire[31:0] M_W_Register2692_io_out_PC_next; // RocketChip.h(49:8)
-  wire[31:0] proxy2764; // RocketChip.h(49:9)
-  wire[31:0] Write_Back2765_io_in_alu_result; // RocketChip.h(49:9)
-  wire[31:0] proxy2768; // RocketChip.h(49:9)
-  wire[31:0] Write_Back2765_io_in_mem_result; // RocketChip.h(49:9)
-  wire[4:0] proxy2771; // RocketChip.h(49:9)
-  wire[4:0] Write_Back2765_io_in_rd; // RocketChip.h(49:9)
-  wire[1:0] proxy2774; // RocketChip.h(49:9)
-  wire[1:0] Write_Back2765_io_in_wb; // RocketChip.h(49:9)
-  wire[4:0] proxy2777; // RocketChip.h(49:9)
-  wire[4:0] Write_Back2765_io_in_rs1; // RocketChip.h(49:9)
-  wire[4:0] proxy2780; // RocketChip.h(49:9)
-  wire[4:0] Write_Back2765_io_in_rs2; // RocketChip.h(49:9)
-  wire[31:0] proxy2783; // RocketChip.h(49:9)
-  wire[31:0] Write_Back2765_io_in_PC_next; // RocketChip.h(49:9)
-  wire[31:0] proxy2786; // RocketChip.h(49:9)
-  wire[31:0] Write_Back2765_io_out_write_data; // RocketChip.h(49:9)
-  wire[4:0] proxy2789; // RocketChip.h(49:9)
-  wire[4:0] Write_Back2765_io_out_rd; // RocketChip.h(49:9)
-  wire[1:0] proxy2792; // RocketChip.h(49:9)
-  wire[1:0] Write_Back2765_io_out_wb; // RocketChip.h(49:9)
-  wire[4:0] proxy3048; // RocketChip.h(49:10)
-  wire[4:0] Forwarding3049_io_in_decode_src1; // RocketChip.h(49:10)
-  wire[4:0] proxy3052; // RocketChip.h(49:10)
-  wire[4:0] Forwarding3049_io_in_decode_src2; // RocketChip.h(49:10)
-  wire[11:0] proxy3055; // RocketChip.h(49:10)
-  wire[11:0] Forwarding3049_io_in_decode_csr_address; // RocketChip.h(49:10)
-  wire[4:0] proxy3058; // RocketChip.h(49:10)
-  wire[4:0] Forwarding3049_io_in_execute_dest; // RocketChip.h(49:10)
-  wire[1:0] proxy3061; // RocketChip.h(49:10)
-  wire[1:0] Forwarding3049_io_in_execute_wb; // RocketChip.h(49:10)
-  wire[31:0] proxy3064; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_execute_alu_result; // RocketChip.h(49:10)
-  wire[31:0] proxy3067; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_execute_PC_next; // RocketChip.h(49:10)
-  wire proxy3070; // RocketChip.h(49:10)
-  wire Forwarding3049_io_in_execute_is_csr; // RocketChip.h(49:10)
-  wire[11:0] proxy3073; // RocketChip.h(49:10)
-  wire[11:0] Forwarding3049_io_in_execute_csr_address; // RocketChip.h(49:10)
-  wire[31:0] proxy3076; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_execute_csr_result; // RocketChip.h(49:10)
-  wire[4:0] proxy3079; // RocketChip.h(49:10)
-  wire[4:0] Forwarding3049_io_in_memory_dest; // RocketChip.h(49:10)
-  wire[1:0] proxy3082; // RocketChip.h(49:10)
-  wire[1:0] Forwarding3049_io_in_memory_wb; // RocketChip.h(49:10)
-  wire[31:0] proxy3085; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_memory_alu_result; // RocketChip.h(49:10)
-  wire[31:0] proxy3088; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_memory_mem_data; // RocketChip.h(49:10)
-  wire[31:0] proxy3091; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_memory_PC_next; // RocketChip.h(49:10)
-  wire proxy3094; // RocketChip.h(49:10)
-  wire Forwarding3049_io_in_memory_is_csr; // RocketChip.h(49:10)
-  wire[11:0] proxy3097; // RocketChip.h(49:10)
-  wire[11:0] Forwarding3049_io_in_memory_csr_address; // RocketChip.h(49:10)
-  wire[31:0] proxy3100; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_memory_csr_result; // RocketChip.h(49:10)
-  wire[4:0] proxy3103; // RocketChip.h(49:10)
-  wire[4:0] Forwarding3049_io_in_writeback_dest; // RocketChip.h(49:10)
-  wire[1:0] proxy3106; // RocketChip.h(49:10)
-  wire[1:0] Forwarding3049_io_in_writeback_wb; // RocketChip.h(49:10)
-  wire[31:0] proxy3109; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_writeback_alu_result; // RocketChip.h(49:10)
-  wire[31:0] proxy3112; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_writeback_mem_data; // RocketChip.h(49:10)
-  wire[31:0] proxy3115; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_in_writeback_PC_next; // RocketChip.h(49:10)
-  wire proxy3118; // RocketChip.h(49:10)
-  wire Forwarding3049_io_out_src1_fwd; // RocketChip.h(49:10)
-  wire[31:0] proxy3121; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_out_src1_fwd_data; // RocketChip.h(49:10)
-  wire proxy3124; // RocketChip.h(49:10)
-  wire Forwarding3049_io_out_src2_fwd; // RocketChip.h(49:10)
-  wire[31:0] proxy3127; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_out_src2_fwd_data; // RocketChip.h(49:10)
-  wire proxy3130; // RocketChip.h(49:10)
-  wire Forwarding3049_io_out_csr_fwd; // RocketChip.h(49:10)
-  wire[31:0] proxy3133; // RocketChip.h(49:10)
-  wire[31:0] Forwarding3049_io_out_csr_fwd_data; // RocketChip.h(49:10)
-  wire proxy3136; // RocketChip.h(49:10)
-  wire Forwarding3049_io_out_fwd_stall; // RocketChip.h(49:10)
-  wire Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_data; // RocketChip.h(49:11)
-  wire Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_valid; // RocketChip.h(49:11)
-  wire proxy3160; // RocketChip.h(49:11)
-  wire Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_ready; // RocketChip.h(49:11)
-  wire proxy3163; // RocketChip.h(49:11)
-  wire Interrupt_Handler3154_io_out_interrupt; // RocketChip.h(49:11)
-  wire[31:0] proxy3166; // RocketChip.h(49:11)
-  wire[31:0] Interrupt_Handler3154_io_out_interrupt_pc; // RocketChip.h(49:11)
-  wire JTAG3500_clk; // RocketChip.h(49:12)
-  wire JTAG3500_reset; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_data; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_valid; // RocketChip.h(49:12)
-  wire proxy3508; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_ready; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_clock_data; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_clock_valid; // RocketChip.h(49:12)
-  wire proxy3517; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_clock_ready; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_reset_data; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_reset_valid; // RocketChip.h(49:12)
-  wire proxy3526; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_JTAG_TAP_in_reset_ready; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_in_data_data; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_in_data_valid; // RocketChip.h(49:12)
-  wire proxy3535; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_in_data_ready; // RocketChip.h(49:12)
-  wire proxy3538; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_out_data_data; // RocketChip.h(49:12)
-  wire proxy3541; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_out_data_valid; // RocketChip.h(49:12)
-  wire JTAG3500_io_JTAG_out_data_ready; // RocketChip.h(49:12)
-  wire[11:0] proxy3606; // RocketChip.h(49:13)
-  wire CSR_Handler3607_clk; // RocketChip.h(49:13)
-  wire CSR_Handler3607_reset; // RocketChip.h(49:13)
-  wire[11:0] CSR_Handler3607_io_in_decode_csr_address; // RocketChip.h(49:13)
-  wire[11:0] proxy3612; // RocketChip.h(49:13)
-  wire[11:0] CSR_Handler3607_io_in_mem_csr_address; // RocketChip.h(49:13)
-  wire proxy3615; // RocketChip.h(49:13)
-  wire CSR_Handler3607_io_in_mem_is_csr; // RocketChip.h(49:13)
-  wire[31:0] proxy3618; // RocketChip.h(49:13)
-  wire[31:0] CSR_Handler3607_io_in_mem_csr_result; // RocketChip.h(49:13)
-  wire[31:0] proxy3621; // RocketChip.h(49:13)
-  wire[31:0] CSR_Handler3607_io_out_decode_csr_data; // RocketChip.h(49:13)
-  wire proxy3623; // RocketChip.h(67:0)
-  wire orl3624; // RocketChip.h(67:0)
-  wire proxy3625; // RocketChip.h(67:0)
-  wire proxy3628; // RocketChip.h(266:1)
-  wire eq3629; // RocketChip.h(266:1)
-  wire proxy3632; // RocketChip.h(266:3)
-  wire eq3633; // RocketChip.h(266:3)
-  wire orl3635; // RocketChip.h(266:3)
-  wire proxy3636; // RocketChip.h(266:3)
-
-  assign io_IBUS_in_data_ready4 = proxy167;
-  assign io_IBUS_out_address_data7 = proxy170;
-  assign io_IBUS_out_address_valid10 = proxy173;
-  assign io_DBUS_in_data_ready16 = proxy2519;
-  assign io_DBUS_out_data_data19 = proxy2522;
-  assign io_DBUS_out_data_valid22 = proxy2525;
-  assign io_DBUS_out_address_data26 = proxy2531;
-  assign io_DBUS_out_address_valid29 = proxy2534;
-  assign io_DBUS_out_control_data33 = proxy2540;
-  assign io_DBUS_out_control_valid36 = proxy2543;
-  assign io_INTERRUPT_in_interrupt_id_ready42 = proxy3160;
-  assign io_jtag_JTAG_TAP_in_mode_select_ready47 = proxy3508;
-  assign io_jtag_JTAG_TAP_in_clock_ready52 = proxy3517;
-  assign io_jtag_JTAG_TAP_in_reset_ready57 = proxy3526;
-  assign io_jtag_in_data_ready62 = proxy3535;
-  assign io_jtag_out_data_data65 = proxy3538;
-  assign io_jtag_out_data_valid68 = proxy3541;
-  assign io_out_fwd_stall72 = proxy3136;
-  assign io_out_branch_stall75 = proxy3625;
-  assign Fetch156_clk = clk;
-  assign Fetch156_reset = reset;
-  Fetch Fetch156(.clk(Fetch156_clk), .reset(Fetch156_reset), .io_IBUS_in_data_data(Fetch156_io_IBUS_in_data_data), .io_IBUS_in_data_valid(Fetch156_io_IBUS_in_data_valid), .io_IBUS_out_address_ready(Fetch156_io_IBUS_out_address_ready), .io_in_branch_dir(Fetch156_io_in_branch_dir), .io_in_branch_dest(Fetch156_io_in_branch_dest), .io_in_branch_stall(Fetch156_io_in_branch_stall), .io_in_fwd_stall(Fetch156_io_in_fwd_stall), .io_in_branch_stall_exe(Fetch156_io_in_branch_stall_exe), .io_in_jal(Fetch156_io_in_jal), .io_in_jal_dest(Fetch156_io_in_jal_dest), .io_in_interrupt(Fetch156_io_in_interrupt), .io_in_interrupt_pc(Fetch156_io_in_interrupt_pc), .io_IBUS_in_data_ready(Fetch156_io_IBUS_in_data_ready), .io_IBUS_out_address_data(Fetch156_io_IBUS_out_address_data), .io_IBUS_out_address_valid(Fetch156_io_IBUS_out_address_valid), .io_out_instruction(Fetch156_io_out_instruction), .io_out_curr_PC(Fetch156_io_out_curr_PC), .io_out_PC_next(Fetch156_io_out_PC_next));
-  assign Fetch156_io_IBUS_in_data_data = io_IBUS_in_data_data;
-  assign Fetch156_io_IBUS_in_data_valid = io_IBUS_in_data_valid;
-  assign proxy167 = Fetch156_io_IBUS_in_data_ready;
-  assign proxy170 = Fetch156_io_IBUS_out_address_data;
-  assign proxy173 = Fetch156_io_IBUS_out_address_valid;
-  assign Fetch156_io_IBUS_out_address_ready = io_IBUS_out_address_ready;
-  assign proxy179 = proxy2606;
-  assign Fetch156_io_in_branch_dir = proxy179;
-  assign proxy182 = proxy2609;
-  assign Fetch156_io_in_branch_dest = proxy182;
-  assign proxy185 = proxy1151;
-  assign Fetch156_io_in_branch_stall = proxy185;
-  assign proxy188 = proxy3136;
-  assign Fetch156_io_in_fwd_stall = proxy188;
-  assign proxy191 = proxy1907;
-  assign Fetch156_io_in_branch_stall_exe = proxy191;
-  assign proxy194 = proxy1898;
-  assign Fetch156_io_in_jal = proxy194;
-  assign proxy197 = proxy1901;
-  assign Fetch156_io_in_jal_dest = proxy197;
-  assign proxy200 = proxy3163;
-  assign Fetch156_io_in_interrupt = proxy200;
-  assign proxy203 = proxy3166;
-  assign Fetch156_io_in_interrupt_pc = proxy203;
-  assign proxy206 = Fetch156_io_out_instruction;
-  assign proxy209 = Fetch156_io_out_curr_PC;
-  assign proxy212 = Fetch156_io_out_PC_next;
-  assign proxy277 = proxy206;
-  assign F_D_Register278_clk = clk;
-  assign F_D_Register278_reset = reset;
-  F_D_Register F_D_Register278(.clk(F_D_Register278_clk), .reset(F_D_Register278_reset), .io_in_instruction(F_D_Register278_io_in_instruction), .io_in_PC_next(F_D_Register278_io_in_PC_next), .io_in_curr_PC(F_D_Register278_io_in_curr_PC), .io_in_branch_stall(F_D_Register278_io_in_branch_stall), .io_in_branch_stall_exe(F_D_Register278_io_in_branch_stall_exe), .io_in_fwd_stall(F_D_Register278_io_in_fwd_stall), .io_out_instruction(F_D_Register278_io_out_instruction), .io_out_curr_PC(F_D_Register278_io_out_curr_PC), .io_out_PC_next(F_D_Register278_io_out_PC_next));
-  assign F_D_Register278_io_in_instruction = proxy277;
-  assign proxy283 = proxy212;
-  assign F_D_Register278_io_in_PC_next = proxy283;
-  assign proxy286 = proxy209;
-  assign F_D_Register278_io_in_curr_PC = proxy286;
-  assign proxy289 = proxy1151;
-  assign F_D_Register278_io_in_branch_stall = proxy289;
-  assign proxy292 = proxy1907;
-  assign F_D_Register278_io_in_branch_stall_exe = proxy292;
-  assign proxy295 = proxy3136;
-  assign F_D_Register278_io_in_fwd_stall = proxy295;
-  assign proxy298 = F_D_Register278_io_out_instruction;
-  assign proxy301 = F_D_Register278_io_out_curr_PC;
-  assign proxy304 = F_D_Register278_io_out_PC_next;
-  assign proxy1058 = proxy298;
-  assign Decode1059_clk = clk;
-  assign Decode1059_reset = reset;
-  Decode Decode1059(.clk(Decode1059_clk), .reset(Decode1059_reset), .io_in_instruction(Decode1059_io_in_instruction), .io_in_PC_next(Decode1059_io_in_PC_next), .io_in_curr_PC(Decode1059_io_in_curr_PC), .io_in_stall(Decode1059_io_in_stall), .io_in_write_data(Decode1059_io_in_write_data), .io_in_rd(Decode1059_io_in_rd), .io_in_wb(Decode1059_io_in_wb), .io_in_src1_fwd(Decode1059_io_in_src1_fwd), .io_in_src1_fwd_data(Decode1059_io_in_src1_fwd_data), .io_in_src2_fwd(Decode1059_io_in_src2_fwd), .io_in_src2_fwd_data(Decode1059_io_in_src2_fwd_data), .io_in_csr_fwd(Decode1059_io_in_csr_fwd), .io_in_csr_fwd_data(Decode1059_io_in_csr_fwd_data), .io_in_csr_data(Decode1059_io_in_csr_data), .io_out_csr_address(Decode1059_io_out_csr_address), .io_out_is_csr(Decode1059_io_out_is_csr), .io_out_csr_data(Decode1059_io_out_csr_data), .io_out_csr_mask(Decode1059_io_out_csr_mask), .io_out_rd(Decode1059_io_out_rd), .io_out_rs1(Decode1059_io_out_rs1), .io_out_rd1(Decode1059_io_out_rd1), .io_out_rs2(Decode1059_io_out_rs2), .io_out_rd2(Decode1059_io_out_rd2), .io_out_wb(Decode1059_io_out_wb), .io_out_alu_op(Decode1059_io_out_alu_op), .io_out_rs2_src(Decode1059_io_out_rs2_src), .io_out_itype_immed(Decode1059_io_out_itype_immed), .io_out_mem_read(Decode1059_io_out_mem_read), .io_out_mem_write(Decode1059_io_out_mem_write), .io_out_branch_type(Decode1059_io_out_branch_type), .io_out_branch_stall(Decode1059_io_out_branch_stall), .io_out_jal(Decode1059_io_out_jal), .io_out_jal_offset(Decode1059_io_out_jal_offset), .io_out_upper_immed(Decode1059_io_out_upper_immed), .io_out_PC_next(Decode1059_io_out_PC_next));
-  assign Decode1059_io_in_instruction = proxy1058;
-  assign proxy1064 = proxy304;
-  assign Decode1059_io_in_PC_next = proxy1064;
-  assign proxy1067 = proxy301;
-  assign Decode1059_io_in_curr_PC = proxy1067;
-  assign proxy1070 = proxy3636;
-  assign Decode1059_io_in_stall = proxy1070;
-  assign proxy1073 = proxy2786;
-  assign Decode1059_io_in_write_data = proxy1073;
-  assign proxy1076 = proxy2789;
-  assign Decode1059_io_in_rd = proxy1076;
-  assign proxy1079 = proxy2792;
-  assign Decode1059_io_in_wb = proxy1079;
-  assign proxy1082 = proxy3118;
-  assign Decode1059_io_in_src1_fwd = proxy1082;
-  assign proxy1085 = proxy3121;
-  assign Decode1059_io_in_src1_fwd_data = proxy1085;
-  assign proxy1088 = proxy3124;
-  assign Decode1059_io_in_src2_fwd = proxy1088;
-  assign proxy1091 = proxy3127;
-  assign Decode1059_io_in_src2_fwd_data = proxy1091;
-  assign proxy1094 = proxy3130;
-  assign Decode1059_io_in_csr_fwd = proxy1094;
-  assign proxy1097 = proxy3133;
-  assign Decode1059_io_in_csr_fwd_data = proxy1097;
-  assign proxy1100 = proxy3621;
-  assign Decode1059_io_in_csr_data = proxy1100;
-  assign proxy1103 = Decode1059_io_out_csr_address;
-  assign proxy1106 = Decode1059_io_out_is_csr;
-  assign proxy1109 = Decode1059_io_out_csr_data;
-  assign proxy1112 = Decode1059_io_out_csr_mask;
-  assign proxy1115 = Decode1059_io_out_rd;
-  assign proxy1118 = Decode1059_io_out_rs1;
-  assign proxy1121 = Decode1059_io_out_rd1;
-  assign proxy1124 = Decode1059_io_out_rs2;
-  assign proxy1127 = Decode1059_io_out_rd2;
-  assign proxy1130 = Decode1059_io_out_wb;
-  assign proxy1133 = Decode1059_io_out_alu_op;
-  assign proxy1136 = Decode1059_io_out_rs2_src;
-  assign proxy1139 = Decode1059_io_out_itype_immed;
-  assign proxy1142 = Decode1059_io_out_mem_read;
-  assign proxy1145 = Decode1059_io_out_mem_write;
-  assign proxy1148 = Decode1059_io_out_branch_type;
-  assign proxy1151 = Decode1059_io_out_branch_stall;
-  assign proxy1154 = Decode1059_io_out_jal;
-  assign proxy1157 = Decode1059_io_out_jal_offset;
-  assign proxy1160 = Decode1059_io_out_upper_immed;
-  assign proxy1163 = Decode1059_io_out_PC_next;
-  assign proxy1466 = proxy1115;
-  assign D_E_Register1467_clk = clk;
-  assign D_E_Register1467_reset = reset;
-  D_E_Register D_E_Register1467(.clk(D_E_Register1467_clk), .reset(D_E_Register1467_reset), .io_in_rd(D_E_Register1467_io_in_rd), .io_in_rs1(D_E_Register1467_io_in_rs1), .io_in_rd1(D_E_Register1467_io_in_rd1), .io_in_rs2(D_E_Register1467_io_in_rs2), .io_in_rd2(D_E_Register1467_io_in_rd2), .io_in_alu_op(D_E_Register1467_io_in_alu_op), .io_in_wb(D_E_Register1467_io_in_wb), .io_in_rs2_src(D_E_Register1467_io_in_rs2_src), .io_in_itype_immed(D_E_Register1467_io_in_itype_immed), .io_in_mem_read(D_E_Register1467_io_in_mem_read), .io_in_mem_write(D_E_Register1467_io_in_mem_write), .io_in_PC_next(D_E_Register1467_io_in_PC_next), .io_in_branch_type(D_E_Register1467_io_in_branch_type), .io_in_fwd_stall(D_E_Register1467_io_in_fwd_stall), .io_in_branch_stall(D_E_Register1467_io_in_branch_stall), .io_in_upper_immed(D_E_Register1467_io_in_upper_immed), .io_in_csr_address(D_E_Register1467_io_in_csr_address), .io_in_is_csr(D_E_Register1467_io_in_is_csr), .io_in_csr_data(D_E_Register1467_io_in_csr_data), .io_in_csr_mask(D_E_Register1467_io_in_csr_mask), .io_in_curr_PC(D_E_Register1467_io_in_curr_PC), .io_in_jal(D_E_Register1467_io_in_jal), .io_in_jal_offset(D_E_Register1467_io_in_jal_offset), .io_out_csr_address(D_E_Register1467_io_out_csr_address), .io_out_is_csr(D_E_Register1467_io_out_is_csr), .io_out_csr_data(D_E_Register1467_io_out_csr_data), .io_out_csr_mask(D_E_Register1467_io_out_csr_mask), .io_out_rd(D_E_Register1467_io_out_rd), .io_out_rs1(D_E_Register1467_io_out_rs1), .io_out_rd1(D_E_Register1467_io_out_rd1), .io_out_rs2(D_E_Register1467_io_out_rs2), .io_out_rd2(D_E_Register1467_io_out_rd2), .io_out_alu_op(D_E_Register1467_io_out_alu_op), .io_out_wb(D_E_Register1467_io_out_wb), .io_out_rs2_src(D_E_Register1467_io_out_rs2_src), .io_out_itype_immed(D_E_Register1467_io_out_itype_immed), .io_out_mem_read(D_E_Register1467_io_out_mem_read), .io_out_mem_write(D_E_Register1467_io_out_mem_write), .io_out_branch_type(D_E_Register1467_io_out_branch_type), .io_out_upper_immed(D_E_Register1467_io_out_upper_immed), .io_out_curr_PC(D_E_Register1467_io_out_curr_PC), .io_out_jal(D_E_Register1467_io_out_jal), .io_out_jal_offset(D_E_Register1467_io_out_jal_offset), .io_out_PC_next(D_E_Register1467_io_out_PC_next));
-  assign D_E_Register1467_io_in_rd = proxy1466;
-  assign proxy1472 = proxy1118;
-  assign D_E_Register1467_io_in_rs1 = proxy1472;
-  assign proxy1475 = proxy1121;
-  assign D_E_Register1467_io_in_rd1 = proxy1475;
-  assign proxy1478 = proxy1124;
-  assign D_E_Register1467_io_in_rs2 = proxy1478;
-  assign proxy1481 = proxy1127;
-  assign D_E_Register1467_io_in_rd2 = proxy1481;
-  assign proxy1484 = proxy1133;
-  assign D_E_Register1467_io_in_alu_op = proxy1484;
-  assign proxy1487 = proxy1130;
-  assign D_E_Register1467_io_in_wb = proxy1487;
-  assign proxy1490 = proxy1136;
-  assign D_E_Register1467_io_in_rs2_src = proxy1490;
-  assign proxy1493 = proxy1139;
-  assign D_E_Register1467_io_in_itype_immed = proxy1493;
-  assign proxy1496 = proxy1142;
-  assign D_E_Register1467_io_in_mem_read = proxy1496;
-  assign proxy1499 = proxy1145;
-  assign D_E_Register1467_io_in_mem_write = proxy1499;
-  assign proxy1502 = proxy1163;
-  assign D_E_Register1467_io_in_PC_next = proxy1502;
-  assign proxy1505 = proxy1148;
-  assign D_E_Register1467_io_in_branch_type = proxy1505;
-  assign proxy1508 = proxy3136;
-  assign D_E_Register1467_io_in_fwd_stall = proxy1508;
-  assign proxy1511 = proxy1907;
-  assign D_E_Register1467_io_in_branch_stall = proxy1511;
-  assign proxy1514 = proxy1160;
-  assign D_E_Register1467_io_in_upper_immed = proxy1514;
-  assign proxy1517 = proxy1103;
-  assign D_E_Register1467_io_in_csr_address = proxy1517;
-  assign proxy1520 = proxy1106;
-  assign D_E_Register1467_io_in_is_csr = proxy1520;
-  assign proxy1523 = proxy1109;
-  assign D_E_Register1467_io_in_csr_data = proxy1523;
-  assign proxy1526 = proxy1112;
-  assign D_E_Register1467_io_in_csr_mask = proxy1526;
-  assign proxy1529 = proxy301;
-  assign D_E_Register1467_io_in_curr_PC = proxy1529;
-  assign proxy1532 = proxy1154;
-  assign D_E_Register1467_io_in_jal = proxy1532;
-  assign proxy1535 = proxy1157;
-  assign D_E_Register1467_io_in_jal_offset = proxy1535;
-  assign proxy1538 = D_E_Register1467_io_out_csr_address;
-  assign proxy1541 = D_E_Register1467_io_out_is_csr;
-  assign proxy1544 = D_E_Register1467_io_out_csr_data;
-  assign proxy1547 = D_E_Register1467_io_out_csr_mask;
-  assign proxy1550 = D_E_Register1467_io_out_rd;
-  assign proxy1553 = D_E_Register1467_io_out_rs1;
-  assign proxy1556 = D_E_Register1467_io_out_rd1;
-  assign proxy1559 = D_E_Register1467_io_out_rs2;
-  assign proxy1562 = D_E_Register1467_io_out_rd2;
-  assign proxy1565 = D_E_Register1467_io_out_alu_op;
-  assign proxy1568 = D_E_Register1467_io_out_wb;
-  assign proxy1571 = D_E_Register1467_io_out_rs2_src;
-  assign proxy1574 = D_E_Register1467_io_out_itype_immed;
-  assign proxy1577 = D_E_Register1467_io_out_mem_read;
-  assign proxy1580 = D_E_Register1467_io_out_mem_write;
-  assign proxy1583 = D_E_Register1467_io_out_branch_type;
-  assign proxy1586 = D_E_Register1467_io_out_upper_immed;
-  assign proxy1589 = D_E_Register1467_io_out_curr_PC;
-  assign proxy1592 = D_E_Register1467_io_out_jal;
-  assign proxy1595 = D_E_Register1467_io_out_jal_offset;
-  assign proxy1598 = D_E_Register1467_io_out_PC_next;
-  assign proxy1798 = proxy1550;
-  Execute Execute1799(.io_in_rd(Execute1799_io_in_rd), .io_in_rs1(Execute1799_io_in_rs1), .io_in_rd1(Execute1799_io_in_rd1), .io_in_rs2(Execute1799_io_in_rs2), .io_in_rd2(Execute1799_io_in_rd2), .io_in_alu_op(Execute1799_io_in_alu_op), .io_in_wb(Execute1799_io_in_wb), .io_in_rs2_src(Execute1799_io_in_rs2_src), .io_in_itype_immed(Execute1799_io_in_itype_immed), .io_in_mem_read(Execute1799_io_in_mem_read), .io_in_mem_write(Execute1799_io_in_mem_write), .io_in_PC_next(Execute1799_io_in_PC_next), .io_in_branch_type(Execute1799_io_in_branch_type), .io_in_upper_immed(Execute1799_io_in_upper_immed), .io_in_csr_address(Execute1799_io_in_csr_address), .io_in_is_csr(Execute1799_io_in_is_csr), .io_in_csr_data(Execute1799_io_in_csr_data), .io_in_csr_mask(Execute1799_io_in_csr_mask), .io_in_jal(Execute1799_io_in_jal), .io_in_jal_offset(Execute1799_io_in_jal_offset), .io_in_curr_PC(Execute1799_io_in_curr_PC), .io_out_csr_address(Execute1799_io_out_csr_address), .io_out_is_csr(Execute1799_io_out_is_csr), .io_out_csr_result(Execute1799_io_out_csr_result), .io_out_alu_result(Execute1799_io_out_alu_result), .io_out_rd(Execute1799_io_out_rd), .io_out_wb(Execute1799_io_out_wb), .io_out_rs1(Execute1799_io_out_rs1), .io_out_rd1(Execute1799_io_out_rd1), .io_out_rs2(Execute1799_io_out_rs2), .io_out_rd2(Execute1799_io_out_rd2), .io_out_mem_read(Execute1799_io_out_mem_read), .io_out_mem_write(Execute1799_io_out_mem_write), .io_out_jal(Execute1799_io_out_jal), .io_out_jal_dest(Execute1799_io_out_jal_dest), .io_out_branch_offset(Execute1799_io_out_branch_offset), .io_out_branch_stall(Execute1799_io_out_branch_stall), .io_out_PC_next(Execute1799_io_out_PC_next));
-  assign Execute1799_io_in_rd = proxy1798;
-  assign proxy1802 = proxy1553;
-  assign Execute1799_io_in_rs1 = proxy1802;
-  assign proxy1805 = proxy1556;
-  assign Execute1799_io_in_rd1 = proxy1805;
-  assign proxy1808 = proxy1559;
-  assign Execute1799_io_in_rs2 = proxy1808;
-  assign proxy1811 = proxy1562;
-  assign Execute1799_io_in_rd2 = proxy1811;
-  assign proxy1814 = proxy1565;
-  assign Execute1799_io_in_alu_op = proxy1814;
-  assign proxy1817 = proxy1568;
-  assign Execute1799_io_in_wb = proxy1817;
-  assign proxy1820 = proxy1571;
-  assign Execute1799_io_in_rs2_src = proxy1820;
-  assign proxy1823 = proxy1574;
-  assign Execute1799_io_in_itype_immed = proxy1823;
-  assign proxy1826 = proxy1577;
-  assign Execute1799_io_in_mem_read = proxy1826;
-  assign proxy1829 = proxy1580;
-  assign Execute1799_io_in_mem_write = proxy1829;
-  assign proxy1832 = proxy1598;
-  assign Execute1799_io_in_PC_next = proxy1832;
-  assign proxy1835 = proxy1583;
-  assign Execute1799_io_in_branch_type = proxy1835;
-  assign proxy1838 = proxy1586;
-  assign Execute1799_io_in_upper_immed = proxy1838;
-  assign proxy1841 = proxy1538;
-  assign Execute1799_io_in_csr_address = proxy1841;
-  assign proxy1844 = proxy1541;
-  assign Execute1799_io_in_is_csr = proxy1844;
-  assign proxy1847 = proxy1544;
-  assign Execute1799_io_in_csr_data = proxy1847;
-  assign proxy1850 = proxy1547;
-  assign Execute1799_io_in_csr_mask = proxy1850;
-  assign proxy1853 = proxy1592;
-  assign Execute1799_io_in_jal = proxy1853;
-  assign proxy1856 = proxy1595;
-  assign Execute1799_io_in_jal_offset = proxy1856;
-  assign proxy1859 = proxy1589;
-  assign Execute1799_io_in_curr_PC = proxy1859;
-  assign proxy1862 = Execute1799_io_out_csr_address;
-  assign proxy1865 = Execute1799_io_out_is_csr;
-  assign proxy1868 = Execute1799_io_out_csr_result;
-  assign proxy1871 = Execute1799_io_out_alu_result;
-  assign proxy1874 = Execute1799_io_out_rd;
-  assign proxy1877 = Execute1799_io_out_wb;
-  assign proxy1880 = Execute1799_io_out_rs1;
-  assign proxy1883 = Execute1799_io_out_rd1;
-  assign proxy1886 = Execute1799_io_out_rs2;
-  assign proxy1889 = Execute1799_io_out_rd2;
-  assign proxy1892 = Execute1799_io_out_mem_read;
-  assign proxy1895 = Execute1799_io_out_mem_write;
-  assign proxy1898 = Execute1799_io_out_jal;
-  assign proxy1901 = Execute1799_io_out_jal_dest;
-  assign proxy1904 = Execute1799_io_out_branch_offset;
-  assign proxy1907 = Execute1799_io_out_branch_stall;
-  assign proxy1910 = Execute1799_io_out_PC_next;
-  assign proxy2082 = proxy1871;
-  assign E_M_Register2083_clk = clk;
-  assign E_M_Register2083_reset = reset;
-  E_M_Register E_M_Register2083(.clk(E_M_Register2083_clk), .reset(E_M_Register2083_reset), .io_in_alu_result(E_M_Register2083_io_in_alu_result), .io_in_rd(E_M_Register2083_io_in_rd), .io_in_wb(E_M_Register2083_io_in_wb), .io_in_rs1(E_M_Register2083_io_in_rs1), .io_in_rd1(E_M_Register2083_io_in_rd1), .io_in_rs2(E_M_Register2083_io_in_rs2), .io_in_rd2(E_M_Register2083_io_in_rd2), .io_in_mem_read(E_M_Register2083_io_in_mem_read), .io_in_mem_write(E_M_Register2083_io_in_mem_write), .io_in_PC_next(E_M_Register2083_io_in_PC_next), .io_in_csr_address(E_M_Register2083_io_in_csr_address), .io_in_is_csr(E_M_Register2083_io_in_is_csr), .io_in_csr_result(E_M_Register2083_io_in_csr_result), .io_in_curr_PC(E_M_Register2083_io_in_curr_PC), .io_in_branch_offset(E_M_Register2083_io_in_branch_offset), .io_in_branch_type(E_M_Register2083_io_in_branch_type), .io_out_csr_address(E_M_Register2083_io_out_csr_address), .io_out_is_csr(E_M_Register2083_io_out_is_csr), .io_out_csr_result(E_M_Register2083_io_out_csr_result), .io_out_alu_result(E_M_Register2083_io_out_alu_result), .io_out_rd(E_M_Register2083_io_out_rd), .io_out_wb(E_M_Register2083_io_out_wb), .io_out_rs1(E_M_Register2083_io_out_rs1), .io_out_rd1(E_M_Register2083_io_out_rd1), .io_out_rd2(E_M_Register2083_io_out_rd2), .io_out_rs2(E_M_Register2083_io_out_rs2), .io_out_mem_read(E_M_Register2083_io_out_mem_read), .io_out_mem_write(E_M_Register2083_io_out_mem_write), .io_out_curr_PC(E_M_Register2083_io_out_curr_PC), .io_out_branch_offset(E_M_Register2083_io_out_branch_offset), .io_out_branch_type(E_M_Register2083_io_out_branch_type), .io_out_PC_next(E_M_Register2083_io_out_PC_next));
-  assign E_M_Register2083_io_in_alu_result = proxy2082;
-  assign proxy2088 = proxy1874;
-  assign E_M_Register2083_io_in_rd = proxy2088;
-  assign proxy2091 = proxy1877;
-  assign E_M_Register2083_io_in_wb = proxy2091;
-  assign proxy2094 = proxy1880;
-  assign E_M_Register2083_io_in_rs1 = proxy2094;
-  assign proxy2097 = proxy1883;
-  assign E_M_Register2083_io_in_rd1 = proxy2097;
-  assign proxy2100 = proxy1886;
-  assign E_M_Register2083_io_in_rs2 = proxy2100;
-  assign proxy2103 = proxy1889;
-  assign E_M_Register2083_io_in_rd2 = proxy2103;
-  assign proxy2106 = proxy1892;
-  assign E_M_Register2083_io_in_mem_read = proxy2106;
-  assign proxy2109 = proxy1895;
-  assign E_M_Register2083_io_in_mem_write = proxy2109;
-  assign proxy2112 = proxy1910;
-  assign E_M_Register2083_io_in_PC_next = proxy2112;
-  assign proxy2115 = proxy1862;
-  assign E_M_Register2083_io_in_csr_address = proxy2115;
-  assign proxy2118 = proxy1865;
-  assign E_M_Register2083_io_in_is_csr = proxy2118;
-  assign proxy2121 = proxy1868;
-  assign E_M_Register2083_io_in_csr_result = proxy2121;
-  assign proxy2124 = proxy1589;
-  assign E_M_Register2083_io_in_curr_PC = proxy2124;
-  assign proxy2127 = proxy1904;
-  assign E_M_Register2083_io_in_branch_offset = proxy2127;
-  assign proxy2130 = proxy1583;
-  assign E_M_Register2083_io_in_branch_type = proxy2130;
-  assign proxy2133 = E_M_Register2083_io_out_csr_address;
-  assign proxy2136 = E_M_Register2083_io_out_is_csr;
-  assign proxy2139 = E_M_Register2083_io_out_csr_result;
-  assign proxy2142 = E_M_Register2083_io_out_alu_result;
-  assign proxy2145 = E_M_Register2083_io_out_rd;
-  assign proxy2148 = E_M_Register2083_io_out_wb;
-  assign proxy2151 = E_M_Register2083_io_out_rs1;
-  assign proxy2154 = E_M_Register2083_io_out_rd1;
-  assign proxy2157 = E_M_Register2083_io_out_rd2;
-  assign proxy2160 = E_M_Register2083_io_out_rs2;
-  assign proxy2163 = E_M_Register2083_io_out_mem_read;
-  assign proxy2166 = E_M_Register2083_io_out_mem_write;
-  assign proxy2169 = E_M_Register2083_io_out_curr_PC;
-  assign proxy2172 = E_M_Register2083_io_out_branch_offset;
-  assign proxy2175 = E_M_Register2083_io_out_branch_type;
-  assign proxy2178 = E_M_Register2083_io_out_PC_next;
-  Memory Memory2513(.io_DBUS_in_data_data(Memory2513_io_DBUS_in_data_data), .io_DBUS_in_data_valid(Memory2513_io_DBUS_in_data_valid), .io_DBUS_out_data_ready(Memory2513_io_DBUS_out_data_ready), .io_DBUS_out_address_ready(Memory2513_io_DBUS_out_address_ready), .io_DBUS_out_control_ready(Memory2513_io_DBUS_out_control_ready), .io_in_alu_result(Memory2513_io_in_alu_result), .io_in_mem_read(Memory2513_io_in_mem_read), .io_in_mem_write(Memory2513_io_in_mem_write), .io_in_rd(Memory2513_io_in_rd), .io_in_wb(Memory2513_io_in_wb), .io_in_rs1(Memory2513_io_in_rs1), .io_in_rd1(Memory2513_io_in_rd1), .io_in_rs2(Memory2513_io_in_rs2), .io_in_rd2(Memory2513_io_in_rd2), .io_in_PC_next(Memory2513_io_in_PC_next), .io_in_curr_PC(Memory2513_io_in_curr_PC), .io_in_branch_offset(Memory2513_io_in_branch_offset), .io_in_branch_type(Memory2513_io_in_branch_type), .io_DBUS_in_data_ready(Memory2513_io_DBUS_in_data_ready), .io_DBUS_out_data_data(Memory2513_io_DBUS_out_data_data), .io_DBUS_out_data_valid(Memory2513_io_DBUS_out_data_valid), .io_DBUS_out_address_data(Memory2513_io_DBUS_out_address_data), .io_DBUS_out_address_valid(Memory2513_io_DBUS_out_address_valid), .io_DBUS_out_control_data(Memory2513_io_DBUS_out_control_data), .io_DBUS_out_control_valid(Memory2513_io_DBUS_out_control_valid), .io_out_alu_result(Memory2513_io_out_alu_result), .io_out_mem_result(Memory2513_io_out_mem_result), .io_out_rd(Memory2513_io_out_rd), .io_out_wb(Memory2513_io_out_wb), .io_out_rs1(Memory2513_io_out_rs1), .io_out_rs2(Memory2513_io_out_rs2), .io_out_branch_dir(Memory2513_io_out_branch_dir), .io_out_branch_dest(Memory2513_io_out_branch_dest), .io_out_PC_next(Memory2513_io_out_PC_next));
-  assign Memory2513_io_DBUS_in_data_data = io_DBUS_in_data_data;
-  assign Memory2513_io_DBUS_in_data_valid = io_DBUS_in_data_valid;
-  assign proxy2519 = Memory2513_io_DBUS_in_data_ready;
-  assign proxy2522 = Memory2513_io_DBUS_out_data_data;
-  assign proxy2525 = Memory2513_io_DBUS_out_data_valid;
-  assign Memory2513_io_DBUS_out_data_ready = io_DBUS_out_data_ready;
-  assign proxy2531 = Memory2513_io_DBUS_out_address_data;
-  assign proxy2534 = Memory2513_io_DBUS_out_address_valid;
-  assign Memory2513_io_DBUS_out_address_ready = io_DBUS_out_address_ready;
-  assign proxy2540 = Memory2513_io_DBUS_out_control_data;
-  assign proxy2543 = Memory2513_io_DBUS_out_control_valid;
-  assign Memory2513_io_DBUS_out_control_ready = io_DBUS_out_control_ready;
-  assign proxy2549 = proxy2142;
-  assign Memory2513_io_in_alu_result = proxy2549;
-  assign proxy2552 = proxy2163;
-  assign Memory2513_io_in_mem_read = proxy2552;
-  assign proxy2555 = proxy2166;
-  assign Memory2513_io_in_mem_write = proxy2555;
-  assign proxy2558 = proxy2145;
-  assign Memory2513_io_in_rd = proxy2558;
-  assign proxy2561 = proxy2148;
-  assign Memory2513_io_in_wb = proxy2561;
-  assign proxy2564 = proxy2151;
-  assign Memory2513_io_in_rs1 = proxy2564;
-  assign proxy2567 = proxy2154;
-  assign Memory2513_io_in_rd1 = proxy2567;
-  assign proxy2570 = proxy2160;
-  assign Memory2513_io_in_rs2 = proxy2570;
-  assign proxy2573 = proxy2157;
-  assign Memory2513_io_in_rd2 = proxy2573;
-  assign proxy2576 = proxy2178;
-  assign Memory2513_io_in_PC_next = proxy2576;
-  assign proxy2579 = proxy2169;
-  assign Memory2513_io_in_curr_PC = proxy2579;
-  assign proxy2582 = proxy2172;
-  assign Memory2513_io_in_branch_offset = proxy2582;
-  assign proxy2585 = proxy2175;
-  assign Memory2513_io_in_branch_type = proxy2585;
-  assign proxy2588 = Memory2513_io_out_alu_result;
-  assign proxy2591 = Memory2513_io_out_mem_result;
-  assign proxy2594 = Memory2513_io_out_rd;
-  assign proxy2597 = Memory2513_io_out_wb;
-  assign proxy2600 = Memory2513_io_out_rs1;
-  assign proxy2603 = Memory2513_io_out_rs2;
-  assign proxy2606 = Memory2513_io_out_branch_dir;
-  assign proxy2609 = Memory2513_io_out_branch_dest;
-  assign proxy2612 = Memory2513_io_out_PC_next;
-  assign proxy2691 = proxy2588;
-  assign M_W_Register2692_clk = clk;
-  assign M_W_Register2692_reset = reset;
-  M_W_Register M_W_Register2692(.clk(M_W_Register2692_clk), .reset(M_W_Register2692_reset), .io_in_alu_result(M_W_Register2692_io_in_alu_result), .io_in_mem_result(M_W_Register2692_io_in_mem_result), .io_in_rd(M_W_Register2692_io_in_rd), .io_in_wb(M_W_Register2692_io_in_wb), .io_in_rs1(M_W_Register2692_io_in_rs1), .io_in_rs2(M_W_Register2692_io_in_rs2), .io_in_PC_next(M_W_Register2692_io_in_PC_next), .io_out_alu_result(M_W_Register2692_io_out_alu_result), .io_out_mem_result(M_W_Register2692_io_out_mem_result), .io_out_rd(M_W_Register2692_io_out_rd), .io_out_wb(M_W_Register2692_io_out_wb), .io_out_rs1(M_W_Register2692_io_out_rs1), .io_out_rs2(M_W_Register2692_io_out_rs2), .io_out_PC_next(M_W_Register2692_io_out_PC_next));
-  assign M_W_Register2692_io_in_alu_result = proxy2691;
-  assign proxy2697 = proxy2591;
-  assign M_W_Register2692_io_in_mem_result = proxy2697;
-  assign proxy2700 = proxy2594;
-  assign M_W_Register2692_io_in_rd = proxy2700;
-  assign proxy2703 = proxy2597;
-  assign M_W_Register2692_io_in_wb = proxy2703;
-  assign proxy2706 = proxy2600;
-  assign M_W_Register2692_io_in_rs1 = proxy2706;
-  assign proxy2709 = proxy2603;
-  assign M_W_Register2692_io_in_rs2 = proxy2709;
-  assign proxy2712 = proxy2612;
-  assign M_W_Register2692_io_in_PC_next = proxy2712;
-  assign proxy2715 = M_W_Register2692_io_out_alu_result;
-  assign proxy2718 = M_W_Register2692_io_out_mem_result;
-  assign proxy2721 = M_W_Register2692_io_out_rd;
-  assign proxy2724 = M_W_Register2692_io_out_wb;
-  assign proxy2727 = M_W_Register2692_io_out_rs1;
-  assign proxy2730 = M_W_Register2692_io_out_rs2;
-  assign proxy2733 = M_W_Register2692_io_out_PC_next;
-  assign proxy2764 = proxy2715;
-  Write_Back Write_Back2765(.io_in_alu_result(Write_Back2765_io_in_alu_result), .io_in_mem_result(Write_Back2765_io_in_mem_result), .io_in_rd(Write_Back2765_io_in_rd), .io_in_wb(Write_Back2765_io_in_wb), .io_in_rs1(Write_Back2765_io_in_rs1), .io_in_rs2(Write_Back2765_io_in_rs2), .io_in_PC_next(Write_Back2765_io_in_PC_next), .io_out_write_data(Write_Back2765_io_out_write_data), .io_out_rd(Write_Back2765_io_out_rd), .io_out_wb(Write_Back2765_io_out_wb));
-  assign Write_Back2765_io_in_alu_result = proxy2764;
-  assign proxy2768 = proxy2718;
-  assign Write_Back2765_io_in_mem_result = proxy2768;
-  assign proxy2771 = proxy2721;
-  assign Write_Back2765_io_in_rd = proxy2771;
-  assign proxy2774 = proxy2724;
-  assign Write_Back2765_io_in_wb = proxy2774;
-  assign proxy2777 = proxy2727;
-  assign Write_Back2765_io_in_rs1 = proxy2777;
-  assign proxy2780 = proxy2730;
-  assign Write_Back2765_io_in_rs2 = proxy2780;
-  assign proxy2783 = proxy2733;
-  assign Write_Back2765_io_in_PC_next = proxy2783;
-  assign proxy2786 = Write_Back2765_io_out_write_data;
-  assign proxy2789 = Write_Back2765_io_out_rd;
-  assign proxy2792 = Write_Back2765_io_out_wb;
-  assign proxy3048 = proxy1118;
-  Forwarding Forwarding3049(.io_in_decode_src1(Forwarding3049_io_in_decode_src1), .io_in_decode_src2(Forwarding3049_io_in_decode_src2), .io_in_decode_csr_address(Forwarding3049_io_in_decode_csr_address), .io_in_execute_dest(Forwarding3049_io_in_execute_dest), .io_in_execute_wb(Forwarding3049_io_in_execute_wb), .io_in_execute_alu_result(Forwarding3049_io_in_execute_alu_result), .io_in_execute_PC_next(Forwarding3049_io_in_execute_PC_next), .io_in_execute_is_csr(Forwarding3049_io_in_execute_is_csr), .io_in_execute_csr_address(Forwarding3049_io_in_execute_csr_address), .io_in_execute_csr_result(Forwarding3049_io_in_execute_csr_result), .io_in_memory_dest(Forwarding3049_io_in_memory_dest), .io_in_memory_wb(Forwarding3049_io_in_memory_wb), .io_in_memory_alu_result(Forwarding3049_io_in_memory_alu_result), .io_in_memory_mem_data(Forwarding3049_io_in_memory_mem_data), .io_in_memory_PC_next(Forwarding3049_io_in_memory_PC_next), .io_in_memory_is_csr(Forwarding3049_io_in_memory_is_csr), .io_in_memory_csr_address(Forwarding3049_io_in_memory_csr_address), .io_in_memory_csr_result(Forwarding3049_io_in_memory_csr_result), .io_in_writeback_dest(Forwarding3049_io_in_writeback_dest), .io_in_writeback_wb(Forwarding3049_io_in_writeback_wb), .io_in_writeback_alu_result(Forwarding3049_io_in_writeback_alu_result), .io_in_writeback_mem_data(Forwarding3049_io_in_writeback_mem_data), .io_in_writeback_PC_next(Forwarding3049_io_in_writeback_PC_next), .io_out_src1_fwd(Forwarding3049_io_out_src1_fwd), .io_out_src1_fwd_data(Forwarding3049_io_out_src1_fwd_data), .io_out_src2_fwd(Forwarding3049_io_out_src2_fwd), .io_out_src2_fwd_data(Forwarding3049_io_out_src2_fwd_data), .io_out_csr_fwd(Forwarding3049_io_out_csr_fwd), .io_out_csr_fwd_data(Forwarding3049_io_out_csr_fwd_data), .io_out_fwd_stall(Forwarding3049_io_out_fwd_stall));
-  assign Forwarding3049_io_in_decode_src1 = proxy3048;
-  assign proxy3052 = proxy1124;
-  assign Forwarding3049_io_in_decode_src2 = proxy3052;
-  assign proxy3055 = proxy1103;
-  assign Forwarding3049_io_in_decode_csr_address = proxy3055;
-  assign proxy3058 = proxy1874;
-  assign Forwarding3049_io_in_execute_dest = proxy3058;
-  assign proxy3061 = proxy1877;
-  assign Forwarding3049_io_in_execute_wb = proxy3061;
-  assign proxy3064 = proxy1871;
-  assign Forwarding3049_io_in_execute_alu_result = proxy3064;
-  assign proxy3067 = proxy1910;
-  assign Forwarding3049_io_in_execute_PC_next = proxy3067;
-  assign proxy3070 = proxy1865;
-  assign Forwarding3049_io_in_execute_is_csr = proxy3070;
-  assign proxy3073 = proxy1862;
-  assign Forwarding3049_io_in_execute_csr_address = proxy3073;
-  assign proxy3076 = proxy1868;
-  assign Forwarding3049_io_in_execute_csr_result = proxy3076;
-  assign proxy3079 = proxy2594;
-  assign Forwarding3049_io_in_memory_dest = proxy3079;
-  assign proxy3082 = proxy2597;
-  assign Forwarding3049_io_in_memory_wb = proxy3082;
-  assign proxy3085 = proxy2588;
-  assign Forwarding3049_io_in_memory_alu_result = proxy3085;
-  assign proxy3088 = proxy2591;
-  assign Forwarding3049_io_in_memory_mem_data = proxy3088;
-  assign proxy3091 = proxy2612;
-  assign Forwarding3049_io_in_memory_PC_next = proxy3091;
-  assign proxy3094 = proxy2136;
-  assign Forwarding3049_io_in_memory_is_csr = proxy3094;
-  assign proxy3097 = proxy2133;
-  assign Forwarding3049_io_in_memory_csr_address = proxy3097;
-  assign proxy3100 = proxy2139;
-  assign Forwarding3049_io_in_memory_csr_result = proxy3100;
-  assign proxy3103 = proxy2721;
-  assign Forwarding3049_io_in_writeback_dest = proxy3103;
-  assign proxy3106 = proxy2724;
-  assign Forwarding3049_io_in_writeback_wb = proxy3106;
-  assign proxy3109 = proxy2715;
-  assign Forwarding3049_io_in_writeback_alu_result = proxy3109;
-  assign proxy3112 = proxy2718;
-  assign Forwarding3049_io_in_writeback_mem_data = proxy3112;
-  assign proxy3115 = proxy2733;
-  assign Forwarding3049_io_in_writeback_PC_next = proxy3115;
-  assign proxy3118 = Forwarding3049_io_out_src1_fwd;
-  assign proxy3121 = Forwarding3049_io_out_src1_fwd_data;
-  assign proxy3124 = Forwarding3049_io_out_src2_fwd;
-  assign proxy3127 = Forwarding3049_io_out_src2_fwd_data;
-  assign proxy3130 = Forwarding3049_io_out_csr_fwd;
-  assign proxy3133 = Forwarding3049_io_out_csr_fwd_data;
-  assign proxy3136 = Forwarding3049_io_out_fwd_stall;
-  Interrupt_Handler Interrupt_Handler3154(.io_INTERRUPT_in_interrupt_id_data(Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_data), .io_INTERRUPT_in_interrupt_id_valid(Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_valid), .io_INTERRUPT_in_interrupt_id_ready(Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_ready), .io_out_interrupt(Interrupt_Handler3154_io_out_interrupt), .io_out_interrupt_pc(Interrupt_Handler3154_io_out_interrupt_pc));
-  assign Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_data = io_INTERRUPT_in_interrupt_id_data;
-  assign Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_valid = io_INTERRUPT_in_interrupt_id_valid;
-  assign proxy3160 = Interrupt_Handler3154_io_INTERRUPT_in_interrupt_id_ready;
-  assign proxy3163 = Interrupt_Handler3154_io_out_interrupt;
-  assign proxy3166 = Interrupt_Handler3154_io_out_interrupt_pc;
-  assign JTAG3500_clk = clk;
-  assign JTAG3500_reset = reset;
-  JTAG JTAG3500(.clk(JTAG3500_clk), .reset(JTAG3500_reset), .io_JTAG_JTAG_TAP_in_mode_select_data(JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_data), .io_JTAG_JTAG_TAP_in_mode_select_valid(JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_valid), .io_JTAG_JTAG_TAP_in_clock_data(JTAG3500_io_JTAG_JTAG_TAP_in_clock_data), .io_JTAG_JTAG_TAP_in_clock_valid(JTAG3500_io_JTAG_JTAG_TAP_in_clock_valid), .io_JTAG_JTAG_TAP_in_reset_data(JTAG3500_io_JTAG_JTAG_TAP_in_reset_data), .io_JTAG_JTAG_TAP_in_reset_valid(JTAG3500_io_JTAG_JTAG_TAP_in_reset_valid), .io_JTAG_in_data_data(JTAG3500_io_JTAG_in_data_data), .io_JTAG_in_data_valid(JTAG3500_io_JTAG_in_data_valid), .io_JTAG_out_data_ready(JTAG3500_io_JTAG_out_data_ready), .io_JTAG_JTAG_TAP_in_mode_select_ready(JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_ready), .io_JTAG_JTAG_TAP_in_clock_ready(JTAG3500_io_JTAG_JTAG_TAP_in_clock_ready), .io_JTAG_JTAG_TAP_in_reset_ready(JTAG3500_io_JTAG_JTAG_TAP_in_reset_ready), .io_JTAG_in_data_ready(JTAG3500_io_JTAG_in_data_ready), .io_JTAG_out_data_data(JTAG3500_io_JTAG_out_data_data), .io_JTAG_out_data_valid(JTAG3500_io_JTAG_out_data_valid));
-  assign JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_data = io_jtag_JTAG_TAP_in_mode_select_data;
-  assign JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_valid = io_jtag_JTAG_TAP_in_mode_select_valid;
-  assign proxy3508 = JTAG3500_io_JTAG_JTAG_TAP_in_mode_select_ready;
-  assign JTAG3500_io_JTAG_JTAG_TAP_in_clock_data = io_jtag_JTAG_TAP_in_clock_data;
-  assign JTAG3500_io_JTAG_JTAG_TAP_in_clock_valid = io_jtag_JTAG_TAP_in_clock_valid;
-  assign proxy3517 = JTAG3500_io_JTAG_JTAG_TAP_in_clock_ready;
-  assign JTAG3500_io_JTAG_JTAG_TAP_in_reset_data = io_jtag_JTAG_TAP_in_reset_data;
-  assign JTAG3500_io_JTAG_JTAG_TAP_in_reset_valid = io_jtag_JTAG_TAP_in_reset_valid;
-  assign proxy3526 = JTAG3500_io_JTAG_JTAG_TAP_in_reset_ready;
-  assign JTAG3500_io_JTAG_in_data_data = io_jtag_in_data_data;
-  assign JTAG3500_io_JTAG_in_data_valid = io_jtag_in_data_valid;
-  assign proxy3535 = JTAG3500_io_JTAG_in_data_ready;
-  assign proxy3538 = JTAG3500_io_JTAG_out_data_data;
-  assign proxy3541 = JTAG3500_io_JTAG_out_data_valid;
-  assign JTAG3500_io_JTAG_out_data_ready = io_jtag_out_data_ready;
-  assign proxy3606 = proxy1103;
-  assign CSR_Handler3607_clk = clk;
-  assign CSR_Handler3607_reset = reset;
-  CSR_Handler CSR_Handler3607(.clk(CSR_Handler3607_clk), .reset(CSR_Handler3607_reset), .io_in_decode_csr_address(CSR_Handler3607_io_in_decode_csr_address), .io_in_mem_csr_address(CSR_Handler3607_io_in_mem_csr_address), .io_in_mem_is_csr(CSR_Handler3607_io_in_mem_is_csr), .io_in_mem_csr_result(CSR_Handler3607_io_in_mem_csr_result), .io_out_decode_csr_data(CSR_Handler3607_io_out_decode_csr_data));
-  assign CSR_Handler3607_io_in_decode_csr_address = proxy3606;
-  assign proxy3612 = proxy2133;
-  assign CSR_Handler3607_io_in_mem_csr_address = proxy3612;
-  assign proxy3615 = proxy2136;
-  assign CSR_Handler3607_io_in_mem_is_csr = proxy3615;
-  assign proxy3618 = proxy2139;
-  assign CSR_Handler3607_io_in_mem_csr_result = proxy3618;
-  assign proxy3621 = CSR_Handler3607_io_out_decode_csr_data;
-  assign proxy3623 = proxy1151;
-  assign orl3624 = proxy3623 || proxy1907;
-  assign proxy3625 = orl3624;
-  assign proxy3628 = proxy1907;
-  assign eq3629 = proxy3628 == 1'h1;
-  assign proxy3632 = proxy3136;
-  assign eq3633 = proxy3632 == 1'h1;
-  assign orl3635 = eq3633 || eq3629;
-  assign proxy3636 = orl3635;
-
-  assign io_IBUS_in_data_ready = io_IBUS_in_data_ready4;
-  assign io_IBUS_out_address_data = io_IBUS_out_address_data7;
-  assign io_IBUS_out_address_valid = io_IBUS_out_address_valid10;
-  assign io_DBUS_in_data_ready = io_DBUS_in_data_ready16;
-  assign io_DBUS_out_data_data = io_DBUS_out_data_data19;
-  assign io_DBUS_out_data_valid = io_DBUS_out_data_valid22;
-  assign io_DBUS_out_address_data = io_DBUS_out_address_data26;
-  assign io_DBUS_out_address_valid = io_DBUS_out_address_valid29;
-  assign io_DBUS_out_control_data = io_DBUS_out_control_data33;
-  assign io_DBUS_out_control_valid = io_DBUS_out_control_valid36;
-  assign io_INTERRUPT_in_interrupt_id_ready = io_INTERRUPT_in_interrupt_id_ready42;
-  assign io_jtag_JTAG_TAP_in_mode_select_ready = io_jtag_JTAG_TAP_in_mode_select_ready47;
-  assign io_jtag_JTAG_TAP_in_clock_ready = io_jtag_JTAG_TAP_in_clock_ready52;
-  assign io_jtag_JTAG_TAP_in_reset_ready = io_jtag_JTAG_TAP_in_reset_ready57;
-  assign io_jtag_in_data_ready = io_jtag_in_data_ready62;
-  assign io_jtag_out_data_data = io_jtag_out_data_data65;
-  assign io_jtag_out_data_valid = io_jtag_out_data_valid68;
-  assign io_out_fwd_stall = io_out_fwd_stall72;
-  assign io_out_branch_stall = io_out_branch_stall75;
->>>>>>> abcccfb7f2a444ccde7bef6eaf348143e03562aa
+  assign io_DBUS_in_data_ready = bindout2390;
+  assign io_DBUS_out_data_data = bindout2393;
+  assign io_DBUS_out_data_valid = bindout2396;
+  assign io_DBUS_out_address_data = bindout2402;
+  assign io_DBUS_out_address_valid = bindout2405;
+  assign io_DBUS_out_control_data = bindout2411;
+  assign io_DBUS_out_control_valid = bindout2414;
+  assign io_INTERRUPT_in_interrupt_id_ready = bindout3015;
+  assign io_jtag_JTAG_TAP_in_mode_select_ready = bindout3370;
+  assign io_jtag_JTAG_TAP_in_clock_ready = bindout3379;
+  assign io_jtag_JTAG_TAP_in_reset_ready = bindout3388;
+  assign io_jtag_in_data_ready = bindout3397;
+  assign io_jtag_out_data_data = bindout3400;
+  assign io_jtag_out_data_valid = bindout3403;
+  assign io_out_fwd_stall = bindout2987;
+  assign io_out_branch_stall = orl3449;
 
 endmodule

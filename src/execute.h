@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "define.h"
 
-using namespace ch::logic;
-using namespace ch::system;
+// using namespace ch::logic;
+// using namespace ch::system;
 
 
 struct Execute
@@ -60,7 +60,7 @@ struct Execute
 		io.out_is_csr      = io.in_is_csr;
 		io.out_csr_address = io.in_csr_address;
 
-    ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_resize<32>(io.in_itype_immed));
+    ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_pad<32>(io.in_itype_immed));
 
 		io.out_branch_offset = se_itype_immed;
 

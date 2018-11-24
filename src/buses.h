@@ -7,8 +7,8 @@
 #include <htl/decoupled.h>
 #include "define.h"
 
-using namespace ch::logic;
-using namespace ch::system;
+// using namespace ch::logic;
+// using namespace ch::system;
 using namespace ch::htl;
 
 __inout(IBUS_io, (

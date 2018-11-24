@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "define.h"
 
-using namespace ch::logic;
-using namespace ch::system;
+// using namespace ch::logic;
+// using namespace ch::system;
 
 
 // __inout(decode_io, (
@@ -34,38 +34,21 @@ struct RegisterFile
 	void describe()
 	{
 		ch_mem<ch_bit<32>, 32> registers;
-		// registers.write(REG(0), ch_bit<32>(0), TRUE);
 
-
-		ch_reg<ch_bool> starting(true);
-
-		__if(starting == TRUE)
-		{
-			// ch_print("DONT SETTING");
-			starting->next = FALSE;
-		};
 
 
 		ch_bit<32> write_data;
 		ch_bit<5> write_register;
 		ch_bool enable;
 
-		__if(starting)
-		{
-			write_data     = ch_bit<32>(0);
-			write_register = REG(0);
-			enable         = TRUE;
-		} __else
-		{
 			write_data     = io.in_data;
 			write_register = io.in_rd;
-			enable         = ((io.in_write_register) && (io.in_rd.as_uint() != 0));
-		};
+			enable         = (io.in_write_register);
 
 		registers.write(write_register, write_data, enable);
 
-    io.out_src1_data = ch_sel(io.in_src1.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.aread(io.in_src1));
-    io.out_src2_data = ch_sel(io.in_src2.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.aread(io.in_src2));
+    	io.out_src1_data = ch_sel(io.in_src1.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.read(io.in_src1));
+    	io.out_src2_data = ch_sel(io.in_src2.as_uint() == ZERO_REG_int, CH_ZERO(32), registers.read(io.in_src2));
 
 
 		// ch_print("Reg 0: {0}", registers.read(ch_bit<5>(0)));
@@ -119,6 +102,7 @@ struct Decode
 		__in(ch_bit<5>)   in_rd,
 		__in(ch_bit<2>)   in_wb,
 
+		#ifdef FORWARDING
 		// FORWARDING INPUTS
 		__in(ch_bit<1>)   in_src1_fwd,
 		__in(ch_bit<32>)  in_src1_fwd_data,
@@ -128,6 +112,9 @@ struct Decode
 		// CSR
 		__in(ch_bit<1>)   in_csr_fwd, 
 		__in(ch_bit<32>)  in_csr_fwd_data,
+
+		#endif
+
 		__in(ch_bit<32>)  in_csr_data, // done
 
 		__out(ch_bit<12>) out_csr_address, // done
@@ -220,23 +207,29 @@ struct Decode
 
 
 
-
-		io.out_rd1 = ch_sel(is_jal, io.in_curr_PC,
-					                ch_sel(io.in_src1_fwd == FWD, io.in_src1_fwd_data, rd1_register));
-		io.out_rd2 = ch_sel(io.in_src2_fwd == FWD, io.in_src2_fwd_data, rd2_register);
+		#ifdef FORWARDING
+			io.out_rd1 = ch_sel(is_jal, io.in_curr_PC,
+						                ch_sel(io.in_src1_fwd == FWD, io.in_src1_fwd_data, rd1_register));
+			io.out_rd2 = ch_sel(io.in_src2_fwd == FWD, io.in_src2_fwd_data, rd2_register);
+			io.out_csr_data = ch_sel(io.in_csr_fwd.as_uint() == 1, io.in_csr_fwd_data, io.in_csr_data);
+		#else
+			io.out_rd1 = ch_sel(is_jal, io.in_curr_PC, rd1_register);
+			io.out_rd2 = rd2_register;
+			io.out_csr_data = io.in_csr_data;
+		#endif
 
 
 
 		io.out_is_csr   = is_csr.as_uint();
-    io.out_csr_mask = ch_sel(is_csr_immed, ch_resize<32>(io.out_rs2), io.out_rd2);
-		io.out_csr_data = ch_sel(io.in_csr_fwd.as_uint() == 1, io.in_csr_fwd_data, io.in_csr_data);
+    	io.out_csr_mask = ch_sel(is_csr_immed, ch_pad<32>(io.out_rs1), io.out_rd1);
 
 
-		io.out_wb      = ch_sel((is_jal || is_jalr || is_e_inst), WB_JAL,
+
+		io.out_wb        = ch_sel((is_jal || is_jalr || is_e_inst), WB_JAL,
 			                   ch_sel(is_linst, WB_MEM, 
 			                   	     ch_sel((is_itype || is_rtype || is_lui || is_auipc || is_csr), WB_ALU,
 			                   	     	    NO_WB)));
-		io.out_rs2_src = ch_sel(is_itype || is_stype, RS2_IMMED, RS2_REG);
+		io.out_rs2_src   = ch_sel(is_itype || is_stype, RS2_IMMED, RS2_REG);
 		// MEM signals 
 		io.out_mem_read  = ch_sel(is_linst, func3, NO_MEM_READ);
 		io.out_mem_write = ch_sel(is_stype, func3, NO_MEM_WRITE);
@@ -248,80 +241,110 @@ struct Decode
 		// ch_print("Curr_inst: {0} , FWD for src1: {1} d: {2}, FWD for src2: {3} , d: {4}", io.in_instruction, io.in_src1_fwd, io.out_rd1, io.in_src2_fwd, io.out_rd2);
 		// ch_print("src1: {0}, src2: {1}, rd: {2}", io.out_rs1, io.out_rs2, io.out_rd);
 
-
-
+		// UPPER IMMEDIATE
 		__switch(curr_opcode)
-			__case(ALU_INST) 
+			__case(LUI_INST)
 			{
-				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
+				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
+			}
+			__case(AUIPC_INST)
+			{
+				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
+			}
+			__default
+			{
+				io.out_upper_immed  = anything20;
+			};
+
+		// JAL 
+		__switch(curr_opcode)
+			__case(JAL_INST)
+			{
+				ch_bit<8>  b_19_to_12      = ch_slice<8>(io.in_instruction >> 12);
+				ch_bit<1>  b_11            = io.in_instruction[20];
+				ch_bit<10> b_10_to_1       = ch_slice<10>(io.in_instruction >> 21);
+				ch_bit<1>  b_20            = io.in_instruction[31];
+				ch_bit<1>  b_0             = ch_bit<1>(0);
+				ch_bit<21> unsigned_offset = ch_cat(b_20, b_19_to_12, b_11, b_10_to_1, b_0);
+       		 	ch_bit<32> offset          = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_pad<32>(unsigned_offset));
+
+       		 	io.out_jal        = JUMP;
+				io.out_jal_offset = offset;
+			}
+			__case(JALR_INST)
+			{
+				ch_bit<12> jalr_immed = ch_cat(func7, io.out_rs2);
+        		ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_pad<32>(jalr_immed));
+
+        		io.out_jal        = JUMP;
+				io.out_jal_offset = offset;
+			}
+			__case(SYS_INST)
+			{
+				ch_bool cond1 = func3.as_uint() == 0;
+				ch_bool cond2 = u_12.as_uint()  <  2;
+
+				__if (cond1 && cond2)
+				{
+					io.out_jal          = JUMP;
+					io.out_jal_offset   = ch_bit<32>(0xb0000000);
+				} __else
+				{
+					io.out_jal          = NO_JUMP;
+					io.out_jal_offset   = anything32;
+				};
+			}
+			__default
+			{
 				io.out_jal          = NO_JUMP;
 				io.out_jal_offset   = anything32;
-				io.out_upper_immed  = anything20;
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
+			};
 
+
+		// CSR
+		ch_bool csr_cond1  = func3.as_uint() != 0;
+		ch_bool csr_cond2  = u_12.as_uint()  >= 2;
+		ch_bool csr_cond3  = curr_opcode     == curr_opcode;
+		io.out_csr_address = ch_sel(csr_cond1 && csr_cond2 && csr_cond3, ch_slice<12>(io.in_instruction >> 20), anything);
+
+
+		// ITYPE IMEED
+		__switch(curr_opcode)
+			__case(ALU_INST)
+			{
 				ch_bool shift_i = (func3 == 1) || (func3 == 5);
-        ch_bit<12> shift_i_immediate = ch_resize<12>(io.out_rs2);
+				// ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2);
+        		ch_bit<12> shift_i_immediate = ch_pad<12>(io.out_rs2);
 
 				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
-				//ch_print("EXE; ALU_INST with Immediate: {0}", io.out_itype_immed.as_uint());
-			}
-			__case(R_INST)
-			{
-				//ch_print("R-Type INSTRUCTION");
-				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
-				io.out_itype_immed  = anything;
-				io.out_jal          = NO_JUMP;
-				io.out_jal_offset   = anything32;
-				io.out_upper_immed  = anything20;
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
 			}
 			__case(S_INST)
 			{
-				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
-				io.out_jal          = NO_JUMP;
-				io.out_jal_offset   = anything32;
-				io.out_upper_immed  = anything20;
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
-
 				io.out_itype_immed = ch_cat(func7, io.out_rd);
-				// ch_print("\nS_TYPE INST: {0}", io.in_instruction);
-				// ch_print("S_TYPE rs1: {0}\trs2: {1}", io.out_rs1, io.out_rs2);
-				// ch_print("S_TYPE rd1: {0}\trd2: {1}", io.out_rd1, io.out_rd2);
-				// ch_print("S_TYPE IMMEDIATE: {0}", io.out_itype_immed);
-				// ch_print("Will store @ : {0} with value {1}", io.out_rd1.as_int() + io.out_itype_immed.as_int(), io.out_rd2);
 			}
 			__case(L_INST)
 			{
-				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
-				io.out_jal          = NO_JUMP;
-				io.out_jal_offset   = anything32;
-				io.out_upper_immed  = anything20;
 				io.out_itype_immed  = ch_slice<12>(io.in_instruction >> 20);
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
 			}
 			__case(B_INST)
 			{
-				io.out_jal          = NO_JUMP;
-				io.out_jal_offset   = anything32;
-				io.out_branch_stall = STALL;
-				io.out_upper_immed  = anything20;
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
-
 				ch_bit<1> b_12      = io.in_instruction[31];
 				ch_bit<1> b_11      = io.in_instruction[7];
 				ch_bit<4> b_1_to_4  = ch_slice<4>(io.in_instruction >> 8);
 				ch_bit<6> b_5_to_10 = ch_slice<6>(io.in_instruction >> 25);
 
 				io.out_itype_immed = ch_cat(b_12, b_11, b_5_to_10, b_1_to_4);
+			}
+			__default
+			{
+				io.out_itype_immed = anything;
+			};
+
+
+		__switch(curr_opcode)
+			__case(B_INST)
+			{
+				io.out_branch_stall = STALL;
 
 				//ch_print("BRANCH INSTRUCTION: {0}\tOFFSET: {1}", io.in_instruction, (io.out_itype_immed << 1));
 
@@ -355,129 +378,26 @@ struct Decode
 						io.out_branch_type = NO_BRANCH; 
 					};
 
-					// ch_print("THIS IS A PRINT AND IMMED: {0}", io.out_itype_immed);
-
-			}
-			__case(SYS_INST)
-			{
-
-
-				// io.out_csr_address  = anything;
-				// io.out_is_csr       = TRUE;
-
-				__switch(func3.as_uint())
-					__case(0)
-					{
-						__if(u_12.as_uint() < 2)
-						{
-							io.out_jal          = JUMP;
-							io.out_branch_type  = NO_BRANCH;
-							io.out_branch_stall = NO_STALL;
-							io.out_itype_immed  = anything;
-							io.out_upper_immed  = anything20;
-							io.out_csr_address  = anything;
-							io.out_is_csr       = FALSE;
-							io.out_jal_offset   = ch_bit<32>(0xb0000000);
-						} __else
-						{
-							io.out_branch_type  = NO_BRANCH;
-							io.out_branch_stall = NO_STALL;
-							io.out_itype_immed  = anything;
-							io.out_jal          = NO_JUMP;
-							io.out_jal_offset   = anything32;
-							io.out_upper_immed  = anything20;
-							io.out_csr_address  = ch_slice<12>(io.in_instruction >> 20);
-							io.out_is_csr       = TRUE;
-						};
-					}
-					__default
-					{
-						io.out_branch_type  = NO_BRANCH;
-						io.out_branch_stall = NO_STALL;
-						io.out_itype_immed  = anything;
-						io.out_jal          = NO_JUMP;
-						io.out_jal_offset   = anything32;
-						io.out_upper_immed  = anything20;
-						io.out_csr_address  = ch_slice<12>(io.in_instruction >> 20);
-						io.out_is_csr       = TRUE;
-					};
-
-			}
-			__case(LUI_INST)
-			{
-				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
-				io.out_jal          = NO_JUMP;
-				io.out_jal_offset   = anything32;
-				io.out_itype_immed  = anything;
-				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
-
-			}
-			__case(AUIPC_INST)
-			{
-				io.out_branch_type  = NO_BRANCH;
-				io.out_branch_stall = NO_STALL;
-				io.out_itype_immed  = anything;
-				io.out_jal          = NO_JUMP;
-				io.out_jal_offset   = anything32;
-				io.out_upper_immed  = ch_cat(func7, io.out_rs2, io.out_rs1, func3);
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
 			}
 			__case(JAL_INST)
 			{
-				io.out_jal          = JUMP;
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = STALL;
-				io.out_itype_immed  = anything;
-				io.out_upper_immed  = anything20;
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
-
-				ch_bit<8> b_19_to_12 = ch_slice<8>(io.in_instruction >> 12);
-				ch_bit<1> b_11       = io.in_instruction[20];
-				ch_bit<10> b_10_to_1 = ch_slice<10>(io.in_instruction >> 21);
-				ch_bit<1> b_20       = io.in_instruction[31];
-
-				ch_bit<1> b_0        = ch_bit<1>(0);
-
-				ch_bit<21> unsigned_offset = ch_cat(b_20, b_19_to_12, b_11, b_10_to_1, b_0);
-
-        ch_bit<32> offset = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_resize<32>(unsigned_offset));
-
-				io.out_jal_offset = offset;
 
 
 			}
 			__case(JALR_INST)
 			{
-				io.out_jal          = JUMP;
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = STALL;
-				io.out_itype_immed  = anything;
-				io.out_upper_immed  = anything20;
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
-
-				ch_bit<12> jalr_immed = ch_cat(func7, io.out_rs2);
-        ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_resize<32>(jalr_immed));
-
-				io.out_jal_offset = offset;
 
 			}
 			__default
 			{
 				io.out_branch_type  = NO_BRANCH;
 				io.out_branch_stall = NO_STALL;
-				io.out_itype_immed  = anything;
-				io.out_jal          = NO_JUMP;
-				io.out_jal_offset   = anything32;
-				io.out_upper_immed  = anything20;
-				io.out_csr_address  = anything;
-				io.out_is_csr       = FALSE;
 			};
+
 
 		// ALU OP
 		__switch(func3.as_uint())
