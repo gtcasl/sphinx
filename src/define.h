@@ -5,7 +5,11 @@
 
 
 // OPTIONS
-// #define FORWARDING
+// #define FORWARDING 
+
+// #ifndef FORWARDING
+	// #define CSR_EXE
+// #endif
 
 // SIZES
 #define INST_SIZE 32
@@ -226,6 +230,18 @@
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define DEFAULT "\033[39m"
+
+// FETCH STATES
+#define P_STATE ch_bit<4>(0)
+#define J_STATE ch_bit<4>(1)
+#define B_STATE ch_bit<4>(2)
+#define I_STATE ch_bit<4>(3)
+
+#define P_STATE_int 0
+#define J_STATE_int 1
+#define B_STATE_int 2
+#define I_STATE_int 3
+
 
 #define NUM_TESTS 39
 

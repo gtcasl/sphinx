@@ -94,7 +94,7 @@ struct Decode
 	__io(
 		// Fetch Inputs
 		__in(ch_bit<32>)  in_instruction,
-		__in(ch_bit<32>)  in_PC_next,
+		// __in(ch_bit<32>)  in_PC_next,
 		__in(ch_bit<32>)  in_curr_PC,
 		__in(ch_bool)     in_stall,
 		// WriteBack inputs
@@ -115,11 +115,11 @@ struct Decode
 
 		#endif
 
-		__in(ch_bit<32>)  in_csr_data, // done
+		// __in(ch_bit<32>)  in_csr_data, // done
 
 		__out(ch_bit<12>) out_csr_address, // done
 		__out(ch_bit<1>)  out_is_csr, // done
-		__out(ch_bit<32>) out_csr_data, // done
+		// __out(ch_bit<32>) out_csr_data, // done
 		__out(ch_bit<32>) out_csr_mask, // done
 
 		// Outputs
@@ -177,8 +177,7 @@ struct Decode
 		ch_bit<3> func3  = ch_slice<3>(io.in_instruction >> 12);
 		ch_bit<7> func7  = ch_slice<7>(io.in_instruction >> 25);
 		ch_bit<12> u_12  = ch_slice<12>(io.in_instruction >> 20);
-		io.out_PC_next   = io.in_PC_next;
-
+		io.out_PC_next   = io.in_curr_PC.as_uint() + ch_uint(4);
 
 
 		registerfile.io.in_write_register = write_register;
@@ -211,11 +210,11 @@ struct Decode
 			io.out_rd1 = ch_sel(is_jal, io.in_curr_PC,
 						                ch_sel(io.in_src1_fwd == FWD, io.in_src1_fwd_data, rd1_register));
 			io.out_rd2 = ch_sel(io.in_src2_fwd == FWD, io.in_src2_fwd_data, rd2_register);
-			io.out_csr_data = ch_sel(io.in_csr_fwd.as_uint() == 1, io.in_csr_fwd_data, io.in_csr_data);
+			// io.out_csr_data = ch_sel(io.in_csr_fwd.as_uint() == 1, io.in_csr_fwd_data, io.in_csr_data);
 		#else
 			io.out_rd1 = ch_sel(is_jal, io.in_curr_PC, rd1_register);
 			io.out_rd2 = rd2_register;
-			io.out_csr_data = io.in_csr_data;
+			// io.out_csr_data = io.in_csr_data;
 		#endif
 
 

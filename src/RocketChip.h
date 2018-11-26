@@ -93,15 +93,15 @@ struct Pipeline
 
     // fetch TO f_d_register
     f_d_register.io.in_instruction(fetch.io.out_instruction);
-    f_d_register.io.in_PC_next(fetch.io.out_PC_next);
+    // f_d_register.io.in_PC_next(fetch.io.out_PC_next);
     f_d_register.io.in_curr_PC(fetch.io.out_curr_PC);
 
     // f_d_register to decode
     decode.io.in_instruction(f_d_register.io.out_instruction);
-    decode.io.in_PC_next(f_d_register.io.out_PC_next);
+    // decode.io.in_PC_next(f_d_register.io.out_PC_next);
     decode.io.in_curr_PC(f_d_register.io.out_curr_PC);
 
-    decode.io.in_csr_data(csr_handler.io.out_decode_csr_data);
+    // decode.io.in_csr_data(csr_handler.io.out_decode_csr_data);
 
     // CSR HANDLER
     csr_handler.io.in_decode_csr_address(decode.io.out_csr_address);
@@ -127,7 +127,7 @@ struct Pipeline
     d_e_register.io.in_upper_immed(decode.io.out_upper_immed);
     d_e_register.io.in_csr_address(decode.io.out_csr_address);
     d_e_register.io.in_is_csr(decode.io.out_is_csr);
-    d_e_register.io.in_csr_data(decode.io.out_csr_data);
+    // d_e_register.io.in_csr_data(decode.io.out_csr_data);
     d_e_register.io.in_csr_mask(decode.io.out_csr_mask);
     d_e_register.io.in_jal(decode.io.out_jal);
     d_e_register.io.in_jal_offset(decode.io.out_jal_offset);
@@ -158,7 +158,8 @@ struct Pipeline
     execute.io.in_upper_immed(d_e_register.io.out_upper_immed);
     execute.io.in_csr_address(d_e_register.io.out_csr_address);
     execute.io.in_is_csr(d_e_register.io.out_is_csr);
-    execute.io.in_csr_data(d_e_register.io.out_csr_data);
+    // execute.io.in_csr_data(d_e_register.io.out_csr_data);
+    execute.io.in_csr_data(csr_handler.io.out_decode_csr_data);
     execute.io.in_csr_mask(d_e_register.io.out_csr_mask);
     execute.io.in_jal(d_e_register.io.out_jal);
     execute.io.in_jal_offset(d_e_register.io.out_jal_offset);

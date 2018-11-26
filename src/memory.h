@@ -27,12 +27,6 @@ struct Cache
 		// ch_print("CACHE");
 		// ch_print("****************");		
 
-		// ch_mem<ch_bit<32>, 16777216> mem_module;
-
-
-
-
-
 
 
 		//  READING MEMORY

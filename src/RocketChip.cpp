@@ -15,6 +15,8 @@ int main()
   // 	std::cout << "Please input a file name" << std::endl;
   // }
 
+
+
     RocketChip rocketchip;
 
     bool passed = true;
@@ -69,12 +71,13 @@ int main()
 		passed = passed && curr;
 	}
 
-
-
-	rocketchip.export_model();
+    rocketchip.export_model();
 
 	if( passed) std::cout << DEFAULT << "PASSED ALL TESTS\n";
 	if(!passed) std::cout << DEFAULT << "Failed one or more tests\n";
+
+
+
 
 	if (passed) return 0;
 	return -1;

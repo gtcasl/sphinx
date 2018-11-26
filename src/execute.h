@@ -82,8 +82,12 @@ struct Execute
 			__case(ADD_int)
 			{
 				//ch_print("ADD_int");
-				io.out_alu_result = ALU_in1.as_int() + ALU_in2.as_int();
+				ch_int<32> temp = ALU_in1.as_int() + ALU_in2.as_int();
+				io.out_alu_result = temp;
 				io.out_csr_result = anything32;
+
+				// ch_print("EXECUTE: {0} = {1} + {1}", ALU_in1.as_int() + ALU_in2.as_int(), ALU_in1, ALU_in2);
+
 				// ch_print("ADD_int: Immediate: {0}, RS2_SRC: {1}, rs1_reg#: {2}", io.in_itype_immed, io.in_rs2_src, io.in_rs1);
 				// ch_print("Adding {0} + {1}", ALU_in1.as_int(), ALU_in2.as_int());
 				// ch_print("alu_result = {0}", io.out_alu_result);
@@ -151,27 +155,11 @@ struct Execute
 			}
 			__case(SUBU_int)
 			{
-				//ch_print("SUBU");
-					
-
-
-				// ch_bit<32> use1 = ch_sel((ALU_in1[31] == 1), -ALU_in1.as_uint(), (1-ALU_in1.as_uint()));
-				// ch_bit<32> use2 = ch_sel((ALU_in2[31] == 1), -ALU_in2.as_uint(), (1-ALU_in2.as_uint()));
-
-				// // ch_print("SUBU signed: {0} - {1} = {2}", ALU_in1, ALU_in2, ALU_in1.as_int() - ALU_in2.as_int());
-
-				// ch_print("SUBU unsigned: {0} - {1} = {2}", ALU_in1, ALU_in2, ALU_in1.as_uint() - ALU_in2.as_uint());
-				// ch_print("SUBU vodo: {0} - {1} = {2}", use1, use2, use1.as_int() - use2.as_int());
-
-				// ch_print("SUBU: {0} < {1}", ALU_in1.as_uint(), ALU_in2.as_uint());
-
 				__if(ALU_in1.as_uint() >= ALU_in2.as_uint())
 				{
-					// ch_print("\t=0xFFFFFF");
 					io.out_alu_result = 0x0;
 				} __else
 				{
-					// ch_print("\t=0x0");
 					io.out_alu_result = 0xffffffff;
 				};
 

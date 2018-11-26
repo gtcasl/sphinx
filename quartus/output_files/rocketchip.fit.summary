@@ -1,0 +1,17 @@
+Fitter Status : Successful - Mon Nov 26 17:36:50 2018
+Quartus Prime Version : 17.1.0 Build 590 10/25/2017 SJ Standard Edition
+Revision Name : rocketchip
+Top-level Entity Name : Pipeline
+Family : Arria 10
+Device : 10AX115N3F40E2SG
+Timing Models : Final
+Logic utilization (in ALMs) : 949 / 427,200 ( < 1 % )
+Total registers : 973
+Total pins : 2 / 826 ( < 1 % )
+Total virtual pins : 194
+Total block memory bits : 51,200 / 55,562,240 ( < 1 % )
+Total RAM Blocks : 5 / 2,713 ( < 1 % )
+Total DSP Blocks : 0 / 1,518 ( 0 % )
+Total HSSI RX channels : 0 / 48 ( 0 % )
+Total HSSI TX channels : 0 / 48 ( 0 % )
+Total PLLs : 0 / 112 ( 0 % )

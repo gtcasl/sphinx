@@ -22,7 +22,8 @@ struct CSR_Handler
 	{
 		ch_mem<ch_bit<12>, 4096> CSR;
 
-		// ch_reg<ch_bit<2>> curr_state(0);
+		ch_reg<ch_bit<12>> decode_csr_address(0);
+		decode_csr_address->next = io.in_decode_csr_address;
 
 		ch_bit<12> write_data;
 		ch_bit<12> write_register;
@@ -33,7 +34,7 @@ struct CSR_Handler
 
 		CSR.write(io.in_mem_csr_address, write_data, io.in_mem_is_csr);
 
-    	io.out_decode_csr_data = ch_pad<32>(CSR.read(io.in_decode_csr_address));
+    	io.out_decode_csr_data = ch_pad<32>(CSR.read(decode_csr_address));
 
 
 		// io.out_decode_csr_data = ch_bit<32>(0x0);

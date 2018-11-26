@@ -39,7 +39,7 @@ struct D_E_Register
 		__in(ch_bit<20>) in_upper_immed,
 		__in(ch_bit<12>) in_csr_address, // done
 		__in(ch_bit<1>)  in_is_csr, // done
-		__in(ch_bit<32>) in_csr_data, // done
+		// __in(ch_bit<32>) in_csr_data, // done
 		__in(ch_bit<32>) in_csr_mask, // done
 		__in(ch_bit<32>) in_curr_PC,
 		__in(ch_bit<1>)  in_jal,
@@ -49,7 +49,7 @@ struct D_E_Register
          // (ch_flip_io<decode_io>) in,
 		__out(ch_bit<12>) out_csr_address, // done
 		__out(ch_bit<1>)  out_is_csr, // done
-		__out(ch_bit<32>) out_csr_data, // done
+		// __out(ch_bit<32>) out_csr_data, // done
 		__out(ch_bit<32>) out_csr_mask, // done
 		__out(ch_bit<5>)  out_rd,
 		__out(ch_bit<5>)  out_rs1,
@@ -89,7 +89,7 @@ struct D_E_Register
 		ch_reg<ch_bit<20>> upper_immed(0);
 		ch_reg<ch_bit<12>> csr_address(0);
 		ch_reg<ch_bit<1>>  is_csr(0);
-		ch_reg<ch_bit<32>> csr_data(0);
+		// ch_reg<ch_bit<32>> csr_data(0);
 		ch_reg<ch_bit<32>> csr_mask(0);
 		ch_reg<ch_bit<32>> curr_PC(0);
 		ch_reg<ch_bit<1>>  jal(NO_JUMP_int);
@@ -127,7 +127,7 @@ struct D_E_Register
 		io.out_upper_immed = upper_immed;
 		io.out_csr_address = csr_address;
 		io.out_is_csr      = is_csr;
-		io.out_csr_data    = csr_data;
+		// io.out_csr_data    = csr_data;
 		io.out_csr_mask    = csr_mask;
 		io.out_jal         = jal;
 		io.out_jal_offset  = jal_offset;
@@ -150,7 +150,7 @@ struct D_E_Register
 		upper_immed->next = ch_sel(stalling, CH_ZERO(20) , io.in_upper_immed);
 		csr_address->next = ch_sel(stalling, CH_ZERO(12) , io.in_csr_address);
 		is_csr->next      = ch_sel(stalling, CH_ZERO(1)  , io.in_is_csr);
-		csr_data->next    = ch_sel(stalling, CH_ZERO(32) , io.in_csr_data);
+		// csr_data->next    = ch_sel(stalling, CH_ZERO(32) , io.in_csr_data);
 		csr_mask->next    = ch_sel(stalling, CH_ZERO(32) , io.in_csr_mask);
 		jal->next         = ch_sel(stalling, NO_JUMP     , io.in_jal);
 		jal_offset->next  = ch_sel(stalling, CH_ZERO(32) , io.in_jal_offset);

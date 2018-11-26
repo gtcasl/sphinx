@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Mon Nov 26 17:33:37 2018
+Quartus Prime Version : 17.1.0 Build 590 10/25/2017 SJ Standard Edition
+Revision Name : rocketchip
+Top-level Entity Name : Pipeline
+Family : Arria 10
+Logic utilization (in ALMs) : N/A
+Total registers : 973
+Total pins : 2
+Total virtual pins : 194
+Total block memory bits : 51,200
+Total DSP Blocks : 0
+Total HSSI RX channels : 0
+Total HSSI TX channels : 0
+Total PLLs : 0
