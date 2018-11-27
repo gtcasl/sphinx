@@ -92,9 +92,6 @@ struct Fetch
 		io.IBUS.out_address.valid = TRUE;
 
 		io.out_curr_PC = out_PC;
-
-
-		ch_bit<32> pc_next = out_PC.as_uint() + ch_uint<32>(4);
 		
 		old->next     = out_PC;
 		PC->next      = PC_to_use.as_uint()          + ch_uint<32>(4);

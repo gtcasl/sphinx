@@ -64,7 +64,11 @@ struct Pipeline
 
 
     // DYNAMIC INSTRUCTION COUNTING:
-    io.out_branch_stall = decode.io.out_branch_stall || execute.io.out_branch_stall;
+    #ifdef BRANCH_WB
+        io.out_branch_stall = decode.io.out_branch_stall || execute.io.out_branch_stall || memory.io.out_branch_stall;
+    #else
+        io.out_branch_stall = decode.io.out_branch_stall || execute.io.out_branch_stall;
+    #endif
     io.out_fwd_stall    = forwarding.io.out_fwd_stall;
 
     // IBUS I/O
@@ -85,8 +89,17 @@ struct Pipeline
 
 
     // EXE TO FETCH
-    fetch.io.in_branch_dir(memory.io.out_branch_dir);
-    fetch.io.in_branch_dest(memory.io.out_branch_dest);
+    #ifdef BRANCH_WB
+        m_w_register.io.in_branch_dir(memory.io.out_branch_dir);
+        m_w_register.io.in_branch_dest(memory.io.out_branch_dest);
+
+        fetch.io.in_branch_dir(m_w_register.io.out_branch_dir);
+        fetch.io.in_branch_dest(m_w_register.io.out_branch_dest);
+    #else
+        fetch.io.in_branch_dir(memory.io.out_branch_dir);
+        fetch.io.in_branch_dest(memory.io.out_branch_dest);
+    #endif
+
     // DECODE TO FETCH
     fetch.io.in_jal(execute.io.out_jal);
     fetch.io.in_jal_dest(execute.io.out_jal_dest);
@@ -136,9 +149,9 @@ struct Pipeline
 
 
     // Decode to f_d_register
-    f_d_register.io.in_branch_stall(decode.io.out_branch_stall);
+    f_d_register.io.in_branch_stall = decode.io.out_branch_stall;
     // Decode to FETCH
-    fetch.io.in_branch_stall(decode.io.out_branch_stall);
+    fetch.io.in_branch_stall = decode.io.out_branch_stall;
 
 
     // d_e_register to execute
@@ -260,13 +273,19 @@ struct Pipeline
         decode.io.in_csr_fwd_data(forwarding.io.out_csr_fwd_data);
     #endif
 
-    decode.io.in_stall = (execute.io.out_branch_stall == STALL);
+    #ifdef BRANCH_WB
+        decode.io.in_stall = (execute.io.out_branch_stall == STALL) || memory.io.out_branch_stall;
 
+        fetch.io.in_branch_stall_exe = execute.io.out_branch_stall || memory.io.out_branch_stall;
+        f_d_register.io.in_branch_stall_exe = execute.io.out_branch_stall || memory.io.out_branch_stall;
+        d_e_register.io.in_branch_stall = execute.io.out_branch_stall || memory.io.out_branch_stall;
+    #else
+        decode.io.in_stall = (execute.io.out_branch_stall == STALL);
 
-    fetch.io.in_branch_stall_exe(execute.io.out_branch_stall);
-    f_d_register.io.in_branch_stall_exe(execute.io.out_branch_stall);
-    d_e_register.io.in_branch_stall(execute.io.out_branch_stall);
-
+        fetch.io.in_branch_stall_exe = execute.io.out_branch_stall;
+        f_d_register.io.in_branch_stall_exe = execute.io.out_branch_stall;
+        d_e_register.io.in_branch_stall = execute.io.out_branch_stall;
+    #endif
     
 
     fetch.io.in_fwd_stall        = forwarding.io.out_fwd_stall;

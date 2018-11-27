@@ -7,6 +7,8 @@
 // OPTIONS
 // #define FORWARDING 
 
+#define BRANCH_WB
+
 // #ifndef FORWARDING
 	// #define CSR_EXE
 // #endif

@@ -177,8 +177,9 @@ struct Memory
 		__out(ch_bit<5>)  out_rs2,
 		__out(ch_bit<1>)  out_branch_dir,
 		__out(ch_bit<32>) out_branch_dest,
-
-
+		#ifdef BRANCH_WB
+		__out(ch_bit<1>)  out_branch_stall,
+		#endif
 		__out(ch_bit<32>)   out_PC_next
 	);
 
@@ -259,6 +260,10 @@ struct Memory
 				io.out_branch_dir = NOT_TAKEN;
 				//ch_print("Default_b_int");
 			};
+
+		#ifdef BRANCH_WB
+		io.out_branch_stall = ch_sel(io.in_branch_type.as_uint() == NO_BRANCH_int, NO_STALL, STALL);
+		#endif
 	}
 
 	ch_module<Cache> cache;

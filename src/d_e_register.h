@@ -29,7 +29,7 @@ struct D_E_Register
 		__in(ch_bit<4>)  in_alu_op,
 		__in(ch_bit<2>)  in_wb,
 		__in(ch_bit<1>)  in_rs2_src, // NEW
-		__in(ch_bit<12>) in_itype_immed, // new
+		__in(ch_bit<32>) in_itype_immed, // new
 		__in(ch_bit<3>)  in_mem_read, // NEW
 		__in(ch_bit<3>)  in_mem_write,
 		__in(ch_bit<32>) in_PC_next,
@@ -59,7 +59,7 @@ struct D_E_Register
 		__out(ch_bit<4>)  out_alu_op,
 		__out(ch_bit<2>)  out_wb,
 		__out(ch_bit<1>)  out_rs2_src, // NEW
-		__out(ch_bit<12>) out_itype_immed, // new
+		__out(ch_bit<32>) out_itype_immed, // new
 		__out(ch_bit<3>)  out_mem_read,
 		__out(ch_bit<3>)  out_mem_write,
 		__out(ch_bit<3>)  out_branch_type,
@@ -82,7 +82,7 @@ struct D_E_Register
 		ch_reg<ch_bit<2>>  wb(NO_WB_int);
 		ch_reg<ch_bit<32>> PC_next_out(0);
 		ch_reg<ch_bit<1>>  rs2_src(0);
-		ch_reg<ch_bit<12>> itype_immed(0);
+		ch_reg<ch_bit<32>> itype_immed(0);
 		ch_reg<ch_bit<3>>  mem_read(NO_MEM_READ_int);
 		ch_reg<ch_bit<3>>  mem_write(NO_MEM_WRITE_int);
 		ch_reg<ch_bit<3>>  branch_type(NO_BRANCH_int);
@@ -143,7 +143,7 @@ struct D_E_Register
 		wb->next          = ch_sel(stalling, NO_WB       , io.in_wb);
 		PC_next_out->next = ch_sel(stalling, CH_ZERO(32) , io.in_PC_next);
 		rs2_src->next     = ch_sel(stalling, RS2_REG     , io.in_rs2_src);
-		itype_immed->next = ch_sel(stalling, anything    , io.in_itype_immed);
+		itype_immed->next = ch_sel(stalling, anything32  , io.in_itype_immed);
 		mem_read->next    = ch_sel(stalling, NO_MEM_READ , io.in_mem_read);
 		mem_write->next   = ch_sel(stalling, NO_MEM_WRITE, io.in_mem_write);
 		branch_type->next = ch_sel(stalling, NO_BRANCH   , io.in_branch_type);

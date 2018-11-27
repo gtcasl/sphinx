@@ -17,7 +17,7 @@ struct Execute
 		__in(ch_bit<4>)   in_alu_op,
 		__in(ch_bit<2>)   in_wb,
 		__in(ch_bit<1>)   in_rs2_src, // NEW
-		__in(ch_bit<12>)  in_itype_immed, // new
+		__in(ch_bit<32>)  in_itype_immed, // new
 		__in(ch_bit<3>)   in_mem_read, // NEW
 		__in(ch_bit<3>)   in_mem_write, // NEW
 		__in(ch_bit<32>)  in_PC_next,
@@ -50,7 +50,6 @@ struct Execute
 		__out(ch_bit<32>) out_PC_next
 	);
 
-
 	void describe()
 	{
 		// ch_print("****************");
@@ -60,14 +59,14 @@ struct Execute
 		io.out_is_csr      = io.in_is_csr;
 		io.out_csr_address = io.in_csr_address;
 
-    ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_pad<32>(io.in_itype_immed));
+    // ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_pad<32>(io.in_itype_immed));
 
-		io.out_branch_offset = se_itype_immed;
+		io.out_branch_offset = io.in_itype_immed;
 
 		ch_bit<32> ALU_in1 = io.in_rd1;
 
 		ch_bool which_in2  = io.in_rs2_src == RS2_IMMED_int;
-		ch_bit<32> ALU_in2 = ch_sel(which_in2, se_itype_immed, io.in_rd2);
+		ch_bit<32> ALU_in2 = ch_sel(which_in2, io.in_itype_immed, io.in_rd2);
 
 
 		ch_bit<32> upper_immed = ch_cat(io.in_upper_immed, CH_ZERO(12));

@@ -22,7 +22,7 @@ module Fetch(
   reg reg110;
   reg[31:0] reg120, reg133, reg139, reg145, reg151, sel161;
   reg[3:0] reg127;
-  wire[31:0] sel162, sel177, sel183, sel189, sel191, add217, add220, add223, add226;
+  wire[31:0] sel162, sel177, sel183, sel189, sel191, add214, add217, add220, add223;
   wire eq166, eq170, orl172, orl174, eq181, eq187;
   wire[3:0] sel199, sel206, sel209;
 
@@ -48,25 +48,25 @@ module Fetch(
     if (reset)
       reg133 <= 32'h0;
     else
-      reg133 <= add217;
+      reg133 <= add214;
   end
   always @ (posedge clk) begin
     if (reset)
       reg139 <= 32'h0;
     else
-      reg139 <= add220;
+      reg139 <= add217;
   end
   always @ (posedge clk) begin
     if (reset)
       reg145 <= 32'h0;
     else
-      reg145 <= add223;
+      reg145 <= add220;
   end
   always @ (posedge clk) begin
     if (reset)
       reg151 <= 32'h0;
     else
-      reg151 <= add226;
+      reg151 <= add223;
   end
   always @(*) begin
     case (reg127)
@@ -91,10 +91,10 @@ module Fetch(
   assign sel199 = eq181 ? 4'h2 : 4'h0;
   assign sel206 = eq187 ? 4'h1 : sel199;
   assign sel209 = io_in_interrupt ? 4'h3 : sel206;
-  assign add217 = sel162 + 32'h4;
-  assign add220 = io_in_jal_dest + 32'h4;
-  assign add223 = io_in_branch_dest + 32'h4;
-  assign add226 = io_in_interrupt_pc + 32'h4;
+  assign add214 = sel162 + 32'h4;
+  assign add217 = io_in_jal_dest + 32'h4;
+  assign add220 = io_in_branch_dest + 32'h4;
+  assign add223 = io_in_interrupt_pc + 32'h4;
 
   assign io_IBUS_in_data_ready = io_IBUS_in_data_valid;
   assign io_IBUS_out_address_data = sel191;
@@ -115,28 +115,28 @@ module F_D_Register(
   output wire[31:0] io_out_instruction,
   output wire[31:0] io_out_curr_PC
 );
-  reg[31:0] reg302, reg311;
-  wire eq332;
-  wire[31:0] sel334, sel335;
+  reg[31:0] reg299, reg308;
+  wire eq329;
+  wire[31:0] sel331, sel332;
 
   always @ (posedge clk) begin
     if (reset)
-      reg302 <= 32'h0;
+      reg299 <= 32'h0;
     else
-      reg302 <= sel335;
+      reg299 <= sel332;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg311 <= 32'h0;
+      reg308 <= 32'h0;
     else
-      reg311 <= sel334;
+      reg308 <= sel331;
   end
-  assign eq332 = io_in_fwd_stall == 1'h0;
-  assign sel334 = eq332 ? io_in_curr_PC : reg311;
-  assign sel335 = eq332 ? io_in_instruction : reg302;
+  assign eq329 = io_in_fwd_stall == 1'h0;
+  assign sel331 = eq329 ? io_in_curr_PC : reg308;
+  assign sel332 = eq329 ? io_in_instruction : reg299;
 
-  assign io_out_instruction = reg302;
-  assign io_out_curr_PC = reg311;
+  assign io_out_instruction = reg299;
+  assign io_out_curr_PC = reg308;
 
 endmodule
 
@@ -150,24 +150,24 @@ module RegisterFile(
   output wire[31:0] io_out_src1_data,
   output wire[31:0] io_out_src2_data
 );
-  reg[31:0] mem437 [0:31];
-  wire[31:0] mrport448, sel457, mrport459, sel466;
-  wire eq455, eq464;
+  reg[31:0] mem434 [0:31];
+  wire[31:0] mrport445, sel454, mrport456, sel463;
+  wire eq452, eq461;
 
   always @ (posedge clk) begin
     if (io_in_write_register) begin
-      mem437[io_in_rd] <= io_in_data;
+      mem434[io_in_rd] <= io_in_data;
     end
   end
-  assign mrport448 = mem437[io_in_src1];
-  assign mrport459 = mem437[io_in_src2];
-  assign eq455 = io_in_src1 == 5'h0;
-  assign sel457 = eq455 ? 32'h0 : mrport448;
-  assign eq464 = io_in_src2 == 5'h0;
-  assign sel466 = eq464 ? 32'h0 : mrport459;
+  assign mrport445 = mem434[io_in_src1];
+  assign mrport456 = mem434[io_in_src2];
+  assign eq452 = io_in_src1 == 5'h0;
+  assign sel454 = eq452 ? 32'h0 : mrport445;
+  assign eq461 = io_in_src2 == 5'h0;
+  assign sel463 = eq461 ? 32'h0 : mrport456;
 
-  assign io_out_src1_data = sel457;
-  assign io_out_src2_data = sel466;
+  assign io_out_src1_data = sel454;
+  assign io_out_src2_data = sel463;
 
 endmodule
 
@@ -190,7 +190,7 @@ module Decode(
   output wire[1:0] io_out_wb,
   output wire[3:0] io_out_alu_op,
   output wire io_out_rs2_src,
-  output wire[11:0] io_out_itype_immed,
+  output wire[31:0] io_out_itype_immed,
   output wire[2:0] io_out_mem_read,
   output wire[2:0] io_out_mem_write,
   output wire[2:0] io_out_branch_type,
@@ -200,231 +200,252 @@ module Decode(
   output wire[19:0] io_out_upper_immed,
   output wire[31:0] io_out_PC_next
 );
-  wire bindin473, bindin474, ne534, sel536, eq588, eq593, eq598, orl600, eq605, eq610, eq615, eq620, eq625, eq630, ne635, eq640, andl642, proxy645, eq646, andl649, eq653, andl659, orl671, orl673, orl675, orl677, orl688, orl690, orl697, sel699, proxy725, proxy733, eq751, proxy768, eq769, eq775, lt779, andl782, sel794, ne797, ge800, eq803, andl814, andl816, eq823, eq828, orl830, proxy852, eq904, eq941, eq949, eq957, orl963, lt981;
-  wire[4:0] bindin477, bindin483, bindin486, proxy546, proxy553, proxy560;
-  wire[31:0] bindin480, bindout489, bindout492, shr543, shr550, shr557, shr564, shr571, add583, sel661, pad663, sel665, shr729, pad742, proxy747, sel753, pad759, proxy764, sel771, sel792, shr856;
-  wire[2:0] proxy567, sel703, sel706;
-  wire[6:0] proxy574;
-  wire[1:0] sel679, sel683, sel692, proxy936;
-  wire[19:0] proxy709;
-  reg[19:0] sel718;
-  wire[7:0] proxy724;
-  wire[9:0] proxy732;
-  wire[20:0] proxy736;
-  wire[11:0] proxy757, sel818, pad832, sel840, proxy843, proxy867;
-  reg[31:0] sel793;
-  reg sel795, sel894;
-  wire[3:0] proxy859, sel906, sel909, sel926, sel943, sel951, sel959, sel965, sel967, sel971, sel975, sel983, sel985;
-  wire[5:0] proxy865;
-  reg[11:0] sel873;
-  reg[2:0] sel892, sel893;
-  reg[3:0] sel934;
+  wire bindin470, bindin471, ne531, sel533, eq585, eq590, eq595, orl597, eq602, eq607, eq612, eq617, eq622, eq627, ne632, eq637, andl639, proxy642, eq643, andl646, eq650, andl656, orl668, orl670, orl672, orl674, orl685, orl687, orl694, sel696, proxy722, proxy730, eq748, proxy765, eq766, eq772, lt776, andl779, sel791, ne794, ge797, eq800, andl805, andl807, eq816, eq821, orl823, eq838, proxy868, eq869, proxy874, eq903, eq941, eq978, eq986, eq994, orl1000, lt1018;
+  wire[4:0] bindin474, bindin480, bindin483, proxy543, proxy550, proxy557;
+  wire[31:0] bindin477, bindout486, bindout489, shr540, shr547, shr554, shr561, shr568, add580, sel658, pad660, sel662, shr726, pad739, proxy744, sel750, pad756, proxy761, sel768, sel789, pad829, proxy833, sel840, pad860, proxy864, sel871, shr878, sel905;
+  wire[2:0] proxy564, sel700, sel703;
+  wire[6:0] proxy571;
+  wire[11:0] proxy577, proxy754, sel809, pad825, sel827, proxy843, proxy889;
+  wire[1:0] sel676, sel680, sel689, proxy973;
+  wire[19:0] proxy706;
+  reg[19:0] sel715;
+  wire[7:0] proxy721;
+  wire[9:0] proxy729;
+  wire[20:0] proxy733;
+  reg[31:0] sel790, sel909;
+  reg sel792, sel931;
+  wire[3:0] proxy881, sel943, sel946, sel963, sel980, sel988, sel996, sel1002, sel1004, sel1008, sel1012, sel1020, sel1022;
+  wire[5:0] proxy887;
+  reg[11:0] sel910;
+  reg[2:0] sel929, sel930;
+  reg[3:0] sel971;
 
-  assign bindin473 = clk;
-  RegisterFile __module5__(.clk(bindin473), .io_in_write_register(bindin474), .io_in_rd(bindin477), .io_in_data(bindin480), .io_in_src1(bindin483), .io_in_src2(bindin486), .io_out_src1_data(bindout489), .io_out_src2_data(bindout492));
-  assign bindin474 = sel536;
-  assign bindin477 = io_in_rd;
-  assign bindin480 = io_in_write_data;
-  assign bindin483 = proxy553;
-  assign bindin486 = proxy560;
-  assign ne534 = io_in_wb != 2'h0;
-  assign sel536 = ne534 ? 1'h1 : 1'h0;
-  assign shr543 = io_in_instruction >> 32'h7;
-  assign proxy546 = shr543[4:0];
-  assign shr550 = io_in_instruction >> 32'hf;
-  assign proxy553 = shr550[4:0];
-  assign shr557 = io_in_instruction >> 32'h14;
-  assign proxy560 = shr557[4:0];
-  assign shr564 = io_in_instruction >> 32'hc;
-  assign proxy567 = shr564[2:0];
-  assign shr571 = io_in_instruction >> 32'h19;
-  assign proxy574 = shr571[6:0];
-  assign add583 = io_in_curr_PC + 32'h4;
-  assign eq588 = io_in_instruction[6:0] == 7'h33;
-  assign eq593 = io_in_instruction[6:0] == 7'h3;
-  assign eq598 = io_in_instruction[6:0] == 7'h13;
-  assign orl600 = eq598 | eq593;
-  assign eq605 = io_in_instruction[6:0] == 7'h23;
-  assign eq610 = io_in_instruction[6:0] == 7'h63;
-  assign eq615 = io_in_instruction[6:0] == 7'h6f;
-  assign eq620 = io_in_instruction[6:0] == 7'h67;
-  assign eq625 = io_in_instruction[6:0] == 7'h37;
-  assign eq630 = io_in_instruction[6:0] == 7'h17;
-  assign ne635 = proxy567 != 3'h0;
-  assign eq640 = io_in_instruction[6:0] == 7'h73;
-  assign andl642 = eq640 & ne635;
-  assign proxy645 = proxy567[2];
-  assign eq646 = proxy645 == 1'h1;
-  assign andl649 = andl642 & eq646;
-  assign eq653 = proxy567 == 3'h0;
-  assign andl659 = eq640 & eq653;
-  assign sel661 = eq615 ? io_in_curr_PC : bindout489;
-  assign pad663 = {{27{1'b0}}, proxy553};
-  assign sel665 = andl649 ? pad663 : sel661;
-  assign orl671 = orl600 | eq588;
-  assign orl673 = orl671 | eq625;
-  assign orl675 = orl673 | eq630;
-  assign orl677 = orl675 | andl642;
-  assign sel679 = orl677 ? 2'h1 : 2'h0;
-  assign sel683 = eq593 ? 2'h2 : sel679;
-  assign orl688 = eq615 | eq620;
-  assign orl690 = orl688 | andl659;
-  assign sel692 = orl690 ? 2'h3 : sel683;
-  assign orl697 = orl600 | eq605;
-  assign sel699 = orl697 ? 1'h1 : 1'h0;
-  assign sel703 = eq593 ? proxy567 : 3'h7;
-  assign sel706 = eq605 ? proxy567 : 3'h7;
-  assign proxy709 = {proxy574, proxy560, proxy553, proxy567};
+  assign bindin470 = clk;
+  RegisterFile __module5__(.clk(bindin470), .io_in_write_register(bindin471), .io_in_rd(bindin474), .io_in_data(bindin477), .io_in_src1(bindin480), .io_in_src2(bindin483), .io_out_src1_data(bindout486), .io_out_src2_data(bindout489));
+  assign bindin471 = sel533;
+  assign bindin474 = io_in_rd;
+  assign bindin477 = io_in_write_data;
+  assign bindin480 = proxy550;
+  assign bindin483 = proxy557;
+  assign ne531 = io_in_wb != 2'h0;
+  assign sel533 = ne531 ? 1'h1 : 1'h0;
+  assign shr540 = io_in_instruction >> 32'h7;
+  assign proxy543 = shr540[4:0];
+  assign shr547 = io_in_instruction >> 32'hf;
+  assign proxy550 = shr547[4:0];
+  assign shr554 = io_in_instruction >> 32'h14;
+  assign proxy557 = shr554[4:0];
+  assign shr561 = io_in_instruction >> 32'hc;
+  assign proxy564 = shr561[2:0];
+  assign shr568 = io_in_instruction >> 32'h19;
+  assign proxy571 = shr568[6:0];
+  assign proxy577 = shr554[11:0];
+  assign add580 = io_in_curr_PC + 32'h4;
+  assign eq585 = io_in_instruction[6:0] == 7'h33;
+  assign eq590 = io_in_instruction[6:0] == 7'h3;
+  assign eq595 = io_in_instruction[6:0] == 7'h13;
+  assign orl597 = eq595 | eq590;
+  assign eq602 = io_in_instruction[6:0] == 7'h23;
+  assign eq607 = io_in_instruction[6:0] == 7'h63;
+  assign eq612 = io_in_instruction[6:0] == 7'h6f;
+  assign eq617 = io_in_instruction[6:0] == 7'h67;
+  assign eq622 = io_in_instruction[6:0] == 7'h37;
+  assign eq627 = io_in_instruction[6:0] == 7'h17;
+  assign ne632 = proxy564 != 3'h0;
+  assign eq637 = io_in_instruction[6:0] == 7'h73;
+  assign andl639 = eq637 & ne632;
+  assign proxy642 = proxy564[2];
+  assign eq643 = proxy642 == 1'h1;
+  assign andl646 = andl639 & eq643;
+  assign eq650 = proxy564 == 3'h0;
+  assign andl656 = eq637 & eq650;
+  assign sel658 = eq612 ? io_in_curr_PC : bindout486;
+  assign pad660 = {{27{1'b0}}, proxy550};
+  assign sel662 = andl646 ? pad660 : sel658;
+  assign orl668 = orl597 | eq585;
+  assign orl670 = orl668 | eq622;
+  assign orl672 = orl670 | eq627;
+  assign orl674 = orl672 | andl639;
+  assign sel676 = orl674 ? 2'h1 : 2'h0;
+  assign sel680 = eq590 ? 2'h2 : sel676;
+  assign orl685 = eq612 | eq617;
+  assign orl687 = orl685 | andl656;
+  assign sel689 = orl687 ? 2'h3 : sel680;
+  assign orl694 = orl597 | eq602;
+  assign sel696 = orl694 ? 1'h1 : 1'h0;
+  assign sel700 = eq590 ? proxy564 : 3'h7;
+  assign sel703 = eq602 ? proxy564 : 3'h7;
+  assign proxy706 = {proxy571, proxy557, proxy550, proxy564};
   always @(*) begin
     case (io_in_instruction[6:0])
-      7'h37: sel718 = proxy709;
-      7'h17: sel718 = proxy709;
-      default: sel718 = 20'h7b;
+      7'h37: sel715 = proxy706;
+      7'h17: sel715 = proxy706;
+      default: sel715 = 20'h7b;
     endcase
   end
-  assign proxy724 = shr564[7:0];
-  assign proxy725 = io_in_instruction[20];
-  assign shr729 = io_in_instruction >> 32'h15;
-  assign proxy732 = shr729[9:0];
-  assign proxy733 = io_in_instruction[31];
-  assign proxy736 = {proxy733, proxy724, proxy725, proxy732, 1'h0};
-  assign pad742 = {{11{1'b0}}, proxy736};
-  assign proxy747 = {11'h7ff, proxy736};
-  assign eq751 = proxy733 == 1'h1;
-  assign sel753 = eq751 ? proxy747 : pad742;
-  assign proxy757 = {proxy574, proxy560};
-  assign pad759 = {{20{1'b0}}, proxy757};
-  assign proxy764 = {20'hfffff, proxy757};
-  assign proxy768 = proxy757[11];
-  assign eq769 = proxy768 == 1'h1;
-  assign sel771 = eq769 ? proxy764 : pad759;
-  assign eq775 = proxy567 == 3'h0;
-  assign lt779 = shr557[11:0] < 12'h2;
-  assign andl782 = eq775 & lt779;
-  assign sel792 = andl782 ? 32'hb0000000 : 32'h7b;
+  assign proxy721 = shr561[7:0];
+  assign proxy722 = io_in_instruction[20];
+  assign shr726 = io_in_instruction >> 32'h15;
+  assign proxy729 = shr726[9:0];
+  assign proxy730 = io_in_instruction[31];
+  assign proxy733 = {proxy730, proxy721, proxy722, proxy729, 1'h0};
+  assign pad739 = {{11{1'b0}}, proxy733};
+  assign proxy744 = {11'h7ff, proxy733};
+  assign eq748 = proxy730 == 1'h1;
+  assign sel750 = eq748 ? proxy744 : pad739;
+  assign proxy754 = {proxy571, proxy557};
+  assign pad756 = {{20{1'b0}}, proxy754};
+  assign proxy761 = {20'hfffff, proxy754};
+  assign proxy765 = proxy754[11];
+  assign eq766 = proxy765 == 1'h1;
+  assign sel768 = eq766 ? proxy761 : pad756;
+  assign eq772 = proxy564 == 3'h0;
+  assign lt776 = proxy577 < 12'h2;
+  assign andl779 = eq772 & lt776;
+  assign sel789 = andl779 ? 32'hb0000000 : 32'h7b;
   always @(*) begin
     case (io_in_instruction[6:0])
-      7'h6f: sel793 = sel753;
-      7'h67: sel793 = sel771;
-      7'h73: sel793 = sel792;
-      default: sel793 = 32'h7b;
+      7'h6f: sel790 = sel750;
+      7'h67: sel790 = sel768;
+      7'h73: sel790 = sel789;
+      default: sel790 = 32'h7b;
     endcase
   end
-  assign sel794 = andl782 ? 1'h1 : 1'h0;
+  assign sel791 = andl779 ? 1'h1 : 1'h0;
   always @(*) begin
     case (io_in_instruction[6:0])
-      7'h6f: sel795 = 1'h1;
-      7'h67: sel795 = 1'h1;
-      7'h73: sel795 = sel794;
-      default: sel795 = 1'h0;
+      7'h6f: sel792 = 1'h1;
+      7'h67: sel792 = 1'h1;
+      7'h73: sel792 = sel791;
+      default: sel792 = 1'h0;
     endcase
   end
-  assign ne797 = proxy567 != 3'h0;
-  assign ge800 = shr557[11:0] >= 12'h2;
-  assign eq803 = io_in_instruction[6:0] == io_in_instruction[6:0];
-  assign andl814 = ne797 & ge800;
-  assign andl816 = andl814 & eq803;
-  assign sel818 = andl816 ? shr557[11:0] : 12'h7b;
-  assign eq823 = proxy567 == 3'h5;
-  assign eq828 = proxy567 == 3'h1;
-  assign orl830 = eq828 | eq823;
-  assign pad832 = {{7{1'b0}}, proxy560};
-  assign sel840 = orl830 ? pad832 : shr557[11:0];
-  assign proxy843 = {proxy574, proxy546};
-  assign proxy852 = io_in_instruction[7];
-  assign shr856 = io_in_instruction >> 32'h8;
-  assign proxy859 = shr856[3:0];
-  assign proxy865 = shr571[5:0];
-  assign proxy867 = {proxy733, proxy852, proxy865, proxy859};
+  assign ne794 = proxy564 != 3'h0;
+  assign ge797 = proxy577 >= 12'h2;
+  assign eq800 = io_in_instruction[6:0] == io_in_instruction[6:0];
+  assign andl805 = ne794 & ge797;
+  assign andl807 = andl805 & eq800;
+  assign sel809 = andl807 ? proxy577 : 12'h7b;
+  assign eq816 = proxy564 == 3'h5;
+  assign eq821 = proxy564 == 3'h1;
+  assign orl823 = eq821 | eq816;
+  assign pad825 = {{7{1'b0}}, proxy557};
+  assign sel827 = orl823 ? pad825 : proxy577;
+  assign pad829 = {{20{1'b0}}, sel910};
+  assign proxy833 = {20'hfffff, sel910};
+  assign eq838 = sel910[11] == 1'h1;
+  assign sel840 = eq838 ? proxy833 : pad829;
+  assign proxy843 = {proxy571, proxy543};
+  assign pad860 = {{20{1'b0}}, proxy577};
+  assign proxy864 = {20'hfffff, proxy577};
+  assign proxy868 = proxy577[11];
+  assign eq869 = proxy868 == 1'h1;
+  assign sel871 = eq869 ? proxy864 : pad860;
+  assign proxy874 = io_in_instruction[7];
+  assign shr878 = io_in_instruction >> 32'h8;
+  assign proxy881 = shr878[3:0];
+  assign proxy887 = shr568[5:0];
+  assign proxy889 = {proxy730, proxy874, proxy887, proxy881};
+  assign eq903 = proxy730 == 1'h1;
+  assign sel905 = eq903 ? proxy833 : pad829;
   always @(*) begin
     case (io_in_instruction[6:0])
-      7'h13: sel873 = sel840;
-      7'h23: sel873 = proxy843;
-      7'h03: sel873 = shr557[11:0];
-      7'h63: sel873 = proxy867;
-      default: sel873 = 12'h7b;
-    endcase
-  end
-  always @(*) begin
-    case (proxy567)
-      3'h0: sel892 = 3'h1;
-      3'h1: sel892 = 3'h2;
-      3'h4: sel892 = 3'h3;
-      3'h5: sel892 = 3'h4;
-      3'h6: sel892 = 3'h5;
-      3'h7: sel892 = 3'h6;
-      default: sel892 = 3'h0;
-    endcase
-  end
-  always @(*) begin
-    case (io_in_instruction[6:0])
-      7'h63: sel893 = sel892;
-      7'h6f: sel893 = 3'h0;
-      7'h67: sel893 = 3'h0;
-      default: sel893 = 3'h0;
+      7'h13: sel909 = sel840;
+      7'h23: sel909 = sel840;
+      7'h03: sel909 = sel871;
+      7'h63: sel909 = sel905;
+      default: sel909 = 32'h7b;
     endcase
   end
   always @(*) begin
     case (io_in_instruction[6:0])
-      7'h63: sel894 = 1'h1;
-      7'h6f: sel894 = 1'h1;
-      7'h67: sel894 = 1'h1;
-      default: sel894 = 1'h0;
+      7'h13: sel910 = sel827;
+      7'h23: sel910 = proxy843;
+      7'h03: sel910 = 12'h0;
+      7'h63: sel910 = proxy889;
+      default: sel910 = 12'h0;
     endcase
   end
-  assign eq904 = proxy574 == 7'h0;
-  assign sel906 = eq904 ? 4'h0 : 4'h1;
-  assign sel909 = eq598 ? 4'h0 : sel906;
-  assign sel926 = eq904 ? 4'h6 : 4'h7;
   always @(*) begin
-    case (proxy567)
-      3'h0: sel934 = sel909;
-      3'h1: sel934 = 4'h2;
-      3'h2: sel934 = 4'h3;
-      3'h3: sel934 = 4'h4;
-      3'h4: sel934 = 4'h5;
-      3'h5: sel934 = sel926;
-      3'h6: sel934 = 4'h8;
-      3'h7: sel934 = 4'h9;
-      default: sel934 = 4'hf;
+    case (proxy564)
+      3'h0: sel929 = 3'h1;
+      3'h1: sel929 = 3'h2;
+      3'h4: sel929 = 3'h3;
+      3'h5: sel929 = 3'h4;
+      3'h6: sel929 = 3'h5;
+      3'h7: sel929 = 3'h6;
+      default: sel929 = 3'h0;
     endcase
   end
-  assign proxy936 = proxy567[1:0];
-  assign eq941 = proxy936 == 2'h3;
-  assign sel943 = eq941 ? 4'hf : 4'hf;
-  assign eq949 = proxy936 == 2'h2;
-  assign sel951 = eq949 ? 4'he : sel943;
-  assign eq957 = proxy936 == 2'h1;
-  assign sel959 = eq957 ? 4'hd : sel951;
-  assign orl963 = eq605 | eq593;
-  assign sel965 = orl963 ? 4'h0 : sel934;
-  assign sel967 = andl642 ? sel959 : sel965;
-  assign sel971 = eq630 ? 4'hc : sel967;
-  assign sel975 = eq625 ? 4'hb : sel971;
-  assign lt981 = sel893 < 3'h5;
-  assign sel983 = lt981 ? 4'h1 : 4'ha;
-  assign sel985 = eq610 ? sel983 : sel975;
+  always @(*) begin
+    case (io_in_instruction[6:0])
+      7'h63: sel930 = sel929;
+      7'h6f: sel930 = 3'h0;
+      7'h67: sel930 = 3'h0;
+      default: sel930 = 3'h0;
+    endcase
+  end
+  always @(*) begin
+    case (io_in_instruction[6:0])
+      7'h63: sel931 = 1'h1;
+      7'h6f: sel931 = 1'h1;
+      7'h67: sel931 = 1'h1;
+      default: sel931 = 1'h0;
+    endcase
+  end
+  assign eq941 = proxy571 == 7'h0;
+  assign sel943 = eq941 ? 4'h0 : 4'h1;
+  assign sel946 = eq595 ? 4'h0 : sel943;
+  assign sel963 = eq941 ? 4'h6 : 4'h7;
+  always @(*) begin
+    case (proxy564)
+      3'h0: sel971 = sel946;
+      3'h1: sel971 = 4'h2;
+      3'h2: sel971 = 4'h3;
+      3'h3: sel971 = 4'h4;
+      3'h4: sel971 = 4'h5;
+      3'h5: sel971 = sel963;
+      3'h6: sel971 = 4'h8;
+      3'h7: sel971 = 4'h9;
+      default: sel971 = 4'hf;
+    endcase
+  end
+  assign proxy973 = proxy564[1:0];
+  assign eq978 = proxy973 == 2'h3;
+  assign sel980 = eq978 ? 4'hf : 4'hf;
+  assign eq986 = proxy973 == 2'h2;
+  assign sel988 = eq986 ? 4'he : sel980;
+  assign eq994 = proxy973 == 2'h1;
+  assign sel996 = eq994 ? 4'hd : sel988;
+  assign orl1000 = eq602 | eq590;
+  assign sel1002 = orl1000 ? 4'h0 : sel971;
+  assign sel1004 = andl639 ? sel996 : sel1002;
+  assign sel1008 = eq627 ? 4'hc : sel1004;
+  assign sel1012 = eq622 ? 4'hb : sel1008;
+  assign lt1018 = sel930 < 3'h5;
+  assign sel1020 = lt1018 ? 4'h1 : 4'ha;
+  assign sel1022 = eq607 ? sel1020 : sel1012;
 
-  assign io_out_csr_address = sel818;
-  assign io_out_is_csr = andl642;
-  assign io_out_csr_mask = sel665;
-  assign io_out_rd = proxy546;
-  assign io_out_rs1 = proxy553;
-  assign io_out_rd1 = sel661;
-  assign io_out_rs2 = proxy560;
-  assign io_out_rd2 = bindout492;
-  assign io_out_wb = sel692;
-  assign io_out_alu_op = sel985;
-  assign io_out_rs2_src = sel699;
-  assign io_out_itype_immed = sel873;
-  assign io_out_mem_read = sel703;
-  assign io_out_mem_write = sel706;
-  assign io_out_branch_type = sel893;
-  assign io_out_branch_stall = sel894;
-  assign io_out_jal = sel795;
-  assign io_out_jal_offset = sel793;
-  assign io_out_upper_immed = sel718;
-  assign io_out_PC_next = add583;
+  assign io_out_csr_address = sel809;
+  assign io_out_is_csr = andl639;
+  assign io_out_csr_mask = sel662;
+  assign io_out_rd = proxy543;
+  assign io_out_rs1 = proxy550;
+  assign io_out_rd1 = sel658;
+  assign io_out_rs2 = proxy557;
+  assign io_out_rd2 = bindout489;
+  assign io_out_wb = sel689;
+  assign io_out_alu_op = sel1022;
+  assign io_out_rs2_src = sel696;
+  assign io_out_itype_immed = sel909;
+  assign io_out_mem_read = sel700;
+  assign io_out_mem_write = sel703;
+  assign io_out_branch_type = sel930;
+  assign io_out_branch_stall = sel931;
+  assign io_out_jal = sel792;
+  assign io_out_jal_offset = sel790;
+  assign io_out_upper_immed = sel715;
+  assign io_out_PC_next = add580;
 
 endmodule
 
@@ -439,7 +460,7 @@ module D_E_Register(
   input wire[3:0] io_in_alu_op,
   input wire[1:0] io_in_wb,
   input wire io_in_rs2_src,
-  input wire[11:0] io_in_itype_immed,
+  input wire[31:0] io_in_itype_immed,
   input wire[2:0] io_in_mem_read,
   input wire[2:0] io_in_mem_write,
   input wire[31:0] io_in_PC_next,
@@ -464,7 +485,7 @@ module D_E_Register(
   output wire[3:0] io_out_alu_op,
   output wire[1:0] io_out_wb,
   output wire io_out_rs2_src,
-  output wire[11:0] io_out_itype_immed,
+  output wire[31:0] io_out_itype_immed,
   output wire[2:0] io_out_mem_read,
   output wire[2:0] io_out_mem_write,
   output wire[2:0] io_out_branch_type,
@@ -474,187 +495,187 @@ module D_E_Register(
   output wire[31:0] io_out_jal_offset,
   output wire[31:0] io_out_PC_next
 );
-  reg[4:0] reg1155, reg1164, reg1177;
-  reg[31:0] reg1171, reg1183, reg1203, reg1262, reg1268, reg1280;
-  reg[3:0] reg1190;
-  reg[1:0] reg1197;
-  reg reg1210, reg1256, reg1274;
-  reg[11:0] reg1217, reg1250;
-  reg[2:0] reg1224, reg1230, reg1237;
-  reg[19:0] reg1244;
-  wire eq1284, eq1288, orl1290, sel1318, sel1340, sel1346;
-  wire[4:0] sel1293, sel1296, sel1302;
-  wire[31:0] sel1299, sel1305, sel1315, sel1343, sel1349, sel1352;
-  wire[3:0] sel1309;
-  wire[1:0] sel1312;
-  wire[11:0] sel1322, sel1337;
-  wire[2:0] sel1325, sel1328, sel1331;
-  wire[19:0] sel1334;
+  reg[4:0] reg1192, reg1201, reg1214;
+  reg[31:0] reg1208, reg1220, reg1240, reg1253, reg1299, reg1305, reg1317;
+  reg[3:0] reg1227;
+  reg[1:0] reg1234;
+  reg reg1247, reg1293, reg1311;
+  reg[2:0] reg1260, reg1266, reg1273;
+  reg[19:0] reg1280;
+  reg[11:0] reg1287;
+  wire eq1321, eq1325, orl1327, sel1355, sel1377, sel1383;
+  wire[4:0] sel1330, sel1333, sel1339;
+  wire[31:0] sel1336, sel1342, sel1352, sel1359, sel1380, sel1386, sel1389;
+  wire[3:0] sel1346;
+  wire[1:0] sel1349;
+  wire[2:0] sel1362, sel1365, sel1368;
+  wire[19:0] sel1371;
+  wire[11:0] sel1374;
 
   always @ (posedge clk) begin
     if (reset)
-      reg1155 <= 5'h0;
+      reg1192 <= 5'h0;
     else
-      reg1155 <= sel1293;
+      reg1192 <= sel1330;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1164 <= 5'h0;
+      reg1201 <= 5'h0;
     else
-      reg1164 <= sel1296;
+      reg1201 <= sel1333;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1171 <= 32'h0;
+      reg1208 <= 32'h0;
     else
-      reg1171 <= sel1299;
+      reg1208 <= sel1336;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1177 <= 5'h0;
+      reg1214 <= 5'h0;
     else
-      reg1177 <= sel1302;
+      reg1214 <= sel1339;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1183 <= 32'h0;
+      reg1220 <= 32'h0;
     else
-      reg1183 <= sel1305;
+      reg1220 <= sel1342;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1190 <= 4'h0;
+      reg1227 <= 4'h0;
     else
-      reg1190 <= sel1309;
+      reg1227 <= sel1346;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1197 <= 2'h0;
+      reg1234 <= 2'h0;
     else
-      reg1197 <= sel1312;
+      reg1234 <= sel1349;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1203 <= 32'h0;
+      reg1240 <= 32'h0;
     else
-      reg1203 <= sel1315;
+      reg1240 <= sel1352;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1210 <= 1'h0;
+      reg1247 <= 1'h0;
     else
-      reg1210 <= sel1318;
+      reg1247 <= sel1355;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1217 <= 12'h0;
+      reg1253 <= 32'h0;
     else
-      reg1217 <= sel1322;
+      reg1253 <= sel1359;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1224 <= 3'h7;
+      reg1260 <= 3'h7;
     else
-      reg1224 <= sel1325;
+      reg1260 <= sel1362;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1230 <= 3'h7;
+      reg1266 <= 3'h7;
     else
-      reg1230 <= sel1328;
+      reg1266 <= sel1365;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1237 <= 3'h0;
+      reg1273 <= 3'h0;
     else
-      reg1237 <= sel1331;
+      reg1273 <= sel1368;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1244 <= 20'h0;
+      reg1280 <= 20'h0;
     else
-      reg1244 <= sel1334;
+      reg1280 <= sel1371;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1250 <= 12'h0;
+      reg1287 <= 12'h0;
     else
-      reg1250 <= sel1337;
+      reg1287 <= sel1374;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1256 <= 1'h0;
+      reg1293 <= 1'h0;
     else
-      reg1256 <= sel1340;
+      reg1293 <= sel1377;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1262 <= 32'h0;
+      reg1299 <= 32'h0;
     else
-      reg1262 <= sel1343;
+      reg1299 <= sel1380;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1268 <= 32'h0;
+      reg1305 <= 32'h0;
     else
-      reg1268 <= sel1352;
+      reg1305 <= sel1389;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1274 <= 1'h0;
+      reg1311 <= 1'h0;
     else
-      reg1274 <= sel1346;
+      reg1311 <= sel1383;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1280 <= 32'h0;
+      reg1317 <= 32'h0;
     else
-      reg1280 <= sel1349;
+      reg1317 <= sel1386;
   end
-  assign eq1284 = io_in_branch_stall == 1'h1;
-  assign eq1288 = io_in_fwd_stall == 1'h1;
-  assign orl1290 = eq1288 | eq1284;
-  assign sel1293 = orl1290 ? 5'h0 : io_in_rd;
-  assign sel1296 = orl1290 ? 5'h0 : io_in_rs1;
-  assign sel1299 = orl1290 ? 32'h0 : io_in_rd1;
-  assign sel1302 = orl1290 ? 5'h0 : io_in_rs2;
-  assign sel1305 = orl1290 ? 32'h0 : io_in_rd2;
-  assign sel1309 = orl1290 ? 4'hf : io_in_alu_op;
-  assign sel1312 = orl1290 ? 2'h0 : io_in_wb;
-  assign sel1315 = orl1290 ? 32'h0 : io_in_PC_next;
-  assign sel1318 = orl1290 ? 1'h0 : io_in_rs2_src;
-  assign sel1322 = orl1290 ? 12'h7b : io_in_itype_immed;
-  assign sel1325 = orl1290 ? 3'h7 : io_in_mem_read;
-  assign sel1328 = orl1290 ? 3'h7 : io_in_mem_write;
-  assign sel1331 = orl1290 ? 3'h0 : io_in_branch_type;
-  assign sel1334 = orl1290 ? 20'h0 : io_in_upper_immed;
-  assign sel1337 = orl1290 ? 12'h0 : io_in_csr_address;
-  assign sel1340 = orl1290 ? 1'h0 : io_in_is_csr;
-  assign sel1343 = orl1290 ? 32'h0 : io_in_csr_mask;
-  assign sel1346 = orl1290 ? 1'h0 : io_in_jal;
-  assign sel1349 = orl1290 ? 32'h0 : io_in_jal_offset;
-  assign sel1352 = orl1290 ? 32'h0 : io_in_curr_PC;
+  assign eq1321 = io_in_branch_stall == 1'h1;
+  assign eq1325 = io_in_fwd_stall == 1'h1;
+  assign orl1327 = eq1325 | eq1321;
+  assign sel1330 = orl1327 ? 5'h0 : io_in_rd;
+  assign sel1333 = orl1327 ? 5'h0 : io_in_rs1;
+  assign sel1336 = orl1327 ? 32'h0 : io_in_rd1;
+  assign sel1339 = orl1327 ? 5'h0 : io_in_rs2;
+  assign sel1342 = orl1327 ? 32'h0 : io_in_rd2;
+  assign sel1346 = orl1327 ? 4'hf : io_in_alu_op;
+  assign sel1349 = orl1327 ? 2'h0 : io_in_wb;
+  assign sel1352 = orl1327 ? 32'h0 : io_in_PC_next;
+  assign sel1355 = orl1327 ? 1'h0 : io_in_rs2_src;
+  assign sel1359 = orl1327 ? 32'h7b : io_in_itype_immed;
+  assign sel1362 = orl1327 ? 3'h7 : io_in_mem_read;
+  assign sel1365 = orl1327 ? 3'h7 : io_in_mem_write;
+  assign sel1368 = orl1327 ? 3'h0 : io_in_branch_type;
+  assign sel1371 = orl1327 ? 20'h0 : io_in_upper_immed;
+  assign sel1374 = orl1327 ? 12'h0 : io_in_csr_address;
+  assign sel1377 = orl1327 ? 1'h0 : io_in_is_csr;
+  assign sel1380 = orl1327 ? 32'h0 : io_in_csr_mask;
+  assign sel1383 = orl1327 ? 1'h0 : io_in_jal;
+  assign sel1386 = orl1327 ? 32'h0 : io_in_jal_offset;
+  assign sel1389 = orl1327 ? 32'h0 : io_in_curr_PC;
 
-  assign io_out_csr_address = reg1250;
-  assign io_out_is_csr = reg1256;
-  assign io_out_csr_mask = reg1262;
-  assign io_out_rd = reg1155;
-  assign io_out_rs1 = reg1164;
-  assign io_out_rd1 = reg1171;
-  assign io_out_rs2 = reg1177;
-  assign io_out_rd2 = reg1183;
-  assign io_out_alu_op = reg1190;
-  assign io_out_wb = reg1197;
-  assign io_out_rs2_src = reg1210;
-  assign io_out_itype_immed = reg1217;
-  assign io_out_mem_read = reg1224;
-  assign io_out_mem_write = reg1230;
-  assign io_out_branch_type = reg1237;
-  assign io_out_upper_immed = reg1244;
-  assign io_out_curr_PC = reg1268;
-  assign io_out_jal = reg1274;
-  assign io_out_jal_offset = reg1280;
-  assign io_out_PC_next = reg1203;
+  assign io_out_csr_address = reg1287;
+  assign io_out_is_csr = reg1293;
+  assign io_out_csr_mask = reg1299;
+  assign io_out_rd = reg1192;
+  assign io_out_rs1 = reg1201;
+  assign io_out_rd1 = reg1208;
+  assign io_out_rs2 = reg1214;
+  assign io_out_rd2 = reg1220;
+  assign io_out_alu_op = reg1227;
+  assign io_out_wb = reg1234;
+  assign io_out_rs2_src = reg1247;
+  assign io_out_itype_immed = reg1253;
+  assign io_out_mem_read = reg1260;
+  assign io_out_mem_write = reg1266;
+  assign io_out_branch_type = reg1273;
+  assign io_out_upper_immed = reg1280;
+  assign io_out_curr_PC = reg1305;
+  assign io_out_jal = reg1311;
+  assign io_out_jal_offset = reg1317;
+  assign io_out_PC_next = reg1240;
 
 endmodule
 
@@ -667,7 +688,7 @@ module Execute(
   input wire[3:0] io_in_alu_op,
   input wire[1:0] io_in_wb,
   input wire io_in_rs2_src,
-  input wire[11:0] io_in_itype_immed,
+  input wire[31:0] io_in_itype_immed,
   input wire[2:0] io_in_mem_read,
   input wire[2:0] io_in_mem_write,
   input wire[31:0] io_in_PC_next,
@@ -698,85 +719,81 @@ module Execute(
   output wire io_out_branch_stall,
   output wire[31:0] io_out_PC_next
 );
-  wire[31:0] pad1555, proxy1560, sel1568, sel1575, proxy1580, add1583, add1586, sub1591, shl1595, sel1605, sel1614, xorl1619, shr1623, shr1628, orl1633, andl1638, add1651, orl1657, sub1661, andl1664, sel1669;
-  wire eq1566, eq1573, lt1603, lt1612, ge1642, ne1677, sel1679;
-  reg[31:0] sel1668, sel1670;
+  wire eq1596, lt1626, lt1635, ge1665, ne1700, sel1702;
+  wire[31:0] sel1598, proxy1603, add1606, add1609, sub1614, shl1618, sel1628, sel1637, xorl1642, shr1646, shr1651, orl1656, andl1661, add1674, orl1680, sub1684, andl1687, sel1692;
+  reg[31:0] sel1691, sel1693;
 
-  assign pad1555 = {{20{1'b0}}, io_in_itype_immed};
-  assign proxy1560 = {20'hfffff, io_in_itype_immed};
-  assign eq1566 = io_in_itype_immed[11] == 1'h1;
-  assign sel1568 = eq1566 ? proxy1560 : pad1555;
-  assign eq1573 = io_in_rs2_src == 1'h1;
-  assign sel1575 = eq1573 ? sel1568 : io_in_rd2;
-  assign proxy1580 = {io_in_upper_immed, 12'h0};
-  assign add1583 = $signed(io_in_rd1) + $signed(io_in_jal_offset);
-  assign add1586 = $signed(io_in_rd1) + $signed(sel1575);
-  assign sub1591 = $signed(io_in_rd1) - $signed(sel1575);
-  assign shl1595 = io_in_rd1 << sel1575;
-  assign lt1603 = $signed(io_in_rd1) < $signed(sel1575);
-  assign sel1605 = lt1603 ? 32'h1 : 32'h0;
-  assign lt1612 = io_in_rd1 < sel1575;
-  assign sel1614 = lt1612 ? 32'h1 : 32'h0;
-  assign xorl1619 = io_in_rd1 ^ sel1575;
-  assign shr1623 = io_in_rd1 >> sel1575;
-  assign shr1628 = $signed(io_in_rd1) >> sel1575;
-  assign orl1633 = io_in_rd1 | sel1575;
-  assign andl1638 = sel1575 & io_in_rd1;
-  assign ge1642 = io_in_rd1 >= sel1575;
-  assign add1651 = $signed(io_in_curr_PC) + $signed(proxy1580);
-  assign orl1657 = io_in_csr_data | io_in_csr_mask;
-  assign sub1661 = 32'hffffffff - io_in_csr_mask;
-  assign andl1664 = io_in_csr_data & sub1661;
+  assign eq1596 = io_in_rs2_src == 1'h1;
+  assign sel1598 = eq1596 ? io_in_itype_immed : io_in_rd2;
+  assign proxy1603 = {io_in_upper_immed, 12'h0};
+  assign add1606 = $signed(io_in_rd1) + $signed(io_in_jal_offset);
+  assign add1609 = $signed(io_in_rd1) + $signed(sel1598);
+  assign sub1614 = $signed(io_in_rd1) - $signed(sel1598);
+  assign shl1618 = io_in_rd1 << sel1598;
+  assign lt1626 = $signed(io_in_rd1) < $signed(sel1598);
+  assign sel1628 = lt1626 ? 32'h1 : 32'h0;
+  assign lt1635 = io_in_rd1 < sel1598;
+  assign sel1637 = lt1635 ? 32'h1 : 32'h0;
+  assign xorl1642 = io_in_rd1 ^ sel1598;
+  assign shr1646 = io_in_rd1 >> sel1598;
+  assign shr1651 = $signed(io_in_rd1) >> sel1598;
+  assign orl1656 = io_in_rd1 | sel1598;
+  assign andl1661 = sel1598 & io_in_rd1;
+  assign ge1665 = io_in_rd1 >= sel1598;
+  assign add1674 = $signed(io_in_curr_PC) + $signed(proxy1603);
+  assign orl1680 = io_in_csr_data | io_in_csr_mask;
+  assign sub1684 = 32'hffffffff - io_in_csr_mask;
+  assign andl1687 = io_in_csr_data & sub1684;
   always @(*) begin
     case (io_in_alu_op)
-      4'h0: sel1668 = 32'h7b;
-      4'h1: sel1668 = 32'h7b;
-      4'h2: sel1668 = 32'h7b;
-      4'h3: sel1668 = 32'h7b;
-      4'h4: sel1668 = 32'h7b;
-      4'h5: sel1668 = 32'h7b;
-      4'h6: sel1668 = 32'h7b;
-      4'h7: sel1668 = 32'h7b;
-      4'h8: sel1668 = 32'h7b;
-      4'h9: sel1668 = 32'h7b;
-      4'ha: sel1668 = 32'h7b;
-      4'hb: sel1668 = 32'h7b;
-      4'hc: sel1668 = 32'h7b;
-      4'hd: sel1668 = io_in_csr_mask;
-      4'he: sel1668 = orl1657;
-      4'hf: sel1668 = andl1664;
-      default: sel1668 = 32'h7b;
+      4'h0: sel1691 = 32'h7b;
+      4'h1: sel1691 = 32'h7b;
+      4'h2: sel1691 = 32'h7b;
+      4'h3: sel1691 = 32'h7b;
+      4'h4: sel1691 = 32'h7b;
+      4'h5: sel1691 = 32'h7b;
+      4'h6: sel1691 = 32'h7b;
+      4'h7: sel1691 = 32'h7b;
+      4'h8: sel1691 = 32'h7b;
+      4'h9: sel1691 = 32'h7b;
+      4'ha: sel1691 = 32'h7b;
+      4'hb: sel1691 = 32'h7b;
+      4'hc: sel1691 = 32'h7b;
+      4'hd: sel1691 = io_in_csr_mask;
+      4'he: sel1691 = orl1680;
+      4'hf: sel1691 = andl1687;
+      default: sel1691 = 32'h7b;
     endcase
   end
-  assign sel1669 = ge1642 ? 32'h0 : 32'hffffffff;
+  assign sel1692 = ge1665 ? 32'h0 : 32'hffffffff;
   always @(*) begin
     case (io_in_alu_op)
-      4'h0: sel1670 = add1586;
-      4'h1: sel1670 = sub1591;
-      4'h2: sel1670 = shl1595;
-      4'h3: sel1670 = sel1605;
-      4'h4: sel1670 = sel1614;
-      4'h5: sel1670 = xorl1619;
-      4'h6: sel1670 = shr1623;
-      4'h7: sel1670 = shr1628;
-      4'h8: sel1670 = orl1633;
-      4'h9: sel1670 = andl1638;
-      4'ha: sel1670 = sel1669;
-      4'hb: sel1670 = proxy1580;
-      4'hc: sel1670 = add1651;
-      4'hd: sel1670 = io_in_csr_data;
-      4'he: sel1670 = io_in_csr_data;
-      4'hf: sel1670 = io_in_csr_data;
-      default: sel1670 = 32'h0;
+      4'h0: sel1693 = add1609;
+      4'h1: sel1693 = sub1614;
+      4'h2: sel1693 = shl1618;
+      4'h3: sel1693 = sel1628;
+      4'h4: sel1693 = sel1637;
+      4'h5: sel1693 = xorl1642;
+      4'h6: sel1693 = shr1646;
+      4'h7: sel1693 = shr1651;
+      4'h8: sel1693 = orl1656;
+      4'h9: sel1693 = andl1661;
+      4'ha: sel1693 = sel1692;
+      4'hb: sel1693 = proxy1603;
+      4'hc: sel1693 = add1674;
+      4'hd: sel1693 = io_in_csr_data;
+      4'he: sel1693 = io_in_csr_data;
+      4'hf: sel1693 = io_in_csr_data;
+      default: sel1693 = 32'h0;
     endcase
   end
-  assign ne1677 = io_in_branch_type != 3'h0;
-  assign sel1679 = ne1677 ? 1'h1 : 1'h0;
+  assign ne1700 = io_in_branch_type != 3'h0;
+  assign sel1702 = ne1700 ? 1'h1 : 1'h0;
 
   assign io_out_csr_address = io_in_csr_address;
   assign io_out_is_csr = io_in_is_csr;
-  assign io_out_csr_result = sel1668;
-  assign io_out_alu_result = sel1670;
+  assign io_out_csr_result = sel1691;
+  assign io_out_alu_result = sel1693;
   assign io_out_rd = io_in_rd;
   assign io_out_wb = io_in_wb;
   assign io_out_rs1 = io_in_rs1;
@@ -786,9 +803,9 @@ module Execute(
   assign io_out_mem_read = io_in_mem_read;
   assign io_out_mem_write = io_in_mem_write;
   assign io_out_jal = io_in_jal;
-  assign io_out_jal_dest = add1583;
-  assign io_out_branch_offset = sel1568;
-  assign io_out_branch_stall = sel1679;
+  assign io_out_jal_dest = add1606;
+  assign io_out_branch_offset = io_in_itype_immed;
+  assign io_out_branch_stall = sel1702;
   assign io_out_PC_next = io_in_PC_next;
 
 endmodule
@@ -829,126 +846,126 @@ module E_M_Register(
   output wire[2:0] io_out_branch_type,
   output wire[31:0] io_out_PC_next
 );
-  reg[31:0] reg1866, reg1888, reg1900, reg1913, reg1946, reg1952, reg1958;
-  reg[4:0] reg1876, reg1882, reg1894;
-  reg[1:0] reg1907;
-  reg[2:0] reg1920, reg1926, reg1964;
-  reg[11:0] reg1933;
-  reg reg1940;
+  reg[31:0] reg1889, reg1911, reg1923, reg1936, reg1969, reg1975, reg1981;
+  reg[4:0] reg1899, reg1905, reg1917;
+  reg[1:0] reg1930;
+  reg[2:0] reg1943, reg1949, reg1987;
+  reg[11:0] reg1956;
+  reg reg1963;
 
   always @ (posedge clk) begin
     if (reset)
-      reg1866 <= 32'h0;
+      reg1889 <= 32'h0;
     else
-      reg1866 <= io_in_alu_result;
+      reg1889 <= io_in_alu_result;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1876 <= 5'h0;
+      reg1899 <= 5'h0;
     else
-      reg1876 <= io_in_rd;
+      reg1899 <= io_in_rd;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1882 <= 5'h0;
+      reg1905 <= 5'h0;
     else
-      reg1882 <= io_in_rs1;
+      reg1905 <= io_in_rs1;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1888 <= 32'h0;
+      reg1911 <= 32'h0;
     else
-      reg1888 <= io_in_rd1;
+      reg1911 <= io_in_rd1;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1894 <= 5'h0;
+      reg1917 <= 5'h0;
     else
-      reg1894 <= io_in_rs2;
+      reg1917 <= io_in_rs2;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1900 <= 32'h0;
+      reg1923 <= 32'h0;
     else
-      reg1900 <= io_in_rd2;
+      reg1923 <= io_in_rd2;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1907 <= 2'h0;
+      reg1930 <= 2'h0;
     else
-      reg1907 <= io_in_wb;
+      reg1930 <= io_in_wb;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1913 <= 32'h0;
+      reg1936 <= 32'h0;
     else
-      reg1913 <= io_in_PC_next;
+      reg1936 <= io_in_PC_next;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1920 <= 3'h0;
+      reg1943 <= 3'h0;
     else
-      reg1920 <= io_in_mem_read;
+      reg1943 <= io_in_mem_read;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1926 <= 3'h0;
+      reg1949 <= 3'h0;
     else
-      reg1926 <= io_in_mem_write;
+      reg1949 <= io_in_mem_write;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1933 <= 12'h0;
+      reg1956 <= 12'h0;
     else
-      reg1933 <= io_in_csr_address;
+      reg1956 <= io_in_csr_address;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1940 <= 1'h0;
+      reg1963 <= 1'h0;
     else
-      reg1940 <= io_in_is_csr;
+      reg1963 <= io_in_is_csr;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1946 <= 32'h0;
+      reg1969 <= 32'h0;
     else
-      reg1946 <= io_in_csr_result;
+      reg1969 <= io_in_csr_result;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1952 <= 32'h0;
+      reg1975 <= 32'h0;
     else
-      reg1952 <= io_in_curr_PC;
+      reg1975 <= io_in_curr_PC;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1958 <= 32'h0;
+      reg1981 <= 32'h0;
     else
-      reg1958 <= io_in_branch_offset;
+      reg1981 <= io_in_branch_offset;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg1964 <= 3'h0;
+      reg1987 <= 3'h0;
     else
-      reg1964 <= io_in_branch_type;
+      reg1987 <= io_in_branch_type;
   end
 
-  assign io_out_csr_address = reg1933;
-  assign io_out_is_csr = reg1940;
-  assign io_out_csr_result = reg1946;
-  assign io_out_alu_result = reg1866;
-  assign io_out_rd = reg1876;
-  assign io_out_wb = reg1907;
-  assign io_out_rs1 = reg1882;
-  assign io_out_rd1 = reg1888;
-  assign io_out_rd2 = reg1900;
-  assign io_out_rs2 = reg1894;
-  assign io_out_mem_read = reg1920;
-  assign io_out_mem_write = reg1926;
-  assign io_out_curr_PC = reg1952;
-  assign io_out_branch_offset = reg1958;
-  assign io_out_branch_type = reg1964;
-  assign io_out_PC_next = reg1913;
+  assign io_out_csr_address = reg1956;
+  assign io_out_is_csr = reg1963;
+  assign io_out_csr_result = reg1969;
+  assign io_out_alu_result = reg1889;
+  assign io_out_rd = reg1899;
+  assign io_out_wb = reg1930;
+  assign io_out_rs1 = reg1905;
+  assign io_out_rd1 = reg1911;
+  assign io_out_rd2 = reg1923;
+  assign io_out_rs2 = reg1917;
+  assign io_out_mem_read = reg1943;
+  assign io_out_mem_write = reg1949;
+  assign io_out_curr_PC = reg1975;
+  assign io_out_branch_offset = reg1981;
+  assign io_out_branch_type = reg1987;
+  assign io_out_PC_next = reg1936;
 
 endmodule
 
@@ -971,58 +988,58 @@ module Cache(
   input wire[31:0] io_in_data,
   output wire[31:0] io_out_data
 );
-  wire lt2166, lt2169, orl2171, eq2179, eq2193, eq2197, andl2199, eq2220, eq2224, andl2226, orl2229, proxy2246, eq2247, proxy2264, eq2265;
-  wire[1:0] sel2205, sel2209, sel2213;
-  wire[7:0] proxy2238;
-  wire[31:0] pad2239, proxy2242, sel2249, pad2257, proxy2260, sel2267;
-  wire[15:0] proxy2256;
-  reg[31:0] sel2283;
+  wire lt2192, lt2195, orl2197, eq2205, eq2219, eq2223, andl2225, eq2246, eq2250, andl2252, orl2255, proxy2272, eq2273, proxy2290, eq2291;
+  wire[1:0] sel2231, sel2235, sel2239;
+  wire[7:0] proxy2264;
+  wire[31:0] pad2265, proxy2268, sel2275, pad2283, proxy2286, sel2293;
+  wire[15:0] proxy2282;
+  reg[31:0] sel2309;
 
-  assign lt2166 = io_in_mem_write < 3'h7;
-  assign lt2169 = io_in_mem_read < 3'h7;
-  assign orl2171 = lt2169 | lt2166;
-  assign eq2179 = io_in_mem_write == 3'h2;
-  assign eq2193 = io_in_mem_write == 3'h7;
-  assign eq2197 = io_in_mem_read == 3'h7;
-  assign andl2199 = eq2197 & eq2193;
-  assign sel2205 = andl2199 ? 2'h0 : 2'h3;
-  assign sel2209 = eq2179 ? 2'h2 : sel2205;
-  assign sel2213 = lt2169 ? 2'h1 : sel2209;
-  assign eq2220 = eq2179 == 1'h0;
-  assign eq2224 = andl2199 == 1'h0;
-  assign andl2226 = eq2224 & eq2220;
-  assign orl2229 = lt2169 | andl2226;
-  assign proxy2238 = io_DBUS_in_data_data[7:0];
-  assign pad2239 = {{24{1'b0}}, proxy2238};
-  assign proxy2242 = {24'hffffff, proxy2238};
-  assign proxy2246 = proxy2238[7];
-  assign eq2247 = proxy2246 == 1'h1;
-  assign sel2249 = eq2247 ? proxy2242 : pad2239;
-  assign proxy2256 = io_DBUS_in_data_data[15:0];
-  assign pad2257 = {{16{1'b0}}, proxy2256};
-  assign proxy2260 = {16'hffff, proxy2256};
-  assign proxy2264 = proxy2256[15];
-  assign eq2265 = proxy2264 == 1'h1;
-  assign sel2267 = eq2265 ? proxy2260 : pad2257;
+  assign lt2192 = io_in_mem_write < 3'h7;
+  assign lt2195 = io_in_mem_read < 3'h7;
+  assign orl2197 = lt2195 | lt2192;
+  assign eq2205 = io_in_mem_write == 3'h2;
+  assign eq2219 = io_in_mem_write == 3'h7;
+  assign eq2223 = io_in_mem_read == 3'h7;
+  assign andl2225 = eq2223 & eq2219;
+  assign sel2231 = andl2225 ? 2'h0 : 2'h3;
+  assign sel2235 = eq2205 ? 2'h2 : sel2231;
+  assign sel2239 = lt2195 ? 2'h1 : sel2235;
+  assign eq2246 = eq2205 == 1'h0;
+  assign eq2250 = andl2225 == 1'h0;
+  assign andl2252 = eq2250 & eq2246;
+  assign orl2255 = lt2195 | andl2252;
+  assign proxy2264 = io_DBUS_in_data_data[7:0];
+  assign pad2265 = {{24{1'b0}}, proxy2264};
+  assign proxy2268 = {24'hffffff, proxy2264};
+  assign proxy2272 = proxy2264[7];
+  assign eq2273 = proxy2272 == 1'h1;
+  assign sel2275 = eq2273 ? proxy2268 : pad2265;
+  assign proxy2282 = io_DBUS_in_data_data[15:0];
+  assign pad2283 = {{16{1'b0}}, proxy2282};
+  assign proxy2286 = {16'hffff, proxy2282};
+  assign proxy2290 = proxy2282[15];
+  assign eq2291 = proxy2290 == 1'h1;
+  assign sel2293 = eq2291 ? proxy2286 : pad2283;
   always @(*) begin
     case (io_in_mem_read)
-      3'h0: sel2283 = sel2249;
-      3'h1: sel2283 = sel2267;
-      3'h2: sel2283 = io_DBUS_in_data_data;
-      3'h4: sel2283 = pad2239;
-      3'h5: sel2283 = pad2257;
-      default: sel2283 = 32'h0;
+      3'h0: sel2309 = sel2275;
+      3'h1: sel2309 = sel2293;
+      3'h2: sel2309 = io_DBUS_in_data_data;
+      3'h4: sel2309 = pad2265;
+      3'h5: sel2309 = pad2283;
+      default: sel2309 = 32'h0;
     endcase
   end
 
-  assign io_DBUS_in_data_ready = orl2229;
+  assign io_DBUS_in_data_ready = orl2255;
   assign io_DBUS_out_data_data = io_in_data;
-  assign io_DBUS_out_data_valid = lt2166;
+  assign io_DBUS_out_data_valid = lt2192;
   assign io_DBUS_out_address_data = io_in_address;
-  assign io_DBUS_out_address_valid = orl2171;
-  assign io_DBUS_out_control_data = sel2213;
+  assign io_DBUS_out_address_valid = orl2197;
+  assign io_DBUS_out_control_data = sel2239;
   assign io_DBUS_out_control_valid = 1'h1;
-  assign io_out_data = sel2283;
+  assign io_out_data = sel2309;
 
 endmodule
 
@@ -1060,60 +1077,64 @@ module Memory(
   output wire[4:0] io_out_rs2,
   output wire io_out_branch_dir,
   output wire[31:0] io_out_branch_dest,
+  output wire io_out_branch_stall,
   output wire[31:0] io_out_PC_next
 );
-  wire[31:0] bindin2290, bindout2299, bindout2308, bindin2326, bindin2335, bindout2338, shl2341, add2343;
-  wire bindin2293, bindout2296, bindout2302, bindin2305, bindout2311, bindin2314, bindout2320, bindin2323, eq2353, sel2355, sel2364, eq2371, sel2373, sel2382;
-  wire[1:0] bindout2317;
-  wire[2:0] bindin2329, bindin2332;
-  reg sel2405;
+  wire[31:0] bindin2316, bindout2325, bindout2334, bindin2352, bindin2361, bindout2364, shl2367, add2369;
+  wire bindin2319, bindout2322, bindout2328, bindin2331, bindout2337, bindin2340, bindout2346, bindin2349, eq2379, sel2381, sel2390, eq2397, sel2399, sel2408, eq2436, sel2438;
+  wire[1:0] bindout2343;
+  wire[2:0] bindin2355, bindin2358;
+  reg sel2431;
 
-  Cache __module10__(.io_DBUS_in_data_data(bindin2290), .io_DBUS_in_data_valid(bindin2293), .io_DBUS_out_data_ready(bindin2305), .io_DBUS_out_address_ready(bindin2314), .io_DBUS_out_control_ready(bindin2323), .io_in_address(bindin2326), .io_in_mem_read(bindin2329), .io_in_mem_write(bindin2332), .io_in_data(bindin2335), .io_DBUS_in_data_ready(bindout2296), .io_DBUS_out_data_data(bindout2299), .io_DBUS_out_data_valid(bindout2302), .io_DBUS_out_address_data(bindout2308), .io_DBUS_out_address_valid(bindout2311), .io_DBUS_out_control_data(bindout2317), .io_DBUS_out_control_valid(bindout2320), .io_out_data(bindout2338));
-  assign bindin2290 = io_DBUS_in_data_data;
-  assign bindin2293 = io_DBUS_in_data_valid;
-  assign bindin2305 = io_DBUS_out_data_ready;
-  assign bindin2314 = io_DBUS_out_address_ready;
-  assign bindin2323 = io_DBUS_out_control_ready;
-  assign bindin2326 = io_in_alu_result;
-  assign bindin2329 = io_in_mem_read;
-  assign bindin2332 = io_in_mem_write;
-  assign bindin2335 = io_in_rd2;
-  assign shl2341 = $signed(io_in_branch_offset) << 32'h1;
-  assign add2343 = $signed(io_in_curr_PC) + $signed(shl2341);
-  assign eq2353 = io_in_alu_result == 32'h0;
-  assign sel2355 = eq2353 ? 1'h1 : 1'h0;
-  assign sel2364 = eq2353 ? 1'h0 : 1'h1;
-  assign eq2371 = io_in_alu_result[31] == 1'h0;
-  assign sel2373 = eq2371 ? 1'h0 : 1'h1;
-  assign sel2382 = eq2371 ? 1'h1 : 1'h0;
+  Cache __module10__(.io_DBUS_in_data_data(bindin2316), .io_DBUS_in_data_valid(bindin2319), .io_DBUS_out_data_ready(bindin2331), .io_DBUS_out_address_ready(bindin2340), .io_DBUS_out_control_ready(bindin2349), .io_in_address(bindin2352), .io_in_mem_read(bindin2355), .io_in_mem_write(bindin2358), .io_in_data(bindin2361), .io_DBUS_in_data_ready(bindout2322), .io_DBUS_out_data_data(bindout2325), .io_DBUS_out_data_valid(bindout2328), .io_DBUS_out_address_data(bindout2334), .io_DBUS_out_address_valid(bindout2337), .io_DBUS_out_control_data(bindout2343), .io_DBUS_out_control_valid(bindout2346), .io_out_data(bindout2364));
+  assign bindin2316 = io_DBUS_in_data_data;
+  assign bindin2319 = io_DBUS_in_data_valid;
+  assign bindin2331 = io_DBUS_out_data_ready;
+  assign bindin2340 = io_DBUS_out_address_ready;
+  assign bindin2349 = io_DBUS_out_control_ready;
+  assign bindin2352 = io_in_alu_result;
+  assign bindin2355 = io_in_mem_read;
+  assign bindin2358 = io_in_mem_write;
+  assign bindin2361 = io_in_rd2;
+  assign shl2367 = $signed(io_in_branch_offset) << 32'h1;
+  assign add2369 = $signed(io_in_curr_PC) + $signed(shl2367);
+  assign eq2379 = io_in_alu_result == 32'h0;
+  assign sel2381 = eq2379 ? 1'h1 : 1'h0;
+  assign sel2390 = eq2379 ? 1'h0 : 1'h1;
+  assign eq2397 = io_in_alu_result[31] == 1'h0;
+  assign sel2399 = eq2397 ? 1'h0 : 1'h1;
+  assign sel2408 = eq2397 ? 1'h1 : 1'h0;
   always @(*) begin
     case (io_in_branch_type)
-      3'h1: sel2405 = sel2355;
-      3'h2: sel2405 = sel2364;
-      3'h3: sel2405 = sel2373;
-      3'h4: sel2405 = sel2382;
-      3'h5: sel2405 = sel2373;
-      3'h6: sel2405 = sel2382;
-      3'h0: sel2405 = 1'h0;
-      default: sel2405 = 1'h0;
+      3'h1: sel2431 = sel2381;
+      3'h2: sel2431 = sel2390;
+      3'h3: sel2431 = sel2399;
+      3'h4: sel2431 = sel2408;
+      3'h5: sel2431 = sel2399;
+      3'h6: sel2431 = sel2408;
+      3'h0: sel2431 = 1'h0;
+      default: sel2431 = 1'h0;
     endcase
   end
+  assign eq2436 = io_in_branch_type == 3'h0;
+  assign sel2438 = eq2436 ? 1'h0 : 1'h1;
 
-  assign io_DBUS_in_data_ready = bindout2296;
-  assign io_DBUS_out_data_data = bindout2299;
-  assign io_DBUS_out_data_valid = bindout2302;
-  assign io_DBUS_out_address_data = bindout2308;
-  assign io_DBUS_out_address_valid = bindout2311;
-  assign io_DBUS_out_control_data = bindout2317;
-  assign io_DBUS_out_control_valid = bindout2320;
+  assign io_DBUS_in_data_ready = bindout2322;
+  assign io_DBUS_out_data_data = bindout2325;
+  assign io_DBUS_out_data_valid = bindout2328;
+  assign io_DBUS_out_address_data = bindout2334;
+  assign io_DBUS_out_address_valid = bindout2337;
+  assign io_DBUS_out_control_data = bindout2343;
+  assign io_DBUS_out_control_valid = bindout2346;
   assign io_out_alu_result = io_in_alu_result;
-  assign io_out_mem_result = bindout2338;
+  assign io_out_mem_result = bindout2364;
   assign io_out_rd = io_in_rd;
   assign io_out_wb = io_in_wb;
   assign io_out_rs1 = io_in_rs1;
   assign io_out_rs2 = io_in_rs2;
-  assign io_out_branch_dir = sel2405;
-  assign io_out_branch_dest = add2343;
+  assign io_out_branch_dir = sel2431;
+  assign io_out_branch_dest = add2369;
+  assign io_out_branch_stall = sel2438;
   assign io_out_PC_next = io_in_PC_next;
 
 endmodule
@@ -1128,68 +1149,87 @@ module M_W_Register(
   input wire[4:0] io_in_rs1,
   input wire[4:0] io_in_rs2,
   input wire[31:0] io_in_PC_next,
+  input wire io_in_branch_dir,
+  input wire[31:0] io_in_branch_dest,
   output wire[31:0] io_out_alu_result,
   output wire[31:0] io_out_mem_result,
   output wire[4:0] io_out_rd,
   output wire[1:0] io_out_wb,
   output wire[4:0] io_out_rs1,
   output wire[4:0] io_out_rs2,
+  output wire io_out_branch_dir,
+  output wire[31:0] io_out_branch_dest,
   output wire[31:0] io_out_PC_next
 );
-  reg[31:0] reg2543, reg2552, reg2584;
-  reg[4:0] reg2559, reg2565, reg2571;
-  reg[1:0] reg2578;
+  reg[31:0] reg2588, reg2597, reg2629, reg2642;
+  reg[4:0] reg2604, reg2610, reg2616;
+  reg[1:0] reg2623;
+  reg reg2636;
 
   always @ (posedge clk) begin
     if (reset)
-      reg2543 <= 32'h0;
+      reg2588 <= 32'h0;
     else
-      reg2543 <= io_in_alu_result;
+      reg2588 <= io_in_alu_result;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg2552 <= 32'h0;
+      reg2597 <= 32'h0;
     else
-      reg2552 <= io_in_mem_result;
+      reg2597 <= io_in_mem_result;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg2559 <= 5'h0;
+      reg2604 <= 5'h0;
     else
-      reg2559 <= io_in_rd;
+      reg2604 <= io_in_rd;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg2565 <= 5'h0;
+      reg2610 <= 5'h0;
     else
-      reg2565 <= io_in_rs1;
+      reg2610 <= io_in_rs1;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg2571 <= 5'h0;
+      reg2616 <= 5'h0;
     else
-      reg2571 <= io_in_rs2;
+      reg2616 <= io_in_rs2;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg2578 <= 2'h0;
+      reg2623 <= 2'h0;
     else
-      reg2578 <= io_in_wb;
+      reg2623 <= io_in_wb;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg2584 <= 32'h0;
+      reg2629 <= 32'h0;
     else
-      reg2584 <= io_in_PC_next;
+      reg2629 <= io_in_PC_next;
+  end
+  always @ (posedge clk) begin
+    if (reset)
+      reg2636 <= 1'h0;
+    else
+      reg2636 <= io_in_branch_dir;
+  end
+  always @ (posedge clk) begin
+    if (reset)
+      reg2642 <= 32'h0;
+    else
+      reg2642 <= io_in_branch_dest;
   end
 
-  assign io_out_alu_result = reg2543;
-  assign io_out_mem_result = reg2552;
-  assign io_out_rd = reg2559;
-  assign io_out_wb = reg2578;
-  assign io_out_rs1 = reg2565;
-  assign io_out_rs2 = reg2571;
-  assign io_out_PC_next = reg2584;
+  assign io_out_alu_result = reg2588;
+  assign io_out_mem_result = reg2597;
+  assign io_out_rd = reg2604;
+  assign io_out_wb = reg2623;
+  assign io_out_rs1 = reg2610;
+  assign io_out_rs2 = reg2616;
+  assign io_out_branch_dir = reg2636;
+  assign io_out_branch_dest = reg2642;
+  assign io_out_PC_next = reg2629;
 
 endmodule
 
@@ -1205,15 +1245,15 @@ module Write_Back(
   output wire[4:0] io_out_rd,
   output wire[1:0] io_out_wb
 );
-  wire eq2650, eq2655;
-  wire[31:0] sel2657, sel2659;
+  wire eq2720, eq2725;
+  wire[31:0] sel2727, sel2729;
 
-  assign eq2650 = io_in_wb == 2'h3;
-  assign eq2655 = io_in_wb == 2'h1;
-  assign sel2657 = eq2655 ? io_in_alu_result : io_in_mem_result;
-  assign sel2659 = eq2650 ? io_in_PC_next : sel2657;
+  assign eq2720 = io_in_wb == 2'h3;
+  assign eq2725 = io_in_wb == 2'h1;
+  assign sel2727 = eq2725 ? io_in_alu_result : io_in_mem_result;
+  assign sel2729 = eq2720 ? io_in_PC_next : sel2727;
 
-  assign io_out_write_data = sel2659;
+  assign io_out_write_data = sel2729;
   assign io_out_rd = io_in_rd;
   assign io_out_wb = io_in_wb;
 
@@ -1248,62 +1288,62 @@ module Forwarding(
   output wire io_out_csr_fwd,
   output wire io_out_fwd_stall
 );
-  wire eq2756, eq2760, ne2765, ne2770, eq2773, andl2775, andl2777, eq2782, ne2786, eq2793, andl2795, andl2797, andl2799, eq2803, ne2811, eq2818, andl2820, andl2822, andl2824, andl2826, orl2829, orl2831, ne2839, eq2842, andl2844, andl2846, eq2850, eq2861, andl2863, andl2865, andl2867, eq2871, eq2886, andl2888, andl2890, andl2892, andl2894, orl2897, orl2899, eq2902, andl2904, eq2908, eq2911, andl2913, andl2915, orl2918, orl2925, orl2927, orl2929;
+  wire eq2826, eq2830, ne2835, ne2840, eq2843, andl2845, andl2847, eq2852, ne2856, eq2863, andl2865, andl2867, andl2869, eq2873, ne2881, eq2888, andl2890, andl2892, andl2894, andl2896, orl2899, orl2901, ne2909, eq2912, andl2914, andl2916, eq2920, eq2931, andl2933, andl2935, andl2937, eq2941, eq2956, andl2958, andl2960, andl2962, andl2964, orl2967, orl2969, eq2972, andl2974, eq2978, eq2981, andl2983, andl2985, orl2988, orl2995, orl2997, orl2999;
 
-  assign eq2756 = io_in_execute_is_csr == 1'h1;
-  assign eq2760 = io_in_memory_is_csr == 1'h1;
-  assign ne2765 = io_in_execute_wb != 2'h0;
-  assign ne2770 = io_in_decode_src1 != 5'h0;
-  assign eq2773 = io_in_decode_src1 == io_in_execute_dest;
-  assign andl2775 = eq2773 & ne2770;
-  assign andl2777 = andl2775 & ne2765;
-  assign eq2782 = andl2777 == 1'h0;
-  assign ne2786 = io_in_memory_wb != 2'h0;
-  assign eq2793 = io_in_decode_src1 == io_in_memory_dest;
-  assign andl2795 = eq2793 & ne2770;
-  assign andl2797 = andl2795 & ne2786;
-  assign andl2799 = andl2797 & eq2782;
-  assign eq2803 = andl2799 == 1'h0;
-  assign ne2811 = io_in_writeback_wb != 2'h0;
-  assign eq2818 = io_in_decode_src1 == io_in_writeback_dest;
-  assign andl2820 = eq2818 & ne2770;
-  assign andl2822 = andl2820 & ne2811;
-  assign andl2824 = andl2822 & eq2782;
-  assign andl2826 = andl2824 & eq2803;
-  assign orl2829 = andl2777 | andl2799;
-  assign orl2831 = orl2829 | andl2826;
-  assign ne2839 = io_in_decode_src2 != 5'h0;
-  assign eq2842 = io_in_decode_src2 == io_in_execute_dest;
-  assign andl2844 = eq2842 & ne2839;
-  assign andl2846 = andl2844 & ne2765;
-  assign eq2850 = andl2846 == 1'h0;
-  assign eq2861 = io_in_decode_src2 == io_in_memory_dest;
-  assign andl2863 = eq2861 & ne2839;
-  assign andl2865 = andl2863 & ne2786;
-  assign andl2867 = andl2865 & eq2850;
-  assign eq2871 = andl2867 == 1'h0;
-  assign eq2886 = io_in_decode_src2 == io_in_writeback_dest;
-  assign andl2888 = eq2886 & ne2839;
-  assign andl2890 = andl2888 & ne2811;
-  assign andl2892 = andl2890 & eq2850;
-  assign andl2894 = andl2892 & eq2871;
-  assign orl2897 = andl2846 | andl2867;
-  assign orl2899 = orl2897 | andl2894;
-  assign eq2902 = io_in_decode_csr_address == io_in_execute_csr_address;
-  assign andl2904 = eq2902 & eq2756;
-  assign eq2908 = andl2904 == 1'h0;
-  assign eq2911 = io_in_decode_csr_address == io_in_memory_csr_address;
-  assign andl2913 = eq2911 & eq2760;
-  assign andl2915 = andl2913 & eq2908;
-  assign orl2918 = andl2904 | andl2915;
-  assign orl2925 = orl2831 | andl2846;
-  assign orl2927 = orl2925 | andl2867;
-  assign orl2929 = orl2927 | andl2894;
+  assign eq2826 = io_in_execute_is_csr == 1'h1;
+  assign eq2830 = io_in_memory_is_csr == 1'h1;
+  assign ne2835 = io_in_execute_wb != 2'h0;
+  assign ne2840 = io_in_decode_src1 != 5'h0;
+  assign eq2843 = io_in_decode_src1 == io_in_execute_dest;
+  assign andl2845 = eq2843 & ne2840;
+  assign andl2847 = andl2845 & ne2835;
+  assign eq2852 = andl2847 == 1'h0;
+  assign ne2856 = io_in_memory_wb != 2'h0;
+  assign eq2863 = io_in_decode_src1 == io_in_memory_dest;
+  assign andl2865 = eq2863 & ne2840;
+  assign andl2867 = andl2865 & ne2856;
+  assign andl2869 = andl2867 & eq2852;
+  assign eq2873 = andl2869 == 1'h0;
+  assign ne2881 = io_in_writeback_wb != 2'h0;
+  assign eq2888 = io_in_decode_src1 == io_in_writeback_dest;
+  assign andl2890 = eq2888 & ne2840;
+  assign andl2892 = andl2890 & ne2881;
+  assign andl2894 = andl2892 & eq2852;
+  assign andl2896 = andl2894 & eq2873;
+  assign orl2899 = andl2847 | andl2869;
+  assign orl2901 = orl2899 | andl2896;
+  assign ne2909 = io_in_decode_src2 != 5'h0;
+  assign eq2912 = io_in_decode_src2 == io_in_execute_dest;
+  assign andl2914 = eq2912 & ne2909;
+  assign andl2916 = andl2914 & ne2835;
+  assign eq2920 = andl2916 == 1'h0;
+  assign eq2931 = io_in_decode_src2 == io_in_memory_dest;
+  assign andl2933 = eq2931 & ne2909;
+  assign andl2935 = andl2933 & ne2856;
+  assign andl2937 = andl2935 & eq2920;
+  assign eq2941 = andl2937 == 1'h0;
+  assign eq2956 = io_in_decode_src2 == io_in_writeback_dest;
+  assign andl2958 = eq2956 & ne2909;
+  assign andl2960 = andl2958 & ne2881;
+  assign andl2962 = andl2960 & eq2920;
+  assign andl2964 = andl2962 & eq2941;
+  assign orl2967 = andl2916 | andl2937;
+  assign orl2969 = orl2967 | andl2964;
+  assign eq2972 = io_in_decode_csr_address == io_in_execute_csr_address;
+  assign andl2974 = eq2972 & eq2826;
+  assign eq2978 = andl2974 == 1'h0;
+  assign eq2981 = io_in_decode_csr_address == io_in_memory_csr_address;
+  assign andl2983 = eq2981 & eq2830;
+  assign andl2985 = andl2983 & eq2978;
+  assign orl2988 = andl2974 | andl2985;
+  assign orl2995 = orl2901 | andl2916;
+  assign orl2997 = orl2995 | andl2937;
+  assign orl2999 = orl2997 | andl2964;
 
-  assign io_out_src1_fwd = orl2831;
-  assign io_out_src2_fwd = orl2899;
-  assign io_out_csr_fwd = orl2918;
-  assign io_out_fwd_stall = orl2929;
+  assign io_out_src1_fwd = orl2901;
+  assign io_out_src2_fwd = orl2969;
+  assign io_out_csr_fwd = orl2988;
+  assign io_out_fwd_stall = orl2999;
 
 endmodule
 
@@ -1314,19 +1354,19 @@ module Interrupt_Handler(
   output wire io_out_interrupt,
   output wire[31:0] io_out_interrupt_pc
 );
-  reg[31:0] mem3024 [0:1];
-  wire[31:0] mrport3026, sel3030;
+  reg[31:0] mem3094 [0:1];
+  wire[31:0] mrport3096, sel3100;
 
   initial begin
-    mem3024[0] = 32'hdeadbeef;
-    mem3024[1] = 32'hdeadbeef;
+    mem3094[0] = 32'hdeadbeef;
+    mem3094[1] = 32'hdeadbeef;
   end
-  assign mrport3026 = mem3024[io_INTERRUPT_in_interrupt_id_data];
-  assign sel3030 = io_INTERRUPT_in_interrupt_id_valid ? mrport3026 : 32'hdeadbeef;
+  assign mrport3096 = mem3094[io_INTERRUPT_in_interrupt_id_data];
+  assign sel3100 = io_INTERRUPT_in_interrupt_id_valid ? mrport3096 : 32'hdeadbeef;
 
   assign io_INTERRUPT_in_interrupt_id_ready = io_INTERRUPT_in_interrupt_id_valid;
   assign io_out_interrupt = io_INTERRUPT_in_interrupt_id_valid;
-  assign io_out_interrupt_pc = sel3030;
+  assign io_out_interrupt_pc = sel3100;
 
 endmodule
 
@@ -1344,64 +1384,64 @@ module TAP(
   output wire io_JTAG_TAP_in_reset_ready,
   output wire[3:0] io_out_curr_state
 );
-  reg[3:0] reg3098, sel3188;
-  wire eq3106, andl3191, eq3195, andl3199, eq3203, andl3207;
-  wire[3:0] sel3112, sel3117, sel3123, sel3129, sel3139, sel3144, sel3148, sel3157, sel3163, sel3173, sel3178, sel3182, sel3189, sel3205, sel3206, sel3208;
+  reg[3:0] reg3168, sel3258;
+  wire eq3176, andl3261, eq3265, andl3269, eq3273, andl3277;
+  wire[3:0] sel3182, sel3187, sel3193, sel3199, sel3209, sel3214, sel3218, sel3227, sel3233, sel3243, sel3248, sel3252, sel3259, sel3275, sel3276, sel3278;
 
   always @ (posedge clk) begin
     if (reset)
-      reg3098 <= 4'h0;
+      reg3168 <= 4'h0;
     else
-      reg3098 <= sel3208;
+      reg3168 <= sel3278;
   end
-  assign eq3106 = io_JTAG_TAP_in_mode_select_data == 1'h1;
-  assign sel3112 = eq3106 ? 4'h0 : 4'h1;
-  assign sel3117 = eq3106 ? 4'h2 : 4'h1;
-  assign sel3123 = eq3106 ? 4'h9 : 4'h3;
-  assign sel3129 = eq3106 ? 4'h5 : 4'h4;
-  assign sel3139 = eq3106 ? 4'h8 : 4'h6;
-  assign sel3144 = eq3106 ? 4'h7 : 4'h6;
-  assign sel3148 = eq3106 ? 4'h4 : 4'h8;
-  assign sel3157 = eq3106 ? 4'h0 : 4'ha;
-  assign sel3163 = eq3106 ? 4'hc : 4'hb;
-  assign sel3173 = eq3106 ? 4'hf : 4'hd;
-  assign sel3178 = eq3106 ? 4'he : 4'hd;
-  assign sel3182 = eq3106 ? 4'hf : 4'hb;
+  assign eq3176 = io_JTAG_TAP_in_mode_select_data == 1'h1;
+  assign sel3182 = eq3176 ? 4'h0 : 4'h1;
+  assign sel3187 = eq3176 ? 4'h2 : 4'h1;
+  assign sel3193 = eq3176 ? 4'h9 : 4'h3;
+  assign sel3199 = eq3176 ? 4'h5 : 4'h4;
+  assign sel3209 = eq3176 ? 4'h8 : 4'h6;
+  assign sel3214 = eq3176 ? 4'h7 : 4'h6;
+  assign sel3218 = eq3176 ? 4'h4 : 4'h8;
+  assign sel3227 = eq3176 ? 4'h0 : 4'ha;
+  assign sel3233 = eq3176 ? 4'hc : 4'hb;
+  assign sel3243 = eq3176 ? 4'hf : 4'hd;
+  assign sel3248 = eq3176 ? 4'he : 4'hd;
+  assign sel3252 = eq3176 ? 4'hf : 4'hb;
   always @(*) begin
-    case (reg3098)
-      4'h0: sel3188 = sel3112;
-      4'h1: sel3188 = sel3117;
-      4'h2: sel3188 = sel3123;
-      4'h3: sel3188 = sel3129;
-      4'h4: sel3188 = sel3129;
-      4'h5: sel3188 = sel3139;
-      4'h6: sel3188 = sel3144;
-      4'h7: sel3188 = sel3148;
-      4'h8: sel3188 = sel3117;
-      4'h9: sel3188 = sel3157;
-      4'ha: sel3188 = sel3163;
-      4'hb: sel3188 = sel3163;
-      4'hc: sel3188 = sel3173;
-      4'hd: sel3188 = sel3178;
-      4'he: sel3188 = sel3182;
-      4'hf: sel3188 = sel3117;
-      default: sel3188 = reg3098;
+    case (reg3168)
+      4'h0: sel3258 = sel3182;
+      4'h1: sel3258 = sel3187;
+      4'h2: sel3258 = sel3193;
+      4'h3: sel3258 = sel3199;
+      4'h4: sel3258 = sel3199;
+      4'h5: sel3258 = sel3209;
+      4'h6: sel3258 = sel3214;
+      4'h7: sel3258 = sel3218;
+      4'h8: sel3258 = sel3187;
+      4'h9: sel3258 = sel3227;
+      4'ha: sel3258 = sel3233;
+      4'hb: sel3258 = sel3233;
+      4'hc: sel3258 = sel3243;
+      4'hd: sel3258 = sel3248;
+      4'he: sel3258 = sel3252;
+      4'hf: sel3258 = sel3187;
+      default: sel3258 = reg3168;
     endcase
   end
-  assign sel3189 = io_JTAG_TAP_in_mode_select_valid ? sel3188 : 4'h0;
-  assign andl3191 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_reset_valid;
-  assign eq3195 = io_JTAG_TAP_in_reset_data == 1'h1;
-  assign andl3199 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_clock_valid;
-  assign eq3203 = io_JTAG_TAP_in_clock_data == 1'h1;
-  assign sel3205 = eq3195 ? 4'h0 : reg3098;
-  assign sel3206 = andl3207 ? sel3189 : reg3098;
-  assign andl3207 = andl3199 & eq3203;
-  assign sel3208 = andl3191 ? sel3205 : sel3206;
+  assign sel3259 = io_JTAG_TAP_in_mode_select_valid ? sel3258 : 4'h0;
+  assign andl3261 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_reset_valid;
+  assign eq3265 = io_JTAG_TAP_in_reset_data == 1'h1;
+  assign andl3269 = io_JTAG_TAP_in_mode_select_valid & io_JTAG_TAP_in_clock_valid;
+  assign eq3273 = io_JTAG_TAP_in_clock_data == 1'h1;
+  assign sel3275 = eq3265 ? 4'h0 : reg3168;
+  assign sel3276 = andl3277 ? sel3259 : reg3168;
+  assign andl3277 = andl3269 & eq3273;
+  assign sel3278 = andl3261 ? sel3275 : sel3276;
 
   assign io_JTAG_TAP_in_mode_select_ready = io_JTAG_TAP_in_mode_select_valid;
   assign io_JTAG_TAP_in_clock_ready = io_JTAG_TAP_in_clock_valid;
   assign io_JTAG_TAP_in_reset_ready = io_JTAG_TAP_in_reset_valid;
-  assign io_out_curr_state = reg3098;
+  assign io_out_curr_state = reg3168;
 
 endmodule
 
@@ -1424,101 +1464,101 @@ module JTAG(
   output wire io_JTAG_out_data_valid,
   input wire io_JTAG_out_data_ready
 );
-  wire bindin3214, bindin3216, bindin3217, bindin3220, bindout3223, bindin3226, bindin3229, bindout3232, bindin3235, bindin3238, bindout3241, eq3278, eq3287, eq3292, eq3369, andl3370, sel3371, sel3378;
-  wire[3:0] bindout3244;
-  reg[31:0] reg3252, reg3259, reg3266, reg3273, sel3377;
-  wire[31:0] sel3295, sel3297, shr3304, proxy3309, sel3364, sel3365, sel3366, sel3367, sel3368;
-  wire[30:0] proxy3307;
-  reg sel3376, sel3383;
+  wire bindin3284, bindin3286, bindin3287, bindin3290, bindout3293, bindin3296, bindin3299, bindout3302, bindin3305, bindin3308, bindout3311, eq3348, eq3357, eq3362, eq3438, andl3439, sel3441, sel3448;
+  wire[3:0] bindout3314;
+  reg[31:0] reg3322, reg3329, reg3336, reg3343, sel3440;
+  wire[31:0] sel3365, sel3367, shr3374, proxy3379, sel3434, sel3435, sel3436, sel3437, sel3447;
+  wire[30:0] proxy3377;
+  reg sel3446, sel3453;
 
-  assign bindin3214 = clk;
-  assign bindin3216 = reset;
-  TAP __module16__(.clk(bindin3214), .reset(bindin3216), .io_JTAG_TAP_in_mode_select_data(bindin3217), .io_JTAG_TAP_in_mode_select_valid(bindin3220), .io_JTAG_TAP_in_clock_data(bindin3226), .io_JTAG_TAP_in_clock_valid(bindin3229), .io_JTAG_TAP_in_reset_data(bindin3235), .io_JTAG_TAP_in_reset_valid(bindin3238), .io_JTAG_TAP_in_mode_select_ready(bindout3223), .io_JTAG_TAP_in_clock_ready(bindout3232), .io_JTAG_TAP_in_reset_ready(bindout3241), .io_out_curr_state(bindout3244));
-  assign bindin3217 = io_JTAG_JTAG_TAP_in_mode_select_data;
-  assign bindin3220 = io_JTAG_JTAG_TAP_in_mode_select_valid;
-  assign bindin3226 = io_JTAG_JTAG_TAP_in_clock_data;
-  assign bindin3229 = io_JTAG_JTAG_TAP_in_clock_valid;
-  assign bindin3235 = io_JTAG_JTAG_TAP_in_reset_data;
-  assign bindin3238 = io_JTAG_JTAG_TAP_in_reset_valid;
+  assign bindin3284 = clk;
+  assign bindin3286 = reset;
+  TAP __module16__(.clk(bindin3284), .reset(bindin3286), .io_JTAG_TAP_in_mode_select_data(bindin3287), .io_JTAG_TAP_in_mode_select_valid(bindin3290), .io_JTAG_TAP_in_clock_data(bindin3296), .io_JTAG_TAP_in_clock_valid(bindin3299), .io_JTAG_TAP_in_reset_data(bindin3305), .io_JTAG_TAP_in_reset_valid(bindin3308), .io_JTAG_TAP_in_mode_select_ready(bindout3293), .io_JTAG_TAP_in_clock_ready(bindout3302), .io_JTAG_TAP_in_reset_ready(bindout3311), .io_out_curr_state(bindout3314));
+  assign bindin3287 = io_JTAG_JTAG_TAP_in_mode_select_data;
+  assign bindin3290 = io_JTAG_JTAG_TAP_in_mode_select_valid;
+  assign bindin3296 = io_JTAG_JTAG_TAP_in_clock_data;
+  assign bindin3299 = io_JTAG_JTAG_TAP_in_clock_valid;
+  assign bindin3305 = io_JTAG_JTAG_TAP_in_reset_data;
+  assign bindin3308 = io_JTAG_JTAG_TAP_in_reset_valid;
   always @ (posedge clk) begin
     if (reset)
-      reg3252 <= 32'h0;
+      reg3322 <= 32'h0;
     else
-      reg3252 <= sel3364;
+      reg3322 <= sel3447;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg3259 <= 32'h1234;
+      reg3329 <= 32'h1234;
     else
-      reg3259 <= sel3367;
+      reg3329 <= sel3436;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg3266 <= 32'h5678;
+      reg3336 <= 32'h5678;
     else
-      reg3266 <= sel3368;
+      reg3336 <= sel3437;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg3273 <= 32'h0;
+      reg3343 <= 32'h0;
     else
-      reg3273 <= sel3377;
+      reg3343 <= sel3440;
   end
-  assign eq3278 = reg3252 == 32'h0;
-  assign eq3287 = reg3252 == 32'h1;
-  assign eq3292 = reg3252 == 32'h2;
-  assign sel3295 = eq3292 ? reg3259 : 32'hdeadbeef;
-  assign sel3297 = eq3287 ? reg3266 : sel3295;
-  assign shr3304 = reg3273 >> 32'h1;
-  assign proxy3307 = shr3304[30:0];
-  assign proxy3309 = {io_JTAG_in_data_data, proxy3307};
-  assign sel3364 = (bindout3244 == 4'hf) ? reg3273 : reg3252;
-  assign sel3365 = eq3292 ? reg3273 : reg3259;
-  assign sel3366 = eq3287 ? reg3259 : sel3365;
-  assign sel3367 = (bindout3244 == 4'h8) ? sel3366 : reg3259;
-  assign sel3368 = andl3370 ? reg3273 : reg3266;
-  assign eq3369 = bindout3244 == 4'h8;
-  assign andl3370 = eq3369 & eq3287;
-  assign sel3371 = eq3278 ? 1'h1 : 1'h0;
+  assign eq3348 = reg3322 == 32'h0;
+  assign eq3357 = reg3322 == 32'h1;
+  assign eq3362 = reg3322 == 32'h2;
+  assign sel3365 = eq3362 ? reg3329 : 32'hdeadbeef;
+  assign sel3367 = eq3357 ? reg3336 : sel3365;
+  assign shr3374 = reg3343 >> 32'h1;
+  assign proxy3377 = shr3374[30:0];
+  assign proxy3379 = {io_JTAG_in_data_data, proxy3377};
+  assign sel3434 = eq3362 ? reg3343 : reg3329;
+  assign sel3435 = eq3357 ? reg3329 : sel3434;
+  assign sel3436 = (bindout3314 == 4'h8) ? sel3435 : reg3329;
+  assign sel3437 = andl3439 ? reg3343 : reg3336;
+  assign eq3438 = bindout3314 == 4'h8;
+  assign andl3439 = eq3438 & eq3357;
   always @(*) begin
-    case (bindout3244)
-      4'h3: sel3376 = sel3371;
-      4'h4: sel3376 = 1'h1;
-      4'h8: sel3376 = sel3371;
-      4'ha: sel3376 = sel3371;
-      4'hb: sel3376 = 1'h1;
-      4'hf: sel3376 = sel3371;
-      default: sel3376 = sel3371;
+    case (bindout3314)
+      4'h3: sel3440 = sel3367;
+      4'h4: sel3440 = proxy3379;
+      4'ha: sel3440 = reg3322;
+      4'hb: sel3440 = proxy3379;
+      default: sel3440 = reg3343;
     endcase
   end
+  assign sel3441 = eq3348 ? 1'h1 : 1'h0;
   always @(*) begin
-    case (bindout3244)
-      4'h3: sel3377 = sel3297;
-      4'h4: sel3377 = proxy3309;
-      4'ha: sel3377 = reg3252;
-      4'hb: sel3377 = proxy3309;
-      default: sel3377 = reg3273;
+    case (bindout3314)
+      4'h3: sel3446 = sel3441;
+      4'h4: sel3446 = 1'h1;
+      4'h8: sel3446 = sel3441;
+      4'ha: sel3446 = sel3441;
+      4'hb: sel3446 = 1'h1;
+      4'hf: sel3446 = sel3441;
+      default: sel3446 = sel3441;
     endcase
   end
-  assign sel3378 = eq3278 ? io_JTAG_in_data_data : 1'h0;
+  assign sel3447 = (bindout3314 == 4'hf) ? reg3343 : reg3322;
+  assign sel3448 = eq3348 ? io_JTAG_in_data_data : 1'h0;
   always @(*) begin
-    case (bindout3244)
-      4'h3: sel3383 = sel3378;
-      4'h4: sel3383 = reg3273[0];
-      4'h8: sel3383 = sel3378;
-      4'ha: sel3383 = sel3378;
-      4'hb: sel3383 = reg3273[0];
-      4'hf: sel3383 = sel3378;
-      default: sel3383 = sel3378;
+    case (bindout3314)
+      4'h3: sel3453 = sel3448;
+      4'h4: sel3453 = reg3343[0];
+      4'h8: sel3453 = sel3448;
+      4'ha: sel3453 = sel3448;
+      4'hb: sel3453 = reg3343[0];
+      4'hf: sel3453 = sel3448;
+      default: sel3453 = sel3448;
     endcase
   end
 
-  assign io_JTAG_JTAG_TAP_in_mode_select_ready = bindout3223;
-  assign io_JTAG_JTAG_TAP_in_clock_ready = bindout3232;
-  assign io_JTAG_JTAG_TAP_in_reset_ready = bindout3241;
+  assign io_JTAG_JTAG_TAP_in_mode_select_ready = bindout3293;
+  assign io_JTAG_JTAG_TAP_in_clock_ready = bindout3302;
+  assign io_JTAG_JTAG_TAP_in_reset_ready = bindout3311;
   assign io_JTAG_in_data_ready = io_JTAG_in_data_valid;
-  assign io_JTAG_out_data_data = sel3383;
-  assign io_JTAG_out_data_valid = sel3376;
+  assign io_JTAG_out_data_data = sel3453;
+  assign io_JTAG_out_data_valid = sel3446;
 
 endmodule
 
@@ -1531,27 +1571,27 @@ module CSR_Handler(
   input wire[31:0] io_in_mem_csr_result,
   output wire[31:0] io_out_decode_csr_data
 );
-  reg[11:0] mem3439 [0:4095];
-  reg[11:0] reg3448;
-  wire[11:0] proxy3458, mrport3460;
-  wire[31:0] pad3462;
+  reg[11:0] mem3509 [0:4095];
+  reg[11:0] reg3518;
+  wire[11:0] proxy3528, mrport3530;
+  wire[31:0] pad3532;
 
   always @ (posedge clk) begin
     if (io_in_mem_is_csr) begin
-      mem3439[io_in_mem_csr_address] <= proxy3458;
+      mem3509[io_in_mem_csr_address] <= proxy3528;
     end
   end
-  assign mrport3460 = mem3439[reg3448];
+  assign mrport3530 = mem3509[reg3518];
   always @ (posedge clk) begin
     if (reset)
-      reg3448 <= 12'h0;
+      reg3518 <= 12'h0;
     else
-      reg3448 <= io_in_decode_csr_address;
+      reg3518 <= io_in_decode_csr_address;
   end
-  assign proxy3458 = io_in_mem_csr_result[11:0];
-  assign pad3462 = {{20{1'b0}}, mrport3460};
+  assign proxy3528 = io_in_mem_csr_result[11:0];
+  assign pad3532 = {{20{1'b0}}, mrport3530};
 
-  assign io_out_decode_csr_data = pad3462;
+  assign io_out_decode_csr_data = pad3532;
 
 endmodule
 
@@ -1597,216 +1637,221 @@ module Pipeline(
   output wire io_out_fwd_stall,
   output wire io_out_branch_stall
 );
-  wire bindin233, bindin235, bindin239, bindout242, bindout248, bindin251, bindin254, bindin260, bindin263, bindin266, bindin269, bindin275, bindin339, bindin340, bindin347, bindin350, bindin353, bindin990, bindin997, bindout1012, bindout1039, bindout1054, bindout1057, bindin1357, bindin1358, bindin1380, bindin1398, bindin1401, bindin1410, bindin1419, bindout1428, bindout1455, bindout1476, bindin1705, bindin1729, bindin1738, bindout1750, bindout1783, bindout1792, bindin1969, bindin1970, bindin2004, bindout2022, bindin2412, bindout2415, bindout2421, bindin2424, bindout2430, bindin2433, bindout2439, bindin2442, bindout2502, bindin2589, bindin2590, bindin2955, bindin2979, bindout3012, bindin3034, bindin3037, bindout3040, bindout3043, bindin3387, bindin3388, bindin3389, bindin3392, bindout3395, bindin3398, bindin3401, bindout3404, bindin3407, bindin3410, bindout3413, bindin3416, bindin3419, bindout3422, bindout3425, bindout3428, bindin3431, bindin3467, bindin3468, bindin3475, orl3483, eq3488;
-  wire[31:0] bindin236, bindout245, bindin257, bindin272, bindin278, bindout281, bindout284, bindin341, bindin344, bindout356, bindout359, bindin991, bindin994, bindin1000, bindout1015, bindout1024, bindout1030, bindout1060, bindout1066, bindin1365, bindin1371, bindin1392, bindin1413, bindin1416, bindin1422, bindout1431, bindout1440, bindout1446, bindout1473, bindout1479, bindout1482, bindin1690, bindin1696, bindin1717, bindin1732, bindin1735, bindin1741, bindin1744, bindout1753, bindout1756, bindout1768, bindout1774, bindout1786, bindout1789, bindout1795, bindin1971, bindin1983, bindin1989, bindin1998, bindin2007, bindin2010, bindin2013, bindout2025, bindout2028, bindout2040, bindout2043, bindout2055, bindout2058, bindout2064, bindin2409, bindout2418, bindout2427, bindin2445, bindin2463, bindin2469, bindin2472, bindin2475, bindin2478, bindout2484, bindout2487, bindout2505, bindout2508, bindin2591, bindin2594, bindin2609, bindout2612, bindout2615, bindout2630, bindin2664, bindin2667, bindin2682, bindout2685, bindin2949, bindin2952, bindin2961, bindin2970, bindin2973, bindin2976, bindin2985, bindin2994, bindin2997, bindin3000, bindout3046, bindin3478, bindout3481;
-  wire[4:0] bindin1003, bindout1018, bindout1021, bindout1027, bindin1359, bindin1362, bindin1368, bindout1434, bindout1437, bindout1443, bindin1684, bindin1687, bindin1693, bindout1759, bindout1765, bindout1771, bindin1974, bindin1980, bindin1986, bindout2031, bindout2037, bindout2046, bindin2454, bindin2460, bindin2466, bindout2490, bindout2496, bindout2499, bindin2597, bindin2603, bindin2606, bindout2618, bindout2624, bindout2627, bindin2670, bindin2676, bindin2679, bindout2688, bindin2934, bindin2937, bindin2943, bindin2964, bindin2988;
-  wire[1:0] bindin1006, bindout1033, bindin1377, bindout1452, bindin1702, bindout1762, bindin1977, bindout2034, bindout2436, bindin2457, bindout2493, bindin2600, bindout2621, bindin2673, bindout2691, bindin2946, bindin2967, bindin2991;
-  wire[11:0] bindout1009, bindout1042, bindin1383, bindin1407, bindout1425, bindout1458, bindin1708, bindin1726, bindout1747, bindin2001, bindout2019, bindin2940, bindin2958, bindin2982, bindin3469, bindin3472;
-  wire[3:0] bindout1036, bindin1374, bindout1449, bindin1699;
-  wire[2:0] bindout1045, bindout1048, bindout1051, bindin1386, bindin1389, bindin1395, bindout1461, bindout1464, bindout1467, bindin1711, bindin1714, bindin1720, bindout1777, bindout1780, bindin1992, bindin1995, bindin2016, bindout2049, bindout2052, bindout2061, bindin2448, bindin2451, bindin2481;
-  wire[19:0] bindout1063, bindin1404, bindout1470, bindin1723;
+  wire bindin230, bindin232, bindin236, bindout239, bindout245, bindin248, bindin251, bindin257, bindin260, bindin263, bindin266, bindin272, bindin336, bindin337, bindin344, bindin347, bindin350, bindin1027, bindin1034, bindout1049, bindout1076, bindout1091, bindout1094, bindin1394, bindin1395, bindin1417, bindin1435, bindin1438, bindin1447, bindin1456, bindout1465, bindout1492, bindout1513, bindin1728, bindin1752, bindin1761, bindout1773, bindout1806, bindout1815, bindin1992, bindin1993, bindin2027, bindout2045, bindin2446, bindout2449, bindout2455, bindin2458, bindout2464, bindin2467, bindout2473, bindin2476, bindout2536, bindout2542, bindin2647, bindin2648, bindin2670, bindout2694, bindin3025, bindin3049, bindout3082, bindin3104, bindin3107, bindout3110, bindout3113, bindin3457, bindin3458, bindin3459, bindin3462, bindout3465, bindin3468, bindin3471, bindout3474, bindin3477, bindin3480, bindout3483, bindin3486, bindin3489, bindout3492, bindout3495, bindout3498, bindin3501, bindin3537, bindin3538, bindin3545, orl3553, orl3555, eq3560, orl3562, orl3565;
+  wire[31:0] bindin233, bindout242, bindin254, bindin269, bindin275, bindout278, bindout281, bindin338, bindin341, bindout353, bindout356, bindin1028, bindin1031, bindin1037, bindout1052, bindout1061, bindout1067, bindout1079, bindout1097, bindout1103, bindin1402, bindin1408, bindin1420, bindin1429, bindin1450, bindin1453, bindin1459, bindout1468, bindout1477, bindout1483, bindout1495, bindout1510, bindout1516, bindout1519, bindin1713, bindin1719, bindin1731, bindin1740, bindin1755, bindin1758, bindin1764, bindin1767, bindout1776, bindout1779, bindout1791, bindout1797, bindout1809, bindout1812, bindout1818, bindin1994, bindin2006, bindin2012, bindin2021, bindin2030, bindin2033, bindin2036, bindout2048, bindout2051, bindout2063, bindout2066, bindout2078, bindout2081, bindout2087, bindin2443, bindout2452, bindout2461, bindin2479, bindin2497, bindin2503, bindin2506, bindin2509, bindin2512, bindout2518, bindout2521, bindout2539, bindout2545, bindin2649, bindin2652, bindin2667, bindin2673, bindout2676, bindout2679, bindout2697, bindout2700, bindin2734, bindin2737, bindin2752, bindout2755, bindin3019, bindin3022, bindin3031, bindin3040, bindin3043, bindin3046, bindin3055, bindin3064, bindin3067, bindin3070, bindout3116, bindin3548, bindout3551;
+  wire[4:0] bindin1040, bindout1055, bindout1058, bindout1064, bindin1396, bindin1399, bindin1405, bindout1471, bindout1474, bindout1480, bindin1707, bindin1710, bindin1716, bindout1782, bindout1788, bindout1794, bindin1997, bindin2003, bindin2009, bindout2054, bindout2060, bindout2069, bindin2488, bindin2494, bindin2500, bindout2524, bindout2530, bindout2533, bindin2655, bindin2661, bindin2664, bindout2682, bindout2688, bindout2691, bindin2740, bindin2746, bindin2749, bindout2758, bindin3004, bindin3007, bindin3013, bindin3034, bindin3058;
+  wire[1:0] bindin1043, bindout1070, bindin1414, bindout1489, bindin1725, bindout1785, bindin2000, bindout2057, bindout2470, bindin2491, bindout2527, bindin2658, bindout2685, bindin2743, bindout2761, bindin3016, bindin3037, bindin3061;
+  wire[11:0] bindout1046, bindin1444, bindout1462, bindin1749, bindout1770, bindin2024, bindout2042, bindin3010, bindin3028, bindin3052, bindin3539, bindin3542;
+  wire[3:0] bindout1073, bindin1411, bindout1486, bindin1722;
+  wire[2:0] bindout1082, bindout1085, bindout1088, bindin1423, bindin1426, bindin1432, bindout1498, bindout1501, bindout1504, bindin1734, bindin1737, bindin1743, bindout1800, bindout1803, bindin2015, bindin2018, bindin2039, bindout2072, bindout2075, bindout2084, bindin2482, bindin2485, bindin2515;
+  wire[19:0] bindout1100, bindin1441, bindout1507, bindin1746;
 
-  assign bindin233 = clk;
-  assign bindin235 = reset;
-  Fetch __module2__(.clk(bindin233), .reset(bindin235), .io_IBUS_in_data_data(bindin236), .io_IBUS_in_data_valid(bindin239), .io_IBUS_out_address_ready(bindin251), .io_in_branch_dir(bindin254), .io_in_branch_dest(bindin257), .io_in_branch_stall(bindin260), .io_in_fwd_stall(bindin263), .io_in_branch_stall_exe(bindin266), .io_in_jal(bindin269), .io_in_jal_dest(bindin272), .io_in_interrupt(bindin275), .io_in_interrupt_pc(bindin278), .io_IBUS_in_data_ready(bindout242), .io_IBUS_out_address_data(bindout245), .io_IBUS_out_address_valid(bindout248), .io_out_instruction(bindout281), .io_out_curr_PC(bindout284));
-  assign bindin236 = io_IBUS_in_data_data;
-  assign bindin239 = io_IBUS_in_data_valid;
-  assign bindin251 = io_IBUS_out_address_ready;
-  assign bindin254 = bindout2502;
-  assign bindin257 = bindout2505;
-  assign bindin260 = bindout1054;
-  assign bindin263 = bindout3012;
-  assign bindin266 = bindout1792;
-  assign bindin269 = bindout1783;
-  assign bindin272 = bindout1786;
-  assign bindin275 = bindout3043;
-  assign bindin278 = bindout3046;
-  assign bindin339 = clk;
-  assign bindin340 = reset;
-  F_D_Register __module3__(.clk(bindin339), .reset(bindin340), .io_in_instruction(bindin341), .io_in_curr_PC(bindin344), .io_in_branch_stall(bindin347), .io_in_branch_stall_exe(bindin350), .io_in_fwd_stall(bindin353), .io_out_instruction(bindout356), .io_out_curr_PC(bindout359));
+  assign bindin230 = clk;
+  assign bindin232 = reset;
+  Fetch __module2__(.clk(bindin230), .reset(bindin232), .io_IBUS_in_data_data(bindin233), .io_IBUS_in_data_valid(bindin236), .io_IBUS_out_address_ready(bindin248), .io_in_branch_dir(bindin251), .io_in_branch_dest(bindin254), .io_in_branch_stall(bindin257), .io_in_fwd_stall(bindin260), .io_in_branch_stall_exe(bindin263), .io_in_jal(bindin266), .io_in_jal_dest(bindin269), .io_in_interrupt(bindin272), .io_in_interrupt_pc(bindin275), .io_IBUS_in_data_ready(bindout239), .io_IBUS_out_address_data(bindout242), .io_IBUS_out_address_valid(bindout245), .io_out_instruction(bindout278), .io_out_curr_PC(bindout281));
+  assign bindin233 = io_IBUS_in_data_data;
+  assign bindin236 = io_IBUS_in_data_valid;
+  assign bindin248 = io_IBUS_out_address_ready;
+  assign bindin251 = bindout2694;
+  assign bindin254 = bindout2697;
+  assign bindin257 = bindout1091;
+  assign bindin260 = bindout3082;
+  assign bindin263 = orl3565;
+  assign bindin266 = bindout1806;
+  assign bindin269 = bindout1809;
+  assign bindin272 = bindout3113;
+  assign bindin275 = bindout3116;
+  assign bindin336 = clk;
+  assign bindin337 = reset;
+  F_D_Register __module3__(.clk(bindin336), .reset(bindin337), .io_in_instruction(bindin338), .io_in_curr_PC(bindin341), .io_in_branch_stall(bindin344), .io_in_branch_stall_exe(bindin347), .io_in_fwd_stall(bindin350), .io_out_instruction(bindout353), .io_out_curr_PC(bindout356));
+  assign bindin338 = bindout278;
   assign bindin341 = bindout281;
-  assign bindin344 = bindout284;
-  assign bindin347 = bindout1054;
-  assign bindin350 = bindout1792;
-  assign bindin353 = bindout3012;
-  assign bindin990 = clk;
-  Decode __module4__(.clk(bindin990), .io_in_instruction(bindin991), .io_in_curr_PC(bindin994), .io_in_stall(bindin997), .io_in_write_data(bindin1000), .io_in_rd(bindin1003), .io_in_wb(bindin1006), .io_out_csr_address(bindout1009), .io_out_is_csr(bindout1012), .io_out_csr_mask(bindout1015), .io_out_rd(bindout1018), .io_out_rs1(bindout1021), .io_out_rd1(bindout1024), .io_out_rs2(bindout1027), .io_out_rd2(bindout1030), .io_out_wb(bindout1033), .io_out_alu_op(bindout1036), .io_out_rs2_src(bindout1039), .io_out_itype_immed(bindout1042), .io_out_mem_read(bindout1045), .io_out_mem_write(bindout1048), .io_out_branch_type(bindout1051), .io_out_branch_stall(bindout1054), .io_out_jal(bindout1057), .io_out_jal_offset(bindout1060), .io_out_upper_immed(bindout1063), .io_out_PC_next(bindout1066));
-  assign bindin991 = bindout356;
-  assign bindin994 = bindout359;
-  assign bindin997 = eq3488;
-  assign bindin1000 = bindout2685;
-  assign bindin1003 = bindout2688;
-  assign bindin1006 = bindout2691;
-  assign bindin1357 = clk;
-  assign bindin1358 = reset;
-  D_E_Register __module6__(.clk(bindin1357), .reset(bindin1358), .io_in_rd(bindin1359), .io_in_rs1(bindin1362), .io_in_rd1(bindin1365), .io_in_rs2(bindin1368), .io_in_rd2(bindin1371), .io_in_alu_op(bindin1374), .io_in_wb(bindin1377), .io_in_rs2_src(bindin1380), .io_in_itype_immed(bindin1383), .io_in_mem_read(bindin1386), .io_in_mem_write(bindin1389), .io_in_PC_next(bindin1392), .io_in_branch_type(bindin1395), .io_in_fwd_stall(bindin1398), .io_in_branch_stall(bindin1401), .io_in_upper_immed(bindin1404), .io_in_csr_address(bindin1407), .io_in_is_csr(bindin1410), .io_in_csr_mask(bindin1413), .io_in_curr_PC(bindin1416), .io_in_jal(bindin1419), .io_in_jal_offset(bindin1422), .io_out_csr_address(bindout1425), .io_out_is_csr(bindout1428), .io_out_csr_mask(bindout1431), .io_out_rd(bindout1434), .io_out_rs1(bindout1437), .io_out_rd1(bindout1440), .io_out_rs2(bindout1443), .io_out_rd2(bindout1446), .io_out_alu_op(bindout1449), .io_out_wb(bindout1452), .io_out_rs2_src(bindout1455), .io_out_itype_immed(bindout1458), .io_out_mem_read(bindout1461), .io_out_mem_write(bindout1464), .io_out_branch_type(bindout1467), .io_out_upper_immed(bindout1470), .io_out_curr_PC(bindout1473), .io_out_jal(bindout1476), .io_out_jal_offset(bindout1479), .io_out_PC_next(bindout1482));
-  assign bindin1359 = bindout1018;
-  assign bindin1362 = bindout1021;
-  assign bindin1365 = bindout1024;
-  assign bindin1368 = bindout1027;
-  assign bindin1371 = bindout1030;
-  assign bindin1374 = bindout1036;
-  assign bindin1377 = bindout1033;
-  assign bindin1380 = bindout1039;
-  assign bindin1383 = bindout1042;
-  assign bindin1386 = bindout1045;
-  assign bindin1389 = bindout1048;
-  assign bindin1392 = bindout1066;
-  assign bindin1395 = bindout1051;
-  assign bindin1398 = bindout3012;
-  assign bindin1401 = bindout1792;
-  assign bindin1404 = bindout1063;
-  assign bindin1407 = bindout1009;
-  assign bindin1410 = bindout1012;
-  assign bindin1413 = bindout1015;
-  assign bindin1416 = bindout359;
-  assign bindin1419 = bindout1057;
-  assign bindin1422 = bindout1060;
-  Execute __module7__(.io_in_rd(bindin1684), .io_in_rs1(bindin1687), .io_in_rd1(bindin1690), .io_in_rs2(bindin1693), .io_in_rd2(bindin1696), .io_in_alu_op(bindin1699), .io_in_wb(bindin1702), .io_in_rs2_src(bindin1705), .io_in_itype_immed(bindin1708), .io_in_mem_read(bindin1711), .io_in_mem_write(bindin1714), .io_in_PC_next(bindin1717), .io_in_branch_type(bindin1720), .io_in_upper_immed(bindin1723), .io_in_csr_address(bindin1726), .io_in_is_csr(bindin1729), .io_in_csr_data(bindin1732), .io_in_csr_mask(bindin1735), .io_in_jal(bindin1738), .io_in_jal_offset(bindin1741), .io_in_curr_PC(bindin1744), .io_out_csr_address(bindout1747), .io_out_is_csr(bindout1750), .io_out_csr_result(bindout1753), .io_out_alu_result(bindout1756), .io_out_rd(bindout1759), .io_out_wb(bindout1762), .io_out_rs1(bindout1765), .io_out_rd1(bindout1768), .io_out_rs2(bindout1771), .io_out_rd2(bindout1774), .io_out_mem_read(bindout1777), .io_out_mem_write(bindout1780), .io_out_jal(bindout1783), .io_out_jal_dest(bindout1786), .io_out_branch_offset(bindout1789), .io_out_branch_stall(bindout1792), .io_out_PC_next(bindout1795));
-  assign bindin1684 = bindout1434;
-  assign bindin1687 = bindout1437;
-  assign bindin1690 = bindout1440;
-  assign bindin1693 = bindout1443;
-  assign bindin1696 = bindout1446;
-  assign bindin1699 = bindout1449;
-  assign bindin1702 = bindout1452;
-  assign bindin1705 = bindout1455;
-  assign bindin1708 = bindout1458;
-  assign bindin1711 = bindout1461;
-  assign bindin1714 = bindout1464;
-  assign bindin1717 = bindout1482;
-  assign bindin1720 = bindout1467;
-  assign bindin1723 = bindout1470;
-  assign bindin1726 = bindout1425;
-  assign bindin1729 = bindout1428;
-  assign bindin1732 = bindout3481;
-  assign bindin1735 = bindout1431;
-  assign bindin1738 = bindout1476;
-  assign bindin1741 = bindout1479;
-  assign bindin1744 = bindout1473;
-  assign bindin1969 = clk;
-  assign bindin1970 = reset;
-  E_M_Register __module8__(.clk(bindin1969), .reset(bindin1970), .io_in_alu_result(bindin1971), .io_in_rd(bindin1974), .io_in_wb(bindin1977), .io_in_rs1(bindin1980), .io_in_rd1(bindin1983), .io_in_rs2(bindin1986), .io_in_rd2(bindin1989), .io_in_mem_read(bindin1992), .io_in_mem_write(bindin1995), .io_in_PC_next(bindin1998), .io_in_csr_address(bindin2001), .io_in_is_csr(bindin2004), .io_in_csr_result(bindin2007), .io_in_curr_PC(bindin2010), .io_in_branch_offset(bindin2013), .io_in_branch_type(bindin2016), .io_out_csr_address(bindout2019), .io_out_is_csr(bindout2022), .io_out_csr_result(bindout2025), .io_out_alu_result(bindout2028), .io_out_rd(bindout2031), .io_out_wb(bindout2034), .io_out_rs1(bindout2037), .io_out_rd1(bindout2040), .io_out_rd2(bindout2043), .io_out_rs2(bindout2046), .io_out_mem_read(bindout2049), .io_out_mem_write(bindout2052), .io_out_curr_PC(bindout2055), .io_out_branch_offset(bindout2058), .io_out_branch_type(bindout2061), .io_out_PC_next(bindout2064));
-  assign bindin1971 = bindout1756;
-  assign bindin1974 = bindout1759;
-  assign bindin1977 = bindout1762;
-  assign bindin1980 = bindout1765;
-  assign bindin1983 = bindout1768;
-  assign bindin1986 = bindout1771;
-  assign bindin1989 = bindout1774;
-  assign bindin1992 = bindout1777;
-  assign bindin1995 = bindout1780;
-  assign bindin1998 = bindout1795;
-  assign bindin2001 = bindout1747;
-  assign bindin2004 = bindout1750;
-  assign bindin2007 = bindout1753;
-  assign bindin2010 = bindout1473;
-  assign bindin2013 = bindout1789;
-  assign bindin2016 = bindout1467;
-  Memory __module9__(.io_DBUS_in_data_data(bindin2409), .io_DBUS_in_data_valid(bindin2412), .io_DBUS_out_data_ready(bindin2424), .io_DBUS_out_address_ready(bindin2433), .io_DBUS_out_control_ready(bindin2442), .io_in_alu_result(bindin2445), .io_in_mem_read(bindin2448), .io_in_mem_write(bindin2451), .io_in_rd(bindin2454), .io_in_wb(bindin2457), .io_in_rs1(bindin2460), .io_in_rd1(bindin2463), .io_in_rs2(bindin2466), .io_in_rd2(bindin2469), .io_in_PC_next(bindin2472), .io_in_curr_PC(bindin2475), .io_in_branch_offset(bindin2478), .io_in_branch_type(bindin2481), .io_DBUS_in_data_ready(bindout2415), .io_DBUS_out_data_data(bindout2418), .io_DBUS_out_data_valid(bindout2421), .io_DBUS_out_address_data(bindout2427), .io_DBUS_out_address_valid(bindout2430), .io_DBUS_out_control_data(bindout2436), .io_DBUS_out_control_valid(bindout2439), .io_out_alu_result(bindout2484), .io_out_mem_result(bindout2487), .io_out_rd(bindout2490), .io_out_wb(bindout2493), .io_out_rs1(bindout2496), .io_out_rs2(bindout2499), .io_out_branch_dir(bindout2502), .io_out_branch_dest(bindout2505), .io_out_PC_next(bindout2508));
-  assign bindin2409 = io_DBUS_in_data_data;
-  assign bindin2412 = io_DBUS_in_data_valid;
-  assign bindin2424 = io_DBUS_out_data_ready;
-  assign bindin2433 = io_DBUS_out_address_ready;
-  assign bindin2442 = io_DBUS_out_control_ready;
-  assign bindin2445 = bindout2028;
-  assign bindin2448 = bindout2049;
-  assign bindin2451 = bindout2052;
-  assign bindin2454 = bindout2031;
-  assign bindin2457 = bindout2034;
-  assign bindin2460 = bindout2037;
-  assign bindin2463 = bindout2040;
-  assign bindin2466 = bindout2046;
-  assign bindin2469 = bindout2043;
-  assign bindin2472 = bindout2064;
-  assign bindin2475 = bindout2055;
-  assign bindin2478 = bindout2058;
-  assign bindin2481 = bindout2061;
-  assign bindin2589 = clk;
-  assign bindin2590 = reset;
-  M_W_Register __module11__(.clk(bindin2589), .reset(bindin2590), .io_in_alu_result(bindin2591), .io_in_mem_result(bindin2594), .io_in_rd(bindin2597), .io_in_wb(bindin2600), .io_in_rs1(bindin2603), .io_in_rs2(bindin2606), .io_in_PC_next(bindin2609), .io_out_alu_result(bindout2612), .io_out_mem_result(bindout2615), .io_out_rd(bindout2618), .io_out_wb(bindout2621), .io_out_rs1(bindout2624), .io_out_rs2(bindout2627), .io_out_PC_next(bindout2630));
-  assign bindin2591 = bindout2484;
-  assign bindin2594 = bindout2487;
-  assign bindin2597 = bindout2490;
-  assign bindin2600 = bindout2493;
-  assign bindin2603 = bindout2496;
-  assign bindin2606 = bindout2499;
-  assign bindin2609 = bindout2508;
-  Write_Back __module12__(.io_in_alu_result(bindin2664), .io_in_mem_result(bindin2667), .io_in_rd(bindin2670), .io_in_wb(bindin2673), .io_in_rs1(bindin2676), .io_in_rs2(bindin2679), .io_in_PC_next(bindin2682), .io_out_write_data(bindout2685), .io_out_rd(bindout2688), .io_out_wb(bindout2691));
-  assign bindin2664 = bindout2612;
-  assign bindin2667 = bindout2615;
-  assign bindin2670 = bindout2618;
-  assign bindin2673 = bindout2621;
-  assign bindin2676 = bindout2624;
-  assign bindin2679 = bindout2627;
-  assign bindin2682 = bindout2630;
-  Forwarding __module13__(.io_in_decode_src1(bindin2934), .io_in_decode_src2(bindin2937), .io_in_decode_csr_address(bindin2940), .io_in_execute_dest(bindin2943), .io_in_execute_wb(bindin2946), .io_in_execute_alu_result(bindin2949), .io_in_execute_PC_next(bindin2952), .io_in_execute_is_csr(bindin2955), .io_in_execute_csr_address(bindin2958), .io_in_execute_csr_result(bindin2961), .io_in_memory_dest(bindin2964), .io_in_memory_wb(bindin2967), .io_in_memory_alu_result(bindin2970), .io_in_memory_mem_data(bindin2973), .io_in_memory_PC_next(bindin2976), .io_in_memory_is_csr(bindin2979), .io_in_memory_csr_address(bindin2982), .io_in_memory_csr_result(bindin2985), .io_in_writeback_dest(bindin2988), .io_in_writeback_wb(bindin2991), .io_in_writeback_alu_result(bindin2994), .io_in_writeback_mem_data(bindin2997), .io_in_writeback_PC_next(bindin3000), .io_out_fwd_stall(bindout3012));
-  assign bindin2934 = bindout1021;
-  assign bindin2937 = bindout1027;
-  assign bindin2940 = bindout1009;
-  assign bindin2943 = bindout1759;
-  assign bindin2946 = bindout1762;
-  assign bindin2949 = bindout1756;
-  assign bindin2952 = bindout1795;
-  assign bindin2955 = bindout1750;
-  assign bindin2958 = bindout1747;
-  assign bindin2961 = bindout1753;
-  assign bindin2964 = bindout2490;
-  assign bindin2967 = bindout2493;
-  assign bindin2970 = bindout2484;
-  assign bindin2973 = bindout2487;
-  assign bindin2976 = bindout2508;
-  assign bindin2979 = bindout2022;
-  assign bindin2982 = bindout2019;
-  assign bindin2985 = bindout2025;
-  assign bindin2988 = bindout2618;
-  assign bindin2991 = bindout2621;
-  assign bindin2994 = bindout2612;
-  assign bindin2997 = bindout2615;
-  assign bindin3000 = bindout2630;
-  Interrupt_Handler __module14__(.io_INTERRUPT_in_interrupt_id_data(bindin3034), .io_INTERRUPT_in_interrupt_id_valid(bindin3037), .io_INTERRUPT_in_interrupt_id_ready(bindout3040), .io_out_interrupt(bindout3043), .io_out_interrupt_pc(bindout3046));
-  assign bindin3034 = io_INTERRUPT_in_interrupt_id_data;
-  assign bindin3037 = io_INTERRUPT_in_interrupt_id_valid;
-  assign bindin3387 = clk;
-  assign bindin3388 = reset;
-  JTAG __module15__(.clk(bindin3387), .reset(bindin3388), .io_JTAG_JTAG_TAP_in_mode_select_data(bindin3389), .io_JTAG_JTAG_TAP_in_mode_select_valid(bindin3392), .io_JTAG_JTAG_TAP_in_clock_data(bindin3398), .io_JTAG_JTAG_TAP_in_clock_valid(bindin3401), .io_JTAG_JTAG_TAP_in_reset_data(bindin3407), .io_JTAG_JTAG_TAP_in_reset_valid(bindin3410), .io_JTAG_in_data_data(bindin3416), .io_JTAG_in_data_valid(bindin3419), .io_JTAG_out_data_ready(bindin3431), .io_JTAG_JTAG_TAP_in_mode_select_ready(bindout3395), .io_JTAG_JTAG_TAP_in_clock_ready(bindout3404), .io_JTAG_JTAG_TAP_in_reset_ready(bindout3413), .io_JTAG_in_data_ready(bindout3422), .io_JTAG_out_data_data(bindout3425), .io_JTAG_out_data_valid(bindout3428));
-  assign bindin3389 = io_jtag_JTAG_TAP_in_mode_select_data;
-  assign bindin3392 = io_jtag_JTAG_TAP_in_mode_select_valid;
-  assign bindin3398 = io_jtag_JTAG_TAP_in_clock_data;
-  assign bindin3401 = io_jtag_JTAG_TAP_in_clock_valid;
-  assign bindin3407 = io_jtag_JTAG_TAP_in_reset_data;
-  assign bindin3410 = io_jtag_JTAG_TAP_in_reset_valid;
-  assign bindin3416 = io_jtag_in_data_data;
-  assign bindin3419 = io_jtag_in_data_valid;
-  assign bindin3431 = io_jtag_out_data_ready;
-  assign bindin3467 = clk;
-  assign bindin3468 = reset;
-  CSR_Handler __module17__(.clk(bindin3467), .reset(bindin3468), .io_in_decode_csr_address(bindin3469), .io_in_mem_csr_address(bindin3472), .io_in_mem_is_csr(bindin3475), .io_in_mem_csr_result(bindin3478), .io_out_decode_csr_data(bindout3481));
-  assign bindin3469 = bindout1009;
-  assign bindin3472 = bindout2019;
-  assign bindin3475 = bindout2022;
-  assign bindin3478 = bindout2025;
-  assign orl3483 = bindout1054 | bindout1792;
-  assign eq3488 = bindout1792 == 1'h1;
+  assign bindin344 = bindout1091;
+  assign bindin347 = orl3565;
+  assign bindin350 = bindout3082;
+  assign bindin1027 = clk;
+  Decode __module4__(.clk(bindin1027), .io_in_instruction(bindin1028), .io_in_curr_PC(bindin1031), .io_in_stall(bindin1034), .io_in_write_data(bindin1037), .io_in_rd(bindin1040), .io_in_wb(bindin1043), .io_out_csr_address(bindout1046), .io_out_is_csr(bindout1049), .io_out_csr_mask(bindout1052), .io_out_rd(bindout1055), .io_out_rs1(bindout1058), .io_out_rd1(bindout1061), .io_out_rs2(bindout1064), .io_out_rd2(bindout1067), .io_out_wb(bindout1070), .io_out_alu_op(bindout1073), .io_out_rs2_src(bindout1076), .io_out_itype_immed(bindout1079), .io_out_mem_read(bindout1082), .io_out_mem_write(bindout1085), .io_out_branch_type(bindout1088), .io_out_branch_stall(bindout1091), .io_out_jal(bindout1094), .io_out_jal_offset(bindout1097), .io_out_upper_immed(bindout1100), .io_out_PC_next(bindout1103));
+  assign bindin1028 = bindout353;
+  assign bindin1031 = bindout356;
+  assign bindin1034 = orl3562;
+  assign bindin1037 = bindout2755;
+  assign bindin1040 = bindout2758;
+  assign bindin1043 = bindout2761;
+  assign bindin1394 = clk;
+  assign bindin1395 = reset;
+  D_E_Register __module6__(.clk(bindin1394), .reset(bindin1395), .io_in_rd(bindin1396), .io_in_rs1(bindin1399), .io_in_rd1(bindin1402), .io_in_rs2(bindin1405), .io_in_rd2(bindin1408), .io_in_alu_op(bindin1411), .io_in_wb(bindin1414), .io_in_rs2_src(bindin1417), .io_in_itype_immed(bindin1420), .io_in_mem_read(bindin1423), .io_in_mem_write(bindin1426), .io_in_PC_next(bindin1429), .io_in_branch_type(bindin1432), .io_in_fwd_stall(bindin1435), .io_in_branch_stall(bindin1438), .io_in_upper_immed(bindin1441), .io_in_csr_address(bindin1444), .io_in_is_csr(bindin1447), .io_in_csr_mask(bindin1450), .io_in_curr_PC(bindin1453), .io_in_jal(bindin1456), .io_in_jal_offset(bindin1459), .io_out_csr_address(bindout1462), .io_out_is_csr(bindout1465), .io_out_csr_mask(bindout1468), .io_out_rd(bindout1471), .io_out_rs1(bindout1474), .io_out_rd1(bindout1477), .io_out_rs2(bindout1480), .io_out_rd2(bindout1483), .io_out_alu_op(bindout1486), .io_out_wb(bindout1489), .io_out_rs2_src(bindout1492), .io_out_itype_immed(bindout1495), .io_out_mem_read(bindout1498), .io_out_mem_write(bindout1501), .io_out_branch_type(bindout1504), .io_out_upper_immed(bindout1507), .io_out_curr_PC(bindout1510), .io_out_jal(bindout1513), .io_out_jal_offset(bindout1516), .io_out_PC_next(bindout1519));
+  assign bindin1396 = bindout1055;
+  assign bindin1399 = bindout1058;
+  assign bindin1402 = bindout1061;
+  assign bindin1405 = bindout1064;
+  assign bindin1408 = bindout1067;
+  assign bindin1411 = bindout1073;
+  assign bindin1414 = bindout1070;
+  assign bindin1417 = bindout1076;
+  assign bindin1420 = bindout1079;
+  assign bindin1423 = bindout1082;
+  assign bindin1426 = bindout1085;
+  assign bindin1429 = bindout1103;
+  assign bindin1432 = bindout1088;
+  assign bindin1435 = bindout3082;
+  assign bindin1438 = orl3565;
+  assign bindin1441 = bindout1100;
+  assign bindin1444 = bindout1046;
+  assign bindin1447 = bindout1049;
+  assign bindin1450 = bindout1052;
+  assign bindin1453 = bindout356;
+  assign bindin1456 = bindout1094;
+  assign bindin1459 = bindout1097;
+  Execute __module7__(.io_in_rd(bindin1707), .io_in_rs1(bindin1710), .io_in_rd1(bindin1713), .io_in_rs2(bindin1716), .io_in_rd2(bindin1719), .io_in_alu_op(bindin1722), .io_in_wb(bindin1725), .io_in_rs2_src(bindin1728), .io_in_itype_immed(bindin1731), .io_in_mem_read(bindin1734), .io_in_mem_write(bindin1737), .io_in_PC_next(bindin1740), .io_in_branch_type(bindin1743), .io_in_upper_immed(bindin1746), .io_in_csr_address(bindin1749), .io_in_is_csr(bindin1752), .io_in_csr_data(bindin1755), .io_in_csr_mask(bindin1758), .io_in_jal(bindin1761), .io_in_jal_offset(bindin1764), .io_in_curr_PC(bindin1767), .io_out_csr_address(bindout1770), .io_out_is_csr(bindout1773), .io_out_csr_result(bindout1776), .io_out_alu_result(bindout1779), .io_out_rd(bindout1782), .io_out_wb(bindout1785), .io_out_rs1(bindout1788), .io_out_rd1(bindout1791), .io_out_rs2(bindout1794), .io_out_rd2(bindout1797), .io_out_mem_read(bindout1800), .io_out_mem_write(bindout1803), .io_out_jal(bindout1806), .io_out_jal_dest(bindout1809), .io_out_branch_offset(bindout1812), .io_out_branch_stall(bindout1815), .io_out_PC_next(bindout1818));
+  assign bindin1707 = bindout1471;
+  assign bindin1710 = bindout1474;
+  assign bindin1713 = bindout1477;
+  assign bindin1716 = bindout1480;
+  assign bindin1719 = bindout1483;
+  assign bindin1722 = bindout1486;
+  assign bindin1725 = bindout1489;
+  assign bindin1728 = bindout1492;
+  assign bindin1731 = bindout1495;
+  assign bindin1734 = bindout1498;
+  assign bindin1737 = bindout1501;
+  assign bindin1740 = bindout1519;
+  assign bindin1743 = bindout1504;
+  assign bindin1746 = bindout1507;
+  assign bindin1749 = bindout1462;
+  assign bindin1752 = bindout1465;
+  assign bindin1755 = bindout3551;
+  assign bindin1758 = bindout1468;
+  assign bindin1761 = bindout1513;
+  assign bindin1764 = bindout1516;
+  assign bindin1767 = bindout1510;
+  assign bindin1992 = clk;
+  assign bindin1993 = reset;
+  E_M_Register __module8__(.clk(bindin1992), .reset(bindin1993), .io_in_alu_result(bindin1994), .io_in_rd(bindin1997), .io_in_wb(bindin2000), .io_in_rs1(bindin2003), .io_in_rd1(bindin2006), .io_in_rs2(bindin2009), .io_in_rd2(bindin2012), .io_in_mem_read(bindin2015), .io_in_mem_write(bindin2018), .io_in_PC_next(bindin2021), .io_in_csr_address(bindin2024), .io_in_is_csr(bindin2027), .io_in_csr_result(bindin2030), .io_in_curr_PC(bindin2033), .io_in_branch_offset(bindin2036), .io_in_branch_type(bindin2039), .io_out_csr_address(bindout2042), .io_out_is_csr(bindout2045), .io_out_csr_result(bindout2048), .io_out_alu_result(bindout2051), .io_out_rd(bindout2054), .io_out_wb(bindout2057), .io_out_rs1(bindout2060), .io_out_rd1(bindout2063), .io_out_rd2(bindout2066), .io_out_rs2(bindout2069), .io_out_mem_read(bindout2072), .io_out_mem_write(bindout2075), .io_out_curr_PC(bindout2078), .io_out_branch_offset(bindout2081), .io_out_branch_type(bindout2084), .io_out_PC_next(bindout2087));
+  assign bindin1994 = bindout1779;
+  assign bindin1997 = bindout1782;
+  assign bindin2000 = bindout1785;
+  assign bindin2003 = bindout1788;
+  assign bindin2006 = bindout1791;
+  assign bindin2009 = bindout1794;
+  assign bindin2012 = bindout1797;
+  assign bindin2015 = bindout1800;
+  assign bindin2018 = bindout1803;
+  assign bindin2021 = bindout1818;
+  assign bindin2024 = bindout1770;
+  assign bindin2027 = bindout1773;
+  assign bindin2030 = bindout1776;
+  assign bindin2033 = bindout1510;
+  assign bindin2036 = bindout1812;
+  assign bindin2039 = bindout1504;
+  Memory __module9__(.io_DBUS_in_data_data(bindin2443), .io_DBUS_in_data_valid(bindin2446), .io_DBUS_out_data_ready(bindin2458), .io_DBUS_out_address_ready(bindin2467), .io_DBUS_out_control_ready(bindin2476), .io_in_alu_result(bindin2479), .io_in_mem_read(bindin2482), .io_in_mem_write(bindin2485), .io_in_rd(bindin2488), .io_in_wb(bindin2491), .io_in_rs1(bindin2494), .io_in_rd1(bindin2497), .io_in_rs2(bindin2500), .io_in_rd2(bindin2503), .io_in_PC_next(bindin2506), .io_in_curr_PC(bindin2509), .io_in_branch_offset(bindin2512), .io_in_branch_type(bindin2515), .io_DBUS_in_data_ready(bindout2449), .io_DBUS_out_data_data(bindout2452), .io_DBUS_out_data_valid(bindout2455), .io_DBUS_out_address_data(bindout2461), .io_DBUS_out_address_valid(bindout2464), .io_DBUS_out_control_data(bindout2470), .io_DBUS_out_control_valid(bindout2473), .io_out_alu_result(bindout2518), .io_out_mem_result(bindout2521), .io_out_rd(bindout2524), .io_out_wb(bindout2527), .io_out_rs1(bindout2530), .io_out_rs2(bindout2533), .io_out_branch_dir(bindout2536), .io_out_branch_dest(bindout2539), .io_out_branch_stall(bindout2542), .io_out_PC_next(bindout2545));
+  assign bindin2443 = io_DBUS_in_data_data;
+  assign bindin2446 = io_DBUS_in_data_valid;
+  assign bindin2458 = io_DBUS_out_data_ready;
+  assign bindin2467 = io_DBUS_out_address_ready;
+  assign bindin2476 = io_DBUS_out_control_ready;
+  assign bindin2479 = bindout2051;
+  assign bindin2482 = bindout2072;
+  assign bindin2485 = bindout2075;
+  assign bindin2488 = bindout2054;
+  assign bindin2491 = bindout2057;
+  assign bindin2494 = bindout2060;
+  assign bindin2497 = bindout2063;
+  assign bindin2500 = bindout2069;
+  assign bindin2503 = bindout2066;
+  assign bindin2506 = bindout2087;
+  assign bindin2509 = bindout2078;
+  assign bindin2512 = bindout2081;
+  assign bindin2515 = bindout2084;
+  assign bindin2647 = clk;
+  assign bindin2648 = reset;
+  M_W_Register __module11__(.clk(bindin2647), .reset(bindin2648), .io_in_alu_result(bindin2649), .io_in_mem_result(bindin2652), .io_in_rd(bindin2655), .io_in_wb(bindin2658), .io_in_rs1(bindin2661), .io_in_rs2(bindin2664), .io_in_PC_next(bindin2667), .io_in_branch_dir(bindin2670), .io_in_branch_dest(bindin2673), .io_out_alu_result(bindout2676), .io_out_mem_result(bindout2679), .io_out_rd(bindout2682), .io_out_wb(bindout2685), .io_out_rs1(bindout2688), .io_out_rs2(bindout2691), .io_out_branch_dir(bindout2694), .io_out_branch_dest(bindout2697), .io_out_PC_next(bindout2700));
+  assign bindin2649 = bindout2518;
+  assign bindin2652 = bindout2521;
+  assign bindin2655 = bindout2524;
+  assign bindin2658 = bindout2527;
+  assign bindin2661 = bindout2530;
+  assign bindin2664 = bindout2533;
+  assign bindin2667 = bindout2545;
+  assign bindin2670 = bindout2536;
+  assign bindin2673 = bindout2539;
+  Write_Back __module12__(.io_in_alu_result(bindin2734), .io_in_mem_result(bindin2737), .io_in_rd(bindin2740), .io_in_wb(bindin2743), .io_in_rs1(bindin2746), .io_in_rs2(bindin2749), .io_in_PC_next(bindin2752), .io_out_write_data(bindout2755), .io_out_rd(bindout2758), .io_out_wb(bindout2761));
+  assign bindin2734 = bindout2676;
+  assign bindin2737 = bindout2679;
+  assign bindin2740 = bindout2682;
+  assign bindin2743 = bindout2685;
+  assign bindin2746 = bindout2688;
+  assign bindin2749 = bindout2691;
+  assign bindin2752 = bindout2700;
+  Forwarding __module13__(.io_in_decode_src1(bindin3004), .io_in_decode_src2(bindin3007), .io_in_decode_csr_address(bindin3010), .io_in_execute_dest(bindin3013), .io_in_execute_wb(bindin3016), .io_in_execute_alu_result(bindin3019), .io_in_execute_PC_next(bindin3022), .io_in_execute_is_csr(bindin3025), .io_in_execute_csr_address(bindin3028), .io_in_execute_csr_result(bindin3031), .io_in_memory_dest(bindin3034), .io_in_memory_wb(bindin3037), .io_in_memory_alu_result(bindin3040), .io_in_memory_mem_data(bindin3043), .io_in_memory_PC_next(bindin3046), .io_in_memory_is_csr(bindin3049), .io_in_memory_csr_address(bindin3052), .io_in_memory_csr_result(bindin3055), .io_in_writeback_dest(bindin3058), .io_in_writeback_wb(bindin3061), .io_in_writeback_alu_result(bindin3064), .io_in_writeback_mem_data(bindin3067), .io_in_writeback_PC_next(bindin3070), .io_out_fwd_stall(bindout3082));
+  assign bindin3004 = bindout1058;
+  assign bindin3007 = bindout1064;
+  assign bindin3010 = bindout1046;
+  assign bindin3013 = bindout1782;
+  assign bindin3016 = bindout1785;
+  assign bindin3019 = bindout1779;
+  assign bindin3022 = bindout1818;
+  assign bindin3025 = bindout1773;
+  assign bindin3028 = bindout1770;
+  assign bindin3031 = bindout1776;
+  assign bindin3034 = bindout2524;
+  assign bindin3037 = bindout2527;
+  assign bindin3040 = bindout2518;
+  assign bindin3043 = bindout2521;
+  assign bindin3046 = bindout2545;
+  assign bindin3049 = bindout2045;
+  assign bindin3052 = bindout2042;
+  assign bindin3055 = bindout2048;
+  assign bindin3058 = bindout2682;
+  assign bindin3061 = bindout2685;
+  assign bindin3064 = bindout2676;
+  assign bindin3067 = bindout2679;
+  assign bindin3070 = bindout2700;
+  Interrupt_Handler __module14__(.io_INTERRUPT_in_interrupt_id_data(bindin3104), .io_INTERRUPT_in_interrupt_id_valid(bindin3107), .io_INTERRUPT_in_interrupt_id_ready(bindout3110), .io_out_interrupt(bindout3113), .io_out_interrupt_pc(bindout3116));
+  assign bindin3104 = io_INTERRUPT_in_interrupt_id_data;
+  assign bindin3107 = io_INTERRUPT_in_interrupt_id_valid;
+  assign bindin3457 = clk;
+  assign bindin3458 = reset;
+  JTAG __module15__(.clk(bindin3457), .reset(bindin3458), .io_JTAG_JTAG_TAP_in_mode_select_data(bindin3459), .io_JTAG_JTAG_TAP_in_mode_select_valid(bindin3462), .io_JTAG_JTAG_TAP_in_clock_data(bindin3468), .io_JTAG_JTAG_TAP_in_clock_valid(bindin3471), .io_JTAG_JTAG_TAP_in_reset_data(bindin3477), .io_JTAG_JTAG_TAP_in_reset_valid(bindin3480), .io_JTAG_in_data_data(bindin3486), .io_JTAG_in_data_valid(bindin3489), .io_JTAG_out_data_ready(bindin3501), .io_JTAG_JTAG_TAP_in_mode_select_ready(bindout3465), .io_JTAG_JTAG_TAP_in_clock_ready(bindout3474), .io_JTAG_JTAG_TAP_in_reset_ready(bindout3483), .io_JTAG_in_data_ready(bindout3492), .io_JTAG_out_data_data(bindout3495), .io_JTAG_out_data_valid(bindout3498));
+  assign bindin3459 = io_jtag_JTAG_TAP_in_mode_select_data;
+  assign bindin3462 = io_jtag_JTAG_TAP_in_mode_select_valid;
+  assign bindin3468 = io_jtag_JTAG_TAP_in_clock_data;
+  assign bindin3471 = io_jtag_JTAG_TAP_in_clock_valid;
+  assign bindin3477 = io_jtag_JTAG_TAP_in_reset_data;
+  assign bindin3480 = io_jtag_JTAG_TAP_in_reset_valid;
+  assign bindin3486 = io_jtag_in_data_data;
+  assign bindin3489 = io_jtag_in_data_valid;
+  assign bindin3501 = io_jtag_out_data_ready;
+  assign bindin3537 = clk;
+  assign bindin3538 = reset;
+  CSR_Handler __module17__(.clk(bindin3537), .reset(bindin3538), .io_in_decode_csr_address(bindin3539), .io_in_mem_csr_address(bindin3542), .io_in_mem_is_csr(bindin3545), .io_in_mem_csr_result(bindin3548), .io_out_decode_csr_data(bindout3551));
+  assign bindin3539 = bindout1046;
+  assign bindin3542 = bindout2042;
+  assign bindin3545 = bindout2045;
+  assign bindin3548 = bindout2048;
+  assign orl3553 = bindout1091 | bindout1815;
+  assign orl3555 = orl3553 | bindout2542;
+  assign eq3560 = bindout1815 == 1'h1;
+  assign orl3562 = eq3560 | bindout2542;
+  assign orl3565 = bindout1815 | bindout2542;
 
-  assign io_IBUS_in_data_ready = bindout242;
-  assign io_IBUS_out_address_data = bindout245;
-  assign io_IBUS_out_address_valid = bindout248;
-  assign io_DBUS_in_data_ready = bindout2415;
-  assign io_DBUS_out_data_data = bindout2418;
-  assign io_DBUS_out_data_valid = bindout2421;
-  assign io_DBUS_out_address_data = bindout2427;
-  assign io_DBUS_out_address_valid = bindout2430;
-  assign io_DBUS_out_control_data = bindout2436;
-  assign io_DBUS_out_control_valid = bindout2439;
-  assign io_INTERRUPT_in_interrupt_id_ready = bindout3040;
-  assign io_jtag_JTAG_TAP_in_mode_select_ready = bindout3395;
-  assign io_jtag_JTAG_TAP_in_clock_ready = bindout3404;
-  assign io_jtag_JTAG_TAP_in_reset_ready = bindout3413;
-  assign io_jtag_in_data_ready = bindout3422;
-  assign io_jtag_out_data_data = bindout3425;
-  assign io_jtag_out_data_valid = bindout3428;
-  assign io_out_fwd_stall = bindout3012;
-  assign io_out_branch_stall = orl3483;
+  assign io_IBUS_in_data_ready = bindout239;
+  assign io_IBUS_out_address_data = bindout242;
+  assign io_IBUS_out_address_valid = bindout245;
+  assign io_DBUS_in_data_ready = bindout2449;
+  assign io_DBUS_out_data_data = bindout2452;
+  assign io_DBUS_out_data_valid = bindout2455;
+  assign io_DBUS_out_address_data = bindout2461;
+  assign io_DBUS_out_address_valid = bindout2464;
+  assign io_DBUS_out_control_data = bindout2470;
+  assign io_DBUS_out_control_valid = bindout2473;
+  assign io_INTERRUPT_in_interrupt_id_ready = bindout3110;
+  assign io_jtag_JTAG_TAP_in_mode_select_ready = bindout3465;
+  assign io_jtag_JTAG_TAP_in_clock_ready = bindout3474;
+  assign io_jtag_JTAG_TAP_in_reset_ready = bindout3483;
+  assign io_jtag_in_data_ready = bindout3492;
+  assign io_jtag_out_data_data = bindout3495;
+  assign io_jtag_out_data_valid = bindout3498;
+  assign io_out_fwd_stall = bindout3082;
+  assign io_out_branch_stall = orl3555;
 
 endmodule

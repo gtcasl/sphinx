@@ -132,7 +132,7 @@ struct Decode
 		__out(ch_bit<2>)  out_wb,
 		__out(ch_bit<4>)  out_alu_op,
 		__out(ch_bit<1>)  out_rs2_src, // NEW
-		__out(ch_bit<12>) out_itype_immed, // new
+		__out(ch_bit<32>) out_itype_immed, // new
 		__out(ch_bit<3>)  out_mem_read, // NEW
 		__out(ch_bit<3>)  out_mem_write, // NEW
 		__out(ch_bit<3>)  out_branch_type,
@@ -304,10 +304,11 @@ struct Decode
 		ch_bool csr_cond1  = func3.as_uint() != 0;
 		ch_bool csr_cond2  = u_12.as_uint()  >= 2;
 		ch_bool csr_cond3  = curr_opcode     == curr_opcode;
-		io.out_csr_address = ch_sel(csr_cond1 && csr_cond2 && csr_cond3, ch_slice<12>(io.in_instruction >> 20), anything);
+		io.out_csr_address = ch_sel(csr_cond1 && csr_cond2 && csr_cond3, u_12, anything);
 
 
 		// ITYPE IMEED
+		ch_bit<12> tempp;
 		__switch(curr_opcode)
 			__case(ALU_INST)
 			{
@@ -315,15 +316,18 @@ struct Decode
 				// ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2);
         		ch_bit<12> shift_i_immediate = ch_pad<12>(io.out_rs2);
 
-				io.out_itype_immed = ch_sel(shift_i, shift_i_immediate, ch_slice<12>(io.in_instruction >> 20));
+        		tempp              = ch_sel(shift_i, shift_i_immediate, u_12);
+				io.out_itype_immed = ch_sel(tempp[11] == 1, ch_cat(ONES_20BITS, tempp), ch_pad<32>(tempp));
 			}
 			__case(S_INST)
 			{
-				io.out_itype_immed = ch_cat(func7, io.out_rd);
+				tempp              = ch_cat(func7, io.out_rd);
+				io.out_itype_immed = ch_sel(tempp[11] == 1, ch_cat(ONES_20BITS, tempp), ch_pad<32>(tempp));
 			}
 			__case(L_INST)
 			{
-				io.out_itype_immed  = ch_slice<12>(io.in_instruction >> 20);
+				tempp = ch_bit<12>(0);
+				io.out_itype_immed = ch_sel(u_12[11] == 1, ch_cat(ONES_20BITS, u_12), ch_pad<32>(u_12));
 			}
 			__case(B_INST)
 			{
@@ -332,11 +336,13 @@ struct Decode
 				ch_bit<4> b_1_to_4  = ch_slice<4>(io.in_instruction >> 8);
 				ch_bit<6> b_5_to_10 = ch_slice<6>(io.in_instruction >> 25);
 
-				io.out_itype_immed = ch_cat(b_12, b_11, b_5_to_10, b_1_to_4);
+				tempp              = ch_cat(b_12, b_11, b_5_to_10, b_1_to_4);
+				io.out_itype_immed = ch_sel(b_12 == 1, ch_cat(ONES_20BITS, tempp), ch_pad<32>(tempp));
 			}
 			__default
 			{
-				io.out_itype_immed = anything;
+				tempp = ch_bit<12>(0);
+				io.out_itype_immed = anything32;
 			};
 
 
