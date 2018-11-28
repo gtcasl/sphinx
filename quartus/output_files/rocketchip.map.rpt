@@ -1,5 +1,5 @@
 Analysis & Synthesis report for rocketchip
-Mon Nov 26 17:33:37 2018
+Tue Nov 27 13:43:36 2018
 Quartus Prime Version 17.1.0 Build 590 10/25/2017 SJ Standard Edition
 
 
@@ -14,19 +14,19 @@ Quartus Prime Version 17.1.0 Build 590 10/25/2017 SJ Standard Edition
   6. Analysis & Synthesis Resource Usage Summary
   7. Analysis & Synthesis Resource Utilization by Entity
   8. Analysis & Synthesis RAM Summary
-  9. State Machine - |Pipeline|JTAG:__module15__|TAP:__module16__|reg3098
+  9. State Machine - |Pipeline|JTAG:__module15__|TAP:__module16__|reg3202
  10. State Machine - |Pipeline|Fetch:__module2__|reg127
  11. Registers Removed During Synthesis
  12. General Register Statistics
  13. Registers Added for RAM Pass-Through Logic
  14. Registers Packed Into Inferred Megafunctions
  15. Multiplexer Restructuring Statistics (Restructuring Performed)
- 16. Source assignments for CSR_Handler:__module17__|altsyncram:mem3439_rtl_0|altsyncram_7li1:auto_generated
- 17. Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0|altsyncram_jbi1:auto_generated
- 18. Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1|altsyncram_jbi1:auto_generated
- 19. Parameter Settings for Inferred Entity Instance: CSR_Handler:__module17__|altsyncram:mem3439_rtl_0
- 20. Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0
- 21. Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1
+ 16. Source assignments for CSR_Handler:__module17__|altsyncram:mem3543_rtl_0|altsyncram_7li1:auto_generated
+ 17. Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0|altsyncram_jbi1:auto_generated
+ 18. Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1|altsyncram_jbi1:auto_generated
+ 19. Parameter Settings for Inferred Entity Instance: CSR_Handler:__module17__|altsyncram:mem3543_rtl_0
+ 20. Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0
+ 21. Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1
  22. altsyncram Parameter Settings by Entity Instance
  23. Port Connectivity Checks: "Forwarding:__module13__"
  24. Post-Synthesis Netlist Statistics for Top Partition
@@ -57,13 +57,13 @@ refer to the applicable agreement for further details.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +-----------------------------+-------------------------------------------------+
-; Analysis & Synthesis Status ; Successful - Mon Nov 26 17:33:37 2018           ;
+; Analysis & Synthesis Status ; Successful - Tue Nov 27 13:43:36 2018           ;
 ; Quartus Prime Version       ; 17.1.0 Build 590 10/25/2017 SJ Standard Edition ;
 ; Revision Name               ; rocketchip                                      ;
 ; Top-level Entity Name       ; Pipeline                                        ;
 ; Family                      ; Arria 10                                        ;
 ; Logic utilization (in ALMs) ; N/A                                             ;
-; Total registers             ; 973                                             ;
+; Total registers             ; 1040                                            ;
 ; Total pins                  ; 2                                               ;
 ; Total virtual pins          ; 194                                             ;
 ; Total block memory bits     ; 51,200                                          ;
@@ -207,16 +207,16 @@ refer to the applicable agreement for further details.
 +---------------------------------------------+-----------+
 ; Resource                                    ; Usage     ;
 +---------------------------------------------+-----------+
-; Estimate of Logic utilization (ALMs needed) ; 986       ;
+; Estimate of Logic utilization (ALMs needed) ; 993       ;
 ;                                             ;           ;
-; Combinational ALUT usage for logic          ; 1256      ;
-;     -- 7 input functions                    ; 27        ;
-;     -- 6 input functions                    ; 383       ;
-;     -- 5 input functions                    ; 262       ;
-;     -- 4 input functions                    ; 198       ;
-;     -- <=3 input functions                  ; 386       ;
+; Combinational ALUT usage for logic          ; 1271      ;
+;     -- 7 input functions                    ; 9         ;
+;     -- 6 input functions                    ; 399       ;
+;     -- 5 input functions                    ; 267       ;
+;     -- 4 input functions                    ; 207       ;
+;     -- <=3 input functions                  ; 389       ;
 ;                                             ;           ;
-; Dedicated logic registers                   ; 973       ;
+; Dedicated logic registers                   ; 1040      ;
 ;                                             ;           ;
 ; Virtual pins                                ; 194       ;
 ; I/O pins                                    ; 2         ;
@@ -228,9 +228,9 @@ refer to the applicable agreement for further details.
 ;     -- Total Floating Point DSP Blocks      ; 0         ;
 ;                                             ;           ;
 ; Maximum fan-out node                        ; clk~input ;
-; Maximum fan-out                             ; 1049      ;
-; Total fan-out                               ; 9973      ;
-; Average fan-out                             ; 3.98      ;
+; Maximum fan-out                             ; 1116      ;
+; Total fan-out                               ; 10200     ;
+; Average fan-out                             ; 3.95      ;
 +---------------------------------------------+-----------+
 
 
@@ -239,27 +239,27 @@ refer to the applicable agreement for further details.
 +----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+--------------------------------------------------------------------------------------------------------------+-----------------+--------------+
 ; Compilation Hierarchy Node                   ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                          ; Entity Name     ; Library Name ;
 +----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+--------------------------------------------------------------------------------------------------------------+-----------------+--------------+
-; |Pipeline                                    ; 1256 (2)            ; 973 (0)                   ; 51200             ; 0          ; 2    ; 194          ; |Pipeline                                                                                                    ; Pipeline        ; work         ;
-;    |CSR_Handler:__module17__|                ; 30 (30)             ; 37 (37)                   ; 49152             ; 0          ; 0    ; 0            ; |Pipeline|CSR_Handler:__module17__                                                                           ; CSR_Handler     ; work         ;
-;       |altsyncram:mem3439_rtl_0|             ; 0 (0)               ; 0 (0)                     ; 49152             ; 0          ; 0    ; 0            ; |Pipeline|CSR_Handler:__module17__|altsyncram:mem3439_rtl_0                                                  ; altsyncram      ; work         ;
-;          |altsyncram_7li1:auto_generated|    ; 0 (0)               ; 0 (0)                     ; 49152             ; 0          ; 0    ; 0            ; |Pipeline|CSR_Handler:__module17__|altsyncram:mem3439_rtl_0|altsyncram_7li1:auto_generated                   ; altsyncram_7li1 ; work         ;
-;    |D_E_Register:__module6__|                ; 124 (124)           ; 227 (227)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|D_E_Register:__module6__                                                                           ; D_E_Register    ; work         ;
-;    |Decode:__module4__|                      ; 104 (98)            ; 86 (0)                    ; 2048              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__                                                                                 ; Decode          ; work         ;
+; |Pipeline                                    ; 1271 (2)            ; 1040 (0)                  ; 51200             ; 0          ; 2    ; 194          ; |Pipeline                                                                                                    ; Pipeline        ; work         ;
+;    |CSR_Handler:__module17__|                ; 31 (31)             ; 37 (37)                   ; 49152             ; 0          ; 0    ; 0            ; |Pipeline|CSR_Handler:__module17__                                                                           ; CSR_Handler     ; work         ;
+;       |altsyncram:mem3543_rtl_0|             ; 0 (0)               ; 0 (0)                     ; 49152             ; 0          ; 0    ; 0            ; |Pipeline|CSR_Handler:__module17__|altsyncram:mem3543_rtl_0                                                  ; altsyncram      ; work         ;
+;          |altsyncram_7li1:auto_generated|    ; 0 (0)               ; 0 (0)                     ; 49152             ; 0          ; 0    ; 0            ; |Pipeline|CSR_Handler:__module17__|altsyncram:mem3543_rtl_0|altsyncram_7li1:auto_generated                   ; altsyncram_7li1 ; work         ;
+;    |D_E_Register:__module6__|                ; 141 (141)           ; 228 (228)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|D_E_Register:__module6__                                                                           ; D_E_Register    ; work         ;
+;    |Decode:__module4__|                      ; 109 (103)           ; 86 (0)                    ; 2048              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__                                                                                 ; Decode          ; work         ;
 ;       |RegisterFile:__module5__|             ; 6 (6)               ; 86 (86)                   ; 2048              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__                                                        ; RegisterFile    ; work         ;
-;          |altsyncram:mem437_rtl_0|           ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0                                ; altsyncram      ; work         ;
-;             |altsyncram_jbi1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0|altsyncram_jbi1:auto_generated ; altsyncram_jbi1 ; work         ;
-;          |altsyncram:mem437_rtl_1|           ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1                                ; altsyncram      ; work         ;
-;             |altsyncram_jbi1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1|altsyncram_jbi1:auto_generated ; altsyncram_jbi1 ; work         ;
-;    |E_M_Register:__module8__|                ; 219 (219)           ; 179 (179)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|E_M_Register:__module8__                                                                           ; E_M_Register    ; work         ;
-;    |Execute:__module7__|                     ; 311 (311)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Execute:__module7__                                                                                ; Execute         ; work         ;
+;          |altsyncram:mem434_rtl_0|           ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0                                ; altsyncram      ; work         ;
+;             |altsyncram_jbi1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0|altsyncram_jbi1:auto_generated ; altsyncram_jbi1 ; work         ;
+;          |altsyncram:mem434_rtl_1|           ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1                                ; altsyncram      ; work         ;
+;             |altsyncram_jbi1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 1024              ; 0          ; 0    ; 0            ; |Pipeline|Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1|altsyncram_jbi1:auto_generated ; altsyncram_jbi1 ; work         ;
+;    |E_M_Register:__module8__|                ; 219 (219)           ; 213 (213)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|E_M_Register:__module8__                                                                           ; E_M_Register    ; work         ;
+;    |Execute:__module7__|                     ; 301 (301)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Execute:__module7__                                                                                ; Execute         ; work         ;
 ;    |F_D_Register:__module3__|                ; 12 (12)             ; 64 (64)                   ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|F_D_Register:__module3__                                                                           ; F_D_Register    ; work         ;
 ;    |Fetch:__module2__|                       ; 228 (228)           ; 133 (133)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Fetch:__module2__                                                                                  ; Fetch           ; work         ;
 ;    |Forwarding:__module13__|                 ; 27 (27)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Forwarding:__module13__                                                                            ; Forwarding      ; work         ;
 ;    |JTAG:__module15__|                       ; 91 (61)             ; 144 (128)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|JTAG:__module15__                                                                                  ; JTAG            ; work         ;
 ;       |TAP:__module16__|                     ; 30 (30)             ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|JTAG:__module15__|TAP:__module16__                                                                 ; TAP             ; work         ;
-;    |M_W_Register:__module11__|               ; 31 (31)             ; 103 (103)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|M_W_Register:__module11__                                                                          ; M_W_Register    ; work         ;
-;    |Memory:__module9__|                      ; 45 (38)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Memory:__module9__                                                                                 ; Memory          ; work         ;
-;       |Cache:__module10__|                   ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Memory:__module9__|Cache:__module10__                                                              ; Cache           ; work         ;
+;    |M_W_Register:__module11__|               ; 31 (31)             ; 135 (135)                 ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|M_W_Register:__module11__                                                                          ; M_W_Register    ; work         ;
+;    |Memory:__module9__|                      ; 47 (41)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Memory:__module9__                                                                                 ; Memory          ; work         ;
+;       |Cache:__module10__|                   ; 6 (6)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Memory:__module9__|Cache:__module10__                                                              ; Cache           ; work         ;
 ;    |Write_Back:__module12__|                 ; 32 (32)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |Pipeline|Write_Back:__module12__                                                                            ; Write_Back      ; work         ;
 +----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+--------------------------------------------------------------------------------------------------------------+-----------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
@@ -270,34 +270,34 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +---------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+-------+------+
 ; Name                                                                                                          ; Type ; Mode             ; Port A Depth ; Port A Width ; Port B Depth ; Port B Width ; Size  ; MIF  ;
 +---------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+-------+------+
-; CSR_Handler:__module17__|altsyncram:mem3439_rtl_0|altsyncram_7li1:auto_generated|ALTSYNCRAM                   ; AUTO ; Simple Dual Port ; 4096         ; 12           ; 4096         ; 12           ; 49152 ; None ;
-; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0|altsyncram_jbi1:auto_generated|ALTSYNCRAM ; AUTO ; Simple Dual Port ; 32           ; 32           ; 32           ; 32           ; 1024  ; None ;
-; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1|altsyncram_jbi1:auto_generated|ALTSYNCRAM ; AUTO ; Simple Dual Port ; 32           ; 32           ; 32           ; 32           ; 1024  ; None ;
+; CSR_Handler:__module17__|altsyncram:mem3543_rtl_0|altsyncram_7li1:auto_generated|ALTSYNCRAM                   ; AUTO ; Simple Dual Port ; 4096         ; 12           ; 4096         ; 12           ; 49152 ; None ;
+; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0|altsyncram_jbi1:auto_generated|ALTSYNCRAM ; AUTO ; Simple Dual Port ; 32           ; 32           ; 32           ; 32           ; 1024  ; None ;
+; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1|altsyncram_jbi1:auto_generated|ALTSYNCRAM ; AUTO ; Simple Dual Port ; 32           ; 32           ; 32           ; 32           ; 1024  ; None ;
 +---------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+-------+------+
 
 
 Encoding Type:  One-Hot
 +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; State Machine - |Pipeline|JTAG:__module15__|TAP:__module16__|reg3098                                                                                                                                                                                         ;
+; State Machine - |Pipeline|JTAG:__module15__|TAP:__module16__|reg3202                                                                                                                                                                                         ;
 +--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+
-; Name         ; reg3098.1111 ; reg3098.1110 ; reg3098.1101 ; reg3098.1100 ; reg3098.1011 ; reg3098.1010 ; reg3098.1001 ; reg3098.1000 ; reg3098.0111 ; reg3098.0110 ; reg3098.0101 ; reg3098.0100 ; reg3098.0011 ; reg3098.0010 ; reg3098.0001 ; reg3098.0000 ;
+; Name         ; reg3202.1111 ; reg3202.1110 ; reg3202.1101 ; reg3202.1100 ; reg3202.1011 ; reg3202.1010 ; reg3202.1001 ; reg3202.1000 ; reg3202.0111 ; reg3202.0110 ; reg3202.0101 ; reg3202.0100 ; reg3202.0011 ; reg3202.0010 ; reg3202.0001 ; reg3202.0000 ;
 +--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+
-; reg3098.0000 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ;
-; reg3098.0001 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 1            ;
-; reg3098.0010 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 1            ;
-; reg3098.0011 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 1            ;
-; reg3098.0100 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.0101 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.0110 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.0111 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1000 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1001 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1010 ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1011 ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1100 ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1101 ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1110 ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
-; reg3098.1111 ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.0000 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ;
+; reg3202.0001 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 1            ;
+; reg3202.0010 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 1            ;
+; reg3202.0011 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 1            ;
+; reg3202.0100 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.0101 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.0110 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.0111 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1000 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1001 ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1010 ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1011 ; 0            ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1100 ; 0            ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1101 ; 0            ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1110 ; 0            ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
+; reg3202.1111 ; 1            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 0            ; 1            ;
 +--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+
 
 
@@ -319,25 +319,27 @@ Encoding Type:  One-Hot
 +-----------------------------------------------------------------------+--------------------------------------------------+
 ; Register name                                                         ; Reason for Removal                               ;
 +-----------------------------------------------------------------------+--------------------------------------------------+
-; E_M_Register:__module8__|reg1952[0]                                   ; Merged with E_M_Register:__module8__|reg1913[0]  ;
-; D_E_Register:__module6__|reg1280[29,31]                               ; Merged with D_E_Register:__module6__|reg1280[28] ;
-; D_E_Register:__module6__|reg1280[21..27,30]                           ; Merged with D_E_Register:__module6__|reg1280[20] ;
-; E_M_Register:__module8__|reg1952[1]                                   ; Merged with E_M_Register:__module8__|reg1913[1]  ;
-; E_M_Register:__module8__|reg1958[12..30]                              ; Merged with E_M_Register:__module8__|reg1958[11] ;
-; D_E_Register:__module6__|reg1268[0]                                   ; Merged with D_E_Register:__module6__|reg1203[0]  ;
-; D_E_Register:__module6__|reg1268[1]                                   ; Merged with D_E_Register:__module6__|reg1203[1]  ;
+; M_W_Register:__module11__|reg2676[0]                                  ; Merged with M_W_Register:__module11__|reg2663[0] ;
+; E_M_Register:__module8__|reg1985[0]                                   ; Merged with E_M_Register:__module8__|reg1946[0]  ;
+; D_E_Register:__module6__|reg1317[29,31]                               ; Merged with D_E_Register:__module6__|reg1317[28] ;
+; D_E_Register:__module6__|reg1317[21..27,30]                           ; Merged with D_E_Register:__module6__|reg1317[20] ;
+; E_M_Register:__module8__|reg1985[1]                                   ; Merged with E_M_Register:__module8__|reg1946[1]  ;
+; E_M_Register:__module8__|reg1991[13..30]                              ; Merged with E_M_Register:__module8__|reg1991[12] ;
+; D_E_Register:__module6__|reg1253[13..31]                              ; Merged with D_E_Register:__module6__|reg1253[12] ;
+; D_E_Register:__module6__|reg1305[0]                                   ; Merged with D_E_Register:__module6__|reg1240[0]  ;
+; D_E_Register:__module6__|reg1305[1]                                   ; Merged with D_E_Register:__module6__|reg1240[1]  ;
 ; Fetch:__module2__|reg151[2,3,8,14,17,20,22,24,29]                     ; Stuck at GND due to stuck port data_in           ;
 ; Fetch:__module2__|reg127.0000                                         ; Lost fanout                                      ;
-; JTAG:__module15__|TAP:__module16__|reg3098~2                          ; Lost fanout                                      ;
-; JTAG:__module15__|TAP:__module16__|reg3098~3                          ; Lost fanout                                      ;
-; JTAG:__module15__|TAP:__module16__|reg3098~4                          ; Lost fanout                                      ;
-; JTAG:__module15__|TAP:__module16__|reg3098~5                          ; Lost fanout                                      ;
+; JTAG:__module15__|TAP:__module16__|reg3202~2                          ; Lost fanout                                      ;
+; JTAG:__module15__|TAP:__module16__|reg3202~3                          ; Lost fanout                                      ;
+; JTAG:__module15__|TAP:__module16__|reg3202~4                          ; Lost fanout                                      ;
+; JTAG:__module15__|TAP:__module16__|reg3202~5                          ; Lost fanout                                      ;
 ; Fetch:__module2__|reg127~2                                            ; Lost fanout                                      ;
 ; Fetch:__module2__|reg127~3                                            ; Lost fanout                                      ;
 ; Fetch:__module2__|reg127~4                                            ; Lost fanout                                      ;
 ; Fetch:__module2__|reg127~5                                            ; Lost fanout                                      ;
 ; Fetch:__module2__|reg151[1,4..7,9..13,15,16,18,19,21,23,25..28,30,31] ; Merged with Fetch:__module2__|reg151[0]          ;
-; Total Number of Removed Registers = 73                                ;                                                  ;
+; Total Number of Removed Registers = 92                                ;                                                  ;
 +-----------------------------------------------------------------------+--------------------------------------------------+
 
 
@@ -346,9 +348,9 @@ Encoding Type:  One-Hot
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 973   ;
-; Number of registers using Synchronous Clear  ; 760   ;
-; Number of registers using Synchronous Load   ; 73    ;
+; Total registers                              ; 1040  ;
+; Number of registers using Synchronous Clear  ; 824   ;
+; Number of registers using Synchronous Load   ; 72    ;
 ; Number of registers using Asynchronous Clear ; 0     ;
 ; Number of registers using Asynchronous Load  ; 0     ;
 ; Number of registers using Clock Enable       ; 188   ;
@@ -361,129 +363,129 @@ Encoding Type:  One-Hot
 +---------------------------------------------------------------------+----------------------------------------------------------+
 ; Register Name                                                       ; RAM Name                                                 ;
 +---------------------------------------------------------------------+----------------------------------------------------------+
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[0]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[1]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[2]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[3]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[4]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[5]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[6]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[7]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[8]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[9]                    ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[10]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[11]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[12]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[13]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[14]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[15]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[16]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[17]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[18]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[19]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[20]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[21]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[22]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[23]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[24]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[25]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[26]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[27]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[28]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[29]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[30]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[31]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[32]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[33]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[34]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[35]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; CSR_Handler:__module17__|mem3439_rtl_0_bypass[36]                   ; CSR_Handler:__module17__|mem3439_rtl_0                   ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[0]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[1]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[2]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[3]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[4]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[5]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[6]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[7]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[8]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[9]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[10] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[11] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[12] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[13] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[14] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[15] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[16] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[17] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[18] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[19] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[20] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[21] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[22] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[23] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[24] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[25] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[26] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[27] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[28] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[29] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[30] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[31] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[32] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[33] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[34] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[35] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[36] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[37] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[38] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[39] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[40] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[41] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0_bypass[42] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[0]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[1]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[2]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[3]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[4]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[5]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[6]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[7]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[8]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[9]  ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[10] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[11] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[12] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[13] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[14] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[15] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[16] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[17] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[18] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[19] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[20] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[21] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[22] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[23] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[24] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[25] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[26] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[27] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[28] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[29] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[30] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[31] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[32] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[33] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[34] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[35] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[36] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[37] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[38] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[39] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[40] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[41] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
-; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1_bypass[42] ; Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1 ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[0]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[1]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[2]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[3]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[4]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[5]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[6]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[7]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[8]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[9]                    ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[10]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[11]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[12]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[13]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[14]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[15]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[16]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[17]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[18]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[19]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[20]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[21]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[22]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[23]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[24]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[25]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[26]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[27]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[28]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[29]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[30]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[31]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[32]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[33]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[34]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[35]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; CSR_Handler:__module17__|mem3543_rtl_0_bypass[36]                   ; CSR_Handler:__module17__|mem3543_rtl_0                   ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[0]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[1]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[2]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[3]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[4]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[5]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[6]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[7]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[8]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[9]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[10] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[11] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[12] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[13] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[14] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[15] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[16] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[17] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[18] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[19] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[20] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[21] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[22] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[23] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[24] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[25] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[26] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[27] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[28] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[29] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[30] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[31] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[32] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[33] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[34] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[35] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[36] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[37] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[38] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[39] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[40] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[41] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0_bypass[42] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[0]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[1]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[2]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[3]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[4]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[5]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[6]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[7]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[8]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[9]  ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[10] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[11] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[12] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[13] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[14] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[15] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[16] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[17] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[18] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[19] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[20] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[21] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[22] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[23] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[24] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[25] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[26] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[27] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[28] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[29] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[30] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[31] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[32] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[33] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[34] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[35] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[36] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[37] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[38] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[39] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[40] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[41] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
+; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1_bypass[42] ; Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1 ;
 +---------------------------------------------------------------------+----------------------------------------------------------+
 
 
@@ -492,7 +494,7 @@ Encoding Type:  One-Hot
 +-----------------------------------------+----------------------------------------+------+
 ; Register Name                           ; Megafunction                           ; Type ;
 +-----------------------------------------+----------------------------------------+------+
-; CSR_Handler:__module17__|reg3448[0..11] ; CSR_Handler:__module17__|mem3439_rtl_0 ; RAM  ;
+; CSR_Handler:__module17__|reg3552[0..11] ; CSR_Handler:__module17__|mem3543_rtl_0 ; RAM  ;
 +-----------------------------------------+----------------------------------------+------+
 
 
@@ -501,64 +503,63 @@ Encoding Type:  One-Hot
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------------------+
 ; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                                  ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------------------+
-; 3:1                ; 96 bits   ; 192 LEs       ; 0 LEs                ; 192 LEs                ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1250[10]                              ;
-; 3:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |Pipeline|JTAG:__module15__|reg3252[12]                                     ;
-; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; Yes        ; |Pipeline|JTAG:__module15__|reg3259[12]                                     ;
-; 3:1                ; 27 bits   ; 54 LEs        ; 0 LEs                ; 54 LEs                 ; Yes        ; |Pipeline|JTAG:__module15__|reg3259[1]                                      ;
-; 3:1                ; 8 bits    ; 16 LEs        ; 8 LEs                ; 8 LEs                  ; Yes        ; |Pipeline|JTAG:__module15__|reg3266[9]                                      ;
-; 3:1                ; 24 bits   ; 48 LEs        ; 0 LEs                ; 48 LEs                 ; Yes        ; |Pipeline|JTAG:__module15__|reg3266[20]                                     ;
-; 3:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |Pipeline|F_D_Register:__module3__|reg311[10]                               ;
-; 4:1                ; 22 bits   ; 44 LEs        ; 0 LEs                ; 44 LEs                 ; Yes        ; |Pipeline|F_D_Register:__module3__|reg302[7]                                ;
-; 4:1                ; 6 bits    ; 12 LEs        ; 12 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1280[10]                              ;
-; 4:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1224[1]                               ;
-; 4:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1230[2]                               ;
-; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1262[8]                               ;
-; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1262[4]                               ;
-; 4:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1244[11]                              ;
-; 9:1                ; 7 bits    ; 42 LEs        ; 14 LEs               ; 28 LEs                 ; Yes        ; |Pipeline|M_W_Register:__module11__|reg2552[5]                              ;
-; 6:1                ; 16 bits   ; 64 LEs        ; 32 LEs               ; 32 LEs                 ; Yes        ; |Pipeline|M_W_Register:__module11__|reg2552[26]                             ;
-; 5:1                ; 32 bits   ; 96 LEs        ; 0 LEs                ; 96 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1183[23]                              ;
-; 6:1                ; 7 bits    ; 28 LEs        ; 21 LEs               ; 7 LEs                  ; Yes        ; |Pipeline|M_W_Register:__module11__|reg2552[8]                              ;
-; 6:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1280[6]                               ;
-; 17:1               ; 12 bits   ; 132 LEs       ; 72 LEs               ; 60 LEs                 ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1946[2]                               ;
-; 6:1                ; 20 bits   ; 80 LEs        ; 40 LEs               ; 40 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1171[31]                              ;
-; 7:1                ; 3 bits    ; 12 LEs        ; 12 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1280[1]                               ;
-; 14:1               ; 32 bits   ; 288 LEs       ; 64 LEs               ; 224 LEs                ; Yes        ; |Pipeline|JTAG:__module15__|reg3273[14]                                     ;
-; 11:1               ; 9 bits    ; 63 LEs        ; 0 LEs                ; 63 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1280[11]                              ;
-; 15:1               ; 2 bits    ; 20 LEs        ; 14 LEs               ; 6 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1217[0]                               ;
-; 13:1               ; 2 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1217[9]                               ;
-; 21:1               ; 8 bits    ; 112 LEs       ; 72 LEs               ; 40 LEs                 ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1866[5]                               ;
-; 22:1               ; 4 bits    ; 56 LEs        ; 56 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1866[12]                              ;
-; 22:1               ; 12 bits   ; 168 LEs       ; 108 LEs              ; 60 LEs                 ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1866[26]                              ;
-; 24:1               ; 3 bits    ; 48 LEs        ; 45 LEs               ; 3 LEs                  ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1866[1]                               ;
-; 25:1               ; 4 bits    ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1866[28]                              ;
+; 3:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |Pipeline|JTAG:__module15__|reg3356[5]                                      ;
+; 3:1                ; 96 bits   ; 192 LEs       ; 0 LEs                ; 192 LEs                ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1287[8]                               ;
+; 3:1                ; 5 bits    ; 10 LEs        ; 5 LEs                ; 5 LEs                  ; Yes        ; |Pipeline|JTAG:__module15__|reg3363[9]                                      ;
+; 3:1                ; 27 bits   ; 54 LEs        ; 0 LEs                ; 54 LEs                 ; Yes        ; |Pipeline|JTAG:__module15__|reg3363[11]                                     ;
+; 3:1                ; 8 bits    ; 16 LEs        ; 8 LEs                ; 8 LEs                  ; Yes        ; |Pipeline|JTAG:__module15__|reg3370[10]                                     ;
+; 3:1                ; 24 bits   ; 48 LEs        ; 0 LEs                ; 48 LEs                 ; Yes        ; |Pipeline|JTAG:__module15__|reg3370[11]                                     ;
+; 3:1                ; 32 bits   ; 64 LEs        ; 0 LEs                ; 64 LEs                 ; Yes        ; |Pipeline|F_D_Register:__module3__|reg308[7]                                ;
+; 4:1                ; 22 bits   ; 44 LEs        ; 0 LEs                ; 44 LEs                 ; Yes        ; |Pipeline|F_D_Register:__module3__|reg299[26]                               ;
+; 4:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1260[2]                               ;
+; 4:1                ; 6 bits    ; 12 LEs        ; 12 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1317[2]                               ;
+; 4:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1266[2]                               ;
+; 4:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1299[9]                               ;
+; 4:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1299[0]                               ;
+; 4:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1280[6]                               ;
+; 9:1                ; 7 bits    ; 42 LEs        ; 14 LEs               ; 28 LEs                 ; Yes        ; |Pipeline|M_W_Register:__module11__|reg2631[1]                              ;
+; 6:1                ; 16 bits   ; 64 LEs        ; 32 LEs               ; 32 LEs                 ; Yes        ; |Pipeline|M_W_Register:__module11__|reg2631[31]                             ;
+; 5:1                ; 32 bits   ; 96 LEs        ; 0 LEs                ; 96 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1220[2]                               ;
+; 6:1                ; 7 bits    ; 28 LEs        ; 21 LEs               ; 7 LEs                  ; Yes        ; |Pipeline|M_W_Register:__module11__|reg2631[8]                              ;
+; 17:1               ; 12 bits   ; 132 LEs       ; 72 LEs               ; 60 LEs                 ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1979[1]                               ;
+; 6:1                ; 20 bits   ; 80 LEs        ; 40 LEs               ; 40 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1208[30]                              ;
+; 9:1                ; 5 bits    ; 30 LEs        ; 25 LEs               ; 5 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1317[1]                               ;
+; 14:1               ; 32 bits   ; 288 LEs       ; 64 LEs               ; 224 LEs                ; Yes        ; |Pipeline|JTAG:__module15__|reg3377[9]                                      ;
+; 15:1               ; 8 bits    ; 80 LEs        ; 0 LEs                ; 80 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1317[18]                              ;
+; 21:1               ; 8 bits    ; 112 LEs       ; 72 LEs               ; 40 LEs                 ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1899[8]                               ;
+; 28:1               ; 3 bits    ; 54 LEs        ; 39 LEs               ; 15 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1253[4]                               ;
+; 22:1               ; 4 bits    ; 56 LEs        ; 56 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1899[15]                              ;
+; 22:1               ; 12 bits   ; 168 LEs       ; 108 LEs              ; 60 LEs                 ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1899[19]                              ;
+; 29:1               ; 2 bits    ; 38 LEs        ; 28 LEs               ; 10 LEs                 ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1253[5]                               ;
+; 24:1               ; 3 bits    ; 48 LEs        ; 45 LEs               ; 3 LEs                  ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1899[2]                               ;
+; 25:1               ; 4 bits    ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; Yes        ; |Pipeline|E_M_Register:__module8__|reg1899[31]                              ;
+; 21:1               ; 4 bits    ; 56 LEs        ; 52 LEs               ; 4 LEs                  ; Yes        ; |Pipeline|D_E_Register:__module6__|reg1253[8]                               ;
 ; 3:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Pipeline|Memory:__module9__|Cache:__module10__|io_DBUS_out_control_data[1] ;
-; 3:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector31                                     ;
-; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector31                                     ;
-; 3:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector34                                     ;
-; 3:1                ; 32 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; No         ; |Pipeline|Write_Back:__module12__|io_out_write_data[14]                     ;
-; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftLeft0                                    ;
+; 3:1                ; 7 bits    ; 14 LEs        ; 14 LEs               ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector32                                     ;
+; 3:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector76                                     ;
+; 3:1                ; 32 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; No         ; |Pipeline|Write_Back:__module12__|io_out_write_data[12]                     ;
 ; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftLeft0                                    ;
 ; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftRight0                                   ;
-; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftRight0                                   ;
+; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftRight0                                   ;
 ; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftLeft0                                    ;
+; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftRight0                                   ;
 ; 4:1                ; 50 bits   ; 100 LEs       ; 100 LEs              ; 0 LEs                  ; No         ; |Pipeline|Execute:__module7__|ShiftLeft0                                    ;
-; 4:1                ; 32 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; No         ; |Pipeline|Fetch:__module2__|io_IBUS_out_address_data[19]                    ;
+; 4:1                ; 32 bits   ; 64 LEs        ; 64 LEs               ; 0 LEs                  ; No         ; |Pipeline|Fetch:__module2__|io_IBUS_out_address_data[3]                     ;
 ; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Pipeline|Fetch:__module2__|reg127                                          ;
-; 4:1                ; 3 bits    ; 6 LEs         ; 6 LEs                ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector34                                     ;
-; 4:1                ; 2 bits    ; 4 LEs         ; 4 LEs                ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector31                                     ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |Pipeline|F_D_Register:__module3__|reg302                                   ;
-; 4:1                ; 12 bits   ; 24 LEs        ; 24 LEs               ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|io_out_rd1[10]                                 ;
-; 5:1                ; 6 bits    ; 18 LEs        ; 18 LEs               ; 0 LEs                  ; No         ; |Pipeline|JTAG:__module15__|TAP:__module16__|reg3098                        ;
-; 6:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Pipeline|JTAG:__module15__|TAP:__module16__|reg3098                        ;
-; 5:1                ; 9 bits    ; 27 LEs        ; 27 LEs               ; 0 LEs                  ; No         ; |Pipeline|Fetch:__module2__|sel162[20]                                      ;
-; 5:1                ; 23 bits   ; 69 LEs        ; 69 LEs               ; 0 LEs                  ; No         ; |Pipeline|Fetch:__module2__|sel162[28]                                      ;
-; 6:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Pipeline|JTAG:__module15__|TAP:__module16__|reg3098                        ;
+; 4:1                ; 4 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector32                                     ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 20 LEs               ; 0 LEs                  ; No         ; |Pipeline|F_D_Register:__module3__|reg299                                   ;
+; 4:1                ; 12 bits   ; 24 LEs        ; 24 LEs               ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|io_out_rd1[7]                                  ;
+; 5:1                ; 6 bits    ; 18 LEs        ; 18 LEs               ; 0 LEs                  ; No         ; |Pipeline|JTAG:__module15__|TAP:__module16__|reg3202                        ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Pipeline|JTAG:__module15__|TAP:__module16__|reg3202                        ;
+; 5:1                ; 9 bits    ; 27 LEs        ; 27 LEs               ; 0 LEs                  ; No         ; |Pipeline|Fetch:__module2__|sel162[8]                                       ;
+; 5:1                ; 23 bits   ; 69 LEs        ; 69 LEs               ; 0 LEs                  ; No         ; |Pipeline|Fetch:__module2__|sel162[19]                                      ;
+; 6:1                ; 7 bits    ; 28 LEs        ; 28 LEs               ; 0 LEs                  ; No         ; |Pipeline|Decode:__module4__|Selector76                                     ;
+; 6:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |Pipeline|JTAG:__module15__|TAP:__module16__|reg3202                        ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------------------+
 
 
 +---------------------------------------------------------------------------------------------------------+
-; Source assignments for CSR_Handler:__module17__|altsyncram:mem3439_rtl_0|altsyncram_7li1:auto_generated ;
+; Source assignments for CSR_Handler:__module17__|altsyncram:mem3543_rtl_0|altsyncram_7li1:auto_generated ;
 +---------------------------------+--------------------+------+-------------------------------------------+
 ; Assignment                      ; Value              ; From ; To                                        ;
 +---------------------------------+--------------------+------+-------------------------------------------+
@@ -567,7 +568,7 @@ Encoding Type:  One-Hot
 
 
 +---------------------------------------------------------------------------------------------------------------------------+
-; Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0|altsyncram_jbi1:auto_generated ;
+; Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0|altsyncram_jbi1:auto_generated ;
 +---------------------------------+--------------------+------+-------------------------------------------------------------+
 ; Assignment                      ; Value              ; From ; To                                                          ;
 +---------------------------------+--------------------+------+-------------------------------------------------------------+
@@ -576,7 +577,7 @@ Encoding Type:  One-Hot
 
 
 +---------------------------------------------------------------------------------------------------------------------------+
-; Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1|altsyncram_jbi1:auto_generated ;
+; Source assignments for Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1|altsyncram_jbi1:auto_generated ;
 +---------------------------------+--------------------+------+-------------------------------------------------------------+
 ; Assignment                      ; Value              ; From ; To                                                          ;
 +---------------------------------+--------------------+------+-------------------------------------------------------------+
@@ -585,7 +586,7 @@ Encoding Type:  One-Hot
 
 
 +----------------------------------------------------------------------------------------------------+
-; Parameter Settings for Inferred Entity Instance: CSR_Handler:__module17__|altsyncram:mem3439_rtl_0 ;
+; Parameter Settings for Inferred Entity Instance: CSR_Handler:__module17__|altsyncram:mem3543_rtl_0 ;
 +------------------------------------+----------------------+----------------------------------------+
 ; Parameter Name                     ; Value                ; Type                                   ;
 +------------------------------------+----------------------+----------------------------------------+
@@ -646,7 +647,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 
 
 +----------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0 ;
+; Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0 ;
 +------------------------------------+----------------------+----------------------------------------------------------+
 ; Parameter Name                     ; Value                ; Type                                                     ;
 +------------------------------------+----------------------+----------------------------------------------------------+
@@ -707,7 +708,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 
 
 +----------------------------------------------------------------------------------------------------------------------+
-; Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1 ;
+; Parameter Settings for Inferred Entity Instance: Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1 ;
 +------------------------------------+----------------------+----------------------------------------------------------+
 ; Parameter Name                     ; Value                ; Type                                                     ;
 +------------------------------------+----------------------+----------------------------------------------------------+
@@ -773,7 +774,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; Name                                      ; Value                                                               ;
 +-------------------------------------------+---------------------------------------------------------------------+
 ; Number of entity instances                ; 3                                                                   ;
-; Entity Instance                           ; CSR_Handler:__module17__|altsyncram:mem3439_rtl_0                   ;
+; Entity Instance                           ; CSR_Handler:__module17__|altsyncram:mem3543_rtl_0                   ;
 ;     -- OPERATION_MODE                     ; DUAL_PORT                                                           ;
 ;     -- WIDTH_A                            ; 12                                                                  ;
 ;     -- NUMWORDS_A                         ; 4096                                                                ;
@@ -784,7 +785,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 ;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                        ;
 ;     -- RAM_BLOCK_TYPE                     ; AUTO                                                                ;
 ;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                           ;
-; Entity Instance                           ; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0 ;
+; Entity Instance                           ; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0 ;
 ;     -- OPERATION_MODE                     ; DUAL_PORT                                                           ;
 ;     -- WIDTH_A                            ; 32                                                                  ;
 ;     -- NUMWORDS_A                         ; 32                                                                  ;
@@ -795,7 +796,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 ;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                        ;
 ;     -- RAM_BLOCK_TYPE                     ; AUTO                                                                ;
 ;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                           ;
-; Entity Instance                           ; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_1 ;
+; Entity Instance                           ; Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_1 ;
 ;     -- OPERATION_MODE                     ; DUAL_PORT                                                           ;
 ;     -- WIDTH_A                            ; 32                                                                  ;
 ;     -- NUMWORDS_A                         ; 32                                                                  ;
@@ -826,34 +827,34 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
 ; boundary_port         ; 196                         ;
-; twentynm_ff           ; 973                         ;
+; twentynm_ff           ; 1040                        ;
 ;     ENA               ; 13                          ;
 ;     ENA SCLR          ; 143                         ;
 ;     ENA SCLR SLD      ; 32                          ;
-;     SCLR              ; 544                         ;
-;     SCLR SLD          ; 41                          ;
-;     plain             ; 200                         ;
-; twentynm_lcell_comb   ; 1259                        ;
+;     SCLR              ; 609                         ;
+;     SCLR SLD          ; 40                          ;
+;     plain             ; 203                         ;
+; twentynm_lcell_comb   ; 1274                        ;
 ;     arith             ; 268                         ;
 ;         0 data inputs ; 1                           ;
 ;         1 data inputs ; 90                          ;
 ;         2 data inputs ; 83                          ;
 ;         3 data inputs ; 30                          ;
 ;         4 data inputs ; 64                          ;
-;     extend            ; 27                          ;
-;         7 data inputs ; 27                          ;
-;     normal            ; 964                         ;
+;     extend            ; 9                           ;
+;         7 data inputs ; 9                           ;
+;     normal            ; 997                         ;
 ;         0 data inputs ; 1                           ;
 ;         1 data inputs ; 3                           ;
-;         2 data inputs ; 74                          ;
-;         3 data inputs ; 107                         ;
-;         4 data inputs ; 134                         ;
-;         5 data inputs ; 262                         ;
-;         6 data inputs ; 383                         ;
+;         2 data inputs ; 83                          ;
+;         3 data inputs ; 101                         ;
+;         4 data inputs ; 143                         ;
+;         5 data inputs ; 267                         ;
+;         6 data inputs ; 399                         ;
 ; twentynm_ram_block    ; 76                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 7.00                        ;
-; Average LUT depth     ; 3.70                        ;
+; Max LUT depth         ; 8.00                        ;
+; Average LUT depth     ; 3.50                        ;
 +-----------------------+-----------------------------+
 
 
@@ -885,7 +886,7 @@ Info: Running Quartus Prime Analysis & Synthesis
     Info: the sole purpose of programming logic devices manufactured by
     Info: Intel and sold by Intel or its authorized distributors.  Please
     Info: refer to the applicable agreement for further details.
-    Info: Processing started: Mon Nov 26 17:33:23 2018
+    Info: Processing started: Tue Nov 27 13:43:22 2018
 Info: Command: quartus_map rocketchip --read_settings_files=on
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
 Info (12021): Found 17 design units, including 17 entities, in source file /home/fares/Desktop/Projects/Pipeline/src/pipeline.v
@@ -893,46 +894,46 @@ Info (12021): Found 17 design units, including 17 entities, in source file /home
     Info (12023): Found entity 2: F_D_Register File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 107
     Info (12023): Found entity 3: RegisterFile File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 143
     Info (12023): Found entity 4: Decode File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 174
-    Info (12023): Found entity 5: D_E_Register File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 431
-    Info (12023): Found entity 6: Execute File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 661
-    Info (12023): Found entity 7: E_M_Register File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 796
-    Info (12023): Found entity 8: Cache File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 955
-    Info (12023): Found entity 9: Memory File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1029
-    Info (12023): Found entity 10: M_W_Register File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1121
-    Info (12023): Found entity 11: Write_Back File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1196
-    Info (12023): Found entity 12: Forwarding File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1222
-    Info (12023): Found entity 13: Interrupt_Handler File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1310
-    Info (12023): Found entity 14: TAP File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1333
-    Info (12023): Found entity 15: JTAG File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1408
-    Info (12023): Found entity 16: CSR_Handler File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1525
-    Info (12023): Found entity 17: Pipeline File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1558
+    Info (12023): Found entity 5: D_E_Register File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 452
+    Info (12023): Found entity 6: Execute File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 682
+    Info (12023): Found entity 7: E_M_Register File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 814
+    Info (12023): Found entity 8: Cache File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 991
+    Info (12023): Found entity 9: Memory File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1065
+    Info (12023): Found entity 10: M_W_Register File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1161
+    Info (12023): Found entity 11: Write_Back File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1255
+    Info (12023): Found entity 12: Forwarding File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1281
+    Info (12023): Found entity 13: Interrupt_Handler File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1369
+    Info (12023): Found entity 14: TAP File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1392
+    Info (12023): Found entity 15: JTAG File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1467
+    Info (12023): Found entity 16: CSR_Handler File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1584
+    Info (12023): Found entity 17: Pipeline File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1617
 Info (12127): Elaborating entity "Pipeline" for the top level hierarchy
-Info (12128): Elaborating entity "Fetch" for hierarchy "Fetch:__module2__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1611
-Info (12128): Elaborating entity "F_D_Register" for hierarchy "F_D_Register:__module3__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
-Info (12128): Elaborating entity "Decode" for hierarchy "Decode:__module4__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1633
+Info (12128): Elaborating entity "Fetch" for hierarchy "Fetch:__module2__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1670
+Info (12128): Elaborating entity "F_D_Register" for hierarchy "F_D_Register:__module3__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1685
+Info (12128): Elaborating entity "Decode" for hierarchy "Decode:__module4__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1692
 Info (12128): Elaborating entity "RegisterFile" for hierarchy "Decode:__module4__|RegisterFile:__module5__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 224
-Info (12128): Elaborating entity "D_E_Register" for hierarchy "D_E_Register:__module6__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1642
-Info (12128): Elaborating entity "Execute" for hierarchy "Execute:__module7__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1665
-Info (12128): Elaborating entity "E_M_Register" for hierarchy "E_M_Register:__module8__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1689
-Info (12128): Elaborating entity "Memory" for hierarchy "Memory:__module9__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1706
-Info (12128): Elaborating entity "Cache" for hierarchy "Memory:__module9__|Cache:__module10__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1071
-Info (12128): Elaborating entity "M_W_Register" for hierarchy "M_W_Register:__module11__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1727
-Info (12128): Elaborating entity "Write_Back" for hierarchy "Write_Back:__module12__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1735
-Info (12128): Elaborating entity "Forwarding" for hierarchy "Forwarding:__module13__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1743
-Info (12128): Elaborating entity "Interrupt_Handler" for hierarchy "Interrupt_Handler:__module14__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1767
-Warning (10030): Net "mem3024.data_a" at pipeline.v(1317) has no driver or initial value, using a default initial value '0' File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1317
-Warning (10030): Net "mem3024.waddr_a[0]" at pipeline.v(1317) has no driver or initial value, using a default initial value '0' File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1317
-Warning (10030): Net "mem3024.we_a" at pipeline.v(1317) has no driver or initial value, using a default initial value '0' File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1317
-Info (12128): Elaborating entity "JTAG" for hierarchy "JTAG:__module15__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1772
-Info (12128): Elaborating entity "TAP" for hierarchy "JTAG:__module15__|TAP:__module16__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1436
-Info (12128): Elaborating entity "CSR_Handler" for hierarchy "CSR_Handler:__module17__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1784
-Warning (276020): Inferred RAM node "CSR_Handler:__module17__|mem3439_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
-Warning (276020): Inferred RAM node "Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
-Warning (276020): Inferred RAM node "Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
+Info (12128): Elaborating entity "D_E_Register" for hierarchy "D_E_Register:__module6__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1701
+Info (12128): Elaborating entity "Execute" for hierarchy "Execute:__module7__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1724
+Info (12128): Elaborating entity "E_M_Register" for hierarchy "E_M_Register:__module8__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1748
+Info (12128): Elaborating entity "Memory" for hierarchy "Memory:__module9__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1767
+Info (12128): Elaborating entity "Cache" for hierarchy "Memory:__module9__|Cache:__module10__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1108
+Info (12128): Elaborating entity "M_W_Register" for hierarchy "M_W_Register:__module11__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1788
+Info (12128): Elaborating entity "Write_Back" for hierarchy "Write_Back:__module12__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1798
+Info (12128): Elaborating entity "Forwarding" for hierarchy "Forwarding:__module13__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1806
+Info (12128): Elaborating entity "Interrupt_Handler" for hierarchy "Interrupt_Handler:__module14__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1830
+Warning (10030): Net "mem3128.data_a" at pipeline.v(1376) has no driver or initial value, using a default initial value '0' File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1376
+Warning (10030): Net "mem3128.waddr_a[0]" at pipeline.v(1376) has no driver or initial value, using a default initial value '0' File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1376
+Warning (10030): Net "mem3128.we_a" at pipeline.v(1376) has no driver or initial value, using a default initial value '0' File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1376
+Info (12128): Elaborating entity "JTAG" for hierarchy "JTAG:__module15__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1835
+Info (12128): Elaborating entity "TAP" for hierarchy "JTAG:__module15__|TAP:__module16__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1495
+Info (12128): Elaborating entity "CSR_Handler" for hierarchy "CSR_Handler:__module17__" File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1847
+Warning (276020): Inferred RAM node "CSR_Handler:__module17__|mem3543_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
+Warning (276020): Inferred RAM node "Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
+Warning (276020): Inferred RAM node "Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
 Info (276014): Found 1 instances of uninferred RAM logic
-    Info (276004): RAM logic "Interrupt_Handler:__module14__|mem3024" is uninferred due to inappropriate RAM size File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1317
+    Info (276004): RAM logic "Interrupt_Handler:__module14__|mem3128" is uninferred due to inappropriate RAM size File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1376
 Info (19000): Inferred 3 megafunctions from design logic
-    Info (276029): Inferred altsyncram megafunction from the following design logic: "CSR_Handler:__module17__|mem3439_rtl_0" 
+    Info (276029): Inferred altsyncram megafunction from the following design logic: "CSR_Handler:__module17__|mem3543_rtl_0" 
         Info (286033): Parameter OPERATION_MODE set to DUAL_PORT
         Info (286033): Parameter WIDTH_A set to 12
         Info (286033): Parameter WIDTHAD_A set to 12
@@ -947,7 +948,7 @@ Info (19000): Inferred 3 megafunctions from design logic
         Info (286033): Parameter ADDRESS_REG_B set to CLOCK0
         Info (286033): Parameter INDATA_ACLR_A set to NONE
         Info (286033): Parameter WRCONTROL_ACLR_A set to NONE
-    Info (276029): Inferred altsyncram megafunction from the following design logic: "Decode:__module4__|RegisterFile:__module5__|mem437_rtl_0" 
+    Info (276029): Inferred altsyncram megafunction from the following design logic: "Decode:__module4__|RegisterFile:__module5__|mem434_rtl_0" 
         Info (286033): Parameter OPERATION_MODE set to DUAL_PORT
         Info (286033): Parameter WIDTH_A set to 32
         Info (286033): Parameter WIDTHAD_A set to 5
@@ -962,7 +963,7 @@ Info (19000): Inferred 3 megafunctions from design logic
         Info (286033): Parameter ADDRESS_REG_B set to CLOCK0
         Info (286033): Parameter INDATA_ACLR_A set to NONE
         Info (286033): Parameter WRCONTROL_ACLR_A set to NONE
-    Info (276029): Inferred altsyncram megafunction from the following design logic: "Decode:__module4__|RegisterFile:__module5__|mem437_rtl_1" 
+    Info (276029): Inferred altsyncram megafunction from the following design logic: "Decode:__module4__|RegisterFile:__module5__|mem434_rtl_1" 
         Info (286033): Parameter OPERATION_MODE set to DUAL_PORT
         Info (286033): Parameter WIDTH_A set to 32
         Info (286033): Parameter WIDTHAD_A set to 5
@@ -977,8 +978,8 @@ Info (19000): Inferred 3 megafunctions from design logic
         Info (286033): Parameter ADDRESS_REG_B set to CLOCK0
         Info (286033): Parameter INDATA_ACLR_A set to NONE
         Info (286033): Parameter WRCONTROL_ACLR_A set to NONE
-Info (12130): Elaborated megafunction instantiation "CSR_Handler:__module17__|altsyncram:mem3439_rtl_0"
-Info (12133): Instantiated megafunction "CSR_Handler:__module17__|altsyncram:mem3439_rtl_0" with the following parameter:
+Info (12130): Elaborated megafunction instantiation "CSR_Handler:__module17__|altsyncram:mem3543_rtl_0"
+Info (12133): Instantiated megafunction "CSR_Handler:__module17__|altsyncram:mem3543_rtl_0" with the following parameter:
     Info (12134): Parameter "OPERATION_MODE" = "DUAL_PORT"
     Info (12134): Parameter "WIDTH_A" = "12"
     Info (12134): Parameter "WIDTHAD_A" = "12"
@@ -995,8 +996,8 @@ Info (12133): Instantiated megafunction "CSR_Handler:__module17__|altsyncram:mem
     Info (12134): Parameter "WRCONTROL_ACLR_A" = "NONE"
 Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_7li1.tdf
     Info (12023): Found entity 1: altsyncram_7li1 File: /home/fares/Desktop/Projects/Pipeline/quartus/db/altsyncram_7li1.tdf Line: 27
-Info (12130): Elaborated megafunction instantiation "Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0"
-Info (12133): Instantiated megafunction "Decode:__module4__|RegisterFile:__module5__|altsyncram:mem437_rtl_0" with the following parameter:
+Info (12130): Elaborated megafunction instantiation "Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0"
+Info (12133): Instantiated megafunction "Decode:__module4__|RegisterFile:__module5__|altsyncram:mem434_rtl_0" with the following parameter:
     Info (12134): Parameter "OPERATION_MODE" = "DUAL_PORT"
     Info (12134): Parameter "WIDTH_A" = "32"
     Info (12134): Parameter "WIDTHAD_A" = "5"
@@ -1015,214 +1016,214 @@ Info (12021): Found 1 design units, including 1 entities, in source file db/alts
     Info (12023): Found entity 1: altsyncram_jbi1 File: /home/fares/Desktop/Projects/Pipeline/quartus/db/altsyncram_jbi1.tdf Line: 27
 Warning (12241): 1 hierarchies have connectivity warnings - see the Connectivity Checks report folder
 Warning (13024): Output pins are stuck at VCC or GND
-    Warning (13410): Pin "io_IBUS_out_address_valid" is stuck at VCC File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1565
-    Warning (13410): Pin "io_DBUS_out_control_valid" is stuck at VCC File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1577
+    Warning (13410): Pin "io_IBUS_out_address_valid" is stuck at VCC File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1624
+    Warning (13410): Pin "io_DBUS_out_control_valid" is stuck at VCC File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1636
 Info (286030): Timing-Driven Synthesis is running
 Info (17049): 9 registers lost all their fanouts during netlist optimizations.
 Info (15717): Design contains 194 virtual pins; timing numbers associated with paths containing virtual pins are estimates
-    Info (15719): Pin "io_IBUS_in_data_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1563
-    Info (15719): Pin "io_IBUS_out_address_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[2]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[3]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[4]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[5]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[6]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[7]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[8]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[9]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[10]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[11]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[12]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[13]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[14]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[15]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[16]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[17]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[18]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[19]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[20]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[21]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[22]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[23]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[24]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[25]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[26]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[27]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[28]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[29]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[30]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_data[31]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1564
-    Info (15719): Pin "io_IBUS_out_address_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1565
-    Info (15718): Pin "io_IBUS_out_address_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1566
-    Info (15718): Pin "io_DBUS_in_data_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1568
-    Info (15719): Pin "io_DBUS_in_data_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1569
-    Info (15719): Pin "io_DBUS_out_data_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[2]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[3]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[4]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[5]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[6]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[7]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[8]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[9]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[10]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[11]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[12]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[13]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[14]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[15]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[16]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[17]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[18]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[19]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[20]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[21]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[22]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[23]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[24]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[25]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[26]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[27]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[28]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[29]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[30]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_data[31]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1570
-    Info (15719): Pin "io_DBUS_out_data_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1571
-    Info (15718): Pin "io_DBUS_out_data_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1572
-    Info (15719): Pin "io_DBUS_out_address_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[2]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[3]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[4]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[5]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[6]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[7]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[8]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[9]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[10]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[11]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[12]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[13]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[14]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[15]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[16]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[17]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[18]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[19]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[20]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[21]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[22]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[23]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[24]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[25]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[26]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[27]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[28]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[29]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[30]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_data[31]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1573
-    Info (15719): Pin "io_DBUS_out_address_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1574
-    Info (15718): Pin "io_DBUS_out_address_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1575
-    Info (15719): Pin "io_DBUS_out_control_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1576
-    Info (15719): Pin "io_DBUS_out_control_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1576
-    Info (15719): Pin "io_DBUS_out_control_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1577
-    Info (15718): Pin "io_DBUS_out_control_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1578
-    Info (15718): Pin "io_INTERRUPT_in_interrupt_id_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1579
-    Info (15719): Pin "io_INTERRUPT_in_interrupt_id_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1581
-    Info (15719): Pin "io_jtag_JTAG_TAP_in_mode_select_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1584
-    Info (15719): Pin "io_jtag_JTAG_TAP_in_clock_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1587
-    Info (15719): Pin "io_jtag_JTAG_TAP_in_reset_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1590
-    Info (15719): Pin "io_jtag_in_data_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1593
-    Info (15719): Pin "io_jtag_out_data_data" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1594
-    Info (15719): Pin "io_jtag_out_data_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1595
-    Info (15718): Pin "io_jtag_out_data_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1596
-    Info (15719): Pin "io_out_fwd_stall" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1597
-    Info (15719): Pin "io_out_branch_stall" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1599
-    Info (15718): Pin "io_IBUS_in_data_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1562
-    Info (15718): Pin "io_INTERRUPT_in_interrupt_id_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1580
-    Info (15718): Pin "io_jtag_JTAG_TAP_in_mode_select_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1583
-    Info (15718): Pin "io_jtag_JTAG_TAP_in_clock_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1586
-    Info (15718): Pin "io_jtag_JTAG_TAP_in_reset_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1589
-    Info (15718): Pin "io_jtag_in_data_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1592
-    Info (15718): Pin "io_jtag_in_data_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1591
-    Info (15718): Pin "io_jtag_JTAG_TAP_in_reset_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1588
-    Info (15718): Pin "io_jtag_JTAG_TAP_in_mode_select_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1582
-    Info (15718): Pin "io_jtag_JTAG_TAP_in_clock_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1585
-    Info (15718): Pin "io_IBUS_in_data_data[24]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[19]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[20]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[21]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[22]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[23]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[15]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[16]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[17]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[18]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[0]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[1]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[2]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[3]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[4]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[6]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[5]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[25]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[26]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[31]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[30]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[29]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[28]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[27]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[14]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[13]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[12]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[11]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[7]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[8]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[9]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_IBUS_in_data_data[10]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1561
-    Info (15718): Pin "io_DBUS_in_data_data[4]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[7]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[15]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[17]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[16]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[14]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[21]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[20]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[19]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[18]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[25]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[24]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[23]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[22]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[29]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[28]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[27]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[26]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[5]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[31]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[30]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[13]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[12]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[11]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[10]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[9]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[8]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[6]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[0]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[1]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[2]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
-    Info (15718): Pin "io_DBUS_in_data_data[3]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1567
+    Info (15719): Pin "io_IBUS_in_data_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1622
+    Info (15719): Pin "io_IBUS_out_address_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[2]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[3]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[4]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[5]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[6]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[7]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[8]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[9]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[10]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[11]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[12]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[13]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[14]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[15]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[16]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[17]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[18]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[19]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[20]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[21]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[22]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[23]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[24]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[25]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[26]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[27]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[28]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[29]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[30]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_data[31]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1623
+    Info (15719): Pin "io_IBUS_out_address_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1624
+    Info (15718): Pin "io_IBUS_out_address_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1625
+    Info (15718): Pin "io_DBUS_in_data_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1627
+    Info (15719): Pin "io_DBUS_in_data_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1628
+    Info (15719): Pin "io_DBUS_out_data_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[2]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[3]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[4]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[5]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[6]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[7]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[8]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[9]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[10]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[11]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[12]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[13]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[14]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[15]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[16]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[17]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[18]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[19]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[20]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[21]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[22]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[23]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[24]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[25]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[26]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[27]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[28]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[29]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[30]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_data[31]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1629
+    Info (15719): Pin "io_DBUS_out_data_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1630
+    Info (15718): Pin "io_DBUS_out_data_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1631
+    Info (15719): Pin "io_DBUS_out_address_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[2]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[3]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[4]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[5]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[6]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[7]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[8]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[9]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[10]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[11]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[12]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[13]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[14]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[15]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[16]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[17]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[18]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[19]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[20]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[21]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[22]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[23]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[24]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[25]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[26]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[27]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[28]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[29]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[30]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_data[31]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1632
+    Info (15719): Pin "io_DBUS_out_address_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1633
+    Info (15718): Pin "io_DBUS_out_address_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1634
+    Info (15719): Pin "io_DBUS_out_control_data[0]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1635
+    Info (15719): Pin "io_DBUS_out_control_data[1]" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1635
+    Info (15719): Pin "io_DBUS_out_control_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1636
+    Info (15718): Pin "io_DBUS_out_control_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1637
+    Info (15718): Pin "io_INTERRUPT_in_interrupt_id_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1638
+    Info (15719): Pin "io_INTERRUPT_in_interrupt_id_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1640
+    Info (15719): Pin "io_jtag_JTAG_TAP_in_mode_select_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1643
+    Info (15719): Pin "io_jtag_JTAG_TAP_in_clock_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1646
+    Info (15719): Pin "io_jtag_JTAG_TAP_in_reset_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1649
+    Info (15719): Pin "io_jtag_in_data_ready" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1652
+    Info (15719): Pin "io_jtag_out_data_data" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1653
+    Info (15719): Pin "io_jtag_out_data_valid" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1654
+    Info (15718): Pin "io_jtag_out_data_ready" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1655
+    Info (15719): Pin "io_out_fwd_stall" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1656
+    Info (15719): Pin "io_out_branch_stall" is virtual output pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1658
+    Info (15718): Pin "io_IBUS_in_data_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1621
+    Info (15718): Pin "io_INTERRUPT_in_interrupt_id_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1639
+    Info (15718): Pin "io_jtag_JTAG_TAP_in_mode_select_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1642
+    Info (15718): Pin "io_jtag_JTAG_TAP_in_clock_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1645
+    Info (15718): Pin "io_jtag_JTAG_TAP_in_reset_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1648
+    Info (15718): Pin "io_jtag_in_data_valid" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1651
+    Info (15718): Pin "io_jtag_in_data_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1650
+    Info (15718): Pin "io_jtag_JTAG_TAP_in_reset_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1647
+    Info (15718): Pin "io_jtag_JTAG_TAP_in_mode_select_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1641
+    Info (15718): Pin "io_jtag_JTAG_TAP_in_clock_data" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1644
+    Info (15718): Pin "io_IBUS_in_data_data[24]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[19]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[20]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[21]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[22]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[23]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[15]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[16]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[17]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[18]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[0]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[1]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[2]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[3]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[6]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[5]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[4]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[11]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[7]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[8]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[9]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[10]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[14]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[13]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[12]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[31]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[26]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[25]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[27]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[28]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[29]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_IBUS_in_data_data[30]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1620
+    Info (15718): Pin "io_DBUS_in_data_data[0]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[1]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[2]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[3]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[4]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[5]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[6]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[7]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[8]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[9]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[10]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[11]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[12]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[13]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[14]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[15]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[16]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[17]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[18]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[19]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[20]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[21]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[22]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[23]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[24]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[25]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[26]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[27]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[28]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[29]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[30]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
+    Info (15718): Pin "io_DBUS_in_data_data[31]" is virtual input pin File: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v Line: 1626
 Warning (15751): Ignored Virtual Pin assignment to "io_actual_change".
-Info (21057): Implemented 2119 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 2135 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 2 input pins
     Info (21059): Implemented 0 output pins
-    Info (21061): Implemented 2041 logic cells
+    Info (21061): Implemented 2057 logic cells
     Info (21064): Implemented 76 RAM segments
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 11 warnings
-    Info: Peak virtual memory: 1055 megabytes
-    Info: Processing ended: Mon Nov 26 17:33:37 2018
+    Info: Peak virtual memory: 1058 megabytes
+    Info: Processing ended: Tue Nov 27 13:43:36 2018
     Info: Elapsed time: 00:00:14
     Info: Total CPU time (on all processors): 00:00:31
 

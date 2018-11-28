@@ -24,6 +24,10 @@ struct E_M_Register
 		__in(ch_bit<32>)  in_curr_PC,
 		__in(ch_bit<32>)  in_branch_offset,
 		__in(ch_bit<3>)   in_branch_type,
+		#ifdef JAL_MEM
+		__in(ch_bit<1>)   in_jal,
+		__in(ch_bit<32>)  in_jal_dest,
+		#endif
 
 		__out(ch_bit<12>) out_csr_address,
 		__out(ch_bit<1>)  out_is_csr,
@@ -40,13 +44,17 @@ struct E_M_Register
 		__out(ch_bit<32>) out_curr_PC,
 		__out(ch_bit<32>) out_branch_offset,
 		__out(ch_bit<3>)  out_branch_type,
+		#ifdef JAL_MEM
+		__out(ch_bit<1>)  out_jal,
+		__out(ch_bit<32>) out_jal_dest,
+		#endif
 		__out(ch_bit<32>) out_PC_next
 	);
 
 	void describe()
 	{
 
-		ch_reg<ch_bit<32>>  alu_result(0);
+		ch_reg<ch_bit<32>> alu_result(0);
 		ch_reg<ch_bit<5>>  rd(0);
 		ch_reg<ch_bit<5>>  rs1(0);
 		ch_reg<ch_bit<32>> rd1(0);
@@ -62,6 +70,10 @@ struct E_M_Register
 		ch_reg<ch_bit<32>> curr_PC(0);
 		ch_reg<ch_bit<32>> branch_offset(0);
 		ch_reg<ch_bit<3>>  branch_type(0);
+		#ifdef JAL_MEM
+		ch_reg<ch_bit<1>>  jal(NO_JUMP_int);
+		ch_reg<ch_bit<32>> jal_dest(0);
+		#endif
 
 		io.out_alu_result    = alu_result;
 		io.out_rd            = rd;
@@ -79,6 +91,10 @@ struct E_M_Register
 		io.out_curr_PC       = curr_PC;
 		io.out_branch_offset = branch_offset;
 		io.out_branch_type   = branch_type;
+		#ifdef JAL_MEM
+		io.out_jal           = jal;
+		io.out_jal_dest      = jal_dest;
+		#endif
 		
 		alu_result->next    = io.in_alu_result;
 		rd->next            = io.in_rd;
@@ -96,5 +112,9 @@ struct E_M_Register
 		curr_PC->next       = io.in_curr_PC;
 		branch_offset->next = io.in_branch_offset;
 		branch_type->next   = io.in_branch_type;
+		#ifdef JAL_MEM
+		jal->next           = io.in_jal;
+		jal_dest->next      = io.in_jal_dest;
+		#endif
 	}
 };

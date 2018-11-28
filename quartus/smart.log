@@ -14,14 +14,15 @@ Info: Running Quartus Prime Shell
     Info: the sole purpose of programming logic devices manufactured by
     Info: Intel and sold by Intel or its authorized distributors.  Please
     Info: refer to the applicable agreement for further details.
-    Info: Processing started: Mon Nov 26 17:33:22 2018
+    Info: Processing started: Tue Nov 27 13:43:21 2018
 Info: Command: quartus_sh --determine_smart_action rocketchip
 Info: Quartus(args): rocketchip
-Info: SMART_ACTION = DONE
-Info: Nothing done
+Info (293032): Detected changes in source files.
+    Info (293027): Source file: /home/fares/Desktop/Projects/Pipeline/src/pipeline.v has changed.
+Info: SMART_ACTION = SOURCE
 Info (23030): Evaluation of Tcl script /home/fares/intelFPGA/17.1/quartus/common/tcl/internal/qsh_smart.tcl was successful
 Info: Quartus Prime Shell was successful. 0 errors, 0 warnings
-    Info: Peak virtual memory: 789 megabytes
-    Info: Processing ended: Mon Nov 26 17:33:22 2018
+    Info: Peak virtual memory: 793 megabytes
+    Info: Processing ended: Tue Nov 27 13:43:21 2018
     Info: Elapsed time: 00:00:00
     Info: Total CPU time (on all processors): 00:00:00

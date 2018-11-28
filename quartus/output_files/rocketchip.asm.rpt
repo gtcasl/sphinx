@@ -1,5 +1,5 @@
 Assembler report for rocketchip
-Mon Nov 26 17:36:58 2018
+Tue Nov 27 13:46:46 2018
 Quartus Prime Version 17.1.0 Build 590 10/25/2017 SJ Standard Edition
 
 
@@ -35,7 +35,7 @@ refer to the applicable agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Mon Nov 26 17:36:58 2018 ;
+; Assembler Status      ; Successful - Tue Nov 27 13:46:46 2018 ;
 ; Revision Name         ; rocketchip                            ;
 ; Top-level Entity Name ; Pipeline                              ;
 ; Family                ; Arria 10                              ;
@@ -98,13 +98,13 @@ Info: Running Quartus Prime Assembler
     Info: the sole purpose of programming logic devices manufactured by
     Info: Intel and sold by Intel or its authorized distributors.  Please
     Info: refer to the applicable agreement for further details.
-    Info: Processing started: Mon Nov 26 17:36:52 2018
+    Info: Processing started: Tue Nov 27 13:46:41 2018
 Info: Command: quartus_asm rocketchip
 Warning (292011): Can't generate programming files because you are currently using the Quartus Prime software in Evaluation Mode.
 Info: Quartus Prime Assembler was successful. 0 errors, 1 warning
     Info: Peak virtual memory: 1181 megabytes
-    Info: Processing ended: Mon Nov 26 17:36:58 2018
-    Info: Elapsed time: 00:00:06
+    Info: Processing ended: Tue Nov 27 13:46:46 2018
+    Info: Elapsed time: 00:00:05
     Info: Total CPU time (on all processors): 00:00:05
 
 

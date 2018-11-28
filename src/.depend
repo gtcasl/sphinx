@@ -1,4 +1,4 @@
-RocketChip.o: RocketChip.cpp RocketChip.h fetch.h define.h buses.h \
+Sphinx.o: Sphinx.cpp Sphinx.h fetch.h define.h config.h buses.h \
  f_d_register.h decode.h d_e_register.h execute.h e_m_register.h memory.h \
  m_w_register.h write_back.h forwarding.h interrupt_handler.h \
  csr_handler.h ram.h JTAG/jtag.h JTAG/../define.h JTAG/../buses.h \

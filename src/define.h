@@ -3,15 +3,7 @@
 #ifndef __DEFINITIONS__
 #define __DEFINITIONS__
 
-
-// OPTIONS
-// #define FORWARDING 
-
-#define BRANCH_WB
-
-// #ifndef FORWARDING
-	// #define CSR_EXE
-// #endif
+#include "config.h"
 
 // SIZES
 #define INST_SIZE 32

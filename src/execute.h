@@ -59,8 +59,6 @@ struct Execute
 		io.out_is_csr      = io.in_is_csr;
 		io.out_csr_address = io.in_csr_address;
 
-    // ch_bit<32> se_itype_immed = ch_sel(io.in_itype_immed[11] == 1, ch_cat(ONES_20BITS, io.in_itype_immed), ch_pad<32>(io.in_itype_immed));
-
 		io.out_branch_offset = io.in_itype_immed;
 
 		ch_bit<32> ALU_in1 = io.in_rd1;
@@ -71,7 +69,6 @@ struct Execute
 
 		ch_bit<32> upper_immed = ch_cat(io.in_upper_immed, CH_ZERO(12));
 
-	
 
 
 		io.out_jal_dest = io.in_rd1.as_int() + io.in_jal_offset.as_int();
@@ -199,7 +196,11 @@ struct Execute
 			};
 
 
+		#ifdef JAL_MEM
+		io.out_branch_stall = ch_sel((io.in_branch_type.as_uint() != NO_BRANCH_int) || io.in_jal, STALL, NO_STALL);
+		#else
 		io.out_branch_stall = ch_sel(io.in_branch_type.as_uint() != NO_BRANCH_int, STALL, NO_STALL);
+		#endif
 
 		io.out_rd = io.in_rd;
 		io.out_wb = io.in_wb;
