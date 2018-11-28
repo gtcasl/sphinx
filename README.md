@@ -4,7 +4,7 @@ Sphinx is a RISC-V core implemented in CASH. The following are some of the specs
 
 - RV32I instruction set
 - Pipelined with 5 stages (Fetch, Decode, Execute, Memory, WriteBack)
-- Options to enable/disable forwarding, Branches stalling 2/3 cycles, and jumps taking 1/2 cycles.
+- Options to enable/disable forwarding, Branches resolving in 2/3 cycles, and jumps resolving in 1/2 cycles.
 - Atomic CSR instructions.
 
 
@@ -27,7 +27,7 @@ Cyclone V    140.19 MHz     263.92 MHz
 
 ## Dependancies 
 
-This model only depends on [CASH](https://github.com/gtcasl/cash) being installed.
+Sphinx only depends on [CASH](https://github.com/gtcasl/cash) being installed.
 
 
 ## CPU Generation and simulation
@@ -46,7 +46,8 @@ To simulate the model with the test cases:
 
 To simulate the model with a user program, provide the .hex file:
 ```sh
-./Sphinx <relative location>
+#./Sphinx <relative location>
+./Sphinx ../tests/rv32ui-p-bltu.hex
 ```
 
 For options in config.h:
