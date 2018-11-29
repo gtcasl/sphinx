@@ -34,16 +34,30 @@ struct RegisterFile
 	void describe()
 	{
 		ch_mem<ch_bit<32>, 32> registers;
+		// ch_reg<ch_bool> starting(true);
 
-
+		// __if(starting)
+		// {
+		// 	starting->next = ch_bool(false);
+		// };
 
 		ch_bit<32> write_data;
 		ch_bit<5> write_register;
 		ch_bool enable;
 
+
+
+		// __if(starting)
+		// {
+		// 	write_data     = ch_bit<32>(0);
+		// 	write_register = ch_bit<5>(0);
+		// 	enable         = TRUE; 
+		// } __else
+		// {
 			write_data     = io.in_data;
 			write_register = io.in_rd;
-			enable         = (io.in_write_register);
+			enable         = io.in_write_register && ((io.in_rd != ch_bit<5>(0)));
+		// };
 
 		registers.write(write_register, write_data, enable);
 
@@ -217,6 +231,8 @@ struct Decode
 			// io.out_csr_data = io.in_csr_data;
 		#endif
 
+
+		// ch_print("curr_PC: {0}\tcurr_isnt: {1}\tStall: {2}", io.in_curr_PC, io.in_instruction, io.in_stall);
 
 
 		io.out_is_csr   = is_csr.as_uint();

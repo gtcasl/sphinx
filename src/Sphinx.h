@@ -344,6 +344,9 @@ class Sphinx
         ch_device<Pipeline> pipeline;
 
         ch_tracer sim;
+        long int curr_cycle;
+        bool stop;
+        bool unit_test;
         std::string instruction_file_name;
         std::ofstream results;
         int stats_static_inst;
@@ -355,8 +358,8 @@ class Sphinx
 };
 
 
-Sphinx::Sphinx() : start_pc(0), stats_static_inst(0), stats_dynamic_inst(-1), stats_total_cycles(0),
-                                                                stats_fwd_stalls(0), stats_branch_stalls(0)
+Sphinx::Sphinx() : start_pc(0), curr_cycle(0), stop(true), unit_test(true), stats_static_inst(0), stats_dynamic_inst(-1),
+                                                    stats_total_cycles(0), stats_fwd_stalls(0), stats_branch_stalls(0)
 {
     this->sim = ch_tracer(this->pipeline);
     this->results.open("../results/results.txt");
@@ -425,8 +428,10 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline)
     ++stats_total_cycles;
 
     if(debug) std::cout << "new_PC: " << new_PC << std::endl;
+    // if(this->curr_cycle%1000 == 0) std::cout << "new_PC: " << std::hex << new_PC << "\n";
 
-    if ((curr_inst != 0) && (curr_inst != 0xffffffff))
+    // std::cout << "MAIN_PC: " << std::hex << new_PC << "\t" << "MAIN_isnt: " << curr_inst << "\n";
+    if ((((unsigned int)curr_inst) != 0) && (((unsigned int)curr_inst) != 0xffffffff))
     {
         ++stats_dynamic_inst;
         if(debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << curr_inst << std::endl;
@@ -439,6 +444,11 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline)
     if(debug) std::cout << "------------------------------------------";
     if(debug) std::cout << std::endl << std::endl << std::endl << std::endl;
    ////////////////////// STATS //////////////////////
+
+    if ((((unsigned int)new_PC) == 0x80000118) && (!this->unit_test))
+    {
+        this->stop = false; 
+    }
 
     return stop;
 
@@ -539,6 +549,12 @@ void Sphinx::jtag_driver(ch_device<Pipeline> & pipeline)
 
 bool Sphinx::simulate(std::string file_to_simulate) {
 
+    this->unit_test = true;
+    if (file_to_simulate == "../tests/dhrystoneO3.hex")
+    {
+        this->unit_test = false;
+    }
+
     this->instruction_file_name = file_to_simulate;
     this->results << "\n****************\t" << file_to_simulate << "\t****************\n";
 
@@ -548,7 +564,14 @@ bool Sphinx::simulate(std::string file_to_simulate) {
 
     sim.run([&](ch_tick t)->bool {
 
-        if(debug) std::cout << "Cycle: " << t/2 << std::endl;
+        long int cycle = t/2;
+
+        this->curr_cycle = cycle;
+
+        if(debug) std::cout << "Cycle: " << cycle << std::endl;
+        // if(cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
+
+        // std::cout << "Cycle: " << std::dec << cycle << "\n";
 
 
         static bool stop      = false;
@@ -569,7 +592,8 @@ bool Sphinx::simulate(std::string file_to_simulate) {
 
 
         // RETURNS FALSE TO STOP
-        return !(stop && (counter > 5));
+        // return (!(stop && (counter > 5)) || true);
+        return this->stop && (!(stop && (counter > 5)));
     });
 
     {
@@ -600,12 +624,19 @@ void Sphinx::print_stats(void)
     uint32_t status;
     ram.getWord(0, &status);
 
-    if (status == 1)
+    if (this->unit_test)
     {
-        this->results << std::setw(24) << "# GRADE:" << " PASSING\n";
-    } else
+        if (status == 1)
+        {
+            this->results << std::setw(24) << "# GRADE:" << "PASSING\n";
+        } else
+        {
+            this->results << std::setw(24) << "# GRADE:" << "Failed on test: " << status << "\n";
+        }
+    }
+    else
     {
-        this->results << std::setw(24) << "# GRADE:" << " Failed on test: " << status << "\n";
+        this->results << std::setw(24) << "# GRADE:" << "N/A [NOT A UNIT TEST]\n";
     }
 
     this->stats_static_inst   =  0;
@@ -619,6 +650,6 @@ void Sphinx::print_stats(void)
 void Sphinx::export_model()
 {
     ch_toVerilog("pipeline.v", pipeline);
-    sim.toVCD("pipeline.vcd");
+    // sim.toVCD("pipeline.vcd");
 }
 

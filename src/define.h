@@ -237,7 +237,7 @@
 #define I_STATE_int 3
 
 
-#define NUM_TESTS 39
+#define NUM_TESTS 40
 
 #include <chrono> 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> clock_time;

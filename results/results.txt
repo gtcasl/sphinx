@@ -5,8 +5,8 @@
 # of forwarding stalls: 392
 # of branch stalls:     390
 # CPI:                  2.39062
-# time to simulate:     0.270504 ms
-# GRADE:                 PASSING
+# time to simulate:     0.265588 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-addi.hex	****************
 # Dynamic Instructions: 225
@@ -14,8 +14,8 @@
 # of forwarding stalls: 231
 # of branch stalls:     219
 # CPI:                  2.64
-# time to simulate:     0.139237 ms
-# GRADE:                 PASSING
+# time to simulate:     0.139 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-and.hex	****************
 # Dynamic Instructions: 468
@@ -23,8 +23,8 @@
 # of forwarding stalls: 614
 # of branch stalls:     339
 # CPI:                  2.73504
-# time to simulate:     0.298372 ms
-# GRADE:                 PASSING
+# time to simulate:     0.29893 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-andi.hex	****************
 # Dynamic Instructions: 181
@@ -32,8 +32,8 @@
 # of forwarding stalls: 209
 # of branch stalls:     164
 # CPI:                  2.73481
-# time to simulate:     0.115303 ms
-# GRADE:                 PASSING
+# time to simulate:     0.11559 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-auipc.hex	****************
 # Dynamic Instructions: 42
@@ -41,8 +41,8 @@
 # of forwarding stalls: 45
 # of branch stalls:     43
 # CPI:                  3.02381
-# time to simulate:     0.029633 ms
-# GRADE:                 PASSING
+# time to simulate:     0.030222 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-beq.hex	****************
 # Dynamic Instructions: 274
@@ -50,8 +50,8 @@
 # of forwarding stalls: 190
 # of branch stalls:     393
 # CPI:                  2.58029
-# time to simulate:     0.164489 ms
-# GRADE:                 PASSING
+# time to simulate:     0.164498 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bge.hex	****************
 # Dynamic Instructions: 292
@@ -59,8 +59,8 @@
 # of forwarding stalls: 205
 # of branch stalls:     432
 # CPI:                  2.62671
-# time to simulate:     0.178371 ms
-# GRADE:                 PASSING
+# time to simulate:     0.178825 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bgeu.hex	****************
 # Dynamic Instructions: 317
@@ -68,8 +68,8 @@
 # of forwarding stalls: 274
 # of branch stalls:     432
 # CPI:                  2.71609
-# time to simulate:     0.199984 ms
-# GRADE:                 PASSING
+# time to simulate:     0.200088 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-blt.hex	****************
 # Dynamic Instructions: 274
@@ -77,8 +77,8 @@
 # of forwarding stalls: 190
 # of branch stalls:     396
 # CPI:                  2.58029
-# time to simulate:     0.164061 ms
-# GRADE:                 PASSING
+# time to simulate:     0.165448 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bltu.hex	****************
 # Dynamic Instructions: 299
@@ -86,8 +86,8 @@
 # of forwarding stalls: 262
 # of branch stalls:     396
 # CPI:                  2.68896
-# time to simulate:     0.186733 ms
-# GRADE:                 PASSING
+# time to simulate:     0.187748 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bne.hex	****************
 # Dynamic Instructions: 274
@@ -95,8 +95,8 @@
 # of forwarding stalls: 193
 # of branch stalls:     396
 # CPI:                  2.59124
-# time to simulate:     0.164744 ms
-# GRADE:                 PASSING
+# time to simulate:     0.165734 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-jal.hex	****************
 # Dynamic Instructions: 38
@@ -104,8 +104,8 @@
 # of forwarding stalls: 38
 # of branch stalls:     44
 # CPI:                  3.05263
-# time to simulate:     0.02694 ms
-# GRADE:                 PASSING
+# time to simulate:     0.02761 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-jalr.hex	****************
 # Dynamic Instructions: 91
@@ -113,8 +113,8 @@
 # of forwarding stalls: 101
 # of branch stalls:     110
 # CPI:                  2.87912
-# time to simulate:     0.060866 ms
-# GRADE:                 PASSING
+# time to simulate:     0.06156 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lb.hex	****************
 # Dynamic Instructions: 228
@@ -122,8 +122,8 @@
 # of forwarding stalls: 290
 # of branch stalls:     231
 # CPI:                  2.87719
-# time to simulate:     0.152804 ms
-# GRADE:                 PASSING
+# time to simulate:     0.152913 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lbu.hex	****************
 # Dynamic Instructions: 228
@@ -131,8 +131,8 @@
 # of forwarding stalls: 290
 # of branch stalls:     231
 # CPI:                  2.87719
-# time to simulate:     0.152537 ms
-# GRADE:                 PASSING
+# time to simulate:     0.152984 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lh.hex	****************
 # Dynamic Instructions: 240
@@ -140,8 +140,8 @@
 # of forwarding stalls: 326
 # of branch stalls:     231
 # CPI:                  2.93333
-# time to simulate:     0.16367 ms
-# GRADE:                 PASSING
+# time to simulate:     0.164015 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lhu.hex	****************
 # Dynamic Instructions: 247
@@ -149,8 +149,8 @@
 # of forwarding stalls: 347
 # of branch stalls:     233
 # CPI:                  2.96356
-# time to simulate:     0.170324 ms
-# GRADE:                 PASSING
+# time to simulate:     0.170898 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lui.hex	****************
 # Dynamic Instructions: 48
@@ -158,8 +158,8 @@
 # of forwarding stalls: 46
 # of branch stalls:     54
 # CPI:                  2.89583
-# time to simulate:     0.032385 ms
-# GRADE:                 PASSING
+# time to simulate:     0.032428 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lui.hex.hex	****************
 # Dynamic Instructions: 48
@@ -167,8 +167,8 @@
 # of forwarding stalls: 46
 # of branch stalls:     54
 # CPI:                  2.89583
-# time to simulate:     0.032381 ms
-# GRADE:                 PASSING
+# time to simulate:     0.032376 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lw.hex	****************
 # Dynamic Instructions: 250
@@ -176,8 +176,8 @@
 # of forwarding stalls: 356
 # of branch stalls:     233
 # CPI:                  2.976
-# time to simulate:     0.173058 ms
-# GRADE:                 PASSING
+# time to simulate:     0.173308 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-or.hex	****************
 # Dynamic Instructions: 471
@@ -185,8 +185,8 @@
 # of forwarding stalls: 623
 # of branch stalls:     339
 # CPI:                  2.7431
-# time to simulate:     0.300773 ms
-# GRADE:                 PASSING
+# time to simulate:     0.300901 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-ori.hex	****************
 # Dynamic Instructions: 188
@@ -194,8 +194,8 @@
 # of forwarding stalls: 230
 # of branch stalls:     166
 # CPI:                  2.78191
-# time to simulate:     0.121571 ms
-# GRADE:                 PASSING
+# time to simulate:     0.121789 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sb.hex	****************
 # Dynamic Instructions: 413
@@ -203,8 +203,8 @@
 # of forwarding stalls: 417
 # of branch stalls:     365
 # CPI:                  2.50363
-# time to simulate:     0.240464 ms
-# GRADE:                 PASSING
+# time to simulate:     0.240902 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sh.hex	****************
 # Dynamic Instructions: 466
@@ -212,8 +212,8 @@
 # of forwarding stalls: 562
 # of branch stalls:     367
 # CPI:                  2.64378
-# time to simulate:     0.286737 ms
-# GRADE:                 PASSING
+# time to simulate:     0.286458 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-simple.hex	****************
 # Dynamic Instructions: 24
@@ -221,8 +221,8 @@
 # of forwarding stalls: 27
 # of branch stalls:     26
 # CPI:                  3.25
-# time to simulate:     0.018175 ms
-# GRADE:                 PASSING
+# time to simulate:     0.018151 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sll.hex	****************
 # Dynamic Instructions: 476
@@ -230,8 +230,8 @@
 # of forwarding stalls: 421
 # of branch stalls:     410
 # CPI:                  2.39496
-# time to simulate:     0.266143 ms
-# GRADE:                 PASSING
+# time to simulate:     0.264653 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slli.hex	****************
 # Dynamic Instructions: 224
@@ -239,8 +239,8 @@
 # of forwarding stalls: 228
 # of branch stalls:     219
 # CPI:                  2.63393
-# time to simulate:     0.139029 ms
-# GRADE:                 PASSING
+# time to simulate:     0.137046 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slt.hex	****************
 # Dynamic Instructions: 442
@@ -248,8 +248,8 @@
 # of forwarding stalls: 374
 # of branch stalls:     390
 # CPI:                  2.36878
-# time to simulate:     0.246105 ms
-# GRADE:                 PASSING
+# time to simulate:     0.243308 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slti.hex	****************
 # Dynamic Instructions: 220
@@ -257,8 +257,8 @@
 # of forwarding stalls: 219
 # of branch stalls:     219
 # CPI:                  2.62273
-# time to simulate:     0.136104 ms
-# GRADE:                 PASSING
+# time to simulate:     0.133789 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sltiu.hex	****************
 # Dynamic Instructions: 220
@@ -266,8 +266,8 @@
 # of forwarding stalls: 222
 # of branch stalls:     219
 # CPI:                  2.63636
-# time to simulate:     0.136769 ms
-# GRADE:                 PASSING
+# time to simulate:     0.134583 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sltu.hex	****************
 # Dynamic Instructions: 442
@@ -275,8 +275,8 @@
 # of forwarding stalls: 374
 # of branch stalls:     390
 # CPI:                  2.36878
-# time to simulate:     0.242984 ms
-# GRADE:                 PASSING
+# time to simulate:     0.242838 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sra.hex	****************
 # Dynamic Instructions: 495
@@ -284,8 +284,8 @@
 # of forwarding stalls: 471
 # of branch stalls:     415
 # CPI:                  2.44848
-# time to simulate:     0.281373 ms
-# GRADE:                 PASSING
+# time to simulate:     0.281492 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srai.hex	****************
 # Dynamic Instructions: 239
@@ -293,8 +293,8 @@
 # of forwarding stalls: 276
 # of branch stalls:     219
 # CPI:                  2.73222
-# time to simulate:     0.151583 ms
-# GRADE:                 PASSING
+# time to simulate:     0.152167 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srl.hex	****************
 # Dynamic Instructions: 489
@@ -302,8 +302,8 @@
 # of forwarding stalls: 447
 # of branch stalls:     415
 # CPI:                  2.41718
-# time to simulate:     0.274015 ms
-# GRADE:                 PASSING
+# time to simulate:     0.274578 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srli.hex	****************
 # Dynamic Instructions: 233
@@ -311,8 +311,8 @@
 # of forwarding stalls: 255
 # of branch stalls:     219
 # CPI:                  2.6867
-# time to simulate:     0.145188 ms
-# GRADE:                 PASSING
+# time to simulate:     0.145224 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sub.hex	****************
 # Dynamic Instructions: 440
@@ -320,8 +320,8 @@
 # of forwarding stalls: 381
 # of branch stalls:     383
 # CPI:                  2.38409
-# time to simulate:     0.243217 ms
-# GRADE:                 PASSING
+# time to simulate:     0.243258 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sw.hex	****************
 # Dynamic Instructions: 473
@@ -329,8 +329,8 @@
 # of forwarding stalls: 618
 # of branch stalls:     367
 # CPI:                  2.73784
-# time to simulate:     0.301014 ms
-# GRADE:                 PASSING
+# time to simulate:     0.301197 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-xor.hex	****************
 # Dynamic Instructions: 470
@@ -338,8 +338,8 @@
 # of forwarding stalls: 620
 # of branch stalls:     339
 # CPI:                  2.74043
-# time to simulate:     0.298759 ms
-# GRADE:                 PASSING
+# time to simulate:     0.299893 ms
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-xori.hex	****************
 # Dynamic Instructions: 190
@@ -347,5 +347,14 @@
 # of forwarding stalls: 239
 # of branch stalls:     166
 # CPI:                  2.81053
-# time to simulate:     0.123954 ms
-# GRADE:                 PASSING
+# time to simulate:     0.1242 ms
+# GRADE:                PASSING
+
+****************	../tests/dhrystoneO3.hex	****************
+# Dynamic Instructions: 121352
+# of total cycles:      295183
+# of forwarding stalls: 79134
+# of branch stalls:     128379
+# CPI:                  2.43245
+# time to simulate:     68.5247 ms
+# GRADE:                N/A [NOT A UNIT TEST]

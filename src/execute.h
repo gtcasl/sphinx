@@ -56,14 +56,13 @@ struct Execute
 		// ch_print("EXECUTE");
 		// ch_print("****************");		
 
-		io.out_is_csr      = io.in_is_csr;
-		io.out_csr_address = io.in_csr_address;
 
-		io.out_branch_offset = io.in_itype_immed;
 
-		ch_bit<32> ALU_in1 = io.in_rd1;
+		
 
 		ch_bool which_in2  = io.in_rs2_src == RS2_IMMED_int;
+
+		ch_bit<32> ALU_in1 = io.in_rd1;
 		ch_bit<32> ALU_in2 = ch_sel(which_in2, io.in_itype_immed, io.in_rd2);
 
 
@@ -202,15 +201,19 @@ struct Execute
 		io.out_branch_stall = ch_sel(io.in_branch_type.as_uint() != NO_BRANCH_int, STALL, NO_STALL);
 		#endif
 
-		io.out_rd = io.in_rd;
-		io.out_wb = io.in_wb;
-		io.out_mem_read = io.in_mem_read;
-		io.out_mem_write = io.in_mem_write;
-		io.out_rs1 = io.in_rs1;
-		io.out_rd1 = io.in_rd1;
-		io.out_rd2 = io.in_rd2;
-		io.out_rs2 = io.in_rs2;
-		io.out_PC_next = io.in_PC_next;
+
+		io.out_rd            = io.in_rd;
+		io.out_wb            = io.in_wb;
+		io.out_mem_read      = io.in_mem_read;
+		io.out_mem_write     = io.in_mem_write;
+		io.out_rs1           = io.in_rs1;
+		io.out_rd1           = io.in_rd1;
+		io.out_rd2           = io.in_rd2;
+		io.out_rs2           = io.in_rs2;
+		io.out_PC_next       = io.in_PC_next;
+		io.out_is_csr        = io.in_is_csr;
+		io.out_csr_address   = io.in_csr_address;
+		io.out_branch_offset = io.in_itype_immed;
 
 	}
 };
