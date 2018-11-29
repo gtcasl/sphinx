@@ -77,7 +77,7 @@ int main(int argc, char ** argv)
 			}
 			else
 			{
-				if (!curr) std::cout << RED   << "Not a Test : " << tests[ii] << std::endl;
+				std::cout << RED   << "Not a Test : " << tests[ii] << std::endl;
 			}
 
 			std::cout << DEFAULT;
@@ -92,8 +92,15 @@ int main(int argc, char ** argv)
 	{
 		std::cout << DEFAULT << "Running: " << argv[1] << "\n";
 		passed = sphinx.simulate(argv[1]);
-		if ( passed) std::cout << GREEN << "Passed: " << argv[1] << std::endl;
-		if (!passed) std::cout << RED   << "Failed: " << argv[1] << std::endl;
+		if (argv[1] != "../tests/dhrystoneO3.hex")
+		{
+			if ( passed) std::cout << GREEN << "Passed: " << argv[1] << std::endl;
+			if (!passed) std::cout << RED   << "Failed: " << argv[1] << std::endl;
+		}
+		else
+		{
+			std::cout << RED   << "Not a Test : " << argv[1] << std::endl;
+		}
 		std::cout << DEFAULT << "\nExporting model to Verilog ... ";
 	}
 
