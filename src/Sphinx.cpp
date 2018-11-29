@@ -90,9 +90,10 @@ int main(int argc, char ** argv)
 	}
 	else
 	{
+		std::string file_to_simulate = argv[1];
 		std::cout << DEFAULT << "Running: " << argv[1] << "\n";
 		passed = sphinx.simulate(argv[1]);
-		if (argv[1] != "../tests/dhrystoneO3.hex")
+		if (file_to_simulate != "../tests/dhrystoneO3.hex")
 		{
 			if ( passed) std::cout << GREEN << "Passed: " << argv[1] << std::endl;
 			if (!passed) std::cout << RED   << "Failed: " << argv[1] << std::endl;
