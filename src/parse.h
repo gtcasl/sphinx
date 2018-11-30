@@ -4,6 +4,8 @@
 #define __PARSE__
 
 #include <string>
+#include <vector>
+#include <algorithm>
 
 struct Execution_State
 {
@@ -11,7 +13,7 @@ struct Execution_State
 	int state;
 	int numCycles;
 	std::string file_to_simulate;
-	int debugAddress;
+	std::vector<int> debugAddress;
 	bool exportVerilog;
 };
 
@@ -55,8 +57,11 @@ execution_state parseArguments(int argc, char ** argv)
 				if (curr_command == "--breakpoint")
 				{
 					es.state = 3;
-					++ii;
-					es.debugAddress = hToI(argv[ii], 8);
+					while ((ii < argc) && (curr_command != "--exportVerilog"))
+					{
+						++ii;
+						es.debugAddress.append(hToI(argv[ii], 8));
+					}
 				}
 			}
 		}

@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <vector>
 #include <math.h>
+#include <algorithm>
 
 // RAM
 #include "ram.h"
@@ -326,7 +327,7 @@ class Sphinx
         ~Sphinx();
         bool simulate(std::string);
         void simulate_numCycles(int);
-        bool simulate_debug(std::string, int);
+        bool simulate_debug(std::string, std::vector<int>);
         void export_model(void);
     private:
 
@@ -335,7 +336,7 @@ class Sphinx
         void reset_debug(void);
 
 
-        bool ibus_driver(ch_device<Pipeline> &, bool=false, int=-1);
+        bool ibus_driver(ch_device<Pipeline> &, bool=false, std::vector<int> = std::vector<int>());
         void dbus_driver(ch_device<Pipeline> &);
         void interrupt_driver(ch_device<Pipeline> &);
         void jtag_driver(ch_device<Pipeline> &);
@@ -363,13 +364,14 @@ class Sphinx
         int debug_wait_num;
         int debug_inst_num;
         int debug_end_wait;
+        int debug_debugAddr;
         clock_diff stats_sim_time;
 };
 
 
 Sphinx::Sphinx() : start_pc(0), curr_cycle(0), stop(true), unit_test(true), stats_static_inst(0), stats_dynamic_inst(-1),
                                                     stats_total_cycles(0), stats_fwd_stalls(0), stats_branch_stalls(0),
-                                                    debug_state(0), debug_return(0), debug_wait_num(0), debug_inst_num(0), debug_end_wait(0)
+                                                    debug_state(0), debug_return(0), debug_wait_num(0), debug_inst_num(0), debug_end_wait(0), debug_debugAddr(0)
 {
     this->sim = ch_tracer(this->pipeline);
     this->results.open("../results/results.txt");
@@ -410,7 +412,7 @@ void Sphinx::ProcessFile(void)
 
 }
 
-bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, int debugAddress)
+bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::vector<int> debugAddress)
 {
 
     static int store_state[31] = {
@@ -475,9 +477,11 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, int de
         if (this->debug_state == 0)
         {
             // std::cout << "NEW PC: " << new_PC << "\n";
-            if (( (int) new_PC) == debugAddress)
+            // if (( (int) new_PC) == debugAddress)
+            if (std::find(debugAddress.begin(), debugAddress.end(), (int) new_PC) != debugAddress.end())
             {
                 this->debug_state = 1;
+                this->debug_debugAddr = new_PC;
             }
             ram.getWord(new_PC, &curr_inst);
             pipeline.io.in_debug = false;
@@ -789,7 +793,7 @@ void Sphinx::simulate_numCycles(int numCycles)
     this->print_stats();
 }
 
-bool Sphinx::simulate_debug(std::string file_to_simulate, int debugAddress)
+bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<int> debugAddress)
 {
 
     this->unit_test = true;
@@ -829,7 +833,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, int debugAddress)
         {
             this->reset_debug();
             std::cout <<  RED << "BREAKPOINT REACHED  -  " << DEFAULT "Cycle: " << std::dec << cycle << "\n";
-            std::cout << "Register state at instructtion address: 0x" << std::hex << debugAddress << "\n";
+            std::cout << "Register state at instructtion address: 0x" << std::hex << this->debug_debugAddr << "\n";
             for (unsigned i = 1; i < 32; ++i)
             {
                 uint32_t value;
