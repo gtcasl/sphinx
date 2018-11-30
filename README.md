@@ -52,7 +52,7 @@ To simulate the model with a specific hex file (optional --exportVerilog to expo
 
 To add breakpoints to the simulation, use the --breakpoint flag (optional --exportVerilog to export model to verilog). When a breakpoint is reached, the values of the registers will be printed after the breakpoint instruction is executed and the user will have the option to continue or exit simulation. 
 ```sh
-#./Sphinx --test <relative location> --breakpoint <breakpoint PC value 1> <breakpoint PC value 2> ... <<breakpoint PC value N>
+#./Sphinx --test <relative location> --breakpoint <breakpoint PC value 1> ... <<breakpoint PC value N>
 >> ./Sphinx --test ../tests/rv32ui-p-sra.hex --breakpoint 80000130 80000188 
 ```
 
