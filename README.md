@@ -34,21 +34,35 @@ Sphinx only depends on [CASH](https://github.com/gtcasl/cash) being installed.
 
 ```sh
 #To compile the model
-git clone https://github.com/gtcasl/cash_riscv.git
-cd cash_riscv/src
-make
+>> git clone https://github.com/gtcasl/cash_riscv.git
+>> cd cash_riscv/src
+>> make
 ```
 
-To simulate the model with the test cases:
+To simulate the model with the test cases (optional --exportVerilog to export model to verilog):
 ```sh
-./Sphinx
+>> ./Sphinx
 ```
 
-To simulate the model with a user program, provide the .hex file:
+To simulate the model with a specific hex file (optional --exportVerilog to export model to verilog):
 ```sh
-#./Sphinx <relative location>
-./Sphinx ../tests/rv32ui-p-bltu.hex
+#./Sphinx --test <relative location>
+>> ./Sphinx  --test ../tests/rv32ui-p-bltu.hex
 ```
+
+To add a breakpoint to the simulation, use the --breakpoint flag (optional --exportVerilog to export model to verilog). When the breakpoint is reached, user will have the option to continue or exit simulation. 
+```sh
+#./Sphinx --test <relative location> --breakpoint <breakpoint PC value>
+>> ./Sphinx --test ../tests/rv32ui-p-sra.hex --breakpoint 80000130
+```
+
+
+To simulate the model a specific number of cycles (optional --exportVerilog to export model to verilog):
+```sh
+#./Sphinx --numCycles <num>
+>>./Sphinx --numCycles 1000000
+```
+
 
 For options in config.h:
 - #define FORWARDING   enables forwarding otherwise stalls

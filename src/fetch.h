@@ -25,6 +25,7 @@ struct Fetch
 		__in(ch_bit<32>)  in_jal_dest,
 		__in(ch_bool)     in_interrupt,
 		__in(ch_bit<32>)  in_interrupt_pc,
+		__in(ch_bool)     in_debug,
 
 		__out(ch_bit<32>) out_instruction,
 		__out(ch_bit<32>) out_curr_PC
@@ -65,25 +66,27 @@ struct Fetch
 			}
 			__case(I_STATE_int)
 			{
-				PC_to_use_temp = I_reg;
+				// PC_to_use_temp = I_reg;
+				PC_to_use_temp = old;
 			} __default
 			{
 				PC_to_use_temp = ch_bit<32>(0);
 			};
 
-		PC_to_use = ch_sel(stall_reg, old, PC_to_use_temp);
+		PC_to_use = ch_sel(stall_reg, old, ch_sel(io.in_debug, PC, PC_to_use_temp));
 
 		// stall_reg->next = true;
 
 		io.IBUS.in_data.ready = io.IBUS.in_data.valid;
 		
-		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL) || (io.in_branch_stall_exe);
+		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL) || (io.in_branch_stall_exe) || (io.in_interrupt);
 		stall_reg->next    = stall;
 
 		io.out_instruction = ch_sel(stall, CH_ZERO(32), io.IBUS.in_data.data);
 
 		ch_bit<32> temp_PC   = ch_sel(io.in_jal == JUMP, io.in_jal_dest, ch_sel(io.in_branch_dir == TAKEN, io.in_branch_dest, PC_to_use));
-		ch_bit<32> out_PC    = ch_sel(io.in_interrupt, io.in_interrupt_pc, temp_PC);
+		// ch_bit<32> out_PC    = ch_sel(io.in_interrupt, io.in_interrupt_pc, temp_PC);
+		ch_bit<32> out_PC    = temp_PC;
 
 		ch_bit<4> temp_state = ch_sel(io.in_jal == JUMP, J_STATE, ch_sel(io.in_branch_dir == TAKEN, B_STATE, P_STATE));
 		state->next          = ch_sel(io.in_interrupt, I_STATE, temp_state);

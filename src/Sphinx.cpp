@@ -2,20 +2,13 @@
 
 #include "Sphinx.h"
 
+#include "parse.h"
+
 int main(int argc, char ** argv)
 {
 
-  // if (argc > 1)
-  // {
-  //   RocketChip rocketchip(argv[1]);
-  //   rocketchip.simulate();
-  //   rocketchip.export_model();
-  // } else
-  // {
-  // 	std::cout << "Please input a file name" << std::endl;
-  // }
 
-
+	execution_state es = parseArguments(argc, argv);
 
     Sphinx sphinx;
 
@@ -63,9 +56,8 @@ int main(int argc, char ** argv)
 		"../tests/dhrystoneO3.hex"
 	};
 
-	if (argc < 2)
+	if (es.state == 0)
 	{
-
 		for (int ii = 0; ii < NUM_TESTS; ii++)
 		// for (int ii = 0; ii < NUM_TESTS - 1; ii++)
 		{
@@ -86,27 +78,45 @@ int main(int argc, char ** argv)
 
 		if( passed) std::cout << DEFAULT << "PASSED ALL TESTS\n";
 		if(!passed) std::cout << DEFAULT << "Failed one or more tests\n";
-		std::cout << DEFAULT << "\nExporting model to Verilog ... ";
 	}
-	else
+	else if (es.state == 1)
 	{
-		std::string file_to_simulate = argv[1];
-		std::cout << DEFAULT << "Running: " << argv[1] << "\n";
-		passed = sphinx.simulate(argv[1]);
-		if (file_to_simulate != "../tests/dhrystoneO3.hex")
+		std::cout << DEFAULT << "Going to run " << es.numCycles << " cycles\n";
+		sphinx.simulate_numCycles(es.numCycles);
+	} else if (es.state == 2)
+	{
+		std::cout << DEFAULT << "Running: " << es.file_to_simulate << "\t";
+		passed = sphinx.simulate(es.file_to_simulate);
+		if (es.file_to_simulate != "../tests/dhrystoneO3.hex")
 		{
-			if ( passed) std::cout << GREEN << "Passed: " << argv[1] << std::endl;
-			if (!passed) std::cout << RED   << "Failed: " << argv[1] << std::endl;
+			if ( passed) std::cout << GREEN << "Passed\n";
+			if (!passed) std::cout << RED   << "Failed\n";
 		}
 		else
 		{
-			std::cout << RED   << "Not a Test : " << argv[1] << std::endl;
+			std::cout << RED   << "Not a Test\n";
 		}
-		std::cout << DEFAULT << "\nExporting model to Verilog ... ";
+	} else if (es.state == 3)
+	{
+		std::cout << DEFAULT << "Running: " << es.file_to_simulate << " with debugging at 0x" << std::hex << es.debugAddress << " enabled\n";
+		passed = sphinx.simulate_debug(es.file_to_simulate, es.debugAddress);
+		if (es.file_to_simulate != "../tests/dhrystoneO3.hex")
+		{
+			if ( passed) std::cout << GREEN << "Passed\n";
+			if (!passed) std::cout << RED   << "Failed\n";
+		}
+		else
+		{
+			std::cout << RED   << "Not a Test\n";
+		}
 	}
 
-	sphinx.export_model();
-	std::cout << GREEN << "Model successfully exported\n";
+	if (es.exportVerilog)
+	{
+		std::cout << DEFAULT << "\nExporting model to Verilog ... ";
+		sphinx.export_model();
+		std::cout << GREEN << "Model successfully exported\n";
+	}
 
 	std::cout << DEFAULT;
 
@@ -114,6 +124,3 @@ int main(int argc, char ** argv)
 	return -1;
 
 }
-
-
-

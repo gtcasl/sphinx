@@ -54,6 +54,7 @@ struct Pipeline
     (DBUS_io)         DBUS,
     (INTERRUPT_io)    INTERRUPT,
     (JTAG_io)         jtag,
+    __in(ch_bool)     in_debug,
 
     __out(ch_bool)    out_fwd_stall, // DInst counting
     __out(ch_bool)    out_branch_stall // DInst counting
@@ -73,7 +74,7 @@ struct Pipeline
 
     // IBUS I/O
     fetch.io.IBUS(io.IBUS);
-
+    fetch.io.in_debug(io.in_debug);
     // DBUS I/O
     memory.io.DBUS(io.DBUS);
 
@@ -324,14 +325,17 @@ class Sphinx
         Sphinx();
         ~Sphinx();
         bool simulate(std::string);
+        void simulate_numCycles(int);
+        bool simulate_debug(std::string, int);
         void export_model(void);
     private:
 
         void ProcessFile(void);
         void print_stats(void);
+        void reset_debug(void);
 
 
-        bool ibus_driver(ch_device<Pipeline> &);
+        bool ibus_driver(ch_device<Pipeline> &, bool=false, int=-1);
         void dbus_driver(ch_device<Pipeline> &);
         void interrupt_driver(ch_device<Pipeline> &);
         void jtag_driver(ch_device<Pipeline> &);
@@ -354,12 +358,18 @@ class Sphinx
         int stats_total_cycles;
         int stats_fwd_stalls;
         int stats_branch_stalls;
+        int debug_state;
+        int debug_return;
+        int debug_wait_num;
+        int debug_inst_num;
+        int debug_end_wait;
         clock_diff stats_sim_time;
 };
 
 
 Sphinx::Sphinx() : start_pc(0), curr_cycle(0), stop(true), unit_test(true), stats_static_inst(0), stats_dynamic_inst(-1),
-                                                    stats_total_cycles(0), stats_fwd_stalls(0), stats_branch_stalls(0)
+                                                    stats_total_cycles(0), stats_fwd_stalls(0), stats_branch_stalls(0),
+                                                    debug_state(0), debug_return(0), debug_wait_num(0), debug_inst_num(0), debug_end_wait(0)
 {
     this->sim = ch_tracer(this->pipeline);
     this->results.open("../results/results.txt");
@@ -374,8 +384,6 @@ void Sphinx::ProcessFile(void)
 {
 
     loadHexImpl(this->instruction_file_name, &this->ram);
-
-    // Printing state
 
     if(debug) std::cout << "$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
 
@@ -402,21 +410,120 @@ void Sphinx::ProcessFile(void)
 
 }
 
-bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline)
+bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, int debugAddress)
 {
+
+    static int store_state[31] = {
+                0x00102023,
+                0x00202223,
+                0x00302423,
+                0x00402623,
+                0x00502823,
+                0x00602a23,
+                0x00702c23,
+                0x00802e23,
+                0x02902023,
+                0x02a02223,
+                0x02b02423,
+                0x02c02623,
+                0x02d02823,
+                0x02e02a23,
+                0x02f02c23,
+                0x03002e23,
+                0x05102023,
+                0x05202223,
+                0x05302423,
+                0x05402623,
+                0x05502823,
+                0x05602a23,
+                0x05702c23,
+                0x05802e23,
+                0x07902023,
+                0x07a02223,
+                0x07b02423,
+                0x07c02623,
+                0x07d02823,
+                0x07e02a23,
+                0x07f02c23
+                };
+    
     ////////////////////// IBUS //////////////////////
-    unsigned new_PC;
-    bool stop = false;
-    uint32_t curr_inst = 0xdeadbeef;
+        unsigned new_PC;
+        bool stop = false;
+        uint32_t curr_inst = 0;
+    if (!debug_mode)
+    {
+        stop = false;
+        curr_inst = 0xdeadbeef;
+
+        pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
+        new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
+        ram.getWord(new_PC, &curr_inst);
+        pipeline.io.IBUS.in_data.data      = curr_inst;
+        pipeline.io.IBUS.in_data.valid     = true;
+        pipeline.io.in_debug               = false;
+    }
+    else
+    {
+        stop = false;
+        curr_inst = 0;
 
 
-    pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
-    new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
-    ram.getWord(new_PC, &curr_inst);
-    pipeline.io.IBUS.in_data.data      = curr_inst;
-    pipeline.io.IBUS.in_data.valid     = true;
+        pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
+        new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
+
+        if (this->debug_state == 0)
+        {
+            // std::cout << "NEW PC: " << new_PC << "\n";
+            if (( (int) new_PC) == debugAddress)
+            {
+                this->debug_state = 1;
+            }
+            ram.getWord(new_PC, &curr_inst);
+            pipeline.io.in_debug = false;
+        }
+        else if (this->debug_state == 1)
+        {
+            this->debug_return = new_PC;
+            this->debug_state = 2;
+            pipeline.io.in_debug = true;
+        }
+        else if (this->debug_state == 2)
+        {
+            if (this->debug_wait_num > 5) this->debug_state = 3;
+            ++this->debug_wait_num;
+            pipeline.io.in_debug = true;
+        }
+        else if (this->debug_state == 3)
+        {
+            if (this->debug_inst_num < 31)
+            {
+                curr_inst = (uint32_t) store_state[this->debug_inst_num];
+                this->debug_inst_num++;
+                pipeline.io.in_debug = true;
+            }
+            else
+            {
+                this->debug_state = 4;
+                pipeline.io.in_debug = true;
+            }
+        } else if (this->debug_state == 4)
+        {
+            if (this->debug_end_wait > 5) this->debug_state = 5;
+            ++this->debug_end_wait;
+            pipeline.io.in_debug = true;
+        }
+
+        pipeline.io.IBUS.in_data.data      = curr_inst;
+        pipeline.io.IBUS.in_data.valid     = true;
+
+    }
+
+    // std::cout << "new_PC: " << std::hex << new_PC << "\n";
+    std::cout << std::dec;
 
     ////////////////////// IBUS //////////////////////
+
 
     ////////////////////// STATS //////////////////////
     if (pipeline.io.out_fwd_stall || pipeline.io.out_branch_stall)
@@ -505,7 +612,9 @@ void Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
     if (write_data && valid_address)
     {
+
         if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
+        // std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
         uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
         ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
     }
@@ -517,7 +626,14 @@ void Sphinx::interrupt_driver(ch_device<Pipeline> & pipeline)
 
     ////////////////////// INTERRUPT //////////////////////
 
-    pipeline.io.INTERRUPT.in_interrupt_id.valid = false;
+    if (this->debug_state == 0)
+    {
+        pipeline.io.INTERRUPT.in_interrupt_id.valid = false;
+    }
+    else
+    {
+        pipeline.io.INTERRUPT.in_interrupt_id.valid = false;
+    }
     pipeline.io.INTERRUPT.in_interrupt_id.data  = 0;
 
     ////////////////////// INTERRUPT //////////////////////
@@ -547,7 +663,8 @@ void Sphinx::jtag_driver(ch_device<Pipeline> & pipeline)
 
 }
 
-bool Sphinx::simulate(std::string file_to_simulate) {
+bool Sphinx::simulate(std::string file_to_simulate)
+{
 
     this->unit_test = true;
     if (file_to_simulate == "../tests/dhrystoneO3.hex")
@@ -609,6 +726,152 @@ bool Sphinx::simulate(std::string file_to_simulate) {
 }
 
 
+
+void Sphinx::simulate_numCycles(int numCycles)
+{
+    std::string file_to_simulate = "../tests/dhrystoneO3.hex";
+    this->unit_test = true;
+    if (file_to_simulate == "../tests/dhrystoneO3.hex")
+    {
+        this->unit_test = false;
+    }
+
+    this->instruction_file_name = file_to_simulate;
+    this->results << "\n****************\t" << file_to_simulate << "\t****************\n";
+
+    this->ProcessFile();
+
+    clock_time start_time = std::chrono::high_resolution_clock::now();
+
+    sim.run([&](ch_tick t)->bool {
+
+        long int cycle = t/2;
+
+        this->curr_cycle = cycle;
+
+        if(debug) std::cout << "Cycle: " << cycle << std::endl;
+        // if(cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
+
+        // std::cout << "Cycle: " << std::dec << cycle << "\n";
+
+
+        static bool stop      = false;
+        static int counter    = 0;
+
+        stop = ibus_driver(pipeline);
+               dbus_driver(pipeline);
+               interrupt_driver(pipeline);
+               jtag_driver(pipeline);
+
+        if (stop)
+        {
+            counter++;
+        } else
+        {
+            counter = 0;
+        }
+
+        if (this->stats_total_cycles%1000 == 0) std::cout << "Cycle: " << this->stats_total_cycles << "\n";
+
+        // RETURNS FALSE TO STOP
+        // return (!(stop && (counter > 5)) || true);
+        return (this->stats_total_cycles != numCycles);
+    });
+
+    {
+        using namespace std::chrono;
+        this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
+    }
+
+    uint32_t status;
+    ram.getWord(0, &status);
+
+    this->print_stats();
+}
+
+bool Sphinx::simulate_debug(std::string file_to_simulate, int debugAddress)
+{
+
+    this->unit_test = true;
+    if (file_to_simulate == "../tests/dhrystoneO3.hex")
+    {
+        this->unit_test = false;
+    }
+
+    this->instruction_file_name = file_to_simulate;
+    this->results << "\n****************\t" << file_to_simulate << "\t****************\n";
+
+    this->ProcessFile();
+
+    clock_time start_time = std::chrono::high_resolution_clock::now();
+
+    sim.run([&](ch_tick t)->bool {
+
+        bool alt = true;
+        long int cycle = t/2;
+
+        this->curr_cycle = cycle;
+
+        if(debug) std::cout << "Cycle: " << cycle << std::endl;
+
+        static bool stop      = false;
+        static int counter    = 0;
+
+        stop = ibus_driver(pipeline, true, debugAddress);
+               dbus_driver(pipeline);
+               interrupt_driver(pipeline);
+               jtag_driver(pipeline);
+
+
+        if (cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
+
+        if (this->debug_state == 5)
+        {
+            this->reset_debug();
+            std::cout <<  RED << "BREAKPOINT REACHED  -  " << DEFAULT "Cycle: " << std::dec << cycle << "\n";
+            std::cout << "Register state at instructtion address: 0x" << std::hex << debugAddress << "\n";
+            for (unsigned i = 1; i < 32; ++i)
+            {
+                uint32_t value;
+                ram.getWord((i - 1) * 4, &value);
+                std::cout << "Reg " << std::dec << i << ": 0x" << std::hex << value << "\n"; 
+            }
+            std::cout << "\n\n";
+            std::cout << "Would you like to continue or the simulation? [y/n]: ";
+            char ans;
+            std::cin >> ans;
+            if (ans == 'y') alt = true;
+            if (ans == 'n') alt = false;
+        }
+
+        if (stop && (this->debug_state == 0))
+        {
+            counter++;
+        } else
+        {
+            counter = 0;
+        }
+
+
+        // RETURNS FALSE TO STOP
+        // return (!(stop && (counter > 5)) || true);
+        bool to_stop = this->stop && (!(stop && (counter > 5)));
+        // if ((!to_stop && (this->debug_state == 0))) std::cout << "ABOUT TO EXIT\n";
+        return !((!to_stop && (this->debug_state == 0))) && alt;
+    });
+
+    {
+        using namespace std::chrono;
+        this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
+    }
+
+    uint32_t status;
+    ram.getWord(0, &status);
+
+    this->print_stats();
+    return (status == 1);
+}
+
 void Sphinx::print_stats(void)
 {
     this->results << std::left;
@@ -653,3 +916,11 @@ void Sphinx::export_model()
     // sim.toVCD("pipeline.vcd");
 }
 
+void Sphinx::reset_debug()
+{
+    this->debug_state    = 0;
+    this->debug_return   = 0;
+    this->debug_wait_num = 0;
+    this->debug_inst_num = 0;
+    this->debug_end_wait = 0;
+}

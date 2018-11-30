@@ -1,3 +1,8 @@
+
+#ifndef __RAM__
+
+#define __RAM__
+
 #include "string.h"
 
 class RAM{
@@ -198,3 +203,5 @@ void loadHexImpl(std::string path,RAM* mem) {
 
     delete [] content;
 }
+
+#endif
