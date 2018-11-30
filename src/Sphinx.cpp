@@ -82,7 +82,7 @@ int main(int argc, char ** argv)
 	else if (es.state == 1)
 	{
 		std::cout << DEFAULT << "Going to run " << es.numCycles << " cycles\n";
-		sphinx.simulate_numCycles(es.numCycles);
+		sphinx.simulate_numCycles(es.numCycles, es.print, es.printEvery);
 	} else if (es.state == 2)
 	{
 		std::cout << DEFAULT << "Running: " << es.file_to_simulate << "\t";
@@ -98,7 +98,7 @@ int main(int argc, char ** argv)
 		}
 	} else if (es.state == 3)
 	{
-		std::cout << DEFAULT << "Running: " << es.file_to_simulate << " with debugging at 0x" << std::hex << es.debugAddress << " enabled\n";
+		std::cout << DEFAULT << "Running: " << es.file_to_simulate << " with debugging enabled\n";
 		passed = sphinx.simulate_debug(es.file_to_simulate, es.debugAddress);
 		if (es.file_to_simulate != "../tests/dhrystoneO3.hex")
 		{

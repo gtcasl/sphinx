@@ -47,20 +47,20 @@ To simulate the model with the test cases (optional --exportVerilog to export mo
 To simulate the model with a specific hex file (optional --exportVerilog to export model to verilog):
 ```sh
 #./Sphinx --test <relative location>
->> ./Sphinx  --test ../tests/rv32ui-p-bltu.hex
+>> ./Sphinx.out  --test ../tests/rv32ui-p-bltu.hex
 ```
 
 To add breakpoints to the simulation, use the --breakpoint flag (optional --exportVerilog to export model to verilog). When a breakpoint is reached, the values of the registers will be printed after the breakpoint instruction is executed and the user will have the option to continue or exit simulation. 
 ```sh
-#./Sphinx --test <relative location> --breakpoint <breakpoint PC value 1> ... <<breakpoint PC value N>
->> ./Sphinx --test ../tests/rv32ui-p-sra.hex --breakpoint 80000130 80000188 
+#./Sphinx.out --test <relative location> --breakpoint <breakpoint PC value 1> ... <<breakpoint PC value N>
+>> ./Sphinx.out --test ../tests/rv32ui-p-sra.hex --breakpoint 800000e4 80000114 80000130 800001cc
 ```
 
 
-To simulate the model a specific number of cycles (optional --exportVerilog to export model to verilog):
+To simulate the model a specific number of cycles (optional --exportVerilog to export model to verilog). This by default does not print anything for correct timing simulation. However, flag --printEvery could be used to print every N num cycles.
 ```sh
-#./Sphinx --numCycles <num>
->>./Sphinx --numCycles 1000000
+#./Sphinx.out --numCycles <num> --printEvery <num>
+>> ./Sphinx.out --numCycles 1000000 --printEvery 10000
 ```
 
 

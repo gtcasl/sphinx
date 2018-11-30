@@ -1,9 +1,9 @@
 
-****************	../tests/dhrystoneO3.hex	****************
-# Dynamic Instructions: 4437
-# of total cycles:      10000
-# of forwarding stalls: 15
-# of branch stalls:     5548
-# CPI:                  2.25378
-# time to simulate:     2.29856 ms
-# GRADE:                N/A [NOT A UNIT TEST]
+****************	../tests/rv32ui-p-sra.hex	****************
+# Dynamic Instructions: 617
+# of total cycles:      1392
+# of forwarding stalls: 465
+# of branch stalls:     409
+# CPI:                  2.25608
+# time to simulate:     4.14106 ms
+# GRADE:                PASSING

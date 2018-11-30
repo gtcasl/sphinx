@@ -326,8 +326,8 @@ class Sphinx
         Sphinx();
         ~Sphinx();
         bool simulate(std::string);
-        void simulate_numCycles(int);
-        bool simulate_debug(std::string, std::vector<int>);
+        void simulate_numCycles(int, bool, int);
+        bool simulate_debug(std::string, std::vector<unsigned>);
         void export_model(void);
     private:
 
@@ -336,7 +336,7 @@ class Sphinx
         void reset_debug(void);
 
 
-        bool ibus_driver(ch_device<Pipeline> &, bool=false, std::vector<int> = std::vector<int>());
+        bool ibus_driver(ch_device<Pipeline> &, bool=false, std::vector<unsigned> = std::vector<unsigned>());
         void dbus_driver(ch_device<Pipeline> &);
         void interrupt_driver(ch_device<Pipeline> &);
         void jtag_driver(ch_device<Pipeline> &);
@@ -412,7 +412,7 @@ void Sphinx::ProcessFile(void)
 
 }
 
-bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::vector<int> debugAddress)
+bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::vector<unsigned> debugAddress)
 {
 
     static int store_state[31] = {
@@ -474,14 +474,17 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
         pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
         new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
 
+        // std::cout << "curr_PC: " << std::hex << new_PC << "\n";
         if (this->debug_state == 0)
         {
-            // std::cout << "NEW PC: " << new_PC << "\n";
             // if (( (int) new_PC) == debugAddress)
             if (std::find(debugAddress.begin(), debugAddress.end(), (int) new_PC) != debugAddress.end())
             {
+                // std::cout << "REACHED: " << std::hex << new_PC << "\n";
                 this->debug_state = 1;
                 this->debug_debugAddr = new_PC;
+                std::cout <<  RED << "BREAKPOINT REACHED  -  " << DEFAULT "Cycle: " << std::dec << this->stats_total_cycles << "\n";
+                std::cout << "Register state at instructtion address: 0x" << std::hex << new_PC << "\n";
             }
             ram.getWord(new_PC, &curr_inst);
             pipeline.io.in_debug = false;
@@ -513,9 +516,16 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
             }
         } else if (this->debug_state == 4)
         {
-            if (this->debug_end_wait > 5) this->debug_state = 5;
+            if (this->debug_end_wait > 5)
+            {
+                this->debug_state    = 5;
+                pipeline.io.in_debug = true;
+            }
+            else
+            {
+                pipeline.io.in_debug = true;
+            }
             ++this->debug_end_wait;
-            pipeline.io.in_debug = true;
         }
 
         pipeline.io.IBUS.in_data.data      = curr_inst;
@@ -731,7 +741,7 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
 
 
-void Sphinx::simulate_numCycles(int numCycles)
+void Sphinx::simulate_numCycles(int numCycles, bool print, int mod)
 {
     std::string file_to_simulate = "../tests/dhrystoneO3.hex";
     this->unit_test = true;
@@ -775,7 +785,9 @@ void Sphinx::simulate_numCycles(int numCycles)
             counter = 0;
         }
 
-        if (this->stats_total_cycles%1000 == 0) std::cout << "Cycle: " << this->stats_total_cycles << "\n";
+        
+        if (print) if (this->stats_total_cycles%mod == 0) std::cout << "Cycle: " << this->stats_total_cycles << "\n";
+
 
         // RETURNS FALSE TO STOP
         // return (!(stop && (counter > 5)) || true);
@@ -793,7 +805,7 @@ void Sphinx::simulate_numCycles(int numCycles)
     this->print_stats();
 }
 
-bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<int> debugAddress)
+bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> debugAddress)
 {
 
     this->unit_test = true;
@@ -832,8 +844,6 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<int> debug
         if (this->debug_state == 5)
         {
             this->reset_debug();
-            std::cout <<  RED << "BREAKPOINT REACHED  -  " << DEFAULT "Cycle: " << std::dec << cycle << "\n";
-            std::cout << "Register state at instructtion address: 0x" << std::hex << this->debug_debugAddr << "\n";
             for (unsigned i = 1; i < 32; ++i)
             {
                 uint32_t value;

@@ -35,17 +35,18 @@ struct Fetch
 	void describe()
 	{
 
-
+		ch_print("**************");
 		// ch_reg<ch_bit<32>> PC(0);
 		// ch_reg<ch_bool> start(true);
 		ch_reg<ch_bool> stall_reg(false);
 
 		ch_reg<ch_bit<32>> old(0);
-		ch_reg<ch_bit<4>> state(0);
+		ch_reg<ch_bit<5>> state(0);
 		ch_reg<ch_bit<32>> PC(0);
 		ch_reg<ch_bit<32>> JAL_reg(0);
 		ch_reg<ch_bit<32>> BR_reg(0);
 		ch_reg<ch_bit<32>> I_reg(0);
+		ch_reg<ch_bool>    prev_debug(false);
 
 		ch_bit<32> PC_to_use;
 		ch_bit<32> PC_to_use_temp;
@@ -67,15 +68,22 @@ struct Fetch
 			__case(I_STATE_int)
 			{
 				// PC_to_use_temp = I_reg;
+				// PC_to_use_temp = old;
+				PC_to_use_temp = PC;
+			}
+			__case(S_STATE_int)
+			{
 				PC_to_use_temp = old;
-			} __default
+			}
+			__default
 			{
 				PC_to_use_temp = ch_bit<32>(0);
 			};
 
-		PC_to_use = ch_sel(stall_reg, old, ch_sel(io.in_debug, PC, PC_to_use_temp));
+		PC_to_use = ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp));
 
 		// stall_reg->next = true;
+		ch_print("STATE: {0}", state);
 
 		io.IBUS.in_data.ready = io.IBUS.in_data.valid;
 		
@@ -88,23 +96,25 @@ struct Fetch
 		// ch_bit<32> out_PC    = ch_sel(io.in_interrupt, io.in_interrupt_pc, temp_PC);
 		ch_bit<32> out_PC    = temp_PC;
 
-		ch_bit<4> temp_state = ch_sel(io.in_jal == JUMP, J_STATE, ch_sel(io.in_branch_dir == TAKEN, B_STATE, P_STATE));
-		state->next          = ch_sel(io.in_interrupt, I_STATE, temp_state);
+		ch_bit<5> temp_state  = ch_sel(io.in_jal == JUMP, J_STATE, ch_sel(io.in_branch_dir == TAKEN, B_STATE, P_STATE));
+		ch_bit<5> tempp_state = ch_sel(io.in_interrupt, I_STATE, temp_state);
+		state->next           = ch_sel(io.in_debug, I_STATE, ch_sel(prev_debug, S_STATE, tempp_state));
 
 		io.IBUS.out_address.data = out_PC;
 		io.IBUS.out_address.valid = TRUE;
 
 		io.out_curr_PC = out_PC;
 		
-		old->next     = out_PC;
-		PC->next      = PC_to_use.as_uint()          + ch_uint<32>(4);
-		JAL_reg->next = io.in_jal_dest.as_uint()     + ch_uint<32>(4);
-		BR_reg->next  = io.in_branch_dest.as_uint()  + ch_uint<32>(4);
-		I_reg->next   = io.in_interrupt_pc.as_uint() + ch_uint<32>(4);
-
+		old->next        = out_PC;
+		PC->next         = PC_to_use.as_uint()          + ch_uint<32>(4);
+		JAL_reg->next    = io.in_jal_dest.as_uint()     + ch_uint<32>(4);
+		BR_reg->next     = io.in_branch_dest.as_uint()  + ch_uint<32>(4);
+		I_reg->next      = io.in_interrupt_pc.as_uint() + ch_uint<32>(4);
+		prev_debug->next = io.in_debug;
 		// PC->next       = ch_sel(stall, out_PC.as_int(), pc_next.as_int());
 
 
+		ch_print("OUT_PC: {0}",out_PC);
 		// ch_print("PC: {0}", out_PC);
 		
 		// PC->next = ch_sel(stall, out_PC, PC_to_use);
@@ -115,6 +125,7 @@ struct Fetch
 		// ch_print("BRANCH DEST: {0}", io.in_branch_dest);
 		// ch_print("io.in_branch_stall IS: {0}\tio.in_fwd_stall IS: {1}", io.in_branch_stall, io.in_fwd_stall);
 
+		ch_print("-----------------");
 	}
 
 };
