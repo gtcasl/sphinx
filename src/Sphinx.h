@@ -743,47 +743,40 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
 void Sphinx::simulate_numCycles(int numCycles, bool print, int mod)
 {
-    std::string file_to_simulate = "../tests/dhrystoneO3.hex";
-    this->unit_test = true;
-    if (file_to_simulate == "../tests/dhrystoneO3.hex")
-    {
-        this->unit_test = false;
-    }
-
-    this->instruction_file_name = file_to_simulate;
-    this->results << "\n****************\t" << file_to_simulate << "\t****************\n";
-
-    this->ProcessFile();
-
     clock_time start_time = std::chrono::high_resolution_clock::now();
 
-    sim.run([&](ch_tick t)->bool {
-
-        long int cycle = t/2;
-
-        this->curr_cycle = cycle;
-
-        if(debug) std::cout << "Cycle: " << cycle << std::endl;
-        // if(cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
-
-        // std::cout << "Cycle: " << std::dec << cycle << "\n";
+    sim.run([&](ch_tick t)->bool
+    {
 
 
-        static bool stop      = false;
-        static int counter    = 0;
+        pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
+        pipeline.io.IBUS.in_data.data      = 0x0;
+        pipeline.io.IBUS.in_data.valid     = true;
+        pipeline.io.in_debug               = false;
 
-        stop = ibus_driver(pipeline);
-               dbus_driver(pipeline);
-               interrupt_driver(pipeline);
-               jtag_driver(pipeline);
 
-        if (stop)
-        {
-            counter++;
-        } else
-        {
-            counter = 0;
-        }
+        pipeline.io.DBUS.in_data.data  = 0x123;
+        pipeline.io.DBUS.in_data.valid = false;
+
+
+        pipeline.io.INTERRUPT.in_interrupt_id.valid = false;
+
+        pipeline.io.INTERRUPT.in_interrupt_id.data  = 0;
+
+        pipeline.io.jtag.JTAG_TAP.in_mode_select.valid = false;
+        pipeline.io.jtag.JTAG_TAP.in_mode_select.data  = 0;
+
+        pipeline.io.jtag.JTAG_TAP.in_clock.valid       = false;
+        pipeline.io.jtag.JTAG_TAP.in_clock.data        = 0;
+
+        pipeline.io.jtag.JTAG_TAP.in_reset.valid       = false;
+        pipeline.io.jtag.JTAG_TAP.in_reset.data        = 0;
+
+        pipeline.io.jtag.in_data.valid                 = false;
+        pipeline.io.jtag.in_data.data                  = 0;
+
+        pipeline.io.jtag.out_data.ready                = false;
+
 
         
         if (print) if (this->stats_total_cycles%mod == 0) std::cout << "Cycle: " << this->stats_total_cycles << "\n";
@@ -791,7 +784,7 @@ void Sphinx::simulate_numCycles(int numCycles, bool print, int mod)
 
         // RETURNS FALSE TO STOP
         // return (!(stop && (counter > 5)) || true);
-        return (this->stats_total_cycles != numCycles);
+        return ((t/2) != numCycles);
     });
 
     {
