@@ -365,7 +365,7 @@ class Sphinx
         int debug_inst_num;
         int debug_end_wait;
         int debug_debugAddr;
-        clock_diff stats_sim_time;
+        double stats_sim_time;
 };
 
 
@@ -691,7 +691,7 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
     this->ProcessFile();
 
-    clock_time start_time = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     sim.run([&](ch_tick t)->bool {
 
@@ -743,7 +743,7 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
 void Sphinx::simulate_numCycles(int numCycles, bool print, int mod)
 {
-    clock_time start_time = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     sim.run([&](ch_tick t)->bool
     {
@@ -812,7 +812,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
 
     this->ProcessFile();
 
-    clock_time start_time = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     sim.run([&](ch_tick t)->bool {
 
@@ -869,7 +869,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
 
     {
         using namespace std::chrono;
-        this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
+        this->stats_sim_time = duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
     }
 
     uint32_t status;

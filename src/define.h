@@ -245,4 +245,7 @@
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> clock_time;
 typedef std::chrono::duration<double> clock_diff;
 
+#define duration(a) std::chrono::duration_cast<std::chrono::nanoseconds>(a).count()
+#define timeNow() std::chrono::high_resolution_clock::now()
+
 #endif
