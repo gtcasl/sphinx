@@ -41,8 +41,8 @@
 // JTAG
 #include "JTAG/jtag.h"
 
-using namespace ch::core;
-using namespace ch::sim;
+// using namespace ch::core;
+// using namespace ch::sim;
 using namespace ch::htl;
 
 bool debug = false;
@@ -326,13 +326,13 @@ class Sphinx
         Sphinx();
         ~Sphinx();
         bool simulate(std::string);
-        void simulate_numCycles(int, bool, int);
+        void simulate_numCycles(unsigned, bool, int);
         bool simulate_debug(std::string, std::vector<unsigned>);
         void export_model(void);
     private:
 
         void ProcessFile(void);
-        void print_stats(void);
+        void print_stats();
         void reset_debug(void);
 
 
@@ -729,7 +729,7 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
     {
         using namespace std::chrono;
-        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time);
+        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
     }
 
     uint32_t status;
@@ -741,13 +741,14 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
 
 
-void Sphinx::simulate_numCycles(int numCycles, bool print, int mod)
+void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod)
 {
     auto start_time = std::chrono::high_resolution_clock::now();
 
+    this->unit_test = false;
+
     sim.run([&](ch_tick t)->bool
     {
-
 
         pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
         pipeline.io.IBUS.in_data.data      = 0x0;
@@ -789,11 +790,8 @@ void Sphinx::simulate_numCycles(int numCycles, bool print, int mod)
 
     {
         using namespace std::chrono;
-        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time);
+        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
     }
-
-    uint32_t status;
-    ram.getWord(0, &status);
 
     this->print_stats();
 }
@@ -832,7 +830,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
                jtag_driver(pipeline);
 
 
-        if (cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
+        // if (cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
 
         if (this->debug_state == 5)
         {
@@ -879,16 +877,26 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
     return (status == 1);
 }
 
-void Sphinx::print_stats(void)
+void Sphinx::print_stats()
 {
-    this->results << std::left;
-    // this->results << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
-    this->results << std::setw(24) << "# Dynamic Instructions:" << std::dec << this->stats_dynamic_inst << std::endl;
-    this->results << std::setw(24) << "# of total cycles:" << std::dec << this->stats_total_cycles << std::endl;
-    this->results << std::setw(24) << "# of forwarding stalls:" << std::dec << this->stats_fwd_stalls << std::endl;
-    this->results << std::setw(24) << "# of branch stalls:" << std::dec << this->stats_branch_stalls << std::endl;
-    this->results << std::setw(24) << "# CPI:" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
-    this->results << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time.count() << " ms" << std::endl;
+
+    if (this->unit_test)
+    {
+        this->results << std::left;
+        // this->results << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
+        this->results << std::setw(24) << "# Dynamic Instructions:" << std::dec << this->stats_dynamic_inst << std::endl;
+        this->results << std::setw(24) << "# of total cycles:" << std::dec << this->stats_total_cycles << std::endl;
+        this->results << std::setw(24) << "# of forwarding stalls:" << std::dec << this->stats_fwd_stalls << std::endl;
+        this->results << std::setw(24) << "# of branch stalls:" << std::dec << this->stats_branch_stalls << std::endl;
+        this->results << std::setw(24) << "# CPI:" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
+        this->results << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time << " milliseconds" << std::endl;
+    }
+    else
+    {
+        this->results << std::left;
+        this->results << std::setw(24) << "# of total cycles:" << std::dec << this->stats_total_cycles << std::endl;
+        this->results << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time << " milliseconds" << std::endl;
+    }
 
 
     uint32_t status;

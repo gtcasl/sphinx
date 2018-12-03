@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "define.h"
 
-// using namespace ch::logic;
-// using namespace ch::system;
+using namespace ch::logic;
+using namespace ch::system;
 
 
 // __inout(decode_io, (
@@ -236,7 +236,7 @@ struct Decode
 
 
 		io.out_is_csr   = is_csr.as_uint();
-    	io.out_csr_mask = ch_sel(is_csr_immed, ch_pad<32>(io.out_rs1), io.out_rd1);
+    	io.out_csr_mask = ch_sel(is_csr_immed, ch_resize<32>(io.out_rs1), io.out_rd1);
 
 
 
@@ -281,7 +281,7 @@ struct Decode
 				ch_bit<1>  b_20            = io.in_instruction[31];
 				ch_bit<1>  b_0             = ch_bit<1>(0);
 				ch_bit<21> unsigned_offset = ch_cat(b_20, b_19_to_12, b_11, b_10_to_1, b_0);
-       		 	ch_bit<32> offset          = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_pad<32>(unsigned_offset));
+       		 	ch_bit<32> offset          = ch_sel(b_20.as_uint() == 1, ch_cat(ONES_11BITS, unsigned_offset), ch_resize<32>(unsigned_offset));
 
        		 	io.out_jal        = JUMP;
 				io.out_jal_offset = offset;
@@ -289,7 +289,7 @@ struct Decode
 			__case(JALR_INST)
 			{
 				ch_bit<12> jalr_immed = ch_cat(func7, io.out_rs2);
-        		ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_pad<32>(jalr_immed));
+        		ch_bit<32> offset     = ch_sel(jalr_immed[11] == 1, ch_cat(ONES_20BITS, jalr_immed), ch_resize<32>(jalr_immed));
 
         		io.out_jal        = JUMP;
 				io.out_jal_offset = offset;
@@ -330,20 +330,20 @@ struct Decode
 			{
 				ch_bool shift_i = (func3 == 1) || (func3 == 5);
 				// ch_bit<12> shift_i_immediate = ch_cat(ch_bit<7>(0), io.out_rs2);
-        		ch_bit<12> shift_i_immediate = ch_pad<12>(io.out_rs2);
+        		ch_bit<12> shift_i_immediate = ch_resize<12>(io.out_rs2);
 
         		tempp              = ch_sel(shift_i, shift_i_immediate, u_12);
-				io.out_itype_immed = ch_sel(tempp[11] == 1, ch_cat(ONES_20BITS, tempp), ch_pad<32>(tempp));
+				io.out_itype_immed = ch_sel(tempp[11] == 1, ch_cat(ONES_20BITS, tempp), ch_resize<32>(tempp));
 			}
 			__case(S_INST)
 			{
 				tempp              = ch_cat(func7, io.out_rd);
-				io.out_itype_immed = ch_sel(tempp[11] == 1, ch_cat(ONES_20BITS, tempp), ch_pad<32>(tempp));
+				io.out_itype_immed = ch_sel(tempp[11] == 1, ch_cat(ONES_20BITS, tempp), ch_resize<32>(tempp));
 			}
 			__case(L_INST)
 			{
 				tempp = ch_bit<12>(0);
-				io.out_itype_immed = ch_sel(u_12[11] == 1, ch_cat(ONES_20BITS, u_12), ch_pad<32>(u_12));
+				io.out_itype_immed = ch_sel(u_12[11] == 1, ch_cat(ONES_20BITS, u_12), ch_resize<32>(u_12));
 			}
 			__case(B_INST)
 			{
@@ -353,7 +353,7 @@ struct Decode
 				ch_bit<6> b_5_to_10 = ch_slice<6>(io.in_instruction >> 25);
 
 				tempp              = ch_cat(b_12, b_11, b_5_to_10, b_1_to_4);
-				io.out_itype_immed = ch_sel(b_12 == 1, ch_cat(ONES_20BITS, tempp), ch_pad<32>(tempp));
+				io.out_itype_immed = ch_sel(b_12 == 1, ch_cat(ONES_20BITS, tempp), ch_resize<32>(tempp));
 			}
 			__default
 			{

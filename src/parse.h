@@ -11,7 +11,7 @@ struct Execution_State
 {
 
 	int state;
-	int numCycles;
+	unsigned numCycles;
 	std::string file_to_simulate;
 	std::vector<unsigned> debugAddress;
 	bool exportVerilog;
@@ -36,7 +36,6 @@ execution_state parseArguments(int argc, char ** argv)
 	{
 
 		std::string curr_command = argv[ii];
-		std::cout << "curr_command: " << curr_command << "\n";
 		if (es.state == 0)
 		{
 			if (curr_command == "--numCycles")

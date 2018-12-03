@@ -14,8 +14,8 @@
 // 	__out(ch_bit2)   out_PC_next
 // ));
 
-// using namespace ch::logic;
-// using namespace ch::system;
+using namespace ch::logic;
+using namespace ch::system;
 
 
 struct D_E_Register

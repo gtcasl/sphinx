@@ -2,8 +2,8 @@
 #include <ioport.h>
 #include "define.h"
 
-// using namespace ch::logic;
-// using namespace ch::system;
+using namespace ch::logic;
+using namespace ch::system;
 
 
 struct Forwarding

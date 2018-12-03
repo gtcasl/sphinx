@@ -66,14 +66,15 @@ int main(int argc, char ** argv)
 			{
 				if ( curr) std::cout << GREEN << "Test Passed: " << tests[ii] << std::endl;
 				if (!curr) std::cout << RED   << "Test Failed: " << tests[ii] << std::endl;
+				passed = passed && curr;
 			}
 			else
 			{
 				std::cout << RED   << "Not a Test : " << tests[ii] << std::endl;
+				// passed = passed && curr;
 			}
 
 			std::cout << DEFAULT;
-			passed = passed && curr;
 		}
 
 		if( passed) std::cout << DEFAULT << "PASSED ALL TESTS\n";

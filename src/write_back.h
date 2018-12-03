@@ -1,4 +1,6 @@
 
+using namespace ch::logic;
+using namespace ch::system;
 
 struct Write_Back
 {
