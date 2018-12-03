@@ -348,7 +348,7 @@ class Sphinx
 
         ch_device<Pipeline> pipeline;
 
-        ch_tracer sim;
+        ch_simulator sim;
         long int curr_cycle;
         bool stop;
         bool unit_test;
@@ -373,7 +373,7 @@ Sphinx::Sphinx() : start_pc(0), curr_cycle(0), stop(true), unit_test(true), stat
                                                     stats_total_cycles(0), stats_fwd_stalls(0), stats_branch_stalls(0),
                                                     debug_state(0), debug_return(0), debug_wait_num(0), debug_inst_num(0), debug_end_wait(0), debug_debugAddr(0)
 {
-    this->sim = ch_tracer(this->pipeline);
+    this->sim = ch_simulator(this->pipeline);
     this->results.open("../results/results.txt");
 }
 
