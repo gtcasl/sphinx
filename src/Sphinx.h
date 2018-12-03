@@ -729,7 +729,7 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
     {
         using namespace std::chrono;
-        this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
+        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time);
     }
 
     uint32_t status;
@@ -789,7 +789,7 @@ void Sphinx::simulate_numCycles(int numCycles, bool print, int mod)
 
     {
         using namespace std::chrono;
-        this->stats_sim_time = duration_cast<microseconds>(high_resolution_clock::now() - start_time);
+        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time);
     }
 
     uint32_t status;
@@ -869,7 +869,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
 
     {
         using namespace std::chrono;
-        this->stats_sim_time = duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
+        this->stats_sim_time = duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
     }
 
     uint32_t status;
