@@ -869,7 +869,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
 
     {
         using namespace std::chrono;
-        this->stats_sim_time = duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time).count();
+        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
     }
 
     uint32_t status;
