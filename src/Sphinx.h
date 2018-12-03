@@ -332,7 +332,7 @@ class Sphinx
     private:
 
         void ProcessFile(void);
-        void print_stats();
+        void print_stats(bool = true);
         void reset_debug(void);
 
 
@@ -793,7 +793,7 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod)
         this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
     }
 
-    this->print_stats();
+    this->print_stats(false);
 }
 
 bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> debugAddress)
@@ -877,10 +877,10 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
     return (status == 1);
 }
 
-void Sphinx::print_stats()
+void Sphinx::print_stats(bool cycle_test)
 {
 
-    if (this->unit_test)
+    if (cycle_test)
     {
         this->results << std::left;
         // this->results << "# Static Instructions:\t" << std::dec << this->stats_static_inst << std::endl;
