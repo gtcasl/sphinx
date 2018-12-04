@@ -17,6 +17,7 @@ struct Execution_State
 	bool exportVerilog;
 	bool print;
 	int printEvery;
+	int numRuns;
 };
 
 
@@ -34,7 +35,6 @@ execution_state parseArguments(int argc, char ** argv)
 	int ii = 1;
 	while (ii < argc)
 	{
-
 		std::string curr_command = argv[ii];
 		if (es.state == 0)
 		{
@@ -71,14 +71,17 @@ execution_state parseArguments(int argc, char ** argv)
 			}
 		}
 
-		if (es.state == 1)
+		if (curr_command == "--numRuns")
 		{
-			if (curr_command == "--printEvery")
-			{
-				es.print = true;
-				++ii;
-				es.printEvery = std::stoi(argv[ii],&sz);
-			}
+			++ii;
+			es.numRuns = std::stoi(argv[ii],&sz);
+		}
+
+		if (curr_command == "--printEvery")
+		{
+			es.print = true;
+			++ii;
+			es.printEvery = std::stoi(argv[ii],&sz);
 		}
 
 		if (curr_command == "--exportVerilog") es.exportVerilog = true;

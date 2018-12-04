@@ -83,7 +83,10 @@ int main(int argc, char ** argv)
 	else if (es.state == 1)
 	{
 		std::cout << DEFAULT << "Going to run " << es.numCycles << " cycles\n";
-		sphinx.simulate_numCycles(es.numCycles, es.print, es.printEvery);
+		sphinx.simulate_numCycles(es.numCycles, es.print, es.printEvery, es.numRuns);
+
+
+		
 	} else if (es.state == 2)
 	{
 		std::cout << DEFAULT << "Running: " << es.file_to_simulate << "\t";

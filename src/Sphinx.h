@@ -41,6 +41,8 @@
 // JTAG
 #include "JTAG/jtag.h"
 
+#include <ctime>
+
 // using namespace ch::core;
 // using namespace ch::sim;
 using namespace ch::htl;
@@ -326,7 +328,7 @@ class Sphinx
         Sphinx();
         ~Sphinx();
         bool simulate(std::string);
-        void simulate_numCycles(unsigned, bool, int);
+        void simulate_numCycles(unsigned, bool, int, int);
         bool simulate_debug(std::string, std::vector<unsigned>);
         void export_model(void);
     private:
@@ -691,7 +693,9 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
     this->ProcessFile();
 
-    auto start_time = std::chrono::high_resolution_clock::now();
+    // auto start_time = std::chrono::high_resolution_clock::now();
+
+    auto start_time = clock();
 
     sim.run([&](ch_tick t)->bool {
 
@@ -727,10 +731,12 @@ bool Sphinx::simulate(std::string file_to_simulate)
         return this->stop && (!(stop && (counter > 5)));
     });
 
-    {
-        using namespace std::chrono;
-        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
-    }
+    // {
+    //     using namespace std::chrono;
+    //     this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
+    // }
+
+    this->stats_sim_time = (((clock() - start_time) * (1000)) / CLOCKS_PER_SEC);
 
     uint32_t status;
     ram.getWord(0, &status);
@@ -741,57 +747,71 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
 
 
-void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod)
+void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int numRuns)
 {
-    auto start_time = std::chrono::high_resolution_clock::now();
+    // auto start_time = std::chrono::high_resolution_clock::now();
+
+
 
     this->unit_test = false;
+    this->stats_sim_time = 0;
 
-    sim.run([&](ch_tick t)->bool
+    auto start_time = clock();
+    for (int i = 0; i < numRuns; ++i)
     {
+        sim.run([&](ch_tick t)->bool
+        {
 
-        pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
-        pipeline.io.IBUS.in_data.data      = 0x0;
-        pipeline.io.IBUS.in_data.valid     = true;
-        pipeline.io.in_debug               = false;
-
-
-        pipeline.io.DBUS.in_data.data  = 0x123;
-        pipeline.io.DBUS.in_data.valid = false;
+            pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
+            pipeline.io.IBUS.in_data.data      = 0x0;
+            pipeline.io.IBUS.in_data.valid     = true;
+            pipeline.io.in_debug               = false;
 
 
-        pipeline.io.INTERRUPT.in_interrupt_id.valid = false;
-
-        pipeline.io.INTERRUPT.in_interrupt_id.data  = 0;
-
-        pipeline.io.jtag.JTAG_TAP.in_mode_select.valid = false;
-        pipeline.io.jtag.JTAG_TAP.in_mode_select.data  = 0;
-
-        pipeline.io.jtag.JTAG_TAP.in_clock.valid       = false;
-        pipeline.io.jtag.JTAG_TAP.in_clock.data        = 0;
-
-        pipeline.io.jtag.JTAG_TAP.in_reset.valid       = false;
-        pipeline.io.jtag.JTAG_TAP.in_reset.data        = 0;
-
-        pipeline.io.jtag.in_data.valid                 = false;
-        pipeline.io.jtag.in_data.data                  = 0;
-
-        pipeline.io.jtag.out_data.ready                = false;
+            pipeline.io.DBUS.in_data.data  = 0x123;
+            pipeline.io.DBUS.in_data.valid = false;
 
 
-        
-        if (print) if (this->stats_total_cycles%mod == 0) std::cout << "Cycle: " << this->stats_total_cycles << "\n";
+            pipeline.io.INTERRUPT.in_interrupt_id.valid = false;
+
+            pipeline.io.INTERRUPT.in_interrupt_id.data  = 0;
+
+            pipeline.io.jtag.JTAG_TAP.in_mode_select.valid = false;
+            pipeline.io.jtag.JTAG_TAP.in_mode_select.data  = 0;
+
+            pipeline.io.jtag.JTAG_TAP.in_clock.valid       = false;
+            pipeline.io.jtag.JTAG_TAP.in_clock.data        = 0;
+
+            pipeline.io.jtag.JTAG_TAP.in_reset.valid       = false;
+            pipeline.io.jtag.JTAG_TAP.in_reset.data        = 0;
+
+            pipeline.io.jtag.in_data.valid                 = false;
+            pipeline.io.jtag.in_data.data                  = 0;
+
+            pipeline.io.jtag.out_data.ready                = false;
 
 
-        // RETURNS FALSE TO STOP
-        // return (!(stop && (counter > 5)) || true);
-        return ((t/2) != numCycles);
-    });
+            
+            if (print) if (this->stats_total_cycles%mod == 0) std::cout << "Cycle: " << this->stats_total_cycles << "\n";
 
-    {
-        using namespace std::chrono;
-        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
+
+            // RETURNS FALSE TO STOP
+            // return (!(stop && (counter > 5)) || true);
+            return ((t/2) != numCycles);
+        });
+
     }
+
+    auto end_time = clock();
+    this->stats_sim_time = ((end_time - start_time) * 1000)  /  (CLOCKS_PER_SEC * numRuns);
+
+    // {
+    //     using namespace std::chrono;
+    //     this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count() / numRuns;
+    // }
+
+
+    // this->stats_sim_time = (this->stats_sim_time / numRuns);
 
     this->print_stats(false);
 }
@@ -810,7 +830,9 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
 
     this->ProcessFile();
 
-    auto start_time = std::chrono::high_resolution_clock::now();
+    // auto start_time = std::chrono::high_resolution_clock::now();
+
+    auto start_time = clock();
 
     sim.run([&](ch_tick t)->bool {
 
@@ -865,10 +887,12 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
         return !((!to_stop && (this->debug_state == 0))) && alt;
     });
 
-    {
-        using namespace std::chrono;
-        this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
-    }
+    // {
+    //     using namespace std::chrono;
+    //     this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
+    // }
+
+    this->stats_sim_time = (((clock() - start_time) * (1000)) / CLOCKS_PER_SEC);
 
     uint32_t status;
     ram.getWord(0, &status);
