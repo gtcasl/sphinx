@@ -1,3 +1,0 @@
-# of total cycles:      0
-# time to simulate:     2450 milliseconds
-# GRADE:                N/A [NOT A UNIT TEST]
