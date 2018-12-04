@@ -34,8 +34,9 @@ struct Fetch
 
 	void describe()
 	{
-
+  #ifndef NDEBUG
 		ch_print("**************");
+  #endif
 		// ch_reg<ch_bit<32>> PC(0);
 		// ch_reg<ch_bool> start(true);
 		ch_reg<ch_bool> stall_reg(false);
@@ -83,7 +84,9 @@ struct Fetch
 		PC_to_use = ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp));
 
 		// stall_reg->next = true;
+  #ifndef NDEBUG
 		ch_print("STATE: {0}", state);
+  #endif
 
 		io.IBUS.in_data.ready = io.IBUS.in_data.valid;
 		
@@ -113,19 +116,21 @@ struct Fetch
 		prev_debug->next = io.in_debug;
 		// PC->next       = ch_sel(stall, out_PC.as_int(), pc_next.as_int());
 
-
+  #ifndef NDEBUG
 		ch_print("OUT_PC: {0}",out_PC);
-		// ch_print("PC: {0}", out_PC);
+    // ch_print("PC: {0}", out_PC);
+  #endif
 		
 		// PC->next = ch_sel(stall, out_PC, PC_to_use);
-
 
 		// ch_print("Inst_in: {0}", io.IBUS.in_data.data);
 		// ch_print("JAL: {0}\tBRANCH_DIR: {1}", io.in_jal, io.in_branch_dir);
 		// ch_print("BRANCH DEST: {0}", io.in_branch_dest);
 		// ch_print("io.in_branch_stall IS: {0}\tio.in_fwd_stall IS: {1}", io.in_branch_stall, io.in_fwd_stall);
 
+  #ifndef NDEBUG
 		ch_print("-----------------");
+  #endif
 	}
 
 };
