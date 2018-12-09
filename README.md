@@ -59,8 +59,8 @@ To add breakpoints to the simulation, use the --breakpoint flag (optional --expo
 
 To simulate the model a specific number of cycles (optional --exportVerilog to export model to verilog). This by default does not print anything for correct timing simulation. However, flag --printEvery could be used to print every N num cycles.
 ```sh
-#./Sphinx.out --numCycles <num> --printEvery <num>
->> ./Sphinx.out --numCycles 1000000 --printEvery 10000
+#./Sphinx.out --numCycles <num> --numRuns <num> --printEvery <num>
+>> ./Sphinx.out --numCycles 1000000 --numRuns 10 --printEvery 10000
 ```
 
 
