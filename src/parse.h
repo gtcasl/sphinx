@@ -31,6 +31,7 @@ execution_state parseArguments(int argc, char ** argv)
 	es.file_to_simulate   = "";
 	es.exportVerilog      = false;
 	es.debugAddress       = std::vector<unsigned>();
+	es.numRuns            = 1;
 	std::string::size_type sz;
 	int ii = 1;
 	while (ii < argc)

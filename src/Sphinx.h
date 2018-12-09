@@ -568,6 +568,15 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
     if(debug) std::cout << std::endl << std::endl << std::endl << std::endl;
    ////////////////////// STATS //////////////////////
 
+
+    // JUST FOR DEBUGGING CLOCK
+    if ((((unsigned int)new_PC) == 0x8000043c) && (!this->unit_test))
+    {
+        // CHANGES CLOCK
+        uint32_t data = 0x1ff45678; 
+        ram.writeWord(0xf00fff10, &data);
+    }
+
     if ((((unsigned int)new_PC) == 0x80000118) && (!this->unit_test))
     {
         this->stop = false; 
@@ -756,7 +765,10 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
     this->unit_test = false;
     this->stats_sim_time = 0;
 
+
+
     auto start_time = clock();
+
     for (int i = 0; i < numRuns; ++i)
     {
         sim.run([&](ch_tick t)->bool
@@ -789,11 +801,8 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
             pipeline.io.jtag.in_data.data                  = 0;
 
             pipeline.io.jtag.out_data.ready                = false;
-
-
             
             if (print) if (this->stats_total_cycles%mod == 0) std::cout << "Cycle: " << this->stats_total_cycles << "\n";
-
 
             // RETURNS FALSE TO STOP
             // return (!(stop && (counter > 5)) || true);
@@ -803,7 +812,9 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
     }
 
     auto end_time = clock();
-    this->stats_sim_time = ((end_time - start_time) * 1000)  /  (CLOCKS_PER_SEC * numRuns);
+
+    this->stats_total_cycles = numCycles;
+    this->stats_sim_time     =  ((end_time - start_time) * 1000) / (CLOCKS_PER_SEC * numRuns);
 
     // {
     //     using namespace std::chrono;
@@ -891,7 +902,6 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
     //     using namespace std::chrono;
     //     this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
     // }
-
     this->stats_sim_time = (((clock() - start_time) * (1000)) / CLOCKS_PER_SEC);
 
     uint32_t status;
