@@ -784,9 +784,16 @@ bool Sphinx::simulate(std::string file_to_simulate)
 
     // auto start_time = std::chrono::high_resolution_clock::now();
 
+
+    static bool stop      = false;
+    static int counter    = 0;
+    counter = 0;
+    stop = false;
+
     auto start_time = clock();
 
     sim.run([&](ch_tick t)->bool {
+
 
         long int cycle = t/2;
 
@@ -796,10 +803,6 @@ bool Sphinx::simulate(std::string file_to_simulate)
         // if(cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
 
         // std::cout << "Cycle: " << std::dec << cycle << "\n";
-
-
-        static bool stop      = false;
-        static int counter    = 0;
 
         stop = ibus_driver(pipeline);
                dbus_driver(pipeline);
@@ -844,7 +847,6 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
     this->sim = ch_simulator(this->pipeline);
     this->unit_test = false;
     this->stats_sim_time = 0;
-
 
 
     auto start_time = clock();
@@ -924,6 +926,10 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
 
     // auto start_time = std::chrono::high_resolution_clock::now();
 
+    static bool stop      = false;
+    static int counter    = 0;
+    counter = 0;
+    stop = false;
     auto start_time = clock();
 
     sim.run([&](ch_tick t)->bool {
@@ -935,8 +941,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> 
 
         if(debug) std::cout << "Cycle: " << cycle << std::endl;
 
-        static bool stop      = false;
-        static int counter    = 0;
+
 
         stop = ibus_driver(pipeline, true, debugAddress);
                dbus_driver(pipeline);

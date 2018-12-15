@@ -37,18 +37,18 @@ struct ICACHE
 
 		#else
 
-			ch_print("****************");
+			// ch_print("****************");
 
 			ch_mem<ch_bit<LINE_BIT_SIZE>, INUM_LINES> data_cache;
 			ch_mem<ch_uint<32>          , INUM_LINES> tag_cache;
 			
 
 
-			ch_print("ITAG_BITS: {0}, INUM_LINES: {1}", ch_uint(ITAG_BITS), ch_uint(INUM_LINES));
+			// ch_print("ITAG_BITS: {0}, INUM_LINES: {1}", ch_uint(ITAG_BITS), ch_uint(INUM_LINES));
 
 			auto line_index  = ch_resize<INUM_BITS>(io.in_address.as_uint()    >> ILINE_BITS);
 			// auto curr_tag    = ch_resize<32>(io.in_address.as_uint()    >> IG_TAG_BITS) >> 20;
-			ch_uint<32> curr_tag    = io.in_address.as_uint() & ch_uint<32>(tag_mask);
+			ch_uint<32> curr_tag    = io.in_address.as_uint() & ch_uint<32>(ITAG_MASK);
 			auto data_offset = ch_resize<OFFSET_BITS>(io.in_address).as_uint() << 3;
 
 
@@ -59,10 +59,6 @@ struct ICACHE
 			auto cache_tag      = tag_cache.read(line_index);
 			ch_bool icache_miss = curr_tag != cache_tag;
 
-			__if(icache_miss)
-			{
-				ch_print("COMPARING: {0} with {1}, INDEX: {2}", curr_tag, tag_cache.read(line_index), line_index);
-			};
 
 			io.IBUS.out_address.valid = icache_miss;
 
@@ -82,7 +78,7 @@ struct ICACHE
 
 
 
-			ch_print("ADDRESS: {0}, instruction: {1}, DELAY: {2}", io.in_address, io.out_instruction, copying);
+			// ch_print("ADDRESS: {0}, instruction: {1}, DELAY: {2}", io.in_address, io.out_instruction, copying);
 
 
 
@@ -91,10 +87,10 @@ struct ICACHE
 
 
 
-			__if(icache_miss)
-			{
-				ch_print("writing {0} to {1}", curr_tag, line_index);
-			};
+			// __if(icache_miss)
+			// {
+			// 	ch_print("writing {0} to {1}", curr_tag, line_index);
+			// };
 
 
 
@@ -102,7 +98,7 @@ struct ICACHE
 			data_cache.write(line_index, data_to_write , copying);
 
 
-			ch_print("-----------------");
+			// ch_print("-----------------");
 
 		#endif
 
@@ -182,7 +178,7 @@ struct Fetch
 			};
 
 
-			ch_print("PC: {0}, JAL_reg: {1}, BR_reg: {2}, old: {3}, state: {4}, stall_reg: {5}", PC, JAL_reg, BR_reg, old, state, stall_reg);
+			// ch_print("PC: {0}, JAL_reg: {1}, BR_reg: {2}, old: {3}, state: {4}, stall_reg: {5}", PC, JAL_reg, BR_reg, old, state, stall_reg);
 
 		PC_to_use = ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp));
 
@@ -201,7 +197,7 @@ struct Fetch
 
 
 		ch_bit<32> temp_PC   = ch_sel((io.in_jal == JUMP) && !delay_reg, io.in_jal_dest, ch_sel((io.in_branch_dir == TAKEN) && !delay_reg, io.in_branch_dest, PC_to_use));
-		ch_print("in_jal_dest: {0}, in_branch_dest: {1}", io.in_jal_dest, io.in_branch_dest);
+		// ch_print("in_jal_dest: {0}, in_branch_dest: {1}", io.in_jal_dest, io.in_branch_dest);
 		// ch_bit<32> out_PC    = ch_sel(io.in_interrupt, io.in_interrupt_pc, temp_PC);
 		ch_bit<32> out_PC    = temp_PC;
 

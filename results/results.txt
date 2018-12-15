@@ -5,7 +5,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     269
 # CPI:                  1.33294
-# time to simulate:     33 milliseconds
+# time to simulate:     22 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-addi.hex	****************
@@ -14,7 +14,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     142
 # CPI:                  1.31743
-# time to simulate:     19 milliseconds
+# time to simulate:     14 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-and.hex	****************
@@ -23,7 +23,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     236
 # CPI:                  1.29265
-# time to simulate:     31 milliseconds
+# time to simulate:     26 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-andi.hex	****************
@@ -32,7 +32,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     92
 # CPI:                  1.25495
-# time to simulate:     14 milliseconds
+# time to simulate:     16 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-auipc.hex	****************
@@ -41,7 +41,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     44
 # CPI:                  1.37671
-# time to simulate:     3 milliseconds
+# time to simulate:     5 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-beq.hex	****************
@@ -50,7 +50,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     281
 # CPI:                  1.56809
-# time to simulate:     14 milliseconds
+# time to simulate:     22 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bge.hex	****************
@@ -59,7 +59,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     308
 # CPI:                  1.5636
-# time to simulate:     17 milliseconds
+# time to simulate:     22 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bgeu.hex	****************
@@ -68,7 +68,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     274
 # CPI:                  1.456
-# time to simulate:     33 milliseconds
+# time to simulate:     28 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-blt.hex	****************
@@ -77,7 +77,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     281
 # CPI:                  1.56809
-# time to simulate:     24 milliseconds
+# time to simulate:     15 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bltu.hex	****************
@@ -86,7 +86,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     264
 # CPI:                  1.47993
-# time to simulate:     24 milliseconds
+# time to simulate:     21 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bne.hex	****************
@@ -95,7 +95,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     264
 # CPI:                  1.51789
-# time to simulate:     15 milliseconds
+# time to simulate:     19 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-jal.hex	****************
@@ -104,7 +104,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     27
 # CPI:                  1.23899
-# time to simulate:     6 milliseconds
+# time to simulate:     3 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-jalr.hex	****************
@@ -113,7 +113,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     57
 # CPI:                  1.27642
-# time to simulate:     5 milliseconds
+# time to simulate:     6 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lb.hex	****************
@@ -122,7 +122,7 @@
 # of forwarding stalls: 3
 # of branch stalls:     125
 # CPI:                  1.2866
-# time to simulate:     14 milliseconds
+# time to simulate:     12 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lbu.hex	****************
@@ -140,7 +140,7 @@
 # of forwarding stalls: 3
 # of branch stalls:     125
 # CPI:                  1.27043
-# time to simulate:     16 milliseconds
+# time to simulate:     15 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lhu.hex	****************
@@ -149,7 +149,7 @@
 # of forwarding stalls: 3
 # of branch stalls:     159
 # CPI:                  1.35524
-# time to simulate:     17 milliseconds
+# time to simulate:     14 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lui.hex	****************
@@ -158,7 +158,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     49
 # CPI:                  1.35503
-# time to simulate:     6 milliseconds
+# time to simulate:     4 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lui.hex.hex	****************
@@ -167,7 +167,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     49
 # CPI:                  1.35503
-# time to simulate:     5 milliseconds
+# time to simulate:     10 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lw.hex	****************
@@ -176,7 +176,7 @@
 # of forwarding stalls: 3
 # of branch stalls:     176
 # CPI:                  1.40169
-# time to simulate:     30 milliseconds
+# time to simulate:     15 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-or.hex	****************
@@ -185,7 +185,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     236
 # CPI:                  1.29162
-# time to simulate:     28 milliseconds
+# time to simulate:     22 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-ori.hex	****************
@@ -194,7 +194,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     92
 # CPI:                  1.25061
-# time to simulate:     12 milliseconds
+# time to simulate:     10 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sb.hex	****************
@@ -203,7 +203,7 @@
 # of forwarding stalls: 2
 # of branch stalls:     259
 # CPI:                  1.37725
-# time to simulate:     28 milliseconds
+# time to simulate:     20 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sh.hex	****************
@@ -212,7 +212,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     225
 # CPI:                  1.28029
-# time to simulate:     27 milliseconds
+# time to simulate:     28 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-simple.hex	****************
@@ -221,7 +221,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     14
 # CPI:                  1.19531
-# time to simulate:     2 milliseconds
+# time to simulate:     3 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sll.hex	****************
@@ -230,7 +230,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     264
 # CPI:                  1.30454
-# time to simulate:     28 milliseconds
+# time to simulate:     26 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slli.hex	****************
@@ -248,7 +248,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     303
 # CPI:                  1.40051
-# time to simulate:     29 milliseconds
+# time to simulate:     24 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slti.hex	****************
@@ -257,7 +257,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     142
 # CPI:                  1.32075
-# time to simulate:     13 milliseconds
+# time to simulate:     15 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sltiu.hex	****************
@@ -266,7 +266,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     142
 # CPI:                  1.32075
-# time to simulate:     15 milliseconds
+# time to simulate:     19 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sltu.hex	****************
@@ -275,7 +275,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     303
 # CPI:                  1.40051
-# time to simulate:     22 milliseconds
+# time to simulate:     33 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sra.hex	****************
@@ -284,7 +284,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     267
 # CPI:                  1.29606
-# time to simulate:     25 milliseconds
+# time to simulate:     24 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srai.hex	****************
@@ -293,7 +293,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     176
 # CPI:                  1.3904
-# time to simulate:     17 milliseconds
+# time to simulate:     13 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srl.hex	****************
@@ -302,7 +302,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     284
 # CPI:                  1.32205
-# time to simulate:     31 milliseconds
+# time to simulate:     27 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srli.hex	****************
@@ -311,7 +311,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     159
 # CPI:                  1.34694
-# time to simulate:     14 milliseconds
+# time to simulate:     22 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sub.hex	****************
@@ -320,7 +320,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     249
 # CPI:                  1.31212
-# time to simulate:     23 milliseconds
+# time to simulate:     25 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sw.hex	****************
@@ -329,7 +329,7 @@
 # of forwarding stalls: 3
 # of branch stalls:     293
 # CPI:                  1.39309
-# time to simulate:     20 milliseconds
+# time to simulate:     24 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-xor.hex	****************
@@ -338,7 +338,7 @@
 # of forwarding stalls: 0
 # of branch stalls:     219
 # CPI:                  1.26651
-# time to simulate:     23 milliseconds
+# time to simulate:     21 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-xori.hex	****************
@@ -356,5 +356,5 @@
 # of forwarding stalls: 2786
 # of branch stalls:     117434
 # CPI:                  1.42791
-# time to simulate:     7547 milliseconds
+# time to simulate:     7034 milliseconds
 # GRADE:                N/A [NOT A UNIT TEST]

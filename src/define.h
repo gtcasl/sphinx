@@ -254,7 +254,7 @@
 #define OFFSET_BITS   (ILINE_BITS + 3)
 #define LINE_BIT_SIZE (ILINE_SIZE << 3)
 
-#define tag_mask      (((1<<ITAG_BITS) - 1) << ICACHE_BITS)
+#define ITAG_MASK      (((1<<ITAG_BITS) - 1) << ICACHE_BITS)
 
 #endif
 
