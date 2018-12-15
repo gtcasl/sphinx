@@ -9,8 +9,8 @@
 #define JAL_MEM
 
 #define ICACHE_ENABLE
-#define ILINE_BITS 7
-#define ICACHE_BITS 8
+#define ILINE_BITS 6
+#define ICACHE_BITS 9
 
 
 #endif

@@ -40,16 +40,19 @@ struct ICACHE
 			ch_print("****************");
 
 			ch_mem<ch_bit<LINE_BIT_SIZE>, INUM_LINES> data_cache;
-			ch_mem<ch_uint<ITAG_BITS>   , INUM_LINES> tag_cache;
+			ch_mem<ch_uint<32>          , INUM_LINES> tag_cache;
 			
 
 
 			ch_print("ITAG_BITS: {0}, INUM_LINES: {1}", ch_uint(ITAG_BITS), ch_uint(INUM_LINES));
 
-			auto line_index  = ch_resize<INUM_BITS>(io.in_address.as_uint()  >> ILINE_BITS);
-			auto curr_tag    = ch_resize<ITAG_BITS>(io.in_address.as_uint()   >> IG_TAG_BITS);
+			auto line_index  = ch_resize<INUM_BITS>(io.in_address.as_uint()    >> ILINE_BITS);
+			// auto curr_tag    = ch_resize<32>(io.in_address.as_uint()    >> IG_TAG_BITS) >> 20;
+			ch_uint<32> curr_tag    = io.in_address.as_uint() & ch_uint<32>(tag_mask);
 			auto data_offset = ch_resize<OFFSET_BITS>(io.in_address).as_uint() << 3;
 
+
+			
 
 			io.IBUS.out_address.data  = io.in_address;
 
@@ -72,7 +75,6 @@ struct ICACHE
 			ch_bit<LINE_BIT_SIZE> real_line = data_cache.read(line_index);
 			io.out_instruction              = ch_sel( !copying, ch_resize<32>(real_line >> data_offset), 0x0);
 
-			
 
 
 			ch_bit<LINE_BIT_SIZE> new_data      = (real_line << ch_uint(32)) | ch_pad<LINE_BIT_SIZE - 32>(io.IBUS.in_data.data);
@@ -83,13 +85,18 @@ struct ICACHE
 			ch_print("ADDRESS: {0}, instruction: {1}, DELAY: {2}", io.in_address, io.out_instruction, copying);
 
 
+
 			// ch_print("[0] {0}", data_to_write);
+
+
 
 
 			__if(icache_miss)
 			{
 				ch_print("writing {0} to {1}", curr_tag, line_index);
 			};
+
+
 
 			tag_cache.write(line_index , curr_tag      , icache_miss);
 			data_cache.write(line_index, data_to_write , copying);
