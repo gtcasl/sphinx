@@ -304,6 +304,16 @@ struct Pipeline
     d_e_register.io.in_fwd_stall = forwarding.io.out_fwd_stall;
 
 
+    #ifdef ICACHE_ENABLE
+
+    f_d_register.io.in_freeze = fetch.io.out_delay;
+    d_e_register.io.in_freeze = fetch.io.out_delay;
+    e_m_register.io.in_freeze = fetch.io.out_delay;
+    m_w_register.io.in_freeze = fetch.io.out_delay;
+
+    #endif
+
+
   }
 
   ch_module<Fetch> fetch;
@@ -362,6 +372,7 @@ class Sphinx
         int stats_fwd_stalls;
         int stats_branch_stalls;
         int debug_state;
+        int ibus_state;
         int debug_return;
         int debug_wait_num;
         int debug_inst_num;
@@ -373,7 +384,7 @@ class Sphinx
 
 Sphinx::Sphinx() : start_pc(0), curr_cycle(0), stop(true), unit_test(true), stats_static_inst(0), stats_dynamic_inst(-1),
                                                     stats_total_cycles(0), stats_fwd_stalls(0), stats_branch_stalls(0),
-                                                    debug_state(0), debug_return(0), debug_wait_num(0), debug_inst_num(0), debug_end_wait(0), debug_debugAddr(0)
+                                                    debug_state(0), ibus_state(0), debug_return(0), debug_wait_num(0), debug_inst_num(0), debug_end_wait(0), debug_debugAddr(0)
 {
     this->sim = ch_simulator(this->pipeline);
     this->results.open("../results/results.txt");
@@ -460,12 +471,69 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
         stop = false;
         curr_inst = 0xdeadbeef;
 
-        pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
-        new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
-        ram.getWord(new_PC, &curr_inst);
-        pipeline.io.IBUS.in_data.data      = curr_inst;
-        pipeline.io.IBUS.in_data.valid     = true;
-        pipeline.io.in_debug               = false;
+        #ifndef ICACHE_ENABLE
+
+            pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
+            new_PC                             = (unsigned) pipeline.io.IBUS.out_address.data;
+            ram.getWord(new_PC, &curr_inst);
+            pipeline.io.IBUS.in_data.data      = curr_inst;
+            pipeline.io.IBUS.in_data.valid     = true;
+            pipeline.io.in_debug               = false;
+
+        #else
+
+            static unsigned address = 0;
+            static unsigned min     = 0;
+            if (this->ibus_state == 0)
+            {
+                // std::cout << "IBUS STATE 0\n";
+                pipeline.io.IBUS.in_data.valid     = false;
+                pipeline.io.in_debug               = false;
+                pipeline.io.IBUS.in_data.data      = 0x0000000;
+                pipeline.io.IBUS.out_address.ready = true;
+
+                if (pipeline.io.IBUS.out_address.valid)
+                {
+                    this->ibus_state = 1;
+                    unsigned curr_add = (unsigned) pipeline.io.IBUS.out_address.data;
+                    address = (curr_add | (ILINE_SIZE - 1)) - 3; //
+
+                    min     = (curr_add | (ILINE_SIZE - 1)) - (ILINE_SIZE - 1);
+                }
+            } else
+            {
+                // std::cout << "IBUS STATE 1\n";
+                // std::cout << "ADDRESS: " << std::hex << address << " < min: " << std::hex << min << "? ";
+                if ((address < min) || ((min == 0) && (address == 0xfffffffc)))
+                {
+                    // std::cout << "Y \n";
+                    this->ibus_state = 0;
+                    pipeline.io.IBUS.in_data.valid     = false;
+                    pipeline.io.in_debug               = false;
+                    pipeline.io.IBUS.in_data.data      = 0x0000000;
+                    pipeline.io.IBUS.out_address.ready = true;
+                    address = 0;
+                    // std::cout << "EXITING MOVE\n";
+                }
+                else
+                {
+                    // std::cout << "N \n";
+                    pipeline.io.IBUS.in_data.valid     = true;
+
+                    // std::cout << "getting address: " << std::hex << address << "\n";
+
+                    ram.getWord(address, &curr_inst);
+                    pipeline.io.IBUS.in_data.data      = curr_inst;
+                    pipeline.io.IBUS.out_address.ready = true;
+
+                    // std::cout << "Sent number: " << std::hex << address << "\n";
+
+                    address -= 4;
+                }
+            }
+
+
+        #endif
     }
     else
     {
@@ -485,8 +553,8 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
                 // std::cout << "REACHED: " << std::hex << new_PC << "\n";
                 this->debug_state = 1;
                 this->debug_debugAddr = new_PC;
-                std::cout <<  RED << "BREAKPOINT REACHED  -  " << DEFAULT "Cycle: " << std::dec << this->stats_total_cycles << "\n";
-                std::cout << "Register state at instructtion address: 0x" << std::hex << new_PC << "\n";
+                // std::cout <<  RED << "BREAKPOINT REACHED  -  " << DEFAULT "Cycle: " << std::dec << this->stats_total_cycles << "\n";
+                // std::cout << "Register state at instructtion address: 0x" << std::hex << new_PC << "\n";
             }
             ram.getWord(new_PC, &curr_inst);
             pipeline.io.in_debug = false;
@@ -553,8 +621,19 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
     if(debug) std::cout << "new_PC: " << new_PC << std::endl;
     // if(this->curr_cycle%1000 == 0) std::cout << "new_PC: " << std::hex << new_PC << "\n";
 
+
+    #ifdef ICACHE_ENABLE
+
+        new_PC = (unsigned) pipeline.io.IBUS.out_address.data;
+        ram.getWord(new_PC, &curr_inst);
+
+    #endif
+
+
+    // std::cout << "new_PC: " << std::hex << new_PC << "\tcurr_inst: " << std::hex << curr_inst << "\n";
+
     // std::cout << "MAIN_PC: " << std::hex << new_PC << "\t" << "MAIN_isnt: " << curr_inst << "\n";
-    if ((((unsigned int)curr_inst) != 0) && (((unsigned int)curr_inst) != 0xffffffff))
+    if (((((unsigned int)curr_inst) != 0) && (((unsigned int)curr_inst) != 0xffffffff)) || (this->ibus_state == 1) )
     {
         ++stats_dynamic_inst;
         if(debug) std::cout << "new_PC: " << new_PC << "  inst_going_in: " << std::hex << curr_inst << std::endl;
@@ -569,13 +648,13 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
    ////////////////////// STATS //////////////////////
 
 
-    // JUST FOR DEBUGGING CLOCK
-    if ((((unsigned int)new_PC) == 0x8000043c) && (!this->unit_test))
-    {
-        // CHANGES CLOCK
-        uint32_t data = 0x1ff45678; 
-        ram.writeWord(0xf00fff10, &data);
-    }
+    // // JUST FOR DEBUGGING CLOCK
+    // if ((((unsigned int)new_PC) == 0x8000043c) && (!this->unit_test))
+    // {
+    //     // CHANGES CLOCK
+    //     uint32_t data = 0x1ff45678; 
+    //     ram.writeWord(0xf00fff10, &data);
+    // }
 
     if ((((unsigned int)new_PC) == 0x80000118) && (!this->unit_test))
     {
@@ -691,6 +770,7 @@ void Sphinx::jtag_driver(ch_device<Pipeline> & pipeline)
 bool Sphinx::simulate(std::string file_to_simulate)
 {
 
+    this->sim = ch_simulator(this->pipeline);
     this->unit_test = true;
     if (file_to_simulate == "../tests/dhrystoneO3.hex")
     {
@@ -761,7 +841,7 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
     // auto start_time = std::chrono::high_resolution_clock::now();
 
 
-
+    this->sim = ch_simulator(this->pipeline);
     this->unit_test = false;
     this->stats_sim_time = 0;
 
@@ -830,6 +910,7 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
 bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> debugAddress)
 {
 
+    this->sim = ch_simulator(this->pipeline);
     this->unit_test = true;
     if (file_to_simulate == "../tests/dhrystoneO3.hex")
     {

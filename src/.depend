@@ -1,5 +1,43 @@
-Sphinx.o: Sphinx.cpp Sphinx.h fetch.h define.h config.h buses.h \
- f_d_register.h decode.h d_e_register.h execute.h e_m_register.h memory.h \
- m_w_register.h write_back.h forwarding.h interrupt_handler.h \
- csr_handler.h ram.h JTAG/jtag.h JTAG/../define.h JTAG/../buses.h \
- JTAG/jtag_define.h parse.h
+Sphinx.o: Sphinx.cpp Sphinx.h \
+ /Users/fareselsabbagh/Documents/cash/include/cash.h \
+ /Users/fareselsabbagh/Documents/cash/include/literals.h \
+ /Users/fareselsabbagh/Documents/cash/include/scuint.h \
+ /Users/fareselsabbagh/Documents/cash/include/scint.h \
+ /Users/fareselsabbagh/Documents/cash/include/scbit.h \
+ /Users/fareselsabbagh/Documents/cash/include/system.h \
+ /Users/fareselsabbagh/Documents/cash/include/traits.h \
+ /Users/fareselsabbagh/Documents/cash/include/bitvector.h \
+ /Users/fareselsabbagh/Documents/cash/include/bv.h \
+ /Users/fareselsabbagh/Documents/cash/include/common.h \
+ /Users/fareselsabbagh/Documents/cash/include/macros.h \
+ /Users/fareselsabbagh/Documents/cash/include/utils.h \
+ /Users/fareselsabbagh/Documents/cash/include/logic.h \
+ /Users/fareselsabbagh/Documents/cash/include/lnode.h \
+ /Users/fareselsabbagh/Documents/cash/include/bit.h \
+ /Users/fareselsabbagh/Documents/cash/include/int.h \
+ /Users/fareselsabbagh/Documents/cash/include/uint.h \
+ /Users/fareselsabbagh/Documents/cash/include/reg.h \
+ /Users/fareselsabbagh/Documents/cash/include/if.h \
+ /Users/fareselsabbagh/Documents/cash/include/mem.h \
+ /Users/fareselsabbagh/Documents/cash/include/vec.h \
+ /Users/fareselsabbagh/Documents/cash/include/ioport.h \
+ /Users/fareselsabbagh/Documents/cash/include/enum.h \
+ /Users/fareselsabbagh/Documents/cash/include/union.h \
+ /Users/fareselsabbagh/Documents/cash/include/struct.h \
+ /Users/fareselsabbagh/Documents/cash/include/inout.h \
+ /Users/fareselsabbagh/Documents/cash/include/module.h \
+ /Users/fareselsabbagh/Documents/cash/include/device.h \
+ /Users/fareselsabbagh/Documents/cash/include/select.h \
+ /Users/fareselsabbagh/Documents/cash/include/switch.h \
+ /Users/fareselsabbagh/Documents/cash/include/assertion.h \
+ /Users/fareselsabbagh/Documents/cash/include/simulator.h \
+ /Users/fareselsabbagh/Documents/cash/include/tracer.h \
+ /Users/fareselsabbagh/Documents/cash/include/verilog.h \
+ /Users/fareselsabbagh/Documents/cash/include/firrtl.h \
+ /Users/fareselsabbagh/Documents/cash/include/udf.h \
+ /Users/fareselsabbagh/Documents/cash/include/htl/queue.h \
+ /Users/fareselsabbagh/Documents/cash/include/htl/decoupled.h fetch.h \
+ define.h config.h buses.h f_d_register.h decode.h d_e_register.h \
+ execute.h e_m_register.h memory.h m_w_register.h write_back.h \
+ forwarding.h interrupt_handler.h csr_handler.h ram.h JTAG/jtag.h \
+ JTAG/../define.h JTAG/../buses.h JTAG/jtag_define.h parse.h

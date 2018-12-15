@@ -57,7 +57,6 @@ struct Execute
 		// ch_print("****************");		
 
 
-
 		
 
 		ch_bool which_in2  = io.in_rs2_src == RS2_IMMED_int;

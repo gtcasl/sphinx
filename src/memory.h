@@ -37,8 +37,8 @@ struct Cache
 		ch_bool read_word_enable  = (io.in_mem_read.as_uint()  <  NO_MEM_READ_int);
 
 		ch_bool write_word_enable = (io.in_mem_write.as_uint() == SW_MEM_WRITE_int);
-		ch_bool write_byte_enable = (io.in_mem_write.as_uint() == SB_MEM_WRITE_int);
-		ch_bool write_half_enable = (io.in_mem_write.as_uint() == SH_MEM_WRITE_int);
+		// ch_bool write_byte_enable = (io.in_mem_write.as_uint() == SB_MEM_WRITE_int);
+		// ch_bool write_half_enable = (io.in_mem_write.as_uint() == SH_MEM_WRITE_int);
 
 		ch_bool no_rw_enable      = (io.in_mem_read.as_uint()  == NO_MEM_READ_int) && (io.in_mem_write.as_uint() == NO_MEM_WRITE_int);
 		
@@ -59,7 +59,7 @@ struct Cache
 				
 				// LB sign extend
 				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
-        mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_resize<32>(byte));
+        		mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_resize<32>(byte));
 			}
 			__case(1)
 			{
@@ -68,7 +68,7 @@ struct Cache
 				ch_bit<16> zeros(ZERO);
 				
 				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
-        mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_resize<32>(half));
+        		mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_resize<32>(half));
 			}
 			__case(2)
 			{
@@ -81,7 +81,7 @@ struct Cache
 				ch_bit<24> zeros(ZERO);
 				// LBU
 				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
-        mem_result = ch_resize<32>(byte);
+        		mem_result = ch_resize<32>(byte);
 			}
 			__case(5)
 			{
@@ -89,7 +89,7 @@ struct Cache
 
 				// LHU
 				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
-        mem_result = ch_resize<32>(half);
+        		mem_result = ch_resize<32>(half);
 			}
 			__default
 			{

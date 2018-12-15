@@ -44,7 +44,9 @@ struct D_E_Register
 		__in(ch_bit<32>) in_curr_PC,
 		__in(ch_bit<1>)  in_jal,
 		__in(ch_bit<32>) in_jal_offset,
-
+		#ifdef ICACHE_ENABLE
+		__in(ch_bool)     in_freeze,
+		#endif
 
          // (ch_flip_io<decode_io>) in,
 		__out(ch_bit<12>) out_csr_address, // done
@@ -133,6 +135,12 @@ struct D_E_Register
 		io.out_jal_offset  = jal_offset;
 		io.out_curr_PC     = curr_PC;
 
+		#ifdef ICACHE_ENABLE
+
+		__if(!io.in_freeze)
+		{
+
+		#endif
 
 		rd->next          = ch_sel(stalling, CH_ZERO(5)  , io.in_rd);
 		rs1->next         = ch_sel(stalling, CH_ZERO(5)  , io.in_rs1);
@@ -156,6 +164,11 @@ struct D_E_Register
 		jal_offset->next  = ch_sel(stalling, CH_ZERO(32) , io.in_jal_offset);
 		curr_PC->next     = ch_sel(stalling, CH_ZERO(32) , io.in_curr_PC);
 
+		#ifdef ICACHE_ENABLE
+
+		};
+
+		#endif
 
 	}
 };

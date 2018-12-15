@@ -137,9 +137,9 @@ void loadHexImpl(std::string path,RAM* mem) {
         std::cout << path << " not found" << std::endl;
     }
     //Preload 0x0 <-> 0x80000000 jumps
-    ((uint32_t*)mem->get(0))[0] = 0xf1401073;
-
     ((uint32_t*)mem->get(0))[1] = 0xf1401073;
+
+    // ((uint32_t*)mem->get(0))[1] = 0xf1401073;
     ((uint32_t*)mem->get(0))[2] = 0x30101073;
 
     ((uint32_t*)mem->get(0))[3] = 0x800000b7;

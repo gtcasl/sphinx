@@ -15,7 +15,9 @@ struct M_W_Register
 		__in(ch_bit<5>)   in_rs1,
 		__in(ch_bit<5>)   in_rs2,
 		__in(ch_bit<32>)  in_PC_next,
-
+		#ifdef ICACHE_ENABLE
+		__in(ch_bool)     in_freeze,
+		#endif
 		#ifdef BRANCH_WB
 		__in(ch_bit<1>)   in_branch_dir,
 		__in(ch_bit<32>)  in_branch_dest,
@@ -60,6 +62,14 @@ struct M_W_Register
 		io.out_branch_dest = branch_dest;
 		#endif
 		
+
+		#ifdef ICACHE_ENABLE
+
+		__if(!io.in_freeze)
+		{
+
+		#endif
+
 		alu_result->next   = io.in_alu_result;
 		mem_result->next   = io.in_mem_result;
 		rd->next           = io.in_rd;
@@ -72,6 +82,11 @@ struct M_W_Register
 		branch_dest->next  = io.in_branch_dest;
 		#endif
 
+		#ifdef ICACHE_ENABLE
+
+		};
+
+		#endif
 
 	}
 };

@@ -239,6 +239,23 @@
 #define S_STATE_int 4
 
 
+// ICACHE
+#define ICACHE_NORMAL TRUE
+#define ICACHE_MISS   FALSE
+
+#ifdef  ICACHE_ENABLE
+
+#define ILINE_SIZE    (1<<ILINE_BITS)
+#define ICACHE_SIZE   (1<<ICACHE_BITS)
+#define INUM_LINES    (1<<(ICACHE_BITS - ILINE_BITS))
+#define INUM_BITS     (ICACHE_BITS - ILINE_BITS)
+#define IG_TAG_BITS   (ICACHE_BITS)
+#define ITAG_BITS     (32 - ICACHE_BITS)
+#define OFFSET_BITS   (ILINE_BITS + 3)
+#define LINE_BIT_SIZE (ILINE_SIZE << 3)
+
+#endif
+
 #define NUM_TESTS 40
 
 #include <chrono> 

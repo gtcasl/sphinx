@@ -28,7 +28,9 @@ struct E_M_Register
 		__in(ch_bit<1>)   in_jal,
 		__in(ch_bit<32>)  in_jal_dest,
 		#endif
-
+		#ifdef ICACHE_ENABLE
+		__in(ch_bool)     in_freeze,
+		#endif
 		__out(ch_bit<12>) out_csr_address,
 		__out(ch_bit<1>)  out_is_csr,
 		__out(ch_bit<32>) out_csr_result,
@@ -96,6 +98,14 @@ struct E_M_Register
 		io.out_jal_dest      = jal_dest;
 		#endif
 		
+
+		#ifdef ICACHE_ENABLE
+
+		__if(!io.in_freeze)
+		{
+
+		#endif
+
 		alu_result->next    = io.in_alu_result;
 		rd->next            = io.in_rd;
 		rs1->next           = io.in_rs1;
@@ -116,5 +126,12 @@ struct E_M_Register
 		jal->next           = io.in_jal;
 		jal_dest->next      = io.in_jal_dest;
 		#endif
+
+		#ifdef ICACHE_ENABLE
+
+		};
+
+		#endif
+
 	}
 };

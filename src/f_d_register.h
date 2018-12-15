@@ -15,10 +15,14 @@ struct F_D_Register
 		__in(ch_bit<1>)   in_branch_stall,
 		__in(ch_bit<1>)   in_branch_stall_exe,
 		__in(ch_bit<1>)   in_fwd_stall,
+		#ifdef ICACHE_ENABLE
+		__in(ch_bool)     in_freeze,
+		#endif
 		
 		__out(ch_bit<32>) out_instruction,
 		__out(ch_bit<32>) out_curr_PC
 		// __out(ch_bit<32>) out_PC_next
+
 
 	);
 
@@ -36,17 +40,15 @@ struct F_D_Register
 		// io.out_PC_next     = PC_next;
 		io.out_curr_PC     = curr_PC;
 
+		#ifdef ICACHE_ENABLE
+		__if((io.in_fwd_stall == NO_STALL) && !io.in_freeze)
+		#else
 		__if(io.in_fwd_stall == NO_STALL)
+		#endif
 		{
 			instruction->next  = io.in_instruction;
 			// PC_next->next      = io.in_PC_next;
 			curr_PC->next      = io.in_curr_PC;
-		} __else
-		{
-			// ch_print("STALLING F_D_Register");
-			instruction->next = instruction.as_uint();
-			// PC_next->next     = PC_next.as_uint();
-			curr_PC->next     = curr_PC.as_uint();
 		};
 
 
