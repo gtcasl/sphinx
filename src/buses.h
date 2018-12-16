@@ -19,10 +19,11 @@ __inout(IBUS_io, (
 
 
 __inout(DBUS_io, (
+	__out(ch_bool)          out_miss,
 	(ch_enq_io<ch_bit<32>>) in_data,
 	(ch_deq_io<ch_bit<32>>) out_data,
 	(ch_deq_io<ch_bit<32>>) out_address,
-  (ch_deq_io<ch_bit<2>>)  out_control
+    (ch_deq_io<ch_bit<2 >>)  out_control
 ));
 
 

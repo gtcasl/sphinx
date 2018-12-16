@@ -15,7 +15,7 @@ struct M_W_Register
 		__in(ch_bit<5>)   in_rs1,
 		__in(ch_bit<5>)   in_rs2,
 		__in(ch_bit<32>)  in_PC_next,
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 		__in(ch_bool)     in_freeze,
 		#endif
 		#ifdef BRANCH_WB
@@ -63,7 +63,7 @@ struct M_W_Register
 		#endif
 		
 
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 
 		__if(!io.in_freeze)
 		{
@@ -82,7 +82,7 @@ struct M_W_Register
 		branch_dest->next  = io.in_branch_dest;
 		#endif
 
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 
 		};
 

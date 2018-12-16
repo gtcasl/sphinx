@@ -6,16 +6,149 @@ using namespace ch::logic;
 using namespace ch::system;
 
 
+struct DCACHE
+{
+
+	__io(
+		(DBUS_io) DBUS,
+		__in(ch_bit<2> )  in_control,
+		__in(ch_bit<32>)  in_data,
+		__in(ch_bool   )  in_data_valid,
+
+		__in(ch_bool   )  in_data_ready,
+		__in(ch_bit<32>)  in_address,
+		__in(ch_bool   )  in_address_valid,
+
+
+		__out(ch_bit<32>) out_data,
+		__out(ch_bool)    out_delay
+	);
+
+	void describe()
+	{
+
+		
+
+		#ifndef DCACHE_ENABLE
+
+			io.DBUS.out_address.data  = io.in_address;
+			io.DBUS.out_address.valid = io.in_address_valid;
+			
+			io.DBUS.out_control.data  = io.in_control;
+			io.DBUS.out_control.valid = TRUE;
+
+			io.DBUS.out_data.data     = io.in_data;
+			io.DBUS.out_data.valid    = io.in_data_valid;
+
+
+			io.DBUS.in_data.ready     = io.in_data_ready;
+			io.out_data               = io.DBUS.in_data.data;
+
+			io.out_delay              = FALSE;
+			io.DBUS.out_miss          = FALSE;
+
+		#else
+
+			// ch_print("****************");
+			ch_reg<ch_bool> first_cycle(true);
+			first_cycle->next = FALSE;
+
+			// ch_print("ADDRESS: {0} <- {1}", io.in_address, io.in_address_valid);
+
+			ch_mem<ch_bit<DLINE_BIT_SIZE>, DNUM_LINES> data_cache;
+			ch_mem<ch_uint<32>           , DNUM_LINES> tag_cache;
+			
+
+			io.DBUS.out_address.data  = io.in_address;
+
+
+			ch_print("DCACHE OUTPUT ADDRESS: {0}", io.in_address);
+
+			// ch_print("ITAG_BITS: {0}, INUM_LINES: {1}", ch_uint(ITAG_BITS), ch_uint(INUM_LINES));
+
+			auto line_index  = ch_resize<DNUM_BITS>(io.in_address.as_uint()    >> DLINE_BITS);
+			// auto curr_tag    = ch_resize<32>(io.in_address.as_uint()    >> IG_TAG_BITS) >> 20;
+			ch_uint<32> curr_tag    = io.in_address.as_uint() & ch_uint<32>(DTAG_MASK);
+			auto data_offset = ch_resize<DOFFSET_BITS>(io.in_address).as_uint() << 3;
+
+
+	
+
+
+			io.DBUS.out_data.data     = io.in_data;
+
+			auto cache_tag      = tag_cache.read(line_index);
+			ch_bool dcache_miss = (curr_tag != cache_tag) && !first_cycle && io.in_address_valid;
+
+			ch_print("tags: {0} != {1}", curr_tag, cache_tag);
+
+			io.DBUS.out_miss = dcache_miss;
+			
+
+			io.DBUS.out_address.valid = io.in_address_valid;
+
+			ch_reg<ch_bool> in_data_validity(false);
+
+			in_data_validity->next = (io.DBUS.in_data.valid);
+
+			ch_bool copying           = dcache_miss || (io.DBUS.in_data.valid);
+
+			io.out_delay              = copying || in_data_validity;
+
+
+			io.DBUS.in_data.ready     = TRUE;
+
+			ch_bit<DLINE_BIT_SIZE> real_line = data_cache.read(line_index);
+			io.out_data                      = ch_sel( !copying, ch_resize<32>(real_line >> data_offset), 0x0);
+
+			ch_print("dcache_miss {1}, actul_copying: {2}, out_delay: {0}", copying, dcache_miss, io.DBUS.in_data.valid);
+
+			ch_bit<DLINE_BIT_SIZE> new_data      = (real_line << ch_uint(32)) | ch_pad<DLINE_BIT_SIZE - 32>(io.DBUS.in_data.data);
+
+
+			ch_bit<DLINE_BIT_SIZE> data_to_write = ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), ch_sel( io.in_control == DBUS_WRITE_int, new_data , new_data));
+
+
+
+			tag_cache.write(line_index , curr_tag      , dcache_miss);
+			data_cache.write(line_index, data_to_write , copying);
+
+			ch_print("[0] {0}", data_to_write);
+
+
+
+
+			// __if(dcache_miss)
+			// {
+			// 	ch_print("writing {0} to {1}", curr_tag, line_index);
+			// };
+
+			
+			io.DBUS.out_control.data  = io.in_control;
+			io.DBUS.out_control.valid = TRUE;
+
+			io.DBUS.out_data.valid    = io.in_data_valid;
+
+
+			io.DBUS.in_data.ready     = io.in_data_ready;
+
+		#endif
+
+	}
+
+};
+
 struct Cache
 {
 	__io(
 		(DBUS_io) DBUS,
 
-		__in(ch_bit<32>) in_address,
-		__in(ch_bit<3>) in_mem_read,
-		__in(ch_bit<3>) in_mem_write,
-		__in(ch_bit<32>) in_data,
+		__in(ch_bit<32>)  in_address,
+		__in(ch_bit<3>)   in_mem_read,
+		__in(ch_bit<3>)   in_mem_write,
+		__in(ch_bit<32>)  in_data,
 
+		__out(ch_bool)    out_delay,
 		__out(ch_bit<32>) out_data
 	);
 
@@ -30,11 +163,16 @@ struct Cache
 
 
 		//  READING MEMORY
-		io.DBUS.out_address.data  = io.in_address;
-		io.DBUS.out_address.valid = (io.in_mem_read.as_uint() < NO_MEM_WRITE_int) || (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
 
+		dcache.io.DBUS(io.DBUS);
+		io.out_delay = dcache.io.out_delay;
 
-		ch_bool read_word_enable  = (io.in_mem_read.as_uint()  <  NO_MEM_READ_int);
+		dcache.io.in_address       = io.in_address;
+
+		// dcache.io.in_address_valid = (io.in_mem_read.as_uint() < NO_MEM_READ_int) || (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
+		dcache.io.in_address_valid = io.in_mem_read.as_uint() == LW_MEM_READ_int;
+
+		ch_bool read_word_enable  = (io.in_mem_read.as_uint()  ==  NO_MEM_READ_int);
 
 		ch_bool write_word_enable = (io.in_mem_write.as_uint() == SW_MEM_WRITE_int);
 		// ch_bool write_byte_enable = (io.in_mem_write.as_uint() == SB_MEM_WRITE_int);
@@ -42,12 +180,14 @@ struct Cache
 
 		ch_bool no_rw_enable      = (io.in_mem_read.as_uint()  == NO_MEM_READ_int) && (io.in_mem_write.as_uint() == NO_MEM_WRITE_int);
 		
-		io.DBUS.out_control.data  = ch_sel(read_word_enable, DBUS_READ,
+		dcache.io.in_control      = ch_sel(read_word_enable, DBUS_READ,
 			                               ch_sel(write_word_enable, DBUS_WRITE,
 			                                      ch_sel(no_rw_enable, DBUS_NONE, DBUS_RW)));
-		io.DBUS.out_control.valid = TRUE;
+		
 
-		io.DBUS.in_data.ready     = read_word_enable || (!no_rw_enable && !write_word_enable);
+		dcache.io.in_data_ready   = read_word_enable || (!no_rw_enable && !write_word_enable);
+
+		ch_print("LOADED DATA: {0} <- {1}", dcache.io.out_data, io.in_address);
 
 
 		ch_bit<32> mem_result;
@@ -58,7 +198,7 @@ struct Cache
 				ch_bit<24> zeros(ZERO);
 				
 				// LB sign extend
-				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
+				ch_bit<8> byte = ch_slice<8>(dcache.io.out_data);
         		mem_result = ch_sel(byte[7] == 1, ch_cat(ones, byte), ch_resize<32>(byte));
 			}
 			__case(1)
@@ -67,20 +207,20 @@ struct Cache
 				ch_bit<16> ones(ONES_16BITS);
 				ch_bit<16> zeros(ZERO);
 				
-				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
+				ch_bit<16> half = ch_slice<16>(dcache.io.out_data);
         		mem_result = ch_sel(half[15] == 1, ch_cat(ones, half), ch_resize<32>(half));
 			}
 			__case(2)
 			{
 				// LW
-				mem_result = io.DBUS.in_data.data;
+				mem_result = dcache.io.out_data;
 				// ch_print("Reading Addr: {0}, Value: {1}", io.in_address, mem_result);
 			}
 			__case(4)
 			{
 				ch_bit<24> zeros(ZERO);
 				// LBU
-				ch_bit<8> byte = ch_slice<8>(io.DBUS.in_data.data);
+				ch_bit<8> byte = ch_slice<8>(dcache.io.out_data);
         		mem_result = ch_resize<32>(byte);
 			}
 			__case(5)
@@ -88,7 +228,7 @@ struct Cache
 				ch_bit<16> zeros(0);
 
 				// LHU
-				ch_bit<16> half = ch_slice<16>(io.DBUS.in_data.data);
+				ch_bit<16> half = ch_slice<16>(dcache.io.out_data);
         		mem_result = ch_resize<32>(half);
 			}
 			__default
@@ -98,54 +238,14 @@ struct Cache
 
 		io.out_data = mem_result;
 
-		// ch_bit<24> writing_address(0);
-		// ch_bit<32> writing_data(0);
-		// ch_bool should_write(false);
 
-		// __switch(io.in_mem_write.as_uint())
-		// 	__case(0)
-		// 	{
-		// 		// SB
-		// 		ch_bit<24> zeros(0);
+		dcache.io.in_data       = io.in_data;
+		dcache.io.in_data_valid = (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
 
-		// 		writing_data    = ch_cat(zeros, ch_slice<8>(io.in_data)) | io.DBUS.in_data.data;
-		// 		writing_address = ch_slice<24>(io.in_address); 
-		// 		should_write    = TRUE;       
-
-		// 	}
-		// 	__case(1)
-		// 	{
-		// 		// SH
-		// 		ch_bit<16> zeros(0);
-				
-		// 		writing_data    = ch_cat(zeros, ch_slice<16>(io.in_data)) | io.DBUS.in_data.data;
-		// 		writing_address = ch_slice<24>(io.in_address);
-		// 		should_write    = TRUE;
-				
-
-		// 	}
-		// 	__case(2)
-		// 	{
-		// 		// SW
-				
-		// 		writing_data    = io.in_data;
-		// 		writing_address = ch_slice<24>(io.in_address);
-		// 		should_write    = TRUE;;
-
-		// 		ch_print("Storing in address: {0}, value: {1}", ch_slice<24>(io.in_address), io.in_data);
-		// 		ch_print("!!!!!!!!!!WARNING");
-		// 	}
-		// 	__default
-		// 	{
-		// 		should_write = FALSE;
-		// 		ch_print("$$$$$$$$$$$WARNING");
-		// 	};
-
-
-		io.DBUS.out_data.data     = io.in_data;
-		io.DBUS.out_data.valid    = (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
 
 	}
+
+	ch_module<DCACHE> dcache;
 };
 
 
@@ -180,7 +280,8 @@ struct Memory
 		#ifdef BRANCH_WB
 		__out(ch_bit<1>)  out_branch_stall,
 		#endif
-		__out(ch_bit<32>)   out_PC_next
+		__out(ch_bool)    out_delay,  
+		__out(ch_bit<32>) out_PC_next
 	);
 
 	void describe()
@@ -190,6 +291,7 @@ struct Memory
 		// ch_print("MEMORY");
 		// ch_print("****************");		
 
+		ch_print("CURR PC: {0}", io.in_curr_PC);
 
 		// ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3}, mem_write: {4}, mem_read: {5}", io.in_rd, io.in_alu_result, io.out_mem_result, io.in_rd2, io.in_mem_write, io.in_mem_read);
 
@@ -200,7 +302,7 @@ struct Memory
 		cache.io.in_data = io.in_rd2;
 
 
-
+		io.out_delay = cache.io.out_delay;
 
 		io.out_mem_result = cache.io.out_data;
 

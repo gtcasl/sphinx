@@ -44,7 +44,7 @@ struct D_E_Register
 		__in(ch_bit<32>) in_curr_PC,
 		__in(ch_bit<1>)  in_jal,
 		__in(ch_bit<32>) in_jal_offset,
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 		__in(ch_bool)     in_freeze,
 		#endif
 
@@ -135,7 +135,7 @@ struct D_E_Register
 		io.out_jal_offset  = jal_offset;
 		io.out_curr_PC     = curr_PC;
 
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 
 		__if(!io.in_freeze)
 		{
@@ -164,7 +164,7 @@ struct D_E_Register
 		jal_offset->next  = ch_sel(stalling, CH_ZERO(32) , io.in_jal_offset);
 		curr_PC->next     = ch_sel(stalling, CH_ZERO(32) , io.in_curr_PC);
 
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 
 		};
 

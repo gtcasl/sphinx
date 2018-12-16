@@ -114,6 +114,7 @@ struct Fetch
 		(IBUS_io) IBUS,
 
 		__in(ch_bit<1>)   in_branch_dir,
+		__in(ch_bool)     in_freeze,
 		__in(ch_bit<32>)  in_branch_dest,
 		__in(ch_bit<1>)   in_branch_stall,
 		__in(ch_bit<1>)   in_fwd_stall,
@@ -177,26 +178,30 @@ struct Fetch
 				PC_to_use_temp = ch_bit<32>(0);
 			};
 
-
-			// ch_print("PC: {0}, JAL_reg: {1}, BR_reg: {2}, old: {3}, state: {4}, stall_reg: {5}", PC, JAL_reg, BR_reg, old, state, stall_reg);
-
-		PC_to_use = ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp));
-
-
 		icache.io.IBUS(io.IBUS);
 
 		io.out_delay       = icache.io.out_delay;
 		ch_bool delay      = (icache.io.out_delay);
+			// ch_print("PC: {0}, JAL_reg: {1}, BR_reg: {2}, old: {3}, state: {4}, stall_reg: {5}", PC, JAL_reg, BR_reg, old, state, stall_reg);
+
+		PC_to_use =  ch_sel(delay_reg && !(delay || io.in_freeze), old, ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp)));
+
+
+
 		
-		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL) || (io.in_branch_stall_exe) || (io.in_interrupt) || delay;
+		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL) || (io.in_branch_stall_exe) || (io.in_interrupt) || delay || io.in_freeze;
 		stall_reg->next    = stall;
-		delay_reg->next    = delay;
+		delay_reg->next    = delay || io.in_freeze;
+
+		// ch_print("FETCH STALL : {0}, DELAY: {1}, FREEZE: {2}", stall, delay, io.in_freeze);
 
 		io.out_instruction = ch_sel(stall, CH_ZERO(32), icache.io.out_instruction);
 
 
 
 		ch_bit<32> temp_PC   = ch_sel((io.in_jal == JUMP) && !delay_reg, io.in_jal_dest, ch_sel((io.in_branch_dir == TAKEN) && !delay_reg, io.in_branch_dest, PC_to_use));
+
+
 		// ch_print("in_jal_dest: {0}, in_branch_dest: {1}", io.in_jal_dest, io.in_branch_dest);
 		// ch_bit<32> out_PC    = ch_sel(io.in_interrupt, io.in_interrupt_pc, temp_PC);
 		ch_bit<32> out_PC    = temp_PC;
@@ -219,7 +224,9 @@ struct Fetch
 		prev_debug->next = io.in_debug;
 		// PC->next       = ch_sel(stall, out_PC.as_int(), pc_next.as_int());
 
-		
+
+		ch_print("actual PC: {1}, old: {0}", old, out_PC);
+
 		// PC->next = ch_sel(stall, out_PC, PC_to_use);
 
 		// ch_print("Inst_in: {0}", io.IBUS.in_data.data);

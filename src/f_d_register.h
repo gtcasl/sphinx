@@ -15,7 +15,7 @@ struct F_D_Register
 		__in(ch_bit<1>)   in_branch_stall,
 		__in(ch_bit<1>)   in_branch_stall_exe,
 		__in(ch_bit<1>)   in_fwd_stall,
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 		__in(ch_bool)     in_freeze,
 		#endif
 		
@@ -40,7 +40,7 @@ struct F_D_Register
 		// io.out_PC_next     = PC_next;
 		io.out_curr_PC     = curr_PC;
 
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 		__if((io.in_fwd_stall == NO_STALL) && !io.in_freeze)
 		#else
 		__if(io.in_fwd_stall == NO_STALL)

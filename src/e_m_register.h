@@ -28,7 +28,7 @@ struct E_M_Register
 		__in(ch_bit<1>)   in_jal,
 		__in(ch_bit<32>)  in_jal_dest,
 		#endif
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 		__in(ch_bool)     in_freeze,
 		#endif
 		__out(ch_bit<12>) out_csr_address,
@@ -99,7 +99,7 @@ struct E_M_Register
 		#endif
 		
 
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 
 		__if(!io.in_freeze)
 		{
@@ -127,7 +127,7 @@ struct E_M_Register
 		jal_dest->next      = io.in_jal_dest;
 		#endif
 
-		#ifdef ICACHE_ENABLE
+		#ifdef CACHE_ENABLED
 
 		};
 
