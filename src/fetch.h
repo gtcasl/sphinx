@@ -47,7 +47,9 @@ struct ICACHE
 			// ch_print("ITAG_BITS: {0}, INUM_LINES: {1}", ch_uint(ITAG_BITS), ch_uint(INUM_LINES));
 
 			auto line_index  = ch_resize<INUM_BITS>(io.in_address.as_uint()    >> ILINE_BITS);
+
 			// auto curr_tag    = ch_resize<32>(io.in_address.as_uint()    >> IG_TAG_BITS) >> 20;
+
 			ch_uint<32> curr_tag    = io.in_address.as_uint() & ch_uint<32>(ITAG_MASK);
 			auto data_offset = ch_resize<OFFSET_BITS>(io.in_address).as_uint() << 3;
 
@@ -184,7 +186,7 @@ struct Fetch
 		ch_bool delay      = (icache.io.out_delay);
 			// ch_print("PC: {0}, JAL_reg: {1}, BR_reg: {2}, old: {3}, state: {4}, stall_reg: {5}", PC, JAL_reg, BR_reg, old, state, stall_reg);
 
-		PC_to_use =  ch_sel(delay_reg && !(delay || io.in_freeze), old, ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp)));
+		PC_to_use =  ch_sel(delay_reg && !(io.in_freeze), old, ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp)));
 
 
 
@@ -239,4 +241,3 @@ struct Fetch
 	ch_module<ICACHE> icache;
 
 };
-

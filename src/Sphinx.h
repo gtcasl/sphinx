@@ -681,63 +681,61 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
     #ifndef DCACHE_ENABLE
 
-        pipeline.io.DBUS.out_data.ready    = pipeline.io.DBUS.out_data.valid;
-        pipeline.io.DBUS.out_address.ready = pipeline.io.DBUS.out_address.valid;
-        pipeline.io.DBUS.out_control.ready = pipeline.io.DBUS.out_control.valid;
+    pipeline.io.DBUS.out_data.ready    = pipeline.io.DBUS.out_data.valid;
+    pipeline.io.DBUS.out_address.ready = pipeline.io.DBUS.out_address.valid;
+    pipeline.io.DBUS.out_control.ready = pipeline.io.DBUS.out_control.valid;
 
-        bool valid_address = false;
-        if (pipeline.io.DBUS.out_address.valid)
+    bool valid_address = false;
+    if (pipeline.io.DBUS.out_address.valid)
+    {
+        valid_address = true;
+    }
+
+    bool read_data  = false;
+    bool write_data = false;
+
+    if (pipeline.io.DBUS.out_control.ready && pipeline.io.DBUS.out_control.valid)
+    {
+        if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
         {
-            valid_address = true;
-        }
-
-        bool read_data  = false;
-        bool write_data = false;
-
-        if (pipeline.io.DBUS.out_control.ready && pipeline.io.DBUS.out_control.valid)
-        {
-            if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
+            if (pipeline.io.DBUS.in_data.ready)
             {
-                if (pipeline.io.DBUS.in_data.ready)
-                {
-                    read_data = true;
-                }
-            }
-
-            if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
-            {
-                if (pipeline.io.DBUS.out_data.valid)
-                {
-                    write_data = true;
-                }
+                read_data = true;
             }
         }
 
-        if (read_data && valid_address)
+        if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
         {
-            ram.getWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_read);
-            if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << " read from data: " << data_read << "\n";
-            pipeline.io.DBUS.in_data.data = data_read;
-            pipeline.io.DBUS.in_data.valid = true;
-        } else
-        {
-            pipeline.io.DBUS.in_data.data  = 0x123;
-            pipeline.io.DBUS.in_data.valid = false;
+            if (pipeline.io.DBUS.out_data.valid)
+            {
+                write_data = true;
+            }
         }
+    }
+
+    if (read_data && valid_address)
+    {
+        ram.getWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_read);
+        if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << " read from data: " << data_read << "\n";
+        pipeline.io.DBUS.in_data.data = data_read;
+        pipeline.io.DBUS.in_data.valid = true;
+    } else
+    {
+        pipeline.io.DBUS.in_data.data  = 0x123;
+        pipeline.io.DBUS.in_data.valid = false;
+    }
 
 
-        if (write_data && valid_address)
-        {
+    if (write_data && valid_address)
+    {
 
-            // std::cout << "ABOUT TO: " << std::hex << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << std::hex << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
-            // if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
-            // std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
-            uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
+        if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
+        // std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
+        uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
+        ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
+    }
 
-            ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
-        }
-
-        return false;
+    return false;
 
     #else
 
@@ -746,7 +744,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
         static unsigned min     = 0;
         if (this->dbus_state == 0)
         {
-            std::cout << "DBUS STATE 0\n";
+            // std::cout << "DBUS STATE 0\n";
             pipeline.io.DBUS.out_data.ready    = pipeline.io.DBUS.out_data.valid;
             pipeline.io.DBUS.out_address.ready = pipeline.io.DBUS.out_address.valid;
             pipeline.io.DBUS.out_control.ready = pipeline.io.DBUS.out_control.valid;
@@ -794,15 +792,15 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
                 min     = (curr_add | (DLINE_SIZE - 1)) - (DLINE_SIZE - 1);
 
                 // std::cout << "OUT MISS IS 1 with address: \n";
-                std::cout << "curr_address: " << std::hex << curr_add << "\n";
-                std::cout << "line addr to copy: " << std::hex << address << "\n";
-                std::cout << "MIN ADDR is: " << std::hex << min << "\n";
+                // std::cout << "curr_address: " << std::hex << curr_add << "\n";
+                // std::cout << "line addr to copy: " << std::hex << address << "\n";
+                // std::cout << "MIN ADDR is: " << std::hex << min << "\n";
 
             }
             pipeline.io.DBUS.in_data.valid     = false;
         } else
         {
-            std::cout << "DBUS STATE 1\n";
+            // std::cout << "DBUS STATE 1\n";
             // std::cout << "ADDRESS: " << std::hex << address << " < min: " << std::hex << min << "? ";
             if ((address < min) || ((min == 0) && (address == 0xfffffffc)))
             {
@@ -826,7 +824,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
                 ram.getWord(address, &data_read);
                 pipeline.io.DBUS.in_data.data      = data_read;
                 pipeline.io.DBUS.out_address.ready = true;
-                std::cout << "sending address : " << std::hex << address << "  data: " << data_read << "\n";
+                // std::cout << "sending address : " << std::hex << address << "  data: " << data_read << "\n";
 
                 // std::cout << "Sent number: " << std::hex << address << "\n";
 

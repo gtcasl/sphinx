@@ -40,16 +40,17 @@ struct DCACHE
 			io.DBUS.out_data.data     = io.in_data;
 			io.DBUS.out_data.valid    = io.in_data_valid;
 
+			io.DBUS.out_miss          = FALSE;
+
 
 			io.DBUS.in_data.ready     = io.in_data_ready;
 			io.out_data               = io.DBUS.in_data.data;
 
 			io.out_delay              = FALSE;
-			io.DBUS.out_miss          = FALSE;
 
 		#else
 
-			// ch_print("****************");
+				// ch_print("****************");
 			ch_reg<ch_bool> first_cycle(true);
 			first_cycle->next = FALSE;
 
@@ -132,6 +133,7 @@ struct DCACHE
 
 			io.DBUS.in_data.ready     = io.in_data_ready;
 
+
 		#endif
 
 	}
@@ -143,12 +145,12 @@ struct Cache
 	__io(
 		(DBUS_io) DBUS,
 
-		__in(ch_bit<32>)  in_address,
-		__in(ch_bit<3>)   in_mem_read,
-		__in(ch_bit<3>)   in_mem_write,
-		__in(ch_bit<32>)  in_data,
+		__in(ch_bit<32>) in_address,
+		__in(ch_bit<3>) in_mem_read,
+		__in(ch_bit<3>) in_mem_write,
+		__in(ch_bit<32>) in_data,
 
-		__out(ch_bool)    out_delay,
+		__out(ch_bool) out_delay,
 		__out(ch_bit<32>) out_data
 	);
 
@@ -161,18 +163,18 @@ struct Cache
 		// ch_print("****************");		
 
 
+		io.out_delay = dcache.io.out_delay;
 
 		//  READING MEMORY
 
 		dcache.io.DBUS(io.DBUS);
-		io.out_delay = dcache.io.out_delay;
+		
 
 		dcache.io.in_address       = io.in_address;
+		dcache.io.in_address_valid = (io.in_mem_read.as_uint() < NO_MEM_WRITE_int) || (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
 
-		// dcache.io.in_address_valid = (io.in_mem_read.as_uint() < NO_MEM_READ_int) || (io.in_mem_write.as_uint() < NO_MEM_WRITE_int);
-		dcache.io.in_address_valid = io.in_mem_read.as_uint() == LW_MEM_READ_int;
 
-		ch_bool read_word_enable  = (io.in_mem_read.as_uint()  ==  NO_MEM_READ_int);
+		ch_bool read_word_enable  = (io.in_mem_read.as_uint()  <  NO_MEM_READ_int);
 
 		ch_bool write_word_enable = (io.in_mem_write.as_uint() == SW_MEM_WRITE_int);
 		// ch_bool write_byte_enable = (io.in_mem_write.as_uint() == SB_MEM_WRITE_int);
@@ -186,8 +188,6 @@ struct Cache
 		
 
 		dcache.io.in_data_ready   = read_word_enable || (!no_rw_enable && !write_word_enable);
-
-		ch_print("LOADED DATA: {0} <- {1}", dcache.io.out_data, io.in_address);
 
 
 		ch_bit<32> mem_result;
@@ -277,11 +277,11 @@ struct Memory
 		__out(ch_bit<5>)  out_rs2,
 		__out(ch_bit<1>)  out_branch_dir,
 		__out(ch_bit<32>) out_branch_dest,
+		__out(ch_bool)    out_delay,
 		#ifdef BRANCH_WB
 		__out(ch_bit<1>)  out_branch_stall,
 		#endif
-		__out(ch_bool)    out_delay,  
-		__out(ch_bit<32>) out_PC_next
+		__out(ch_bit<32>)   out_PC_next
 	);
 
 	void describe()
@@ -291,7 +291,8 @@ struct Memory
 		// ch_print("MEMORY");
 		// ch_print("****************");		
 
-		ch_print("CURR PC: {0}", io.in_curr_PC);
+		io.out_delay = cache.io.out_delay;
+
 
 		// ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3}, mem_write: {4}, mem_read: {5}", io.in_rd, io.in_alu_result, io.out_mem_result, io.in_rd2, io.in_mem_write, io.in_mem_read);
 
@@ -302,7 +303,8 @@ struct Memory
 		cache.io.in_data = io.in_rd2;
 
 
-		io.out_delay = cache.io.out_delay;
+
+
 
 		io.out_mem_result = cache.io.out_data;
 
