@@ -1,9 +1,8 @@
 #ifndef __OPTIONS__
 #define __OPTIONS__
-#define BRANCH_WB 
-#define DCACHE_BITS 19
-#define JAL_MEM 
-#define DCACHE_ENABLE 
-#define DLINE_BITS 10
-#define FORWARDING 
+#define ICACHE_DISABLED
+#define DCACHE_DISABLED
+#define JAL_EXE
+#define FORWARDING
+#define BRANCH_WB
 #endif

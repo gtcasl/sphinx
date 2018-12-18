@@ -1,9 +1,9 @@
 
 ****************	../tests/rv32ui-p-addi.hex	****************
-# Dynamic Instructions: 745
-# of total cycles:      876
+# Dynamic Instructions: 238
+# of total cycles:      332
 # of forwarding stalls: 0
-# of branch stalls:     122
-# CPI:                  1.17584
-# time to simulate:     16 milliseconds
+# of branch stalls:     82
+# CPI:                  1.39496
+# time to simulate:     2 milliseconds
 # GRADE:                PASSING

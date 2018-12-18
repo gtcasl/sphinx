@@ -11,8 +11,9 @@ def end(f):
 
 
 def write_config(f, config):
-	for opt, val in config.items():
-		f.write("#define {} {}\n".format(opt, val))
+	for option in config:
+		for conf in option:
+			f.write("{}\n".format(conf))
 
 def export(config):
 	f = open("../src/config.h", "w")

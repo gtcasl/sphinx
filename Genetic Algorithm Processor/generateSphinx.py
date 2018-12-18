@@ -3,9 +3,8 @@ import Genetic
 
 
 def main():
-	ga = Genetic.Genetic(100)
-	ga.initialize_and_test(10)
-	ga.print_best()
+	ga = Genetic.Genetic(6, 30)
+	ga.getGeneration(10)
 	
 
 if __name__ == '__main__':
