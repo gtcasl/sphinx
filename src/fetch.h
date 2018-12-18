@@ -227,7 +227,7 @@ struct Fetch
 		// PC->next       = ch_sel(stall, out_PC.as_int(), pc_next.as_int());
 
 
-		ch_print("actual PC: {1}, old: {0}", old, out_PC);
+		// ch_print("actual PC: {1}, old: {0}", old, out_PC);
 
 		// PC->next = ch_sel(stall, out_PC, PC_to_use);
 

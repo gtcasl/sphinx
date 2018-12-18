@@ -772,7 +772,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
             }
 
 
-            if (write_data && valid_address)
+            if (write_data)
             {
 
                 // std::cout << std::hex << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
