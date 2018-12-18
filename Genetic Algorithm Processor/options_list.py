@@ -51,8 +51,8 @@ opposite = {
     "#define JAL_EXE"         : ["#define JAL_MEM"],
 
 
-    "#define DCACHE_ENABLE"   : ["DCACHE_DISABLED"],
-    "#define DCACHE_DISABLED" : ["DCACHE_ENABLE"],
+    "#define DCACHE_ENABLE"   : ["#define DCACHE_DISABLED"],
+    "#define DCACHE_DISABLED" : ["#define DCACHE_ENABLE"],
     "#define DLINE_BITS"      : [5, 10],
     "#define DCACHE_BITS"     : [11, 20],
 

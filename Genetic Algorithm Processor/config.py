@@ -27,8 +27,13 @@ class ConfigObj:
 		# p = sp.Popen(cmd, stdout=sp.PIPE)
 		# p.wait()
 
+		# print("******************************* CONFIG {}".format(self.config))
 		cmd = ["make", "-C", "../src"]
 		p = sp.Popen(cmd, stdout=sp.PIPE)
+		for line in p.stdout:
+			if "error" in line:
+				print("EROORRRR")
+				exit()
 		p.wait()
 
 		cmd = ["../src/Sphinx.out", "--test", "../tests/rv32ui-p-addi.hex"]
@@ -102,7 +107,7 @@ class ConfigObj:
 				use = other.config[i]
 			curr.append(use)
 
-		# curr = self.mutate(curr)
+		curr = self.mutate(curr)
 
 		return ConfigObj(curr, self.mutRate)
 
@@ -152,8 +157,8 @@ class ConfigObj:
 
 if __name__ == '__main__':
 	for _ in range(100):
-		one = ConfigObj(mutRate=60)
-		two = ConfigObj(mutRate=60)
+		one = ConfigObj(mutRate=100)
+		two = ConfigObj(mutRate=100)
 		three = one.crossOver(two)
 		print(three.config)
 		print("--------------------")
