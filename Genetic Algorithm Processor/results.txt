@@ -1,40 +1,40 @@
 ******** Generation: 0 ********
-Best fitness: 744.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 12', '#define DLINE_BITS 5'], ['#define JAL_EXE'], ['#define FORWARDING'], ['#define BRANCH_WB']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED'], ['#define JAL_EXE'], ['#define NO_FORWARDING'], ['#define BRANCH_WB']]
 
 ******** Generation: 1 ********
-Best fitness: 726.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_WB']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 18', '#define DLINE_BITS 10'], ['#define JAL_EXE'], ['#define FORWARDING'], ['#define BRANCH_WB']]
 
 ******** Generation: 2 ********
-Best fitness: 726.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED', '#define DLINE_BITS 10', '#define DCACHE_BITS 15'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_MEM']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_ENABLE', '#define ICACHE_BITS 11', '#define ILINE_BITS 8'], ['#define DCACHE_DISABLED'], ['#define JAL_EXE'], ['#define FORWARDING'], ['#define BRANCH_MEM']]
 
 ******** Generation: 3 ********
-Best fitness: 646.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED', '#define DLINE_BITS 6', '#define DCACHE_BITS 19'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_MEM']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 19', '#define DLINE_BITS 9'], ['#define JAL_EXE'], ['#define FORWARDING'], ['#define BRANCH_MEM']]
 
 ******** Generation: 4 ********
-Best fitness: 646.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 12', '#define DLINE_BITS 5'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_WB']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 20', '#define DLINE_BITS 6'], ['#define JAL_EXE'], ['#define NO_FORWARDING'], ['#define BRANCH_MEM']]
 
 ******** Generation: 5 ********
-Best fitness: 726.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_WB']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_ENABLE', '#define ICACHE_BITS 14', '#define ILINE_BITS 6'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 16', '#define DLINE_BITS 5'], ['#define JAL_EXE'], ['#define NO_FORWARDING'], ['#define BRANCH_MEM']]
 
 ******** Generation: 6 ********
-Best fitness: 726.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_WB']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 15', '#define DLINE_BITS 10'], ['#define JAL_MEM'], ['#define NO_FORWARDING'], ['#define BRANCH_WB']]
 
 ******** Generation: 7 ********
-Best fitness: 670.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 12', '#define DLINE_BITS 5'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_MEM']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_ENABLE', '#define ICACHE_BITS 16', '#define ILINE_BITS 5'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 13', '#define DLINE_BITS 6'], ['#define JAL_MEM'], ['#define NO_FORWARDING'], ['#define BRANCH_WB']]
 
 ******** Generation: 8 ********
-Best fitness: 750.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_ENABLE', '#define DCACHE_BITS 12', '#define DLINE_BITS 5'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_WB']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED'], ['#define JAL_EXE'], ['#define FORWARDING'], ['#define BRANCH_WB']]
 
 ******** Generation: 9 ********
-Best fitness: 726.0
-Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED'], ['#define JAL_MEM'], ['#define FORWARDING'], ['#define BRANCH_WB']]
+Best fitness: 1240.0
+Best configuration: [['#define ICACHE_DISABLED'], ['#define DCACHE_DISABLED'], ['#define JAL_EXE'], ['#define FORWARDING'], ['#define BRANCH_MEM']]
 

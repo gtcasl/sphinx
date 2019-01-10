@@ -3,7 +3,7 @@ import Genetic
 
 
 def main():
-	ga = Genetic.Genetic(6, 30)
+	ga = Genetic.Genetic(popSize=1000, mutRate=5)
 	ga.getGeneration(10)
 	
 

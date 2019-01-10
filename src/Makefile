@@ -1,8 +1,9 @@
+
 #CXX = clang-5.0
 
 #CXXFLAGS += -std=c++17 -O3 -DNDEBUG -I$(CASH_HOME)/include -Wall -Wextra -pedantic
 # CXXFLAGS += -std=c++17 -O0 -g -I$(CASH_HOME)/include -Wall -Wextra -pedantic
-CASH_HOME = /Users/fareselsabbagh/Documents/cash
+# CASH_HOME = /Users/fareselsabbagh/Documents/cash
 CXXFLAGS += -std=c++17 -O3 -I$(CASH_HOME)/include -w
 LDFLAGS += -lcash -lstdc++ -L$(CASH_HOME)/build/lib
 
@@ -31,5 +32,5 @@ run: $(PROJECTS)
 	$(foreach proj, $(PROJECTS_NAMES), vvp $(proj)_tb.iv || exit;)
 
 ifneq ($(MAKECMDGOALS),clean)
-    -include .depend
+	-include .depend
 endif

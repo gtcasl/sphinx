@@ -1,20 +1,5 @@
 
 
 
-* Instructions in ROM instead of reading from file
-* Use IOPORT
-* Think about branches and addresses, ALSO think about load addresses
-* Implement B-type instructions (BNE, BLT..)
-* Implement J-type instructions 
-
-
-
-
-************** Done **************
-* Implement ALU I-type instructions (ADDI, SLTI, XORI...)
-* Implement MEM I-type instructions (LB, LW, LBU)
-	* out_wb to 2 bits
-	* Add MEMread and MEMwrite
-	* Implement a memory module
-* Implement S-Type instructions
-* Write BASH to compile code
+* Incorperate frequency in fitness test
+* Fix writing for D-CACHE
