@@ -289,7 +289,7 @@
 
 #endif
 
-#define NUM_TESTS 40
+#define NUM_TESTS 39
 
 #include <chrono> 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> clock_time;

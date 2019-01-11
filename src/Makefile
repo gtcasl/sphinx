@@ -26,6 +26,9 @@ all: $(PROJECTS)
 clean:
 	rm -f *.out *.o *.vcd *.iv *.fir .depend *~ *\#
 
+clear:
+	rm -f *.out *.o *.vcd *.iv *.fir .depend *~ *\#
+
 run: $(PROJECTS)
 	$(foreach proj, $(PROJECTS), ./$(proj) || exit;)
 	$(foreach proj, $(PROJECTS_NAMES), iverilog $(proj)_tb.v -o $(proj)_tb.iv || exit;)

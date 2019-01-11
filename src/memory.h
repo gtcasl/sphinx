@@ -70,6 +70,8 @@ struct DCACHE
 
 			ch_mem<ch_bit<DLINE_BIT_SIZE>, DNUM_LINES> data_cache;
 			ch_mem<ch_uint<32>           , DNUM_LINES> tag_cache;
+
+
 			
 
 
@@ -83,17 +85,14 @@ struct DCACHE
 			auto data_offset = ch_resize<DOFFSET_BITS>(io.in_address).as_uint() << 3;
 
 
-	
-
-
-			
 
 			auto cache_tag      = tag_cache.read(line_index);
 			ch_bool dcache_miss = (curr_tag != cache_tag) && !first_cycle && io.in_address_valid;
 
 			// ch_print("tags: {0} != {1}", curr_tag, cache_tag);
 
-			io.DBUS.out_miss = dcache_miss || (io.in_control == DBUS_WRITE) || (io.in_control == DBUS_RW);
+			// io.DBUS.out_miss = dcache_miss || (io.in_control == DBUS_WRITE) || (io.in_control == DBUS_RW);
+			io.DBUS.out_miss = dcache_miss;
 			
 
 			
@@ -107,7 +106,7 @@ struct DCACHE
 			io.out_delay              = copying || in_data_validity;
 
 
-			io.DBUS.in_data.ready     = TRUE;
+			
 
 			ch_bit<DLINE_BIT_SIZE> real_line = data_cache.read(line_index);
 
@@ -117,19 +116,24 @@ struct DCACHE
 			// ch_print("dcache_miss {1}, actul_copying: {2}, out_delay: {0}", copying, dcache_miss, io.DBUS.in_data.valid);
 
 			ch_bit<DLINE_BIT_SIZE> new_data      = (real_line << ch_uint(32)) | ch_pad<DLINE_BIT_SIZE - 32>(io.DBUS.in_data.data);
-			ch_bit<DLINE_BIT_SIZE> data_to_write = ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), new_data);
-			// ch_bit<DLINE_BIT_SIZE> data_to_write = ch_sel(io.in_control == DBUS_WRITE, write_data, ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), new_data));
 
 
 
+			// ch_bit<DLINE_BIT_SIZE> data_to_write = ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), new_data);
+			
+
+			// a ^ ((a ^ b) & mask)
+
+			ch_bit<DLINE_BIT_SIZE> mask          = ch_bit<DLINE_BIT_SIZE>(GENERIC_DMASK) << data_offset;
+			ch_bit<DLINE_BIT_SIZE> change        = ch_resize<DLINE_BIT_SIZE>(io.in_data) << data_offset;
+			ch_bit<DLINE_BIT_SIZE> write_data    = real_line ^ ((real_line ^ change) & mask);
 
 
+			ch_bit<DLINE_BIT_SIZE> data_to_write = ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), ch_sel(copying, new_data, write_data));
 
 
 			tag_cache.write(line_index , curr_tag      , dcache_miss);
-			data_cache.write(line_index, data_to_write , copying);
-
-			
+			data_cache.write(line_index, data_to_write , copying || (io.in_control == DBUS_RW) || (io.in_control == DBUS_WRITE));
 
 
 

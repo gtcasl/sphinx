@@ -52,8 +52,8 @@ int main(int argc, char ** argv)
 		"../tests/rv32ui-p-sub.hex",
 		"../tests/rv32ui-p-sw.hex",
 		"../tests/rv32ui-p-xor.hex",
-		"../tests/rv32ui-p-xori.hex",
-		"../tests/dhrystoneO3.hex"
+		"../tests/rv32ui-p-xori.hex"
+		// "../tests/dhrystoneO3.hex"
 	};
 
 	if (es.state == 0)
@@ -62,17 +62,10 @@ int main(int argc, char ** argv)
 		// for (int ii = 0; ii < NUM_TESTS - 1; ii++)
 		{
 			bool curr = sphinx.simulate(tests[ii]);
-			if (ii < NUM_TESTS - 1)
-			{
-				if ( curr) std::cout << GREEN << "Test Passed: " << tests[ii] << std::endl;
-				if (!curr) std::cout << RED   << "Test Failed: " << tests[ii] << std::endl;
-				passed = passed && curr;
-			}
-			else
-			{
-				std::cout << RED   << "Not a Test : " << tests[ii] << std::endl;
-				// passed = passed && curr;
-			}
+
+			if ( curr) std::cout << GREEN << "Test Passed: " << tests[ii] << std::endl;
+			if (!curr) std::cout << RED   << "Test Failed: " << tests[ii] << std::endl;
+			passed = passed && curr;
 
 			std::cout << DEFAULT;
 		}
