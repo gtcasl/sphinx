@@ -50,6 +50,18 @@ struct DCACHE
 
 		#else
 
+			io.DBUS.out_address.data  = io.in_address;
+			io.DBUS.out_address.valid = io.in_address_valid;
+
+			io.DBUS.out_control.data  = io.in_control;
+			io.DBUS.out_control.valid = TRUE;
+
+			io.DBUS.out_data.data     = io.in_data;
+			io.DBUS.out_data.valid    = io.in_data_valid;
+
+
+			io.DBUS.in_data.ready     = io.in_data_ready;
+
 				// ch_print("****************");
 			ch_reg<ch_bool> first_cycle(true);
 			first_cycle->next = FALSE;
@@ -59,8 +71,6 @@ struct DCACHE
 			ch_mem<ch_bit<DLINE_BIT_SIZE>, DNUM_LINES> data_cache;
 			ch_mem<ch_uint<32>           , DNUM_LINES> tag_cache;
 			
-
-			io.DBUS.out_address.data  = io.in_address;
 
 
 			// ch_print("DCACHE OUTPUT ADDRESS: {0}", io.in_address);
@@ -76,17 +86,17 @@ struct DCACHE
 	
 
 
-			io.DBUS.out_data.data     = io.in_data;
+			
 
 			auto cache_tag      = tag_cache.read(line_index);
 			ch_bool dcache_miss = (curr_tag != cache_tag) && !first_cycle && io.in_address_valid;
 
 			// ch_print("tags: {0} != {1}", curr_tag, cache_tag);
 
-			io.DBUS.out_miss = dcache_miss;
+			io.DBUS.out_miss = dcache_miss || (io.in_control == DBUS_WRITE) || (io.in_control == DBUS_RW);
 			
 
-			io.DBUS.out_address.valid = io.in_address_valid;
+			
 
 			ch_reg<ch_bool> in_data_validity(false);
 
@@ -100,35 +110,17 @@ struct DCACHE
 			io.DBUS.in_data.ready     = TRUE;
 
 			ch_bit<DLINE_BIT_SIZE> real_line = data_cache.read(line_index);
+
+
 			io.out_data                      = ch_sel( !copying, ch_resize<32>(real_line >> data_offset), 0x0);
 
 			// ch_print("dcache_miss {1}, actul_copying: {2}, out_delay: {0}", copying, dcache_miss, io.DBUS.in_data.valid);
 
 			ch_bit<DLINE_BIT_SIZE> new_data      = (real_line << ch_uint(32)) | ch_pad<DLINE_BIT_SIZE - 32>(io.DBUS.in_data.data);
-
-
-			// ch_bit<DLINE_BIT_SIZE> what          = ch_bit<DLINE_BIT_SIZE>(1).as_bit();
-			// ch_bit<DLINE_BIT_SIZE> whatt         = (ch_int<DLINE_BIT_SIZE>(-1) & (ch_cat(ch_int<DLINE_BIT_SIZE - 32>(-1), io.in_data) << data_offset));
-			// ch_bit<DLINE_BIT_SIZE> mask          = whatt | ((what << data_offset).as_int() - 1);
-
-			// ch_bit<DLINE_BIT_SIZE> write_data    = (real_line | mask ) & mask;
-
-
-			// __if(io.in_control == DBUS_WRITE)
-			// {
-			// 	ch_print("----------------------");
-			// 	ch_print("io.in_data: {0}", io.in_data);
-			// 	ch_print("BEFORE: {0}", real_line);
-			// 	ch_print("MASK: {0}", mask);
-			// 	ch_print("data_offset: {0}", data_offset);
-			// 	ch_print("AFTER: {0}", write_data);
-			// 	ch_print("----------------------");
-
-			// };
-
 			ch_bit<DLINE_BIT_SIZE> data_to_write = ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), new_data);
-
 			// ch_bit<DLINE_BIT_SIZE> data_to_write = ch_sel(io.in_control == DBUS_WRITE, write_data, ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), new_data));
+
+
 
 
 
@@ -137,24 +129,8 @@ struct DCACHE
 			tag_cache.write(line_index , curr_tag      , dcache_miss);
 			data_cache.write(line_index, data_to_write , copying);
 
-			// ch_print("[0] {0}", data_to_write);
-
-
-
-
-			// __if(dcache_miss)
-			// {
-			// 	ch_print("writing {0} to {1}", curr_tag, line_index);
-			// };
-
 			
-			io.DBUS.out_control.data  = io.in_control;
-			io.DBUS.out_control.valid = TRUE;
 
-			io.DBUS.out_data.valid    = io.in_data_valid;
-
-
-			io.DBUS.in_data.ready     = io.in_data_ready;
 
 
 		#endif
@@ -326,7 +302,7 @@ struct Memory
 		cache.io.in_data = io.in_rd2;
 
 
-
+		// ch_print("io.in_curr_PC: {0}", io.in_curr_PC);
 
 
 		io.out_mem_result = cache.io.out_data;

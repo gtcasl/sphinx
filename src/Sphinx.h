@@ -730,9 +730,10 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
     {
 
         if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
-        // std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
         uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
         ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
+        // std::cout << "ABOUT TO WRITE TO RAM - Address: " << std::hex << (uint32_t) pipeline.io.DBUS.out_address.data << "\t DATA: " << data_to_write << "\n";
+
     }
 
     return false;
@@ -755,30 +756,48 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
                 valid_address = true;
             }
 
+            bool read_data  = false;
             bool write_data = false;
 
             if (pipeline.io.DBUS.out_control.ready && pipeline.io.DBUS.out_control.valid)
             {
-                // std::cout << "FIRST READY  ";
+                if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_READ_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
+                {
+                    if (pipeline.io.DBUS.in_data.ready)
+                    {
+                        read_data = true;
+                    }
+                }
+
                 if ((pipeline.io.DBUS.out_control.data.as_scint() == DBUS_WRITE_int) || (pipeline.io.DBUS.out_control.data.as_scint() == DBUS_RW_int))
                 {
-                    // std::cout << "SECOND READY  ";
                     if (pipeline.io.DBUS.out_data.valid)
                     {
-                        // std::cout << "WRITE DATA TRUE\n";
                         write_data = true;
                     }
                 }
             }
 
+            if (read_data && valid_address)
+            {
+                ram.getWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_read);
+                if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << " read from data: " << data_read << "\n";
+                pipeline.io.DBUS.in_data.data = data_read;
+                pipeline.io.DBUS.in_data.valid = true;
+            } else
+            {
+                pipeline.io.DBUS.in_data.data  = 0x123;
+                pipeline.io.DBUS.in_data.valid = false;
+            }
 
-            if (write_data)
+
+            if (write_data && valid_address)
             {
 
-                // std::cout << std::hex << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
-                // std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
+                if(debug) std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
                 uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
                 ram.writeWord((uint32_t) pipeline.io.DBUS.out_address.data, &data_to_write);
+                // std::cout << "CACHE ABOUT TO WRITE TO RAM - Address: " << std::hex << (uint32_t) pipeline.io.DBUS.out_address.data << "\t DATA: " << data_to_write << "\n";
             }
 
 

@@ -264,17 +264,18 @@
 
 #ifdef  DCACHE_ENABLE
 
-#define DLINE_SIZE    (1<<DLINE_BITS)
-#define DCACHE_SIZE   (1<<ICACHE_BITS)
-#define DNUM_LINES    (1<<(DCACHE_BITS - DLINE_BITS))
-#define DNUM_BITS     (DCACHE_BITS - DLINE_BITS)
-#define DG_TAG_BITS   (DCACHE_BITS)
-#define DTAG_BITS     (32 - DCACHE_BITS)
+#define DLINE_SIZE     (1<<DLINE_BITS)
+#define DCACHE_SIZE    (1<<ICACHE_BITS)
+#define DNUM_LINES     (1<<(DCACHE_BITS - DLINE_BITS))
+#define DNUM_BITS      (DCACHE_BITS - DLINE_BITS)
+#define DG_TAG_BITS    (DCACHE_BITS)
+#define DTAG_BITS      (32 - DCACHE_BITS)
 #define DOFFSET_BITS   (DLINE_BITS + 3)
 #define DLINE_BIT_SIZE (DLINE_SIZE << 3)
 #define NUM_WORDS_LINE (DLINE_SIZE >> 2)
 
 #define DTAG_MASK      (((1<<DTAG_BITS) - 1) << DCACHE_BITS)
+#define GENERIC_DMASK  ((1<<32) - 1)
 
 #define DCACHE_IDLE (ch_bit<2>(0))
 #define DCACHE_SEND (ch_bit<2>(1))
