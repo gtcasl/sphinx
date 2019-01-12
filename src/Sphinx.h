@@ -742,7 +742,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
 
         static unsigned address = 0;
-        static unsigned min     = 0;
+        static unsigned max     = 0;
         if (this->dbus_state == 0)
         {
             // std::cout << "DBUS STATE 0\n";
@@ -806,9 +806,12 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
             {
                 this->dbus_state = 1;
                 unsigned curr_add = (unsigned) pipeline.io.DBUS.out_address.data;
-                address = (curr_add | (DLINE_SIZE - 1)) - 3; //
 
-                min     = (curr_add | (DLINE_SIZE - 1)) - (DLINE_SIZE - 1);
+                // address = (curr_add | (DLINE_SIZE - 1)) - 3; //
+                // min     = (curr_add | (DLINE_SIZE - 1)) - (DLINE_SIZE - 1);
+
+                address = (curr_add | (DLINE_SIZE - 1)) - (DLINE_SIZE - 1);
+                max     = (curr_add | (DLINE_SIZE - 1));
 
                 // std::cout << "OUT MISS IS 1 with address: \n";
                 // std::cout << "curr_address: " << std::hex << curr_add << "\n";
@@ -820,8 +823,8 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
         } else
         {
             // std::cout << "DBUS STATE 1\n";
-            // std::cout << "ADDRESS: " << std::hex << address << " < min: " << std::hex << min << "? ";
-            if ((address < min) || ((min == 0) && (address == 0xfffffffc)))
+            // std::cout << "ADDRESS: " << std::hex << address << " > max: " << std::hex << max << "? ";
+            if (address > max)
             {
                 // std::cout << "Y \n";
                 this->dbus_state = 0;
@@ -847,7 +850,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
                 // std::cout << "Sent number: " << std::hex << address << "\n";
 
-                address -= 4;
+                address += 4;
             }
         }
 

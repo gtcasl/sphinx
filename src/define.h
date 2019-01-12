@@ -245,18 +245,18 @@
 
 #ifdef  ICACHE_ENABLE
 
-#define ILINE_SIZE    (1<<ILINE_BITS)
-#define ICACHE_SIZE   (1<<ICACHE_BITS)
-#define INUM_LINES    (1<<(ICACHE_BITS - ILINE_BITS))
-#define INUM_BITS     (ICACHE_BITS - ILINE_BITS)
-#define IG_TAG_BITS   (ICACHE_BITS)
-#define ITAG_BITS     (32 - ICACHE_BITS)
-#define OFFSET_BITS   (ILINE_BITS + 3)
-#define LINE_BIT_SIZE (ILINE_SIZE << 3)
+	#define ILINE_SIZE    (1<<ILINE_BITS)
+	#define ICACHE_SIZE   (1<<ICACHE_BITS)
+	#define INUM_LINES    (1<<(ICACHE_BITS - ILINE_BITS))
+	#define INUM_BITS     (ICACHE_BITS - ILINE_BITS)
+	#define IG_TAG_BITS   (ICACHE_BITS)
+	#define ITAG_BITS     (32 - ICACHE_BITS)
+	#define OFFSET_BITS   (ILINE_BITS + 3)
+	#define LINE_BIT_SIZE (ILINE_SIZE << 3)
 
-#define ITAG_MASK      (((1<<ITAG_BITS) - 1) << ICACHE_BITS)
+	#define ITAG_MASK      (((1<<ITAG_BITS) - 1) << ICACHE_BITS)
 
-#define CACHE_ENABLED
+	#define CACHE_ENABLED
 
 #endif
 
@@ -264,28 +264,45 @@
 
 #ifdef  DCACHE_ENABLE
 
-#define DLINE_SIZE     (1<<DLINE_BITS)
-#define DCACHE_SIZE    (1<<ICACHE_BITS)
-#define DNUM_LINES     (1<<(DCACHE_BITS - DLINE_BITS))
-#define DNUM_BITS      (DCACHE_BITS - DLINE_BITS)
-#define DG_TAG_BITS    (DCACHE_BITS)
-#define DTAG_BITS      (32 - DCACHE_BITS)
-#define DOFFSET_BITS   (DLINE_BITS + 3)
-#define DLINE_BIT_SIZE (DLINE_SIZE << 3)
-#define NUM_WORDS_LINE (DLINE_SIZE >> 2)
+	// #ifdef DCACHE_DMANIP
 
-#define DTAG_MASK      (((1<<DTAG_BITS) - 1) << DCACHE_BITS)
-#define GENERIC_DMASK  ((1<<32) - 1)
+	// 	#define DLINE_SIZE     (1<<DLINE_BITS)
 
-#define DCACHE_IDLE (ch_bit<2>(0))
-#define DCACHE_SEND (ch_bit<2>(1))
-#define DCACHE_GET  (ch_bit<2>(2))
+	// 	#define DNUM_LINES     (1<<(DCACHE_BITS - DLINE_BITS))
+	// 	#define DNUM_BITS      (DCACHE_BITS - DLINE_BITS)
+	// 	#define DG_TAG_BITS    (DCACHE_BITS)
+	// 	#define DTAG_BITS      (32 - DCACHE_BITS)
+	// 	#define DOFFSET_BITS   (DLINE_BITS + 3)
+	// 	#define DLINE_BIT_SIZE (DLINE_SIZE << 3)
 
-#ifndef CACHE_ENABLED
+	// 	#define DTAG_MASK      (((1<<DTAG_BITS) - 1) << DCACHE_BITS)
+	// 	#define GENERIC_DMASK  ((1<<32) - 1)
 
-#define CACHE_ENABLED
+	// 	#define DCACHE_IDLE (ch_bit<2>(0))
+	// 	#define DCACHE_SEND (ch_bit<2>(1))
+	// 	#define DCACHE_GET  (ch_bit<2>(2))
 
-#endif
+	// #endif
+
+	// #ifdef DCACHE_AMANIP
+
+		#define DNUM_LINES     (1<<(DCACHE_BITS - DLINE_BITS))
+		#define DNUM_WORDS     ((1<<DCACHE_BITS) >> 2)
+		#define DOFFSET_BITS   (DLINE_BITS + 3)
+		#define DLINE_SIZE     (1<<DLINE_BITS)
+		#define DTAG_MASK      (((1<<DTAG_BITS) - 1) << DCACHE_BITS)
+		#define DTAG_BITS      (32 - DCACHE_BITS)
+		#define DNUM_BITS      (DCACHE_BITS - DLINE_BITS)
+		#define DINDEX_MASK    ((1<<(DCACHE_BITS - 1)-1) - ((1<<DLINE_BITS) - 1))
+
+
+	// #endif
+
+	#ifndef CACHE_ENABLED
+
+		#define CACHE_ENABLED
+
+	#endif
 
 #endif
 
