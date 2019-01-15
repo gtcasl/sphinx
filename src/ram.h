@@ -103,6 +103,33 @@ public:
         }
     }
 
+    void writeHalf(uint32_t address, uint32_t * data)
+    {
+        uint32_t data_to_write = *data;
+
+        uint32_t byte_mask = 0xFF;
+
+        for (int i = 0; i < 2; i++)
+        {
+            // std::cout << "RAM: DATA TO WRITE " << data_to_write << "\n";
+            // std::cout << "RAM: DATA TO MASK  " << byte_mask << "\n";
+            // std::cout << "RAM: WRITING ADDRESS " << address + i << " DATA: " << (data_to_write & byte_mask) << "\n";
+            (*this)[address + i] = data_to_write & byte_mask;
+            data_to_write        = data_to_write >> 8;
+        }
+    }
+
+    void writeByte(uint32_t address, uint32_t * data)
+    {
+        uint32_t data_to_write = *data;
+
+        uint32_t byte_mask = 0xFF;
+
+        (*this)[address] = data_to_write & byte_mask;
+        data_to_write    = data_to_write >> 8;
+
+    }
+
     uint8_t& operator [](uint32_t address) {
         return *get(address);
     }

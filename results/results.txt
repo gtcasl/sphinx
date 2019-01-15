@@ -1,351 +1,351 @@
 
 ****************	../tests/rv32ui-p-add.hex	****************
-# Dynamic Instructions: 515
+# Dynamic Instructions: 516
 # of total cycles:      745
 # of forwarding stalls: 0
 # of branch stalls:     218
-# CPI:                  1.4466
-# time to simulate:     3 milliseconds
+# CPI:                  1.4438
+# time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-addi.hex	****************
-# Dynamic Instructions: 292
+# Dynamic Instructions: 293
 # of total cycles:      429
 # of forwarding stalls: 0
 # of branch stalls:     125
-# CPI:                  1.46918
+# CPI:                  1.46416
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-and.hex	****************
-# Dynamic Instructions: 535
+# Dynamic Instructions: 536
 # of total cycles:      732
 # of forwarding stalls: 0
 # of branch stalls:     185
-# CPI:                  1.36822
+# CPI:                  1.36567
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-andi.hex	****************
-# Dynamic Instructions: 248
+# Dynamic Instructions: 249
 # of total cycles:      352
 # of forwarding stalls: 0
 # of branch stalls:     92
-# CPI:                  1.41935
+# CPI:                  1.41365
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-auipc.hex	****************
-# Dynamic Instructions: 109
+# Dynamic Instructions: 110
 # of total cycles:      148
 # of forwarding stalls: 0
 # of branch stalls:     27
-# CPI:                  1.3578
+# CPI:                  1.34545
 # time to simulate:     0 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-beq.hex	****************
-# Dynamic Instructions: 341
+# Dynamic Instructions: 342
 # of total cycles:      583
 # of forwarding stalls: 0
 # of branch stalls:     230
-# CPI:                  1.70968
-# time to simulate:     2 milliseconds
+# CPI:                  1.70468
+# time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bge.hex	****************
-# Dynamic Instructions: 359
+# Dynamic Instructions: 360
 # of total cycles:      628
 # of forwarding stalls: 0
 # of branch stalls:     257
-# CPI:                  1.7493
+# CPI:                  1.74444
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bgeu.hex	****************
-# Dynamic Instructions: 384
+# Dynamic Instructions: 385
 # of total cycles:      653
 # of forwarding stalls: 0
 # of branch stalls:     257
-# CPI:                  1.70052
+# CPI:                  1.6961
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-blt.hex	****************
-# Dynamic Instructions: 341
+# Dynamic Instructions: 342
 # of total cycles:      583
 # of forwarding stalls: 0
 # of branch stalls:     230
-# CPI:                  1.70968
-# time to simulate:     2 milliseconds
+# CPI:                  1.70468
+# time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bltu.hex	****************
-# Dynamic Instructions: 366
+# Dynamic Instructions: 367
 # of total cycles:      608
 # of forwarding stalls: 0
 # of branch stalls:     230
-# CPI:                  1.6612
+# CPI:                  1.65668
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-bne.hex	****************
-# Dynamic Instructions: 341
+# Dynamic Instructions: 342
 # of total cycles:      583
 # of forwarding stalls: 0
 # of branch stalls:     230
-# CPI:                  1.70968
-# time to simulate:     2 milliseconds
+# CPI:                  1.70468
+# time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-jal.hex	****************
-# Dynamic Instructions: 105
+# Dynamic Instructions: 106
 # of total cycles:      144
 # of forwarding stalls: 0
 # of branch stalls:     27
-# CPI:                  1.37143
+# CPI:                  1.35849
 # time to simulate:     0 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-jalr.hex	****************
-# Dynamic Instructions: 158
+# Dynamic Instructions: 159
 # of total cycles:      227
 # of forwarding stalls: 0
 # of branch stalls:     57
-# CPI:                  1.43671
+# CPI:                  1.42767
 # time to simulate:     0 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lb.hex	****************
-# Dynamic Instructions: 361
+# Dynamic Instructions: 362
 # of total cycles:      501
 # of forwarding stalls: 3
 # of branch stalls:     125
-# CPI:                  1.38781
+# CPI:                  1.38398
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lbu.hex	****************
-# Dynamic Instructions: 361
+# Dynamic Instructions: 362
 # of total cycles:      501
 # of forwarding stalls: 3
 # of branch stalls:     125
-# CPI:                  1.38781
+# CPI:                  1.38398
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lh.hex	****************
-# Dynamic Instructions: 373
+# Dynamic Instructions: 374
 # of total cycles:      513
 # of forwarding stalls: 3
 # of branch stalls:     125
-# CPI:                  1.37534
-# time to simulate:     2 milliseconds
+# CPI:                  1.37166
+# time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lhu.hex	****************
-# Dynamic Instructions: 380
+# Dynamic Instructions: 381
 # of total cycles:      520
 # of forwarding stalls: 3
 # of branch stalls:     125
-# CPI:                  1.36842
-# time to simulate:     2 milliseconds
+# CPI:                  1.36483
+# time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lui.hex	****************
-# Dynamic Instructions: 115
+# Dynamic Instructions: 116
 # of total cycles:      159
 # of forwarding stalls: 0
 # of branch stalls:     32
-# CPI:                  1.38261
+# CPI:                  1.37069
 # time to simulate:     0 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lui.hex.hex	****************
-# Dynamic Instructions: 115
+# Dynamic Instructions: 116
 # of total cycles:      159
 # of forwarding stalls: 0
 # of branch stalls:     32
-# CPI:                  1.38261
+# CPI:                  1.37069
 # time to simulate:     0 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-lw.hex	****************
-# Dynamic Instructions: 383
+# Dynamic Instructions: 384
 # of total cycles:      523
 # of forwarding stalls: 3
 # of branch stalls:     125
-# CPI:                  1.36554
-# time to simulate:     2 milliseconds
+# CPI:                  1.36198
+# time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-or.hex	****************
-# Dynamic Instructions: 538
+# Dynamic Instructions: 539
 # of total cycles:      735
 # of forwarding stalls: 0
 # of branch stalls:     185
-# CPI:                  1.36617
+# CPI:                  1.36364
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-ori.hex	****************
-# Dynamic Instructions: 255
+# Dynamic Instructions: 256
 # of total cycles:      359
 # of forwarding stalls: 0
 # of branch stalls:     92
-# CPI:                  1.40784
+# CPI:                  1.40234
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sb.hex	****************
-# Dynamic Instructions: 186
-# of total cycles:      223
-# of forwarding stalls: 0
-# of branch stalls:     26
-# CPI:                  1.19892
-# time to simulate:     0 milliseconds
-# GRADE:                Failed on test: 9
+# Dynamic Instructions: 547
+# of total cycles:      751
+# of forwarding stalls: 2
+# of branch stalls:     191
+# CPI:                  1.37294
+# time to simulate:     2 milliseconds
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sh.hex	****************
-# Dynamic Instructions: 178
-# of total cycles:      212
+# Dynamic Instructions: 600
+# of total cycles:      802
 # of forwarding stalls: 0
-# of branch stalls:     23
-# CPI:                  1.19101
-# time to simulate:     0 milliseconds
-# GRADE:                Failed on test: 7
+# of branch stalls:     191
+# CPI:                  1.33667
+# time to simulate:     2 milliseconds
+# GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-simple.hex	****************
-# Dynamic Instructions: 91
+# Dynamic Instructions: 92
 # of total cycles:      117
 # of forwarding stalls: 0
 # of branch stalls:     14
-# CPI:                  1.28571
+# CPI:                  1.27174
 # time to simulate:     0 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sll.hex	****************
-# Dynamic Instructions: 543
+# Dynamic Instructions: 544
 # of total cycles:      785
 # of forwarding stalls: 0
 # of branch stalls:     230
-# CPI:                  1.44567
-# time to simulate:     3 milliseconds
+# CPI:                  1.44301
+# time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slli.hex	****************
-# Dynamic Instructions: 291
+# Dynamic Instructions: 292
 # of total cycles:      428
 # of forwarding stalls: 0
 # of branch stalls:     125
-# CPI:                  1.47079
+# CPI:                  1.46575
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slt.hex	****************
-# Dynamic Instructions: 509
+# Dynamic Instructions: 510
 # of total cycles:      739
 # of forwarding stalls: 0
 # of branch stalls:     218
-# CPI:                  1.45187
-# time to simulate:     3 milliseconds
+# CPI:                  1.44902
+# time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-slti.hex	****************
-# Dynamic Instructions: 287
+# Dynamic Instructions: 288
 # of total cycles:      424
 # of forwarding stalls: 0
 # of branch stalls:     125
-# CPI:                  1.47735
+# CPI:                  1.47222
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sltiu.hex	****************
-# Dynamic Instructions: 287
+# Dynamic Instructions: 288
 # of total cycles:      424
 # of forwarding stalls: 0
 # of branch stalls:     125
-# CPI:                  1.47735
+# CPI:                  1.47222
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sltu.hex	****************
-# Dynamic Instructions: 509
+# Dynamic Instructions: 510
 # of total cycles:      739
 # of forwarding stalls: 0
 # of branch stalls:     218
-# CPI:                  1.45187
+# CPI:                  1.44902
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sra.hex	****************
-# Dynamic Instructions: 562
+# Dynamic Instructions: 563
 # of total cycles:      807
 # of forwarding stalls: 0
 # of branch stalls:     233
-# CPI:                  1.43594
-# time to simulate:     3 milliseconds
+# CPI:                  1.43339
+# time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srai.hex	****************
-# Dynamic Instructions: 306
+# Dynamic Instructions: 307
 # of total cycles:      443
 # of forwarding stalls: 0
 # of branch stalls:     125
-# CPI:                  1.44771
+# CPI:                  1.443
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srl.hex	****************
-# Dynamic Instructions: 556
+# Dynamic Instructions: 557
 # of total cycles:      801
 # of forwarding stalls: 0
 # of branch stalls:     233
-# CPI:                  1.44065
-# time to simulate:     3 milliseconds
+# CPI:                  1.43806
+# time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-srli.hex	****************
-# Dynamic Instructions: 300
+# Dynamic Instructions: 301
 # of total cycles:      437
 # of forwarding stalls: 0
 # of branch stalls:     125
-# CPI:                  1.45667
+# CPI:                  1.45183
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sub.hex	****************
-# Dynamic Instructions: 507
+# Dynamic Instructions: 508
 # of total cycles:      734
 # of forwarding stalls: 0
 # of branch stalls:     215
-# CPI:                  1.44773
+# CPI:                  1.44488
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-sw.hex	****************
-# Dynamic Instructions: 606
+# Dynamic Instructions: 607
 # of total cycles:      812
 # of forwarding stalls: 3
 # of branch stalls:     191
-# CPI:                  1.33993
-# time to simulate:     3 milliseconds
+# CPI:                  1.33773
+# time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-xor.hex	****************
-# Dynamic Instructions: 537
+# Dynamic Instructions: 538
 # of total cycles:      734
 # of forwarding stalls: 0
 # of branch stalls:     185
-# CPI:                  1.36685
+# CPI:                  1.36431
 # time to simulate:     2 milliseconds
 # GRADE:                PASSING
 
 ****************	../tests/rv32ui-p-xori.hex	****************
-# Dynamic Instructions: 257
+# Dynamic Instructions: 258
 # of total cycles:      361
 # of forwarding stalls: 0
 # of branch stalls:     92
-# CPI:                  1.40467
+# CPI:                  1.39922
 # time to simulate:     1 milliseconds
 # GRADE:                PASSING
