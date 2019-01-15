@@ -44,4 +44,6 @@ __inout(JTAG_io, (
 	(ch_deq_io<ch_bit<1>>)   out_data        // JTAG test data output pad
 ));
 
+
+
 #endif

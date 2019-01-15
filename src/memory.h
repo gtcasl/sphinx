@@ -2,190 +2,14 @@
 #include <ioport.h>
 #include "buses.h"
 
-#include "utils.h"
+#include "literals.h"
+#include "cache.h"
+
 #include <math.h>
 
 using namespace ch::logic;
 using namespace ch::system;
 
-template<unsigned cache_size, unsigned line_size, unsigned num_ways>
-struct Cache
-{
-
-	__io(
-		(DBUS_io)         DBUS,
-		__in(ch_bit<3> )  in_control,
-		__in(ch_bool   )  in_rw,
-
-		__in(ch_bit<32>)  in_address,
-		__in(ch_bit<32>)  in_data,
-		__in(ch_bool   )  in_valid,
-
-
-		__out(ch_bit<32>) out_data,
-		__out(ch_bool)    out_delay
-	);
-
-	void describe()
-	{
-
-
-		constexpr unsigned way_size    = cache_size / num_ways; // in bytes
-		constexpr unsigned way_bits    = log2(way_size);
-		constexpr unsigned num_lines   = way_size / line_size;
-
-		constexpr unsigned tag_bits    = 32 - way_bits;
-
-		constexpr unsigned line_bits   = log2(line_size);
-		constexpr unsigned index_bits  = log2(num_lines);
-
-
-
-		ch_mem<ch_bit<8>        , way_size  > data_cache;
-		ch_mem<ch_bit<tag_bits> , num_lines > tag_cache;
-		ch_mem<ch_bool          , num_lines > valid_cache;
-
-		ch_reg<ch_bit<way_bits>> miss_addr(0);
-		ch_reg<ch_bool> in_data_validity(false);
-
-
-		auto in_tag   = ch_slice<tag_bits>(io.in_address >> way_bits);
-		auto in_index = ch_slice<index_bits>(io.in_address >> line_bits);
-		auto in_addr  = ch_slice<way_bits>(io.in_address);
-
-		auto curr_tag   = tag_cache.read(in_index);
-		auto curr_valid = valid_cache.read(in_index);
-
-
-		auto miss     = (in_tag != curr_tag)  && curr_valid && io.in_valid;
-		auto copying  = miss                  || io.DBUS.in_data.valid;
-
-
-		in_data_validity->next = io.DBUS.in_data.valid;
-		
-
-		auto new_miss_addr  = ch_cat(in_index, ch_bit<line_bits>(0));
-		auto next_miss_addr = miss_addr.as_uint() + ch_uint<way_bits>(4);
-
-
-		miss_addr->next = ch_sel(io.DBUS.in_data.valid, next_miss_addr, new_miss_addr);
-
-		auto data_w_indx = ch_sel(copying, miss_addr, in_addr);
-		
-		auto Abyte0 = data_w_indx;
-		auto Abyte1 = data_w_indx.as_uint() + ch_uint<way_bits>(1);
-		auto Abyte2 = data_w_indx.as_uint() + ch_uint<way_bits>(2);
-		auto Abyte3 = data_w_indx.as_uint() + ch_uint<way_bits>(3);
-
-		auto byte0 = data_cache.read(Abyte0);
-		auto byte1 = data_cache.read(Abyte1);
-		auto byte2 = data_cache.read(Abyte2);
-		auto byte3 = data_cache.read(Abyte3);
-
-		// LB_SB = 0
-		// LH_SH = 1
-		// LW_SW = 2
-		// LBU   = 3
-		// LHU   = 4
-
-		ch_bool Wbyte0;
-		ch_bool Wbyte1;
-		ch_bool Wbyte2;
-		ch_bool Wbyte3;
-		ch_bit<32> mem_out;
-		__switch(io.in_control)
-			__case(0)
-			{
-				// LB
-				ch_bit<24> ones(ONES_24BITS);
-				ch_bit<24> zeros(ZERO);
-					
-				mem_out =  ch_sel(byte0[7] == 1, ch_cat(ones, byte0), ch_resize<32>(byte0));
-				Wbyte0 = TRUE;
-				Wbyte1 = FALSE;
-				Wbyte2 = FALSE;
-				Wbyte3 = FALSE;
-			}
-			__case(1)
-			{
-				// LH sign extend
-				ch_bit<16> ones(ONES_16BITS);
-				ch_bit<16> zeros(ZERO);
-				
-				ch_bit<16> half = ch_cat(byte1, byte0);
-				mem_out = ch_sel(half[15] == 1, ch_cat(ones, half), ch_resize<32>(half));
-				Wbyte0 = TRUE;
-				Wbyte1 = TRUE;
-				Wbyte2 = FALSE;
-				Wbyte3 = FALSE;
-			}
-			__case(2)
-			{
-				mem_out = ch_cat(byte3, byte2, byte1, byte0);
-				Wbyte0 = TRUE;
-				Wbyte1 = TRUE;
-				Wbyte2 = TRUE;
-				Wbyte3 = TRUE;
-			}
-			__case(4)
-			{
-				mem_out = ch_resize<32>(byte0);
-				Wbyte0 = FALSE;
-				Wbyte1 = FALSE;
-				Wbyte2 = FALSE;
-				Wbyte3 = FALSE;
-			}
-			__case(5)
-			{
-				mem_out = ch_resize<32>(ch_cat(byte1, byte0));
-				Wbyte0 = FALSE;
-				Wbyte1 = FALSE;
-				Wbyte2 = FALSE;
-				Wbyte3 = FALSE;
-			}
-			__default
-			{
-				mem_out  = ch_bit<32>(0xdeadbeef);
-				Wbyte0 = FALSE;
-				Wbyte1 = FALSE;
-				Wbyte2 = FALSE;
-				Wbyte3 = FALSE;
-			};
-
-		io.out_data   = mem_out;
-		io.out_delay  = copying || in_data_validity;
-
-
-		tag_cache.write(  in_index , in_tag, miss );
-		valid_cache.write(in_index , TRUE  , miss );
-
-
-
-		auto data_to_write = ch_sel(copying, io.DBUS.in_data.data, io.in_data);
-
-		data_cache.write(Abyte0, ch_slice<8>(data_to_write)      , copying || (io.in_rw && Wbyte0));
-		data_cache.write(Abyte1, ch_slice<8>(data_to_write >> 8) , copying || (io.in_rw && Wbyte1));
-		data_cache.write(Abyte2, ch_slice<8>(data_to_write >> 16), copying || (io.in_rw && Wbyte2));
-		data_cache.write(Abyte3, ch_slice<8>(data_to_write >> 24), copying || (io.in_rw && Wbyte3));
-
-
-		io.DBUS.out_rw            = io.in_rw;
-		io.DBUS.out_address.data  = io.in_address;
-		io.DBUS.out_address.valid = io.in_valid;
-
-		io.DBUS.out_control.data  = io.in_control;
-		io.DBUS.out_control.valid = TRUE;
-
-		io.DBUS.out_data.data     = io.in_data;
-		io.DBUS.out_data.valid    = io.in_valid;
-
-		io.DBUS.in_data.ready     = io.in_valid;
-		io.DBUS.out_miss          = miss;
-
-
-	}
-
-};
 
 struct Cache_driver
 {
@@ -231,7 +55,7 @@ struct Cache_driver
 
 	}
 
-	ch_module<Cache<32KB, 256, 1>> cache;
+	ch_module<Cache<32KB, 256, 2>> cache;
 };
 
 
@@ -407,7 +231,7 @@ struct Memory
 			// io.DBUS.out_miss    = dcache_miss;
 			// // Telling the pipeline if it's a miss or if currently copying a line into cache
 			// auto dcache_miss = (line_tag != real_tag)  && real_valid && io.in_address_valid;
-			// auto copying     = dcache_miss             || io.DBUS.in_data.valid;
+			// auto copying     = dcache_miss             || io.in_dbus_valid;
 			// ch_reg<ch_bool> in_data_validity(false);
 			// in_data_validity->next = io.DBUS.in_data.valid;
 			// io.out_delay        = copying || in_data_validity;
