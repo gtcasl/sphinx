@@ -42,11 +42,11 @@ struct Cache_driver
 		//  READING MEMORY
 
 		cache.io.DBUS(io.DBUS);
-		cache.io.in_address = io.in_address;
-		cache.io.in_data    = io.in_data;
-		cache.io.in_rw      = mem_write_enable;
-		cache.io.in_valid   = mem_write_enable || mem_read_enable;
-		cache.io.in_control = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
+		cache.io.way_i.in_address = io.in_address;
+		cache.io.way_i.in_data    = io.in_data;
+		cache.io.way_i.in_rw      = mem_write_enable;
+		cache.io.way_i.in_valid   = mem_write_enable || mem_read_enable;
+		cache.io.way_i.in_control = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
 		
 		
 
