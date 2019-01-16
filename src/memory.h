@@ -55,7 +55,7 @@ struct Cache_driver
 
 	}
 
-	ch_module<Cache<32KB, 256, 2>> cache;
+	ch_module<Cache<DCACHE_SIZE, DLINE_SIZE, DNUM_WAYS>> cache;
 };
 
 

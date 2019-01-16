@@ -1,14 +1,19 @@
 #ifndef __OPTIONS__
 #define __OPTIONS__
+
+#include "literals.h"
+
 // #define ICACHE_ENABLE
 // #define ICACHE_BITS 15
 // #define ILINE_BITS 10
+
 #define DCACHE_ENABLE
-// #define DCACHE_DMANIP
-#define DCACHE_AMANIP
-#define DCACHE_BITS 14
-#define DLINE_BITS 8
-#define JAL_MEM
+
+#define DCACHE_SIZE 32KB
+#define DLINE_SIZE 256
+#define DNUM_WAYS 2
+
+
 #define FORWARDING
-#define BRANCH_WB
+
 #endif

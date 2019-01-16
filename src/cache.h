@@ -213,25 +213,27 @@ struct Cache
 	void describe()
 	{
 
+		io.DBUS.out_rw            = io.way_i.in_rw;
+		io.DBUS.out_address.data  = io.way_i.in_address;
+		io.DBUS.out_address.valid = io.way_i.in_valid;
+
+		io.DBUS.out_control.data  = io.way_i.in_control;
+		io.DBUS.out_control.valid = TRUE;
+
+		io.DBUS.out_data.data     = io.way_i.in_data;
+		io.DBUS.out_data.valid    = io.way_i.in_valid;
+
+		io.DBUS.in_data.ready     = io.way_i.in_valid;
+
+		ch_bool big_miss;
+		ch_bool big_delay;
+		ch_bit<32> data;
+
 		if constexpr (num_ways == 1)
 		{
 
 
 			ch_module<Way<cache_size, line_size, num_ways, 0>> way0;
-
-
-			io.DBUS.out_rw            = io.way_i.in_rw;
-			io.DBUS.out_address.data  = io.way_i.in_address;
-			io.DBUS.out_address.valid = io.way_i.in_valid;
-
-			io.DBUS.out_control.data  = io.way_i.in_control;
-			io.DBUS.out_control.valid = TRUE;
-
-			io.DBUS.out_data.data     = io.way_i.in_data;
-			io.DBUS.out_data.valid    = io.way_i.in_valid;
-
-			io.DBUS.in_data.ready     = io.way_i.in_valid;
-
 
 
 			way0.io.in_id         = ch_uint<1>(0);
@@ -240,10 +242,6 @@ struct Cache
 			way0.io.way_i(io.way_i);
 
 
-
-			ch_bool big_miss;
-			ch_bool big_delay;
-			ch_bit<32> data;
 
 			big_miss  = way0.io.out_miss;
 			big_delay = way0.io.out_delay;
@@ -268,17 +266,7 @@ struct Cache
 
 
 
-			io.DBUS.out_rw            = io.way_i.in_rw;
-			io.DBUS.out_address.data  = io.way_i.in_address;
-			io.DBUS.out_address.valid = io.way_i.in_valid;
 
-			io.DBUS.out_control.data  = io.way_i.in_control;
-			io.DBUS.out_control.valid = TRUE;
-
-			io.DBUS.out_data.data     = io.way_i.in_data;
-			io.DBUS.out_data.valid    = io.way_i.in_valid;
-
-			io.DBUS.in_data.ready     = io.way_i.in_valid;
 
 
 
@@ -293,10 +281,6 @@ struct Cache
 			way1.io.way_i(io.way_i);
 
 
-
-			ch_bool big_miss;
-			ch_bool big_delay;
-			ch_bit<32> data;
 
 			big_delay = way0.io.out_delay || way1.io.out_delay;
 			big_miss  = way0.io.out_miss  || way1.io.out_miss;
@@ -328,20 +312,6 @@ struct Cache
 
 
 
-			io.DBUS.out_rw            = io.way_i.in_rw;
-			io.DBUS.out_address.data  = io.way_i.in_address;
-			io.DBUS.out_address.valid = io.way_i.in_valid;
-
-			io.DBUS.out_control.data  = io.way_i.in_control;
-			io.DBUS.out_control.valid = TRUE;
-
-			io.DBUS.out_data.data     = io.way_i.in_data;
-			io.DBUS.out_data.valid    = io.way_i.in_valid;
-
-			io.DBUS.in_data.ready     = io.way_i.in_valid;
-
-
-
 			way0.io.in_id         = kick_out;
 			way0.io.in_dbus_data  = io.DBUS.in_data.data;
 			way0.io.in_dbus_valid = io.DBUS.in_data.valid;
@@ -362,9 +332,7 @@ struct Cache
 			way3.io.in_dbus_valid = io.DBUS.in_data.valid;
 			way3.io.way_i(io.way_i);
 
-			ch_bool big_miss;
-			ch_bool big_delay;
-			ch_bit<32> data;
+
 
 			big_delay = way0.io.out_delay || way1.io.out_delay || way2.io.out_delay || way3.io.out_delay;
 			big_miss  = way0.io.out_miss  || way1.io.out_miss  || way2.io.out_miss  || way3.io.out_miss;

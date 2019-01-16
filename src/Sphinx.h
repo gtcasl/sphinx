@@ -777,8 +777,6 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
                 this->dbus_state = 1;
                 unsigned curr_add = (unsigned) pipeline.io.DBUS.out_address.data;
 
-                // address = (curr_add | (DLINE_SIZE - 1)) - 3; //
-                // min     = (curr_add | (DLINE_SIZE - 1)) - (DLINE_SIZE - 1);
 
                 address = (curr_add | (DLINE_SIZE - 1)) - (DLINE_SIZE - 1);
                 max     = (curr_add | (DLINE_SIZE - 1));
