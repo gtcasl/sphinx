@@ -75,12 +75,13 @@ struct Way
 			auto curr_valid = valid_cache.read(in_index);
 
 			// 
-			auto hit = (in_tag == curr_tag)  && curr_valid;
+			auto hit     = (in_tag == curr_tag)  && curr_valid;
+			auto not_hit = !hit;
 
 			ch_reg<ch_bool> state(TRUE);
 			ch_bool not_state = !state;
 
-			state->next = ch_sel(state && !hit && valid_id && io.way_i.in_valid && !io.in_other_hit, FALSE,
+			state->next = ch_sel(state && not_hit && valid_id && io.way_i.in_valid && !io.in_other_hit, FALSE,
 													  	     ch_sel(not_state && !io.in_dbus_valid, TRUE, state));
 
 
@@ -178,11 +179,11 @@ struct Way
 			
 
 			io.out_data   = mem_out;
-			io.out_delay  = not_state || (!hit && state && io.way_i.in_valid && !io.in_other_hit);
-			io.out_miss   = !hit && state && io.way_i.in_valid;
+			io.out_delay  = not_state || (not_hit && state && io.way_i.in_valid && !io.in_other_hit);
+			io.out_miss   = not_hit && state && io.way_i.in_valid;
 
 
-			// ch_bool actual_miss = not_state && !hit && valid_id && io.way_i.in_valid;
+			// ch_bool actual_miss = not_state && not_hit && valid_id && io.way_i.in_valid;
 
 			tag_cache.write(  in_index , in_tag, not_state);
 			valid_cache.write(in_index , TRUE  , not_state);
