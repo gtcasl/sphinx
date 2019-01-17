@@ -743,6 +743,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
         static unsigned address = 0;
         static unsigned max     = 0;
+        static bool first = true;
         if (this->dbus_state == 0)
         {
             // std::cout << "DBUS STATE 0\n";
@@ -772,7 +773,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
 
 
-            if (pipeline.io.DBUS.out_miss)
+            if ( (bool) pipeline.io.DBUS.out_miss && !first)
             {
                 this->dbus_state = 1;
                 unsigned curr_add = (unsigned) pipeline.io.DBUS.out_address.data;
@@ -788,6 +789,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
             }
             pipeline.io.DBUS.in_data.valid     = false;
+            if (first) first = false;
         } else
         {
             // std::cout << "DBUS STATE 1\n";

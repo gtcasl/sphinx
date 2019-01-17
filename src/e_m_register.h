@@ -64,8 +64,8 @@ struct E_M_Register
 		ch_reg<ch_bit<32>> rd2(0);
 		ch_reg<ch_bit<2>>  wb(0);
 		ch_reg<ch_bit<32>> PC_next(0);
-		ch_reg<ch_bit<3>>  mem_read(0);
-		ch_reg<ch_bit<3>>  mem_write(0);
+		ch_reg<ch_bit<3>>  mem_read(NO_MEM_READ_int);
+		ch_reg<ch_bit<3>>  mem_write(NO_MEM_WRITE_int);
 		ch_reg<ch_bit<12>> csr_address(0);
 		ch_reg<ch_bit<1>>  is_csr(0);
 		ch_reg<ch_bit<32>> csr_result(0);

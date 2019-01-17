@@ -31,6 +31,7 @@ struct Way
 		    (WAY_I)           way_i, 
 		__in(ch_bit<ID_BITS>) in_id,
 		__in(ch_bool)         in_dbus_valid,
+		__in(ch_bool)         in_other_hit,
 		__in(ch_bit<32>)      in_dbus_data,
 
 		__out(ch_bit<32>)     out_data,
@@ -57,9 +58,9 @@ struct Way
 		ch_mem<ch_bit<tag_bits> , num_lines > tag_cache;
 		ch_mem<ch_bool          , num_lines > valid_cache;
 
-		ch_reg<ch_bit<way_bits>> miss_addr(0);
-		ch_reg<ch_bool> in_data_validity(false);
+		ch_bool valid_id = io.in_id == way_id;
 
+		ch_reg<ch_bit<way_bits>> miss_addr(0);
 
 		auto in_tag   = ch_slice<tag_bits>(io.way_i.in_address >> way_bits);
 		auto in_index = ch_slice<index_bits>(io.way_i.in_address >> line_bits);
@@ -68,11 +69,15 @@ struct Way
 		auto curr_tag   = tag_cache.read(in_index);
 		auto curr_valid = valid_cache.read(in_index);
 
-		auto miss     = (in_tag != curr_tag)  && curr_valid && io.way_i.in_valid;
-		auto copying  = miss                  || io.in_dbus_valid;
+		// 
+		auto hit = (in_tag == curr_tag)  && curr_valid;
 
 
-		in_data_validity->next = io.in_dbus_valid;
+		ch_reg<ch_bool> state(TRUE);
+		state->next = ch_sel(state && !hit && valid_id && io.way_i.in_valid && !io.in_other_hit, FALSE,
+												  	     ch_sel(!state && !io.in_dbus_valid, TRUE, state));
+
+
 		
 
 		auto new_miss_addr  = ch_cat(in_index, ch_bit<line_bits>(0));
@@ -81,7 +86,7 @@ struct Way
 
 		miss_addr->next = ch_sel(io.in_dbus_valid, next_miss_addr, new_miss_addr);
 
-		auto data_w_indx = ch_sel(copying, miss_addr, in_addr);
+		auto data_w_indx = ch_sel(!state, miss_addr, in_addr);
 		
 		auto Abyte0 = data_w_indx;
 		auto Abyte1 = data_w_indx.as_uint() + ch_uint<way_bits>(1);
@@ -163,37 +168,40 @@ struct Way
 				Wbyte3 = FALSE;
 			};
 
+		
+
 		io.out_data   = mem_out;
-		io.out_delay  = (copying || in_data_validity) && (io.in_id == way_id);
-		io.out_miss   = miss;
-
-		tag_cache.write(  in_index , in_tag, miss && (io.in_id == way_id) );
-		valid_cache.write(in_index , TRUE  , miss && (io.in_id == way_id) );
+		io.out_delay  = !state || (!hit && state && io.way_i.in_valid && !io.in_other_hit);
+		io.out_miss   = !hit && state && io.way_i.in_valid;
 
 
+		// ch_bool actual_miss = !state && !hit && valid_id && io.way_i.in_valid;
 
-		auto data_to_write = ch_sel(copying, io.in_dbus_data, io.way_i.in_data);
+		tag_cache.write(  in_index , in_tag, !state);
+		valid_cache.write(in_index , TRUE  , !state);
 
-		data_cache.write(Abyte0, ch_slice<8>(data_to_write)      , (copying && io.in_id == way_id) || (io.way_i.in_rw && Wbyte0));
-		data_cache.write(Abyte1, ch_slice<8>(data_to_write >> 8) , (copying && io.in_id == way_id) || (io.way_i.in_rw && Wbyte1));
-		data_cache.write(Abyte2, ch_slice<8>(data_to_write >> 16), (copying && io.in_id == way_id) || (io.way_i.in_rw && Wbyte2));
-		data_cache.write(Abyte3, ch_slice<8>(data_to_write >> 24), (copying && io.in_id == way_id) || (io.way_i.in_rw && Wbyte3));
+		auto data_to_write = ch_sel(!state, io.in_dbus_data, io.way_i.in_data);
 
+		// ch_print("AA {2} [{0}]  {1} ", state, io.in_dbus_valid, ch_bit<ID_BITS>(way_id));
+		ch_print("BB {0}  state: {1}->{9}  hit: {2}  valid_id: {3}, io.in_dbus_valid: {4} io.way_i.in_valid: {10}\t{5}={6}\t{7}=={8}", ch_bit<ID_BITS>(way_id), state, hit, valid_id, io.in_dbus_valid, Abyte0, data_to_write, in_tag, curr_tag, state->next, io.way_i.in_valid);
+		// __if((!state))
+		// {
+		// 	ch_print("RM [{4}] {0}{1} ---> {2} = {3}", ch_bit<ID_BITS>(way_id), io.in_id, Abyte0, data_to_write, state);
+		// };
 
+		// __if((io.way_i.in_rw && hit && Wbyte0) && io.way_i.in_valid)
+		// {
+		// 	ch_print("WM [4] ******************* {0}{1} ---> {2} = {3}", ch_bit<ID_BITS>(way_id), io.in_id, Abyte0, data_to_write, state);
+		// };
 
-
+		data_cache.write(Abyte0, ch_slice<8>(data_to_write)      , (!state) || (io.way_i.in_rw && hit && Wbyte0 && io.way_i.in_valid));
+		data_cache.write(Abyte1, ch_slice<8>(data_to_write >> 8) , (!state) || (io.way_i.in_rw && hit && Wbyte1 && io.way_i.in_valid));
+		data_cache.write(Abyte2, ch_slice<8>(data_to_write >> 16), (!state) || (io.way_i.in_rw && hit && Wbyte2 && io.way_i.in_valid));
+		data_cache.write(Abyte3, ch_slice<8>(data_to_write >> 24), (!state) || (io.way_i.in_rw && hit && Wbyte3 && io.way_i.in_valid));
 
 	}
 
 };
-
-
-	// __in(ch_bit<3> )  in_control,
-	// __in(ch_bool   )  in_rw,
-
-	// __in(ch_bit<32>)  in_address,
-	// __in(ch_bit<32>)  in_data,
-	// __in(ch_bool   )  in_valid
 
 template<unsigned cache_size, unsigned line_size, unsigned num_ways>
 struct Cache
@@ -237,6 +245,7 @@ struct Cache
 
 
 			way0.io.in_id         = ch_uint<1>(0);
+			way0.io.in_other_hit  = FALSE;
 			way0.io.in_dbus_data  = io.DBUS.in_data.data;
 			way0.io.in_dbus_valid = io.DBUS.in_data.valid;
 			way0.io.way_i(io.way_i);
@@ -265,28 +274,28 @@ struct Cache
 			ch_reg<ch_bool> delay_hist(false);
 
 
-
-
-
-
-
 			way0.io.in_id         = kick_out;
 			way0.io.in_dbus_data  = io.DBUS.in_data.data;
 			way0.io.in_dbus_valid = io.DBUS.in_data.valid;
+			way0.io.in_other_hit  = !way1.io.out_miss;
 			way0.io.way_i(io.way_i);
 
 			way1.io.in_id         = kick_out;
 			way1.io.in_dbus_data  = io.DBUS.in_data.data;
 			way1.io.in_dbus_valid = io.DBUS.in_data.valid;
+			way1.io.in_other_hit  = !way0.io.out_miss;
 			way1.io.way_i(io.way_i);
 
 
 
 			big_delay = way0.io.out_delay || way1.io.out_delay;
-			big_miss  = way0.io.out_miss  || way1.io.out_miss;
+			big_miss  = way0.io.out_miss  && way1.io.out_miss;
 			data = ch_sel(!way0.io.out_miss, way0.io.out_data, way1.io.out_data);
 
-
+			__if(io.way_i.in_valid && !io.way_i.in_rw)
+			{
+				ch_print("TRYING TO READ: {0}, and got a {1}\t{2}", io.way_i.in_address, !big_miss, data );
+			};
 
 			delay_hist->next = big_delay;
 			kick_out->next = ch_sel(delay_hist && !big_delay, kick_out + ch_uint<ID_BITS>(1), kick_out); 
@@ -315,19 +324,23 @@ struct Cache
 			way0.io.in_id         = kick_out;
 			way0.io.in_dbus_data  = io.DBUS.in_data.data;
 			way0.io.in_dbus_valid = io.DBUS.in_data.valid;
+			way0.io.in_other_hit  = !way1.io.out_miss  || !way2.io.out_miss  || !way3.io.out_miss;
 			way0.io.way_i(io.way_i);
 
 			way1.io.in_id         = kick_out;
+			way1.io.in_other_hit  = !way0.io.out_miss  || !way2.io.out_miss  || !way3.io.out_miss;
 			way1.io.in_dbus_data  = io.DBUS.in_data.data;
 			way1.io.in_dbus_valid = io.DBUS.in_data.valid;
 			way1.io.way_i(io.way_i);
 
 			way2.io.in_id         = kick_out;
+			way2.io.in_other_hit  = !way1.io.out_miss  || !way0.io.out_miss  || !way3.io.out_miss;
 			way2.io.in_dbus_data  = io.DBUS.in_data.data;
 			way2.io.in_dbus_valid = io.DBUS.in_data.valid;
 			way2.io.way_i(io.way_i);
 
 			way3.io.in_id         = kick_out;
+			way3.io.in_other_hit  = !way1.io.out_miss  || !way2.io.out_miss  || !way0.io.out_miss;
 			way3.io.in_dbus_data  = io.DBUS.in_data.data;
 			way3.io.in_dbus_valid = io.DBUS.in_data.valid;
 			way3.io.way_i(io.way_i);

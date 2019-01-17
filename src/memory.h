@@ -37,6 +37,7 @@ struct Cache_driver
 		ch_bool mem_write_enable = io.in_mem_write.as_uint() < NO_MEM_WRITE_int;
 		ch_bool mem_read_enable  = io.in_mem_read.as_uint() < NO_MEM_WRITE_int;
 
+		ch_print("io.in_mem_write: {0}\tio.in_mem_read: {1}", io.in_mem_write, io.in_mem_read);
 
 
 		//  READING MEMORY
@@ -48,6 +49,7 @@ struct Cache_driver
 		cache.io.way_i.in_valid   = mem_write_enable || mem_read_enable;
 		cache.io.way_i.in_control = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
 		
+
 		
 
 		io.out_data  = cache.io.out_data;
@@ -104,6 +106,7 @@ struct Memory
 		io.out_delay = cache_driver.io.out_delay;
 
 
+
 		// ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3}, mem_write: {4}, mem_read: {5}", io.in_rd, io.in_alu_result, io.out_mem_result, io.in_rd2, io.in_mem_write, io.in_mem_read);
 
 		cache_driver.io.DBUS(io.DBUS);
@@ -112,6 +115,15 @@ struct Memory
 		cache_driver.io.in_mem_write = io.in_mem_write;
 		cache_driver.io.in_data = io.in_rd2;
 
+
+
+		__if(io.in_mem_read.as_uint() < NO_MEM_WRITE_int)
+		{
+			ch_print("--------------------------> {0} = {1}", io.in_alu_result, cache_driver.io.out_data);
+		} __else
+		{
+			ch_print("**************************> PC: {0}", io.in_curr_PC);
+		};
 
 		// ch_print("io.in_curr_PC: {0}", io.in_curr_PC);
 
@@ -183,75 +195,3 @@ struct Memory
 	ch_module<Cache_driver> cache_driver;
 
 };
-
-
-			// io.DBUS.out_address.data  = io.in_address;
-			// io.DBUS.out_address.valid = io.in_address_valid;
-
-			// io.DBUS.out_control.data  = io.in_control;
-			// io.DBUS.out_control.valid = TRUE;
-
-			// io.DBUS.out_data.data     = io.in_data;
-			// io.DBUS.out_data.valid    = io.in_data_valid;
-
-			// io.DBUS.in_data.ready     = io.in_data_ready;
-
-
-			// ch_mem<ch_bit<DLINE_BIT_SIZE>, DNUM_LINES> data_cache;
-			// ch_mem<ch_uint<32>           , DNUM_LINES> tag_cache;
-			// ch_mem<ch_bool               , DNUM_LINES> valid_cache;
-
-
-
-			// ch_bool flush(FALSE);
-
-
-
-
-			// // Getting infro from the address
-			// auto line_index  = ch_resize<DNUM_BITS>(io.in_address.as_uint() >> DLINE_BITS);
-			// auto line_offset = ch_resize<DOFFSET_BITS>(io.in_address).as_uint() << 3;
-			// auto line_tag    = io.in_address.as_uint() & ch_uint<32>(DTAG_MASK);
-
-
-			// // Getting info from cache
-			// auto real_line  = data_cache.read(line_index);
-			// auto real_valid = valid_cache.read(line_index);
-			// auto real_tag   = tag_cache.read(line_index);
-
-
-
-
-			// // checking if there is a cache miss or if cache is currently receiving data from RAM
-
-
-
-
-			// // Telling RAM if it was a miss
-			// io.DBUS.out_miss    = dcache_miss;
-			// // Telling the pipeline if it's a miss or if currently copying a line into cache
-			// auto dcache_miss = (line_tag != real_tag)  && real_valid && io.in_address_valid;
-			// auto copying     = dcache_miss             || io.in_dbus_valid;
-			// ch_reg<ch_bool> in_data_validity(false);
-			// in_data_validity->next = io.DBUS.in_data.valid;
-			// io.out_delay        = copying || in_data_validity;
-
-			// // outputting data if it's a load operation
-			// io.out_data         = ch_sel( !copying, ch_resize<32>(real_line >> line_offset), 0x0);
-
-
-			// auto bus_data      = (real_line << ch_uint(32)) | ch_pad<DLINE_BIT_SIZE - 32>(io.DBUS.in_data.data);
-
-
-			// // Blending the current line
-			// auto mask          =    ch_bit<DLINE_BIT_SIZE>(GENERIC_DMASK) << line_offset;
-			// auto input_word    = ch_resize<DLINE_BIT_SIZE>(io.in_data)    << line_offset;
-			// auto load_data     = real_line ^ ((real_line ^ input_word) & mask);
-
-
-			// auto data_to_write = ch_sel(dcache_miss, ch_bit<DLINE_BIT_SIZE>(0), ch_sel(copying, bus_data, load_data));
-
-
-			// tag_cache.write(  line_index , line_tag      , dcache_miss);
-			// valid_cache.write(line_index , !flush        , dcache_miss || flush);
-			// data_cache.write( line_index , data_to_write , copying     || (io.in_control == DBUS_RW) || (io.in_control == DBUS_WRITE));
