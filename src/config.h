@@ -11,7 +11,7 @@
 
 #define DCACHE_SIZE 32KB
 #define DLINE_SIZE 256
-#define DNUM_WAYS 8
+#define DNUM_WAYS 4
 
 
 #define FORWARDING
