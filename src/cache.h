@@ -40,7 +40,6 @@ struct Way
 		__in(ch_bit<ID_BITS>)    in_id,
 		__in(ch_bit<tag_bits>)   in_tag,
 		__in(ch_bit<index_bits>) in_index,
-		__in(ch_bit<way_bits>)   in_addr,
 		__in(ch_bool)            in_dbus_valid,
 		__in(ch_bool)            in_other_hit,
 		__in(ch_bit<32>)         in_dbus_data,
@@ -48,6 +47,7 @@ struct Way
 		__in(ch_bit<way_bits>)   in_Abyte1,
 		__in(ch_bit<way_bits>)   in_Abyte2,
 		__in(ch_bit<way_bits>)   in_Abyte3,
+		
 		__out(ch_bit<32>)        out_data,
 		__out(ch_bool)           out_delay,
 		__out(ch_bool)           out_state,
@@ -307,7 +307,6 @@ struct Cache
 		way0.io.way_i(io.way_i);
 		way0.io.in_tag        = in_tag;
 		way0.io.in_index      = in_index;
-		way0.io.in_addr       = in_addr;
 		way0.io.in_Abyte0     = Abyte0;
 		way0.io.in_Abyte1     = Abyte1;
 		way0.io.in_Abyte2     = Abyte2;
@@ -320,7 +319,6 @@ struct Cache
 		way1.io.way_i(io.way_i);
 		way1.io.in_tag        = in_tag;
 		way1.io.in_index      = in_index;
-		way1.io.in_addr       = in_addr;
 		way1.io.in_Abyte0     = Abyte0;
 		way1.io.in_Abyte1     = Abyte1;
 		way1.io.in_Abyte2     = Abyte2;
@@ -333,7 +331,6 @@ struct Cache
 		way2.io.way_i(io.way_i);
 		way2.io.in_tag        = in_tag;
 		way2.io.in_index      = in_index;
-		way2.io.in_addr       = in_addr;
 		way2.io.in_Abyte0     = Abyte0;
 		way2.io.in_Abyte1     = Abyte1;
 		way2.io.in_Abyte2     = Abyte2;
@@ -346,7 +343,6 @@ struct Cache
 		way3.io.way_i(io.way_i);
 		way3.io.in_tag        = in_tag;
 		way3.io.in_index      = in_index;
-		way3.io.in_addr       = in_addr;
 		way3.io.in_Abyte0     = Abyte0;
 		way3.io.in_Abyte1     = Abyte1;
 		way3.io.in_Abyte2     = Abyte2;
@@ -360,7 +356,6 @@ struct Cache
 		way4.io.way_i(io.way_i);
 		way4.io.in_tag        = in_tag;
 		way4.io.in_index      = in_index;
-		way4.io.in_addr       = in_addr;
 		way4.io.in_Abyte0     = Abyte0;
 		way4.io.in_Abyte1     = Abyte1;
 		way4.io.in_Abyte2     = Abyte2;
@@ -373,7 +368,6 @@ struct Cache
 		way5.io.way_i(io.way_i);
 		way5.io.in_tag        = in_tag;
 		way5.io.in_index      = in_index;
-		way5.io.in_addr       = in_addr;
 		way5.io.in_Abyte0     = Abyte0;
 		way5.io.in_Abyte1     = Abyte1;
 		way5.io.in_Abyte2     = Abyte2;
@@ -386,7 +380,6 @@ struct Cache
 		way6.io.way_i(io.way_i);
 		way6.io.in_tag        = in_tag;
 		way6.io.in_index      = in_index;
-		way6.io.in_addr       = in_addr;
 		way6.io.in_Abyte0     = Abyte0;
 		way6.io.in_Abyte1     = Abyte1;
 		way6.io.in_Abyte2     = Abyte2;
@@ -399,7 +392,6 @@ struct Cache
 		way7.io.way_i(io.way_i);
 		way7.io.in_tag        = in_tag;
 		way7.io.in_index      = in_index;
-		way7.io.in_addr       = in_addr;
 		way7.io.in_Abyte0     = Abyte0;
 		way7.io.in_Abyte1     = Abyte1;
 		way7.io.in_Abyte2     = Abyte2;
