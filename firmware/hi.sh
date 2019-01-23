@@ -1,5 +1,3 @@
-gcc -c -Wl,-Bstatic,-T,--strip-debug -nostdlib firmware.c -o firmware.o
- # /opt/riscv-nommu/bin/riscv32-unknown-linux-gnu-objdump -d firmware.o > firmware.dump
- # /opt/riscv-nommu/bin/riscv32-unknown-linux-gnu-objcopy -I ihex firmware.o firmware.hex
-objdump -d --adjust-vma=0x80000000 firmware.o > firmware.dump
- # /opt/riscv-nommu/bin/riscv32-unknown-linux-gnu-objcopy --change-addresses 0x80000000 --only-section .text -O ihex firmware.o firmware.hex
+ /opt/riscv-nommu/bin/riscv32-unknown-linux-gnu-gcc -march=rv32i -mabi=ilp32 -Wl,-Bstatic,-T,linker.ld -ffreestanding -nostdlib firmware.c -o firmware.elf
+ /opt/riscv-nommu/bin/riscv32-unknown-linux-gnu-objdump -D firmware.elf > firmware.dump
+ /opt/riscv-nommu/bin/riscv32-unknown-linux-gnu-objcopy -O ihex firmware.elf firmware.hex

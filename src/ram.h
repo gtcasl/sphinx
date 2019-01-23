@@ -189,6 +189,7 @@ void loadHexImpl(std::string path,RAM* mem) {
 
     int offset = 0;
     char* line = content;
+    // std::cout << "WHTA\n";
     while (1) {
         if (line[0] == ':') {
             uint32_t byteCount = hToI(line + 1, 2);

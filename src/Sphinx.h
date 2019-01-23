@@ -407,7 +407,7 @@ void Sphinx::ProcessFile(void)
 
     loadHexImpl(this->instruction_file_name, &this->ram);
 
-    // std::cout << "$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
+    // std::cout<< "$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
     // exit(0);
     // uint32_t address = 0x80000038;
     // // uint32_t * data = new uint32_t[64];

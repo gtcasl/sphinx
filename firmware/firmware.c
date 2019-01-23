@@ -31,29 +31,20 @@
 #define reg_uart_data (*(volatile uint32_t*)0xFF000000)
 // --------------------------------------------------------
 
-
-
-void putcchar(char c)
-{
-	if (c == '\n')
-		putcchar('\r');
-	reg_uart_data = c;
-	return;
-}
-
-void printt(const char *p)
-{
-	while (*p)
-		putcchar(*(p++));
-	return;
-}
-
-
 // --------------------------------------------------------
 int main()
 {
 	
-	printt("Booting..\n");
+	// print("Booting..\n");
+	const char *p = "booting\n";
+
+	while (*p)
+	{
+		char c = *(p++);
+		reg_uart_data = c;
+	}
+
+
 
 	return 0;
 }

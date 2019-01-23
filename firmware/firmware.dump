@@ -1,52 +1,48 @@
 
-firmware.o:     file format elf64-x86-64
+firmware.elf:     file format elf32-littleriscv
 
 
 Disassembly of section .text:
 
-0000000080000000 <putcchar>:
-    80000000:	55                   	push   %rbp
-    80000001:	48 89 e5             	mov    %rsp,%rbp
-    80000004:	48 83 ec 10          	sub    $0x10,%rsp
-    80000008:	89 f8                	mov    %edi,%eax
-    8000000a:	88 45 fc             	mov    %al,-0x4(%rbp)
-    8000000d:	80 7d fc 0a          	cmpb   $0xa,-0x4(%rbp)
-    80000011:	75 0a                	jne    8000001d <putcchar+0x1d>
-    80000013:	bf 0d 00 00 00       	mov    $0xd,%edi
-    80000018:	e8 00 00 00 00       	callq  8000001d <putcchar+0x1d>
-    8000001d:	b8 00 00 00 ff       	mov    $0xff000000,%eax
-    80000022:	0f be 55 fc          	movsbl -0x4(%rbp),%edx
-    80000026:	89 10                	mov    %edx,(%rax)
-    80000028:	90                   	nop
-    80000029:	c9                   	leaveq 
-    8000002a:	c3                   	retq   
+80000000 <main>:
+80000000:	fe010113          	addi	sp,sp,-32
+80000004:	00812e23          	sw	s0,28(sp)
+80000008:	02010413          	addi	s0,sp,32
+8000000c:	810007b7          	lui	a5,0x81000
+80000010:	00078793          	mv	a5,a5
+80000014:	fef42623          	sw	a5,-20(s0)
+80000018:	0240006f          	j	8000003c <main+0x3c>
+8000001c:	fec42783          	lw	a5,-20(s0)
+80000020:	00178713          	addi	a4,a5,1 # 81000001 <main+0x1000001>
+80000024:	fee42623          	sw	a4,-20(s0)
+80000028:	0007c783          	lbu	a5,0(a5)
+8000002c:	fef405a3          	sb	a5,-21(s0)
+80000030:	ff0007b7          	lui	a5,0xff000
+80000034:	feb44703          	lbu	a4,-21(s0)
+80000038:	00e7a023          	sw	a4,0(a5) # ff000000 <main+0x7f000000>
+8000003c:	fec42783          	lw	a5,-20(s0)
+80000040:	0007c783          	lbu	a5,0(a5)
+80000044:	fc079ce3          	bnez	a5,8000001c <main+0x1c>
+80000048:	00000793          	li	a5,0
+8000004c:	00078513          	mv	a0,a5
+80000050:	01c12403          	lw	s0,28(sp)
+80000054:	02010113          	addi	sp,sp,32
+80000058:	00008067          	ret
 
-000000008000002b <printt>:
-    8000002b:	55                   	push   %rbp
-    8000002c:	48 89 e5             	mov    %rsp,%rbp
-    8000002f:	48 83 ec 10          	sub    $0x10,%rsp
-    80000033:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
-    80000037:	eb 19                	jmp    80000052 <printt+0x27>
-    80000039:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
-    8000003d:	48 8d 50 01          	lea    0x1(%rax),%rdx
-    80000041:	48 89 55 f8          	mov    %rdx,-0x8(%rbp)
-    80000045:	0f b6 00             	movzbl (%rax),%eax
-    80000048:	0f be c0             	movsbl %al,%eax
-    8000004b:	89 c7                	mov    %eax,%edi
-    8000004d:	e8 00 00 00 00       	callq  80000052 <printt+0x27>
-    80000052:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
-    80000056:	0f b6 00             	movzbl (%rax),%eax
-    80000059:	84 c0                	test   %al,%al
-    8000005b:	75 dc                	jne    80000039 <printt+0xe>
-    8000005d:	90                   	nop
-    8000005e:	c9                   	leaveq 
-    8000005f:	c3                   	retq   
+Disassembly of section .rodata:
 
-0000000080000060 <main>:
-    80000060:	55                   	push   %rbp
-    80000061:	48 89 e5             	mov    %rsp,%rbp
-    80000064:	bf 00 00 00 00       	mov    $0x0,%edi
-    80000069:	e8 00 00 00 00       	callq  8000006e <main+0xe>
-    8000006e:	b8 00 00 00 00       	mov    $0x0,%eax
-    80000073:	5d                   	pop    %rbp
-    80000074:	c3                   	retq   
+81000000 <.rodata>:
+81000000:	6f62                	flw	ft10,24(sp)
+81000002:	6e69746f          	jal	s0,810976e8 <main+0x10976e8>
+81000006:	          	jalr	s4,zero # 0 <main-0x80000000>
+
+Disassembly of section .comment:
+
+82000000 <.comment>:
+82000000:	3a434347          	fmsub.d	ft6,ft6,ft4,ft7,rmm
+82000004:	2820                	fld	fs0,80(s0)
+82000006:	29554e47          	fmsub.s	ft8,fa0,fs5,ft5,rmm
+8200000a:	3820                	fld	fs0,112(s0)
+8200000c:	322e                	fld	ft4,232(sp)
+8200000e:	302e                	fld	ft0,232(sp)
+	...
