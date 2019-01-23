@@ -7,11 +7,11 @@ struct Write_Back
 	__io(
 		__in(ch_bit<32>) in_alu_result,
 		__in(ch_bit<32>) in_mem_result,
-		__in(ch_bit<5>) in_rd,
-		__in(ch_bit<2>) in_wb,
-		__in(ch_bit<5>) in_rs1,
-		__in(ch_bit<5>) in_rs2,
-		__in(ch_bit<32>)   in_PC_next,
+		__in(ch_bit<5>)  in_rd,
+		__in(ch_bit<2>)  in_wb,
+		__in(ch_bit<5>)  in_rs1,
+		__in(ch_bit<5>)  in_rs2,
+		__in(ch_bit<32>) in_PC_next,
 
 		__out(ch_bit<32>) out_write_data,
 		__out(ch_bit<5>) out_rd,
@@ -32,7 +32,6 @@ struct Write_Back
 		// ch_print("****************");
 		// ch_print("Write Back");
 		// ch_print("****************");		
-
 
 		// ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, PC_next: {3}, WB: {4}", io.in_rd, io.in_alu_result, io.in_mem_result, io.in_PC_next, io.in_wb);
 		// ch_print("rd: {0}, write+data: {1}", io.in_rd, io.out_write_data);

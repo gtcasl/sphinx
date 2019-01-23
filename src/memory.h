@@ -37,27 +37,56 @@ struct Cache_driver
 		ch_bool mem_write_enable = io.in_mem_write.as_uint() < NO_MEM_WRITE_int;
 		ch_bool mem_read_enable  = io.in_mem_read.as_uint() < NO_MEM_WRITE_int;
 
-		ch_print("io.in_mem_write: {0}\tio.in_mem_read: {1}", io.in_mem_write, io.in_mem_read);
+		// ch_print("io.in_mem_write: {0}\tio.in_mem_read: {1}", io.in_mem_write, io.in_mem_read);
 
 
 		//  READING MEMORY
 
-		cache.io.DBUS(io.DBUS);
-		cache.io.way_i.in_address = io.in_address;
-		cache.io.way_i.in_data    = io.in_data;
-		cache.io.way_i.in_rw      = mem_write_enable;
-		cache.io.way_i.in_valid   = mem_write_enable || mem_read_enable;
-		cache.io.way_i.in_control = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
-		
+		#ifdef DCACHE_ENABLE
 
-		
+			cache.io.DBUS(io.DBUS);
+			cache.io.way_i.in_address = io.in_address;
+			cache.io.way_i.in_data    = io.in_data;
+			cache.io.way_i.in_rw      = mem_write_enable;
+			cache.io.way_i.in_valid   = mem_write_enable || mem_read_enable;
+			cache.io.way_i.in_control = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
+			
 
-		io.out_data  = cache.io.out_data;
-		io.out_delay = cache.io.out_delay;
+			ch_print("io.out_delay: {0}", cache.io.out_delay);
+
+			io.out_data  = cache.io.out_data;
+			io.out_delay = cache.io.out_delay;
+
+		#else
+
+
+			io.DBUS.out_rw            = mem_write_enable;
+			io.DBUS.out_address.data  = io.in_address;
+			io.DBUS.out_address.valid = mem_write_enable || mem_read_enable;
+
+			io.DBUS.out_control.data  = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);;
+			io.DBUS.out_control.valid = TRUE;
+
+			io.DBUS.out_data.data     = io.in_data;
+			io.DBUS.out_data.valid    = mem_write_enable || mem_read_enable;
+
+			io.DBUS.in_data.ready     = mem_write_enable || mem_read_enable;
+
+			io.DBUS.out_miss          = FALSE;
+
+			// ch_print("io.out_delay: {0}", cache.io.out_delay);
+
+			io.out_data  = io.DBUS.in_data.data;
+			
+			io.out_delay = FALSE;
+
+		#endif
 
 	}
 
+	#ifdef DCACHE_ENABLE
 	ch_module<Cache<DCACHE_SIZE, DLINE_SIZE, DNUM_WAYS>> cache;
+	#endif
 };
 
 
@@ -117,13 +146,13 @@ struct Memory
 
 
 
-		__if(io.in_mem_read.as_uint() < NO_MEM_WRITE_int)
-		{
-			ch_print("--------------------------> {0} = {1}", io.in_alu_result, cache_driver.io.out_data);
-		} __else
-		{
-			ch_print("**************************> PC: {0}", io.in_curr_PC);
-		};
+		// __if(io.in_mem_read.as_uint() < NO_MEM_WRITE_int)
+		// {
+		// 	ch_print("--------------------------> {0} = {1}", io.in_alu_result, cache_driver.io.out_data);
+		// } __else
+		// {
+		// 	ch_print("**************************> PC: {0}", io.in_curr_PC);
+		// };
 
 		// ch_print("io.in_curr_PC: {0}", io.in_curr_PC);
 

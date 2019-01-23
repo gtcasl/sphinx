@@ -10,10 +10,10 @@
 #define DCACHE_ENABLE
 
 #define DCACHE_SIZE 32KB
-#define DLINE_SIZE 256
-#define DNUM_WAYS 4
+#define DLINE_SIZE 1KB
+#define DNUM_WAYS 1
 
-
+#define JAL_EXE
 #define FORWARDING
 
 #endif

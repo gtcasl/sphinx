@@ -29,7 +29,7 @@ struct Way
 	static constexpr unsigned way_bits   = ((way_size == 0) || (log2(way_size) == 0)) ? 1 : log2(way_size);
 	static constexpr unsigned num_lines  = way_size / line_size;
 
-	static constexpr unsigned tag_bits   = 32 - way_bits;
+	static constexpr unsigned tag_bits   = 32;
 
 	static constexpr unsigned line_bits  = ((line_size == 0) || (log2(line_size) == 0)) ? 1 : log2(line_size);
 	static constexpr unsigned index_bits = ((num_lines == 0) || (log2(num_lines) == 0)) ? 1 : log2(num_lines);
@@ -47,7 +47,7 @@ struct Way
 		__in(ch_bit<way_bits>)   in_Abyte1,
 		__in(ch_bit<way_bits>)   in_Abyte2,
 		__in(ch_bit<way_bits>)   in_Abyte3,
-		
+
 		__out(ch_bit<32>)        out_data,
 		__out(ch_bool)           out_delay,
 		__out(ch_bool)           out_state,
@@ -62,7 +62,8 @@ struct Way
 		static constexpr unsigned way_bits   = ((way_size == 0) || (log2(way_size) == 0)) ? 1 : log2(way_size);
 		static constexpr unsigned num_lines  = way_size / line_size;
 
-		static constexpr unsigned tag_bits   = 32 - way_bits;
+		static constexpr unsigned tag_bits   = 32;
+		// static constexpr unsigned tag_bits   = (32 - way_bits) + 1;
 
 		static constexpr unsigned line_bits  = ((line_size == 0) || (log2(line_size) == 0)) ? 1 : log2(line_size);
 		static constexpr unsigned index_bits = ((num_lines == 0) || (log2(num_lines) == 0)) ? 1 : log2(num_lines);
@@ -71,7 +72,7 @@ struct Way
 		{
 
 			ch_mem<ch_bit<8>          , way_size  > data_cache;
-			ch_mem<ch_bit<tag_bits> , num_lines > tag_cache;
+			ch_mem<ch_bit<tag_bits>   , num_lines > tag_cache;
 			ch_mem<ch_bool            , num_lines > valid_cache;
 
 			ch_bool valid_id = io.in_id == way_id;
@@ -82,7 +83,7 @@ struct Way
 			auto curr_valid = valid_cache.read(io.in_index);
 
 			// 
-			auto hit     = (io.in_tag == curr_tag) && curr_valid;
+			auto hit     = ((io.in_tag == curr_tag) && curr_valid) || (io.way_i.in_address == 0xFF000000);
 			auto not_hit = !hit;
 
 			ch_reg<ch_bool> state(TRUE);
@@ -90,6 +91,8 @@ struct Way
 
 			state->next = ch_sel(state && not_hit && valid_id && io.way_i.in_valid && !io.in_other_hit, FALSE,
 													  	     ch_sel(not_state && !io.in_dbus_valid, TRUE, state));
+
+			// ch_print("not_state: {0}, io.in_dbus_valid: {1}", not_state, io.in_dbus_valid);
 
 			auto byte0 = data_cache.read(io.in_Abyte0);
 			auto byte1 = data_cache.read(io.in_Abyte1);
@@ -166,20 +169,34 @@ struct Way
 					Wbyte3 = FALSE;
 				};
 
-			
 
-			io.out_data   = mem_out;
+			// ch_print("{2} == {3} ? reading {0} --------------> {1}", io.in_Abyte0, mem_out, curr_tag, io.in_tag);
+
+			io.out_data   = ch_sel(io.way_i.in_address == 0xFF000000, io.in_dbus_data, mem_out);
+
 			io.out_delay  = not_state || (not_hit && state && io.way_i.in_valid && !io.in_other_hit);
 			io.out_miss   = not_hit && state && io.way_i.in_valid;
 			io.out_state  = state;
 
+			ch_reg<ch_bool> not_state_hist(FALSE);
 
-			// ch_bool actual_miss = not_state && not_hit && valid_id && io.way_i.in_valid;
+			not_state_hist->next = not_state;
 
-			tag_cache.write(  io.in_index , io.in_tag, not_state);
-			valid_cache.write(io.in_index , TRUE     , not_state);
+			tag_cache.write(  io.in_index , io.in_tag, not_state && !not_state_hist);
+			valid_cache.write(io.in_index , TRUE     , not_state && !not_state_hist);
 
-			auto data_to_write = ch_sel(not_state, io.in_dbus_data, io.way_i.in_data);
+			// __if(not_hit && state)
+			// {
+			// 	ch_print("MISS ON: ADDR: {0}\tct: {1}\tit:{2}\tcv: {3}\t", io.in_Abyte0, curr_tag, io.in_tag, curr_valid);
+			// };
+
+
+			// __if(not_state && !not_state_hist)
+			// {
+			// 	ch_print("Writing: {0} in {1}       prev: {2}", io.in_tag, io.in_index, curr_tag);
+			// };
+
+			auto data_to_write = ch_sel(not_state, io.in_tag, io.way_i.in_data);
 
 			ch_bool write_enable = io.way_i.in_rw && hit && io.way_i.in_valid;
 
@@ -187,6 +204,11 @@ struct Way
 			data_cache.write(io.in_Abyte1, ch_slice<8>(data_to_write >> 8) , (not_state) || (Wbyte1 && write_enable));
 			data_cache.write(io.in_Abyte2, ch_slice<8>(data_to_write >> 16), (not_state) || (Wbyte2 && write_enable));
 			data_cache.write(io.in_Abyte3, ch_slice<8>(data_to_write >> 24), (not_state) || (Wbyte3 && write_enable));
+		
+
+
+				// ch_print("state: {2}:\t data: {0} = {1}", io.in_Abyte0, data_to_write, state);
+
 		}
 		else
 		{
@@ -209,7 +231,8 @@ struct Cache
 	static constexpr unsigned way_bits   = ((way_size == 0) || (log2(way_size) == 0)) ? 1 : log2(way_size);
 	static constexpr unsigned num_lines  = way_size / line_size;
 
-	static constexpr unsigned tag_bits   = 32 - way_bits;
+	static constexpr unsigned tag_bits   = 32;
+	// static constexpr unsigned tag_bits   = (32 - way_bits) + 1;
 
 	static constexpr unsigned line_bits  = ((line_size == 0) || (log2(line_size) == 0)) ? 1 : log2(line_size);
 	static constexpr unsigned index_bits = ((num_lines == 0) || (log2(num_lines) == 0)) ? 1 : log2(num_lines);
@@ -228,6 +251,7 @@ struct Cache
 		if (n < num_ways) return true;
 		return false;
 	}
+
 
 	void describe()
 	{
@@ -266,7 +290,7 @@ struct Cache
 
 		big_delay  = way0.io.out_delay || way1.io.out_delay || way2.io.out_delay || way3.io.out_delay || way4.io.out_delay || way5.io.out_delay || way6.io.out_delay || way7.io.out_delay;
 		big_miss   = way0.io.out_miss  && way1.io.out_miss  && way2.io.out_miss  && way3.io.out_miss  && way4.io.out_miss  && way5.io.out_miss  && way6.io.out_miss  && way7.io.out_miss;
-		big_state  = way0.io.out_state  && way1.io.out_state  && way2.io.out_state  && way3.io.out_state  && way4.io.out_state  && way5.io.out_state  && way6.io.out_state  && way7.io.out_state;
+		big_state  = way0.io.out_state && way1.io.out_state  && way2.io.out_state  && way3.io.out_state  && way4.io.out_state  && way5.io.out_state  && way6.io.out_state  && way7.io.out_state;
 
 
 		data = ch_sel(!way0.io.out_miss, way0.io.out_data,
@@ -276,7 +300,7 @@ struct Cache
 									 	ch_sel(!way4.io.out_miss, way4.io.out_data,
 									 		ch_sel(!way5.io.out_miss, way5.io.out_data,
 									 			ch_sel(!way6.io.out_miss, way6.io.out_data,
-									 				way7.io.out_data)))))));
+									 				                         way7.io.out_data)))))));
 
 
 
@@ -396,7 +420,6 @@ struct Cache
 		way7.io.in_Abyte1     = Abyte1;
 		way7.io.in_Abyte2     = Abyte2;
 		way7.io.in_Abyte3     = Abyte3;
-
 
 
 

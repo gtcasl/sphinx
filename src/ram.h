@@ -178,6 +178,9 @@ void loadHexImpl(std::string path,RAM* mem) {
     // F00FFF10
     ((uint32_t*)mem->get(0xf00fff10))[0] = 0x12345678;
 
+
+    
+
     fseek(fp, 0, SEEK_END);
     uint32_t size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
@@ -197,13 +200,8 @@ void loadHexImpl(std::string path,RAM* mem) {
 
                     unsigned add = nextAddr + i;
 
-                    // if ((add % 4) == 0) add +=  3;
-                    // if ((add % 4) == 1) add +=  1;
-                    // if ((add % 4) == 2) add += -1;
-                    // if ((add % 4) == 3) add += -3;
-
                     *(mem->get(add)) = hToI(line + 9 + i * 2, 2);
-                    // std::cout << "Address: " << std::hex <<(add + i) << "\tValue: " << std::hex << hToI(line + 9 + i * 2, 2) << std::endl;
+                    // std::cout << "Address: " << std::hex <<(add) << "\tValue: " << std::hex << hToI(line + 9 + i * 2, 2) << std::endl;
                 }
                 break;
             case 2:
