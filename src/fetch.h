@@ -189,35 +189,35 @@ struct Fetch
 		PC_to_use =  ch_sel(delay_reg && !(io.in_freeze), old, ch_sel(io.in_debug, ch_sel(prev_debug, old, PC), ch_sel(stall_reg, old, PC_to_use_temp)));
 
 
-		__if(io.in_branch_stall)
-		{
-			ch_print("BRANCHING STALL");
-		};
+		// __if(io.in_branch_stall)
+		// {
+		// 	ch_print("BRANCHING STALL");
+		// };
 
-		__if(io.in_fwd_stall)
-		{
-			ch_print("FORAWARD STALL");
-		};
+		// __if(io.in_fwd_stall)
+		// {
+		// 	ch_print("FORAWARD STALL");
+		// };
 
-		__if(io.in_branch_stall_exe)
-		{
-			ch_print("BRANCH STALL EXE");
-		};
+		// __if(io.in_branch_stall_exe)
+		// {
+		// 	ch_print("BRANCH STALL EXE");
+		// };
 
-		__if(io.in_jal)
-		{
-			ch_print("JUMPING TO {0}", io.in_jal_dest);
-		};
+		// __if(io.in_jal)
+		// {
+		// 	ch_print("JUMPING TO {0}", io.in_jal_dest);
+		// };
 
-		__if(io.in_freeze)
-		{
-			ch_print("FREEZING");
-		};
+		// __if(io.in_freeze)
+		// {
+		// 	ch_print("FREEZING");
+		// };
 
-		__if(delay)
-		{
-			ch_print("DELAYING");
-		};
+		// __if(delay)
+		// {
+		// 	ch_print("DELAYING");
+		// };
 		
 		ch_bool stall      = (io.in_branch_stall == STALL) || (io.in_fwd_stall == STALL) || (io.in_branch_stall_exe) || (io.in_interrupt) || delay || io.in_freeze;
 		stall_reg->next    = stall;
@@ -255,7 +255,7 @@ struct Fetch
 		// PC->next       = ch_sel(stall, out_PC.as_int(), pc_next.as_int());
 
 
-		ch_print("out_PC: {0}, out_instruction: {1}, stall: {2}", out_PC, io.out_instruction, stall);
+		// ch_print("out_PC: {0}, out_instruction: {1}, stall: {2}", out_PC, io.out_instruction, stall);
 
 
 		// ch_print("actual PC: {1}, old: {0}", old, out_PC);

@@ -30,6 +30,7 @@ struct Way
 	static constexpr unsigned num_lines  = way_size / line_size;
 
 	static constexpr unsigned tag_bits   = 32;
+	// static constexpr unsigned tag_bits   = (32 - way_bits) + 1;
 
 	static constexpr unsigned line_bits  = ((line_size == 0) || (log2(line_size) == 0)) ? 1 : log2(line_size);
 	static constexpr unsigned index_bits = ((num_lines == 0) || (log2(num_lines) == 0)) ? 1 : log2(num_lines);
@@ -190,13 +191,24 @@ struct Way
 			// 	ch_print("MISS ON: ADDR: {0}\tct: {1}\tit:{2}\tcv: {3}\t", io.in_Abyte0, curr_tag, io.in_tag, curr_valid);
 			// };
 
+			__if(not_hit && state && io.way_i.in_valid)
+			{
+				ch_print(" {0} == {1} ----------> {2}  {3}  {4}", io.in_tag, curr_tag, not_hit, state, io.way_i.in_valid);
+			};\
+
+			__if(not_state)
+			{
+				ch_print(".......");
+			};
+
+
 
 			// __if(not_state && !not_state_hist)
 			// {
 			// 	ch_print("Writing: {0} in {1}       prev: {2}", io.in_tag, io.in_index, curr_tag);
 			// };
 
-			auto data_to_write = ch_sel(not_state, io.in_tag, io.way_i.in_data);
+			auto data_to_write = ch_sel(not_state, io.in_dbus_data, io.way_i.in_data);
 
 			ch_bool write_enable = io.way_i.in_rw && hit && io.way_i.in_valid;
 

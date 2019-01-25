@@ -229,7 +229,7 @@ void loadHexImpl(std::string path,RAM* mem) {
         size--;
     }
 
-    delete [] content;
+    if (content) delete[] content;
 }
 
 #endif

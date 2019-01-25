@@ -486,7 +486,7 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
             pipeline.io.IBUS.in_data.data      = curr_inst;
             pipeline.io.IBUS.in_data.valid     = true;
             pipeline.io.in_debug               = false;
-            // std::cout << "ADD: " << std::hex << new_PC << "\tINST: " << curr_inst << "\n";
+            // std::cout << "ADDR: " << std::hex << new_PC << "\tINST: " << curr_inst << "\n";
 
         #else
 
@@ -656,18 +656,18 @@ bool Sphinx::ibus_driver(ch_device<Pipeline> & pipeline, bool debug_mode, std::v
    ////////////////////// STATS //////////////////////
 
 
-    // // JUST FOR DEBUGGING CLOCK
-    // if ((((unsigned int)new_PC) == 0x8000043c) && (!this->unit_test))
-    // {
-    //     // CHANGES CLOCK
-    //     uint32_t data = 0x1ff45678; 
-    //     ram.writeWord(0xf00fff10, &data);
-    // }
+    // JUST FOR DEBUGGING CLOCK
+    if ((((unsigned int)new_PC) == 0x8000043c) && (!this->unit_test))
+    {
+        // CHANGES CLOCK
+        uint32_t data = 0x1ff45678; 
+        ram.writeWord(0xf00fff10, &data);
+    }
 
-    // if ((((unsigned int)new_PC) == 0x80000118) && (!this->unit_test))
-    // {
-    //     this->stop = false; 
-    // }
+    if ((((unsigned int)new_PC) == 0x80000118) && (!this->unit_test))
+    {
+        this->stop = false; 
+    }
 
     return stop;
 
@@ -763,16 +763,16 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
             pipeline.io.DBUS.out_control.ready = pipeline.io.DBUS.out_control.valid;
 
 
-            std::cout << std::hex << (unsigned) pipeline.io.DBUS.out_address.data << "\n";
+            // std::cout << std::hex << (unsigned) pipeline.io.DBUS.out_address.data << "\n";
 
             if (pipeline.io.DBUS.out_rw)
             {
-                if (( (unsigned) pipeline.io.DBUS.out_address.data) == 0xFF000000)
-                {
-                    std::cout << "HI\n";
-                    uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
-                    std::cout << (char) data_to_write;
-                } else
+                // if (( (unsigned) pipeline.io.DBUS.out_address.data) == 0xFF000000)
+                // {
+                //     std::cout << "HI\n";
+                //     uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;
+                //     std::cout << (char) data_to_write;
+                // } else
                 {
                     // std::cout << "ABOUT TO: " << (uint32_t) pipeline.io.DBUS.out_address.data << "write to data: " << (uint32_t) pipeline.io.DBUS.out_data.data << "\n";
                     uint32_t data_to_write = (uint32_t) pipeline.io.DBUS.out_data.data;

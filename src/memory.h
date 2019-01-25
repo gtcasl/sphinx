@@ -52,7 +52,7 @@ struct Cache_driver
 			cache.io.way_i.in_control = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
 			
 
-			ch_print("io.out_delay: {0}", cache.io.out_delay);
+			// ch_print("io.out_delay: {0}", cache.io.out_delay);
 
 			io.out_data  = cache.io.out_data;
 			io.out_delay = cache.io.out_delay;

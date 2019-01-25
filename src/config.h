@@ -9,8 +9,8 @@
 
 #define DCACHE_ENABLE
 
-#define DCACHE_SIZE 32KB
-#define DLINE_SIZE 1KB
+#define DCACHE_SIZE 4KB
+#define DLINE_SIZE 32
 #define DNUM_WAYS 1
 
 #define JAL_EXE

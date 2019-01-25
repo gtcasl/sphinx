@@ -219,7 +219,7 @@ struct Decode
 		is_e_inst    = (curr_opcode == SYS_INST) && (func3 == 0);
 
 
-		ch_print("DECODE: PC: {0}, INSTRUCTION: {1}", io.in_curr_PC, io.in_instruction);
+		// ch_print("DECODE: PC: {0}, INSTRUCTION: {1}", io.in_curr_PC, io.in_instruction);
 
 
 		#ifdef FORWARDING
