@@ -37,7 +37,7 @@ struct Way
 
 
 	__io(
-		    (WAY_I)              way_i, 
+		    (WAY_I)              way_i,
 		__in(ch_bit<ID_BITS>)    in_id,
 		__in(ch_bit<tag_bits>)   in_tag,
 		__in(ch_bit<index_bits>) in_index,
@@ -78,12 +78,12 @@ struct Way
 
 			ch_bool valid_id = io.in_id == way_id;
 
-		
+
 
 			auto curr_tag   = tag_cache.read(io.in_index);
 			auto curr_valid = valid_cache.read(io.in_index);
 
-			// 
+			//
 			auto hit     = ((io.in_tag == curr_tag) && curr_valid) || (io.way_i.in_address == 0xFF000000);
 			auto not_hit = !hit;
 
@@ -117,7 +117,7 @@ struct Way
 					// LB
 					ch_bit<24> ones(ONES_24BITS);
 					ch_bit<24> zeros(ZERO);
-						
+
 					mem_out =  ch_sel(byte0[7] == 1, ch_cat(ones, byte0), ch_resize<32>(byte0));
 					Wbyte0 = TRUE;
 					Wbyte1 = FALSE;
@@ -129,7 +129,7 @@ struct Way
 					// LH sign extend
 					ch_bit<16> ones(ONES_16BITS);
 					ch_bit<16> zeros(ZERO);
-					
+
 					ch_bit<16> half = ch_cat(byte1, byte0);
 					mem_out = ch_sel(half[15] == 1, ch_cat(ones, half), ch_resize<32>(half));
 					Wbyte0 = TRUE;
@@ -216,7 +216,7 @@ struct Way
 			data_cache.write(io.in_Abyte1, ch_slice<8>(data_to_write >> 8) , (not_state) || (Wbyte1 && write_enable));
 			data_cache.write(io.in_Abyte2, ch_slice<8>(data_to_write >> 16), (not_state) || (Wbyte2 && write_enable));
 			data_cache.write(io.in_Abyte3, ch_slice<8>(data_to_write >> 24), (not_state) || (Wbyte3 && write_enable));
-		
+
 
 
 				// ch_print("state: {2}:\t data: {0} = {1}", io.in_Abyte0, data_to_write, state);
@@ -330,7 +330,7 @@ struct Cache
 		miss_addr->next = ch_sel(io.DBUS.in_data.valid, next_miss_addr, new_miss_addr);
 
 		auto data_w_indx = ch_sel(!big_state, miss_addr, in_addr);
-		
+
 		auto Abyte0 = data_w_indx;
 		auto Abyte1 = data_w_indx.as_uint() + ch_uint<way_bits>(1);
 		auto Abyte2 = data_w_indx.as_uint() + ch_uint<way_bits>(2);

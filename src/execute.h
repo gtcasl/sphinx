@@ -80,12 +80,9 @@ struct Execute
 				io.out_alu_result = temp;
 				io.out_csr_result = anything32;
 
-				// ch_print("EXECUTE: {0} = {1} + {1}", ALU_in1.as_int() + ALU_in2.as_int(), ALU_in1, ALU_in2);
+				ch_print("EXECUTE: {0} = {1} + {2}\t{3}", temp, ALU_in1, ALU_in2, io.in_curr_PC);
 
-				// ch_print("ADD_int: Immediate: {0}, RS2_SRC: {1}, rs1_reg#: {2}", io.in_itype_immed, io.in_rs2_src, io.in_rs1);
-				// ch_print("Adding {0} + {1}", ALU_in1.as_int(), ALU_in2.as_int());
-				// ch_print("alu_result = {0}", io.out_alu_result);
-				// ch_print("Going to DEST: {0}", io.in_rd);
+				ch_print("ADD_int: Immediate: {0}, rs1_reg: {1}, rs2_reg#: {2}", io.in_itype_immed, io.in_rs1, io.in_rs2);
 			}
 			__case(SUB_int)
 			{
@@ -163,6 +160,7 @@ struct Execute
 			}
 			__case(LUI_ALU_int)
 			{
+				// ch_print("LUI: {0} -------> {1}", io.in_upper_immed, upper_immed);
 				io.out_alu_result = upper_immed;
 				io.out_csr_result = anything32;
 			}

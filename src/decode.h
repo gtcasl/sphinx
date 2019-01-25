@@ -160,6 +160,8 @@ struct Decode
 	void describe()
 	{
 
+		// ch_print("PC: {0}", io.in_curr_PC);
+
 
 		ch_bit<7> curr_opcode(0);
 		ch_bit<4> alu_op;

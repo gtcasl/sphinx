@@ -31,20 +31,93 @@
 #define reg_uart_data (*(volatile uint32_t*)0xFF000000)
 // --------------------------------------------------------
 
+
 // --------------------------------------------------------
 int main()
 {
-	
-	// print("Booting..\n");
-	const char *p = "booting\n";
+	// FUNC DEFINITIONS
+	void putchar(char);
+	void print(const char *);
+	char getchar_prompt(char *);
 
-	while (*p)
+	char arr[2];
+	arr[1] = 0;
+	char c;
+
+	print("Booting..\n");
+
+
+	while ((c = getchar_prompt("Press ENTER to continue..\n")) != '\n')
 	{
-		char c = *(p++);
-		reg_uart_data = c;
+		// arr[0] = c;
+		// print("char printed[ ");
+		// print(arr);
+		// print(" ]\n");
+	}
+	// getchar_prompt("Press ENTER to continue..\n");
+
+
+	print("\n");
+	print("  ______           __       __                          _______  ______  ______   ______       __     __ \n");
+	print(" /      \\         |  \\     |  \\                        |       \\|      \\/      \\ /      \\     |  \\   |  \\\n");
+	print("|  $$$$$$\\ ______ | $$____  \\$$_______  __    __       | $$$$$$$\\\\$$$$$|  $$$$$$|  $$$$$$\\    | $$   | $$\n");
+	print("| $$___\\$$/      \\| $$    \\|  |       \\|  \\  /  \\      | $$__| $$ | $$ | $$___\\$| $$   \\$_____| $$   | $$\n");
+	print(" \\$$    \\|  $$$$$$| $$$$$$$| $| $$$$$$$\\\\$$\\/  $$      | $$    $$ | $$  \\$$    \\| $$    |      \\$$\\ /  $$\n");
+	print(" _\\$$$$$$| $$  | $| $$  | $| $| $$  | $$ >$$  $$       | $$$$$$$\\ | $$  _\\$$$$$$| $$   __\\$$$$$$\\$$\\  $$ \n");
+	print("|  \\__| $| $$__/ $| $$  | $| $| $$  | $$/  $$$$\\       | $$  | $$_| $$_|  \\__| $| $$__/  \\       \\$$ $$  \n");
+	print(" \\$$    $| $$    $| $$  | $| $| $$  | $|  $$ \\$$\\      | $$  | $|   $$ \\\\$$    $$\\$$    $$        \\$$$   \n");
+	print("  \\$$$$$$| $$$$$$$ \\$$   \\$$\\$$\\$$   \\$$\\$$   \\$$       \\$$   \\$$\\$$$$$$ \\$$$$$$  \\$$$$$$          \\$    \n");
+	print("         | $$                                                                                            \n");
+	print("         | $$                                                                                            \n");
+	print("          \\$$                                                                                            \n");
+
+	print("\n");
+
+	return 0;
+}
+
+void putchar(char c)
+{
+	if (c == '\n')
+		putchar('\r');
+	reg_uart_data = c;
+}
+
+void print(const char *p)
+{
+	while (*p)
+		putchar(*(p++));
+}
+
+char getchar_prompt(char *prompt)
+{
+	int32_t c = -1;
+
+	uint32_t cycles_begin, cycles_now, cycles;
+	__asm__ volatile ("rdcycle %0" : "=r"(cycles_begin));
+
+
+	cycles = 0;
+
+	if (prompt)
+		print(prompt);
+
+	while (c == -1) {
+		__asm__ volatile ("rdcycle %0" : "=r"(cycles_now));
+		cycles = cycles_now - cycles_begin;
+		if (cycles > 120000) {
+			if (prompt)
+				print(prompt);
+			cycles_begin = cycles_now;
+		}
+		c = reg_uart_data;
 	}
 
 
+	
 
-	return 0;
+
+	print("\n");
+
+	return c;
 }

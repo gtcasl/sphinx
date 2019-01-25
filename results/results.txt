@@ -1,9 +1,0 @@
-
-****************	../firmware/firmware.hex	****************
-# Dynamic Instructions: 310
-# of total cycles:      585
-# of forwarding stalls: 2
-# of branch stalls:     263
-# CPI:                  1.8871
-# time to simulate:     3 milliseconds
-# GRADE:                Failed on test: 20

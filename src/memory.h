@@ -61,6 +61,7 @@ struct Cache_driver
 
 
 			io.DBUS.out_rw            = mem_write_enable;
+			
 			io.DBUS.out_address.data  = io.in_address;
 			io.DBUS.out_address.valid = mem_write_enable || mem_read_enable;
 

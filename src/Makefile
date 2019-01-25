@@ -5,7 +5,7 @@
 # CXXFLAGS += -std=c++17 -O0 -g -I$(CASH_HOME)/include -Wall -Wextra -pedantic
 # CASH_HOME = /Users/fareselsabbagh/Documents/cash
 CXXFLAGS += -std=c++17 -O3 -I$(CASH_HOME)/include -w
-LDFLAGS += -lcash -lstdc++ -L$(CASH_HOME)/build/lib
+LDFLAGS += -lcash -lstdc++ -L$(CASH_HOME)/build/lib -lncurses
 
 SRCS = Sphinx.cpp
 
@@ -14,7 +14,7 @@ PROJECTS_NAMES = $(SRCS:.cpp=)
 
 all: $(PROJECTS)
 
-%.o: %.cpp
+%.o: %.cpp *.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 %.out: %.o

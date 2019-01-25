@@ -243,7 +243,6 @@ struct Fetch
 		ch_bit<5> tempp_state = ch_sel(io.in_interrupt, I_STATE, temp_state);
 		state->next           = ch_sel(io.in_debug, I_STATE, ch_sel(prev_debug, S_STATE, tempp_state));
 
-
 		io.out_curr_PC = out_PC;
 		
 		old->next        = out_PC;

@@ -53,7 +53,7 @@ int main(int argc, char ** argv)
 		"../tests/rv32ui-p-sw.hex",
 		"../tests/rv32ui-p-xor.hex",
 		"../tests/rv32ui-p-xori.hex"
-		// "../tests/dhrystoneO3.hex"
+		// "tests/dhrystoneO3.hex"
 	};
 
 	if (es.state == 0)
@@ -79,12 +79,12 @@ int main(int argc, char ** argv)
 		sphinx.simulate_numCycles(es.numCycles, es.print, es.printEvery, es.numRuns);
 
 
-		
+
 	} else if (es.state == 2)
 	{
 		std::cout << DEFAULT << "Running: " << es.file_to_simulate << "\t";
 		passed = sphinx.simulate(es.file_to_simulate);
-		if (es.file_to_simulate != "../tests/dhrystoneO3.hex")
+		if (es.file_to_simulate != "tests/dhrystoneO3.hex")
 		{
 			if ( passed) std::cout << GREEN << "Passed\n";
 			if (!passed) std::cout << RED   << "Failed\n";
@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
 	{
 		std::cout << DEFAULT << "Running: " << es.file_to_simulate << " with debugging enabled\n";
 		passed = sphinx.simulate_debug(es.file_to_simulate, es.debugAddress);
-		if (es.file_to_simulate != "../tests/dhrystoneO3.hex")
+		if (es.file_to_simulate != "tests/dhrystoneO3.hex")
 		{
 			if ( passed) std::cout << GREEN << "Passed\n";
 			if (!passed) std::cout << RED   << "Failed\n";
