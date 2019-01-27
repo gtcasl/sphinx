@@ -73,6 +73,56 @@ int main()
 
 	print("\n");
 
+
+	while (1)
+	{
+		c = getchar_prompt("Do you want to play a guessing game? [y/n] ");
+		if (c == 'y')
+		{
+			break;
+		} else if (c == 'n')
+		{
+			return 0;
+		} else
+		{
+			print("\nWrong input, please try again\n");
+		}
+	}
+
+	char n = '5';
+
+	while (1)
+	{
+		c = getchar_prompt("Guess a number between 0 and 9: ");
+		if (c < n)
+		{
+			print("\nThe number is larger\n");
+		} else if (c > n)
+		{
+			print("\nThe number is smaller\n");
+		} else
+		{
+
+
+
+			print("                                  _         _       _   _                 _ _ \n");
+			print("                                 | |       | |     | | (_)               | | |\n");
+			print("   ___ ___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_ _  ___  _ __  ___| | |\n");
+			print("  / __/ _ \\| '_ \\ / _` | '__/ _` | __| | | | |/ _` | __| |/ _ \\| '_ \\/ __| | |\n");
+			print(" | (_| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \\__ \\_|_|\n");
+			print("  \\___\\___/|_| |_|\\__, |_|  \\__,_|\\__|\\__,_|_|\\__,_|\\__|_|\\___/|_| |_|___(_|_)\n");
+			print("                   __/ |                                                      \n");
+			print("                  |___/                                                       \n");
+
+
+			print("\n");
+
+
+			break;
+		}
+	}
+
+
 	return 0;
 }
 
@@ -105,17 +155,13 @@ char getchar_prompt(char *prompt)
 	while (c == -1) {
 		__asm__ volatile ("rdcycle %0" : "=r"(cycles_now));
 		cycles = cycles_now - cycles_begin;
-		if (cycles > 120000) {
-			if (prompt)
-				print(prompt);
-			cycles_begin = cycles_now;
-		}
+		// if (cycles > 1200000) {
+		// 	if (prompt)
+		// 		print(prompt);
+		// 	cycles_begin = cycles_now;
+		// }
 		c = reg_uart_data;
 	}
-
-
-	
-
 
 	print("\n");
 

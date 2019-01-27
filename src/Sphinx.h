@@ -402,12 +402,15 @@ Sphinx::Sphinx() : start_pc(0), curr_cycle(0), stop(true), unit_test(true), stat
 {
     this->sim = ch_simulator(this->pipeline);
     this->results.open("../results/results.txt");
+
+    #ifdef SIM
     initscr();
     cbreak();
     noecho();
     scrollok(stdscr, 1);
     keypad(stdscr, 1);
     nodelay(stdscr, 1);
+    #endif
 }
 
 
@@ -419,7 +422,9 @@ void intHandler(int signo) {
 
 Sphinx::~Sphinx()
 {
+    #ifdef SIM
     endwin();
+    #endif
     this->results.close();
 }
 
@@ -717,6 +722,9 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
             data_write = (uint32_t) pipeline.io.DBUS.out_data.data;
             addr       = (uint32_t) pipeline.io.DBUS.out_address.data;
 
+
+            #ifdef SIM
+
             if ((( (int) data_write) < 256) && ((int) data_write > -1) && (addr == 0xFF000000) )
             {
                 // std::cout << (char) (data_write & 0xFF);
@@ -725,13 +733,10 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
                 {
                     waddch(stdscr, data_write);
                 }
-                if (ch == '\n')
-                {
-                    // wmove(stdscr, 0, 0);
-                }
-
 
             }
+
+            #endif
 
             if (pipeline.io.DBUS.out_control.data == 0)
             {
@@ -760,6 +765,8 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
 
             addr = (uint32_t) pipeline.io.DBUS.out_address.data;
 
+            #ifdef SIM
+
             if (addr == 0xFF000000)
             {
                 ch = getch();
@@ -780,6 +787,12 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
                 // std::cout << "NOTHING SPECIAL\n";
                 ram.getWord(addr, &data_read);
             }
+
+            #else
+
+                ram.getWord(addr, &data_read);
+
+            #endif
 
 
             
@@ -1052,8 +1065,10 @@ bool Sphinx::simulate(std::string file_to_simulate)
     ram.getWord(0, &status);
 
     this->print_stats();
+    #ifdef SIM
     signal(SIGINT, intHandler);
     while (keepRunning) {}
+    #endif
     return (status == 1);
 }
 

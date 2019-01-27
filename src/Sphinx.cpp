@@ -1,8 +1,14 @@
 ////
 
+
+#define SIM
+
 #include "Sphinx.h"
 
 #include "parse.h"
+
+
+#define NUM_TESTS 49
 
 int main(int argc, char ** argv)
 {
@@ -52,8 +58,18 @@ int main(int argc, char ** argv)
 		"../tests/rv32ui-p-sub.hex",
 		"../tests/rv32ui-p-sw.hex",
 		"../tests/rv32ui-p-xor.hex",
-		"../tests/rv32ui-p-xori.hex"
-		// "tests/dhrystoneO3.hex"
+		"../tests/rv32ui-p-xori.hex",
+		"../tests/I-CSRRC-01.elf.hex",
+		"../tests/I-CSRRCI-01.elf.hex",
+		"../tests/I-CSRRS-01.elf.hex",
+		"../tests/I-CSRRSI-01.elf.hex",
+		"../tests/I-CSRRW-01.elf.hex",
+		"../tests/I-CSRRWI-01.elf.hex",
+        "../tests/I-DELAY_SLOTS-01.elf.hex",
+        "../tests/I-EBREAK-01.elf.hex",
+        "../tests/I-ECALL-01.elf.hex",
+        "../tests/I-ENDIANESS-01.elf.hex"
+		// "tests/dhrystoneO3.hex","
 	};
 
 	if (es.state == 0)
