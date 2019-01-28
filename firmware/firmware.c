@@ -74,9 +74,12 @@ int main()
 	print("\n");
 
 
+	char buf[50];
+
 	while (1)
 	{
-		c = getchar_prompt("Do you want to play a guessing game? [y/n] ");
+		getsent_prompt("Do you want to play a guessing game? [y/n] ", buf);
+		c = buf[0];
 		if (c == 'y')
 		{
 			break;
@@ -93,7 +96,8 @@ int main()
 
 	while (1)
 	{
-		c = getchar_prompt("Guess a number between 0 and 9: ");
+		getsent_prompt("Guess a number between 0 and 9: ", buf);
+		c = buf[0];
 		if (c < n)
 		{
 			print("\nThe number is larger\n");
@@ -166,4 +170,41 @@ char getchar_prompt(char *prompt)
 	print("\n");
 
 	return c;
+}
+
+
+void getsent_prompt(char *prompt, char * buf)
+{
+	int32_t c = -1;
+
+	uint32_t cycles_begin, cycles_now, cycles;
+	__asm__ volatile ("rdcycle %0" : "=r"(cycles_begin));
+
+
+
+	cycles = 0;
+
+	if (prompt)
+		print(prompt);
+
+	int inx = 0;
+	while (c != (int) '\n') {
+		__asm__ volatile ("rdcycle %0" : "=r"(cycles_now));
+		cycles = cycles_now - cycles_begin;
+		// if (cycles > 1200000) {
+		// 	if (prompt)
+		// 		print(prompt);
+		// 	cycles_begin = cycles_now;
+		// }
+		c = reg_uart_data;
+		if (c != -1)
+		{
+			buf[inx] = c;
+			inx++;
+		}
+	}
+
+	// print("\n");
+
+	return;
 }
