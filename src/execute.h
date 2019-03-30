@@ -94,7 +94,8 @@ struct Execute
 			__case(SLLA_int)
 			{
 				//ch_print("SLLA_int");
-				io.out_alu_result = ALU_in1.as_uint() << ALU_in2.as_uint();
+				ch_bit<5> to_shift = ch_slice<5>(ALU_in2);
+				io.out_alu_result = ALU_in1.as_uint() << to_shift.as_uint();
 				io.out_csr_result = anything32;
 			}
 			__case(SLT_int)
@@ -121,14 +122,16 @@ struct Execute
 			__case(SRL_int)
 			{
 				//ch_print("SRL_int");
-				io.out_alu_result = ALU_in1.as_uint() >> ALU_in2.as_uint();
+				ch_bit<5> to_shift = ch_slice<5>(ALU_in2);
+				io.out_alu_result = ALU_in1.as_uint() >> to_shift.as_uint();
 				io.out_csr_result = anything32;
 			}
 			__case(SRA_int)
 			{
 				//ch_print("SRA");
 				ch_int32 ALU_in1_int = ALU_in1.as_int();
-				io.out_alu_result    = ALU_in1_int  >> ALU_in2.as_uint();
+				ch_bit<5> to_shift = ch_slice<5>(ALU_in2);
+				io.out_alu_result    = ALU_in1_int  >> to_shift.as_uint();
 				io.out_csr_result    = anything32;
 				// ch_print("STA: {0} >> {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
 			}
