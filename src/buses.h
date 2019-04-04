@@ -6,7 +6,6 @@
 #include <ioport.h>
 #include <htl/decoupled.h>
 #include "define.h"
-#include <htl/cache.h>
 
 
 using namespace ch::logic;

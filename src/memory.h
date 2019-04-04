@@ -3,20 +3,18 @@
 #include "buses.h"
 
 #include "literals.h"
+#include "cache.h"
 
 #include <math.h>
 
 using namespace ch::logic;
 using namespace ch::system;
-using namespace ch::htl::cache;
-
-
 
 
 struct Cache_driver
 {
 	__io(
-		(Cfg::mem_req_io) DBUS,
+		(DBUS_io) DBUS,
 
 		__in(ch_bit<32>)  in_address,
 		__in(ch_bit<3>)   in_mem_read,
@@ -46,73 +44,57 @@ struct Cache_driver
 
 		#ifdef DCACHE_ENABLE
 
-			cache.io.mem(io.DBUS);
-
-			// cache.io.mem.address       = io.DBUS.address.as_scbit();
-			// cache.io.mem.writedata     = io.DBUS.writedata;
-			// cache.io.mem.read          = io.DBUS.read;
-			// cache.io.mem.write         = io.DBUS.write;
-			// cache.io.mem.readdata      = io.DBUS.readdata;
-			// cache.io.mem.readdatavalid = io.DBUS.readdatavalid;
-			// cache.io.mem.waitrequest   = io.DBUS.address;
-
-
-			cache.io.cpu.address     = io.in_address;
-			cache.io.cpu.writedata   = io.in_data;
-			cache.io.cpu.read        = mem_read_enable;
-			cache.io.cpu.write       = mem_write_enable;
-			cache.io.cpu.worden      = ch_bit<4>(0xf);
+			cache.io.DBUS(io.DBUS);
+			cache.io.way_i.in_address = io.in_address;
+			cache.io.way_i.in_data    = io.in_data;
+			cache.io.way_i.in_rw      = mem_write_enable;
+			cache.io.way_i.in_valid   = mem_write_enable || mem_read_enable;
 			cache.io.way_i.in_control = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
+			
 
+			// ch_print("io.out_delay: {0}", cache.io.out_delay);
 
-			io.out_delay             = cache.io.cpu.waitrequest;
-			io.out_data              = cache.io.cpu.readdata;
-			ch_bool not_used         = cache.io.cpu.readdatavalid;
-
+			io.out_data  = cache.io.out_data;
+			io.out_delay = cache.io.out_delay;
 
 		#else
 
 
-			// io.DBUS.out_rw            = mem_write_enable;
+			io.DBUS.out_rw            = mem_write_enable;
 			
-			// io.DBUS.out_address.data  = io.in_address;
-			// io.DBUS.out_address.valid = mem_write_enable || mem_read_enable;
+			io.DBUS.out_address.data  = io.in_address;
+			io.DBUS.out_address.valid = mem_write_enable || mem_read_enable;
 
-			// io.DBUS.out_control.data  = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);;
-			// io.DBUS.out_control.valid = TRUE;
+			io.DBUS.out_control.data  = ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);;
+			io.DBUS.out_control.valid = TRUE;
 
-			// io.DBUS.out_data.data     = io.in_data;
-			// io.DBUS.out_data.valid    = mem_write_enable || mem_read_enable;
+			io.DBUS.out_data.data     = io.in_data;
+			io.DBUS.out_data.valid    = mem_write_enable || mem_read_enable;
 
-			// io.DBUS.in_data.ready     = mem_write_enable || mem_read_enable;
+			io.DBUS.in_data.ready     = mem_write_enable || mem_read_enable;
 
-			// io.DBUS.out_miss          = FALSE;
+			io.DBUS.out_miss          = FALSE;
 
-			// // ch_print("io.out_delay: {0}", cache.io.out_delay);
+			// ch_print("io.out_delay: {0}", cache.io.out_delay);
 
-			// io.out_data  = io.DBUS.in_data.data;
+			io.out_data  = io.DBUS.in_data.data;
 			
-			// io.out_delay = FALSE;
+			io.out_delay = FALSE;
 
 		#endif
 
 	}
+
 	#ifdef DCACHE_ENABLE
-	ch_device<Cache<Cfg>> cache;
+	ch_module<Cache<DCACHE_SIZE, DLINE_SIZE, DNUM_WAYS>> cache;
 	#endif
 };
 
-// template <unsigned CacheSize, // cache size (Bytes)
-//           unsigned BlockSize, // block size (Bytes)
-//           unsigned NumWays,   // number of ways
-//           unsigned AddrBits,  // cpu address bus bits
-//           unsigned DataBits,  // cpu data bus bits
-//           unsigned WordBits>  // cpu data word select bits
 
 struct Memory
 {
 	__io(
-		(Cfg::mem_req_io) DBUS,
+		(DBUS_io) DBUS,
 
 
 		__in(ch_bit<32>)  in_alu_result,
