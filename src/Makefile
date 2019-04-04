@@ -5,8 +5,8 @@
 # CXXFLAGS += -std=c++17 -O0 -g -I$(CASH_HOME)/include -Wall -Wextra -pedantic
 # CASH_HOME = /Users/fareselsabbagh/Documents/cash
 CASH_HOME = /home/fares/Downloads/plz/cash
-CXXFLAGS += -std=c++17 -g -O3 -I$(CASH_HOME)/include -w
-LDFLAGS += -lcash -g -lstdc++ -L$(CASH_HOME)/build/lib -lncurses
+CXXFLAGS += -std=c++17 -O3 -I$(CASH_HOME)/include -w
+LDFLAGS += -lcash -lstdc++ -L$(CASH_HOME)/build/lib -lncurses
 
 SRCS = Sphinx.cpp
 
