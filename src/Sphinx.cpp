@@ -155,7 +155,6 @@ int main(int argc, char ** argv)
 	}
 
 	std::cout << DEFAULT;
-
 	if (passed) return 0;
 	return -1;
 

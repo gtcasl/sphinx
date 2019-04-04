@@ -391,6 +391,7 @@ class Sphinx
         int debug_end_wait;
         int debug_debugAddr;
         double stats_sim_time;
+        double stats_kernel_time;
 };
 
 
@@ -1016,10 +1017,12 @@ bool Sphinx::simulate(std::string file_to_simulate)
     counter = 0;
     stop = false;
 
-    auto start_time = clock();
+    auto start_time = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> overhead;
 
     sim.run([&](ch_tick t)->bool {
-
+        auto k_start_time = std::chrono::high_resolution_clock::now();
 
         long int cycle = t/2;
 
@@ -1036,10 +1039,6 @@ bool Sphinx::simulate(std::string file_to_simulate)
                interrupt_driver(pipeline);
                jtag_driver(pipeline);
 
-        //   T  F
-        // T f  f
-        // F t  f
-
         if (stop)
         {
             counter++;
@@ -1048,9 +1047,11 @@ bool Sphinx::simulate(std::string file_to_simulate)
             counter = 0;
         }
 
-
         // RETURNS FALSE TO STOP
         // return (!(stop && (counter > 5)) || true);
+
+        overhead += (std::chrono::high_resolution_clock::now() - k_start_time);
+
         return this->stop && (!(stop && (counter > 5)));
     });
 
@@ -1059,7 +1060,10 @@ bool Sphinx::simulate(std::string file_to_simulate)
     //     this->stats_sim_time = duration_cast<milliseconds>(high_resolution_clock::now() - start_time).count();
     // }
 
-    this->stats_sim_time = (((clock() - start_time) * (1000)) / CLOCKS_PER_SEC);
+    std::chrono::duration<double> total_time = std::chrono::high_resolution_clock::now() - start_time;
+
+    this->stats_sim_time    = total_time.count() * 1000;
+    this->stats_kernel_time = this->stats_sim_time - (overhead.count() * 1000);
 
     uint32_t status;
     ram.getWord(0, &status);
@@ -1244,13 +1248,14 @@ void Sphinx::print_stats(bool cycle_test)
         this->results << std::setw(24) << "# of forwarding stalls:" << std::dec << this->stats_fwd_stalls << std::endl;
         this->results << std::setw(24) << "# of branch stalls:" << std::dec << this->stats_branch_stalls << std::endl;
         this->results << std::setw(24) << "# CPI:" << std::dec << (double) this->stats_total_cycles / (double) this->stats_dynamic_inst << std::endl;
-        this->results << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time << " milliseconds" << std::endl;
+        this->results << std::setw(24) << "# Total time: " << std::dec << this->stats_sim_time << " milliseconds" << std::endl;
+        this->results << std::setw(24) << "# Kernel Time: " << std::dec << this->stats_kernel_time << " milliseconds" << std::endl;
     }
     else
     {
         this->results << std::left;
-        this->results << std::setw(24) << "# of total cycles:" << std::dec << this->stats_total_cycles << std::endl;
-        this->results << std::setw(24) << "# time to simulate: " << std::dec << this->stats_sim_time << " milliseconds" << std::endl;
+        this->results << std::setw(24) << "# Total time: " << std::dec << this->stats_sim_time << " milliseconds" << std::endl;
+        this->results << std::setw(24) << "# Kernel Time: " << std::dec << this->stats_kernel_time << " milliseconds" << std::endl;
     }
 
 

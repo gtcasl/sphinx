@@ -5,7 +5,8 @@
 # of forwarding stalls: 6468
 # of branch stalls:     135143
 # CPI:                  1.45094
-# time to simulate:     870 milliseconds
+# Total time:           891.109 milliseconds
+# Kernel Time:          330.951 milliseconds
 # GRADE:                Failed on test: 0
 
 ****************	../riscv-benchmarks/vvadd.riscv.hex	****************
@@ -14,7 +15,8 @@
 # of forwarding stalls: 22878
 # of branch stalls:     1023940
 # CPI:                  1.53923
-# time to simulate:     5761 milliseconds
+# Total time:           5887.2 milliseconds
+# Kernel Time:          2251.81 milliseconds
 # GRADE:                Failed on test: 246
 
 ****************	../riscv-benchmarks/towers.riscv.hex	****************
@@ -23,7 +25,8 @@
 # of forwarding stalls: 32485
 # of branch stalls:     396711
 # CPI:                  1.34549
-# time to simulate:     3198 milliseconds
+# Total time:           3200.66 milliseconds
+# Kernel Time:          1191.22 milliseconds
 # GRADE:                Failed on test: 246
 
 ****************	../riscv-benchmarks/spmv.riscv.hex	****************
@@ -32,7 +35,8 @@
 # of forwarding stalls: 28330
 # of branch stalls:     7667686
 # CPI:                  1.48295
-# time to simulate:     44871 milliseconds
+# Total time:           45862.6 milliseconds
+# Kernel Time:          17496.9 milliseconds
 # GRADE:                Failed on test: 125885
 
 ****************	../riscv-benchmarks/median.riscv.hex	****************
@@ -41,7 +45,8 @@
 # of forwarding stalls: 21365
 # of branch stalls:     926661
 # CPI:                  1.53629
-# time to simulate:     5238 milliseconds
+# Total time:           5341.3 milliseconds
+# Kernel Time:          2043.02 milliseconds
 # GRADE:                Failed on test: 246
 
 ****************	../riscv-benchmarks/qsort.riscv.hex	****************
@@ -50,7 +55,8 @@
 # of forwarding stalls: 42326
 # of branch stalls:     171277
 # CPI:                  1.75329
-# time to simulate:     777 milliseconds
+# Total time:           815.169 milliseconds
+# Kernel Time:          302.448 milliseconds
 # GRADE:                Failed on test: 2147510092
 
 ****************	../riscv-benchmarks/multiply.riscv.hex	****************
@@ -59,5 +65,6 @@
 # of forwarding stalls: 9959
 # of branch stalls:     661963
 # CPI:                  1.60165
-# time to simulate:     3415 milliseconds
+# Total time:           3503.48 milliseconds
+# Kernel Time:          1333.91 milliseconds
 # GRADE:                Failed on test: 246
