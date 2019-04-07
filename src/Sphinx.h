@@ -999,7 +999,6 @@ void Sphinx::jtag_driver(ch_device<Pipeline> & pipeline)
 bool Sphinx::simulate(std::string file_to_simulate)
 {
 
-    this->sim = ch_simulator(this->pipeline);
     this->unit_test = true;
     if (file_to_simulate == "../tests/dhrystoneO3.hex")
     {
@@ -1085,7 +1084,6 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
     // auto start_time = std::chrono::high_resolution_clock::now();
 
 
-    this->sim = ch_simulator(this->pipeline);
     this->unit_test = false;
     this->stats_sim_time = 0;
 
@@ -1153,7 +1151,6 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod, int num
 bool Sphinx::simulate_debug(std::string file_to_simulate, std::vector<unsigned> debugAddress)
 {
 
-    this->sim = ch_simulator(this->pipeline);
     this->unit_test = true;
     if (file_to_simulate == "../tests/dhrystoneO3.hex")
     {
