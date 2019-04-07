@@ -1,45 +1,45 @@
 #pragma once
 
 // C++ libraries
-#include <utility>
-#include <iostream>
-#include <map>
-#include <iterator>
-#include <iomanip>
-#include <fstream>
-#include <unistd.h>
-#include <vector>
 #include <math.h>
+#include <unistd.h>
 #include <algorithm>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <utility>
+#include <vector>
 
+#include <ncurses.h>  // sim
+#include <signal.h>   // sim
 #include <ctime>
-#include <ncurses.h> // sim
-#include <signal.h> // sim
 
 // Cash libraries
 #include <cash.h>
-#include <ioport.h>
-#include <htl/queue.h>
 #include <htl/decoupled.h>
+#include <htl/queue.h>
+#include <ioport.h>
 
 // Pipeline Hardware definitions
-#include "util.h"
-#include "define.h"
-#include "fetch.h"
-#include "f_d_register.h"
-#include "decode.h"
-#include "d_e_register.h"
-#include "execute.h"
-#include "e_m_register.h"
-#include "memory.h"
-#include "m_w_register.h"
-#include "write_back.h"
-#include "forwarding.h"
 #include "buses.h"
+#include "d_e_register.h"
+#include "decode.h"
+#include "define.h"
+#include "e_m_register.h"
+#include "execute.h"
+#include "f_d_register.h"
+#include "fetch.h"
+#include "forwarding.h"
+#include "m_w_register.h"
+#include "memory.h"
+#include "util.h"
+#include "write_back.h"
 
 // Handlers
-#include "interrupt_handler.h"
 #include "csr_handler.h"
+#include "interrupt_handler.h"
 
 // RAM
 #include "ram.h"
@@ -49,31 +49,28 @@
 
 using namespace ch::htl;
 
-struct Pipeline
-{
-
-  __io(
-    (IBUS_io)         IBUS,
-    (DBUS_io)         DBUS,
-    (INTERRUPT_io)    INTERRUPT,
-    (JTAG_io)         jtag,
-    __in(ch_bool)     in_debug,
-
-    __out(ch_bool)    out_fwd_stall, // DInst counting
-    __out(ch_bool)    out_branch_stall // DInst counting
+struct Pipeline {
+  __io (
+    (IBUS_io)IBUS,
+    (DBUS_io)DBUS,
+    (INTERRUPT_io)INTERRUPT,
+    (JTAG_io)jtag,
+    __in(ch_bool) in_debug,
+    __out(ch_bool) out_fwd_stall,    // DInst counting
+    __out(ch_bool) out_branch_stall  // DInst counting
   );
 
-  void describe()
-  {
-
-
-    // DYNAMIC INSTRUCTION COUNTING:
-    #ifdef BRANCH_WB
-        io.out_branch_stall = decode.io.out_branch_stall || execute.io.out_branch_stall || memory.io.out_branch_stall;
-    #else
-        io.out_branch_stall = decode.io.out_branch_stall || execute.io.out_branch_stall;
-    #endif
-    io.out_fwd_stall    = forwarding.io.out_fwd_stall;
+  void describe() {
+// DYNAMIC INSTRUCTION COUNTING:
+#ifdef BRANCH_WB
+    io.out_branch_stall = decode.io.out_branch_stall ||
+                          execute.io.out_branch_stall ||
+                          memory.io.out_branch_stall;
+#else
+    io.out_branch_stall =
+        decode.io.out_branch_stall || execute.io.out_branch_stall;
+#endif
+    io.out_fwd_stall = forwarding.io.out_fwd_stall;
 
     // IBUS I/O
     fetch.io.IBUS(io.IBUS);
@@ -91,29 +88,28 @@ struct Pipeline
     fetch.io.in_interrupt(interrupt_handler.io.out_interrupt);
     fetch.io.in_interrupt_pc(interrupt_handler.io.out_interrupt_pc);
 
+// EXE TO FETCH
+#ifdef BRANCH_WB
+    m_w_register.io.in_branch_dir(memory.io.out_branch_dir);
+    m_w_register.io.in_branch_dest(memory.io.out_branch_dest);
 
-    // EXE TO FETCH
-    #ifdef BRANCH_WB
-        m_w_register.io.in_branch_dir(memory.io.out_branch_dir);
-        m_w_register.io.in_branch_dest(memory.io.out_branch_dest);
+    fetch.io.in_branch_dir(m_w_register.io.out_branch_dir);
+    fetch.io.in_branch_dest(m_w_register.io.out_branch_dest);
+#else
+    fetch.io.in_branch_dir(memory.io.out_branch_dir);
+    fetch.io.in_branch_dest(memory.io.out_branch_dest);
+#endif
 
-        fetch.io.in_branch_dir(m_w_register.io.out_branch_dir);
-        fetch.io.in_branch_dest(m_w_register.io.out_branch_dest);
-    #else
-        fetch.io.in_branch_dir(memory.io.out_branch_dir);
-        fetch.io.in_branch_dest(memory.io.out_branch_dest);
-    #endif
-
-    // DECODE TO FETCH
-    #ifdef JAL_MEM
+// DECODE TO FETCH
+#ifdef JAL_MEM
     e_m_register.io.in_jal(execute.io.out_jal);
-    e_m_register.io.in_jal_dest(execute.io.out_jal_dest);  
+    e_m_register.io.in_jal_dest(execute.io.out_jal_dest);
     fetch.io.in_jal(e_m_register.io.out_jal);
-    fetch.io.in_jal_dest(e_m_register.io.out_jal_dest);  
-    #else
+    fetch.io.in_jal_dest(e_m_register.io.out_jal_dest);
+#else
     fetch.io.in_jal(execute.io.out_jal);
     fetch.io.in_jal_dest(execute.io.out_jal_dest);
-    #endif
+#endif
 
     // fetch TO f_d_register
     f_d_register.io.in_instruction(fetch.io.out_instruction);
@@ -133,7 +129,6 @@ struct Pipeline
     csr_handler.io.in_mem_is_csr(e_m_register.io.out_is_csr);
     csr_handler.io.in_mem_csr_result(e_m_register.io.out_csr_result);
 
-
     // decode to d_e_register
     d_e_register.io.in_rd(decode.io.out_rd);
     d_e_register.io.in_rs1(decode.io.out_rs1);
@@ -147,7 +142,7 @@ struct Pipeline
     d_e_register.io.in_wb(decode.io.out_wb);
     d_e_register.io.in_mem_read(decode.io.out_mem_read);
     d_e_register.io.in_mem_write(decode.io.out_mem_write);
-    d_e_register.io.in_branch_type(decode.io.out_branch_type); // branch type
+    d_e_register.io.in_branch_type(decode.io.out_branch_type);  // branch type
     d_e_register.io.in_upper_immed(decode.io.out_upper_immed);
     d_e_register.io.in_csr_address(decode.io.out_csr_address);
     d_e_register.io.in_is_csr(decode.io.out_is_csr);
@@ -158,12 +153,10 @@ struct Pipeline
     d_e_register.io.in_curr_PC(f_d_register.io.out_curr_PC);
     // d_e_register.io(decode.io);
 
-
     // Decode to f_d_register
     f_d_register.io.in_branch_stall = decode.io.out_branch_stall;
     // Decode to FETCH
     fetch.io.in_branch_stall = decode.io.out_branch_stall;
-
 
     // d_e_register to execute
     execute.io.in_rd(d_e_register.io.out_rd);
@@ -222,7 +215,6 @@ struct Pipeline
     memory.io.in_branch_offset(e_m_register.io.out_branch_offset);
     memory.io.in_branch_type(e_m_register.io.out_branch_type);
 
-
     // memory to m_w_register
     m_w_register.io.in_alu_result(memory.io.out_alu_result);
     m_w_register.io.in_mem_result(memory.io.out_mem_result);
@@ -245,7 +237,6 @@ struct Pipeline
     decode.io.in_write_data(write_back.io.out_write_data);
     decode.io.in_rd(write_back.io.out_rd);
     decode.io.in_wb(write_back.io.out_wb);
-
 
     // Forwarding unit
     forwarding.io.in_decode_src1(decode.io.out_rs1);
@@ -275,50 +266,50 @@ struct Pipeline
     forwarding.io.in_writeback_mem_data(m_w_register.io.out_mem_result);
     forwarding.io.in_writeback_PC_next(m_w_register.io.out_PC_next);
 
-    #ifdef FORWARDING
-        decode.io.in_src1_fwd(forwarding.io.out_src1_fwd);
-        decode.io.in_src2_fwd(forwarding.io.out_src2_fwd);
-        decode.io.in_csr_fwd(forwarding.io.out_csr_fwd);
-        decode.io.in_src1_fwd_data(forwarding.io.out_src1_fwd_data);
-        decode.io.in_src2_fwd_data(forwarding.io.out_src2_fwd_data);
-        decode.io.in_csr_fwd_data(forwarding.io.out_csr_fwd_data);
-    #endif
+#ifdef FORWARDING
+    decode.io.in_src1_fwd(forwarding.io.out_src1_fwd);
+    decode.io.in_src2_fwd(forwarding.io.out_src2_fwd);
+    decode.io.in_csr_fwd(forwarding.io.out_csr_fwd);
+    decode.io.in_src1_fwd_data(forwarding.io.out_src1_fwd_data);
+    decode.io.in_src2_fwd_data(forwarding.io.out_src2_fwd_data);
+    decode.io.in_csr_fwd_data(forwarding.io.out_csr_fwd_data);
+#endif
 
-    #ifdef BRANCH_WB
-        decode.io.in_stall = (execute.io.out_branch_stall == STALL) || memory.io.out_branch_stall;
+#ifdef BRANCH_WB
+    decode.io.in_stall =
+        (execute.io.out_branch_stall == STALL) || memory.io.out_branch_stall;
 
-        fetch.io.in_branch_stall_exe = execute.io.out_branch_stall || memory.io.out_branch_stall;
-        f_d_register.io.in_branch_stall_exe = execute.io.out_branch_stall || memory.io.out_branch_stall;
-        d_e_register.io.in_branch_stall = execute.io.out_branch_stall || memory.io.out_branch_stall;
-    #else
-        decode.io.in_stall = (execute.io.out_branch_stall == STALL);
+    fetch.io.in_branch_stall_exe =
+        execute.io.out_branch_stall || memory.io.out_branch_stall;
+    f_d_register.io.in_branch_stall_exe =
+        execute.io.out_branch_stall || memory.io.out_branch_stall;
+    d_e_register.io.in_branch_stall =
+        execute.io.out_branch_stall || memory.io.out_branch_stall;
+#else
+    decode.io.in_stall = (execute.io.out_branch_stall == STALL);
 
-        fetch.io.in_branch_stall_exe = execute.io.out_branch_stall;
-        f_d_register.io.in_branch_stall_exe = execute.io.out_branch_stall;
-        d_e_register.io.in_branch_stall = execute.io.out_branch_stall;
-    #endif
-    
+    fetch.io.in_branch_stall_exe = execute.io.out_branch_stall;
+    f_d_register.io.in_branch_stall_exe = execute.io.out_branch_stall;
+    d_e_register.io.in_branch_stall = execute.io.out_branch_stall;
+#endif
 
-    fetch.io.in_fwd_stall        = forwarding.io.out_fwd_stall;
-    f_d_register.io.in_fwd_stall = forwarding.io.out_fwd_stall;  
+    fetch.io.in_fwd_stall = forwarding.io.out_fwd_stall;
+    f_d_register.io.in_fwd_stall = forwarding.io.out_fwd_stall;
     d_e_register.io.in_fwd_stall = forwarding.io.out_fwd_stall;
 
-
-    #ifdef CACHE_ENABLED
+#ifdef CACHE_ENABLED
 
     f_d_register.io.in_freeze = fetch.io.out_delay || memory.io.out_delay;
     d_e_register.io.in_freeze = fetch.io.out_delay || memory.io.out_delay;
     e_m_register.io.in_freeze = fetch.io.out_delay || memory.io.out_delay;
     m_w_register.io.in_freeze = fetch.io.out_delay || memory.io.out_delay;
-    fetch.io.in_freeze        = memory.io.out_delay;
+    fetch.io.in_freeze = memory.io.out_delay;
 
-    #else
+#else
 
-    fetch.io.in_freeze        = FALSE;
+    fetch.io.in_freeze = FALSE;
 
-    #endif
-
-
+#endif
   }
 
   ch_module<Fetch> fetch;
@@ -336,54 +327,52 @@ struct Pipeline
   ch_module<CSR_Handler> csr_handler;
 };
 
+class Sphinx {
+ public:
+  Sphinx();
+  ~Sphinx();
+  bool simulate(std::string);
+  void simulate_numCycles(unsigned, bool, int, int);
+  bool simulate_debug(std::string, std::vector<unsigned>);
+  void export_model(void);
 
-class Sphinx
-{
-    public:
-        Sphinx();
-        ~Sphinx();
-        bool simulate(std::string);
-        void simulate_numCycles(unsigned, bool, int, int);
-        bool simulate_debug(std::string, std::vector<unsigned>);
-        void export_model(void);
-    private:
+ private:
+  void ProcessFile(void);
+  void print_stats(bool = true);
+  void reset_debug(void);
 
-        void ProcessFile(void);
-        void print_stats(bool = true);
-        void reset_debug(void);
+  bool ibus_driver(ch_device<Pipeline> &, bool = false,
+                   std::vector<unsigned> = std::vector<unsigned>());
+  bool dbus_driver(ch_device<Pipeline> &);
+  void interrupt_driver(ch_device<Pipeline> &);
+  void jtag_driver(ch_device<Pipeline> &);
 
+  std::map<unsigned, unsigned> inst_map;
+  RAM ram;
 
-        bool ibus_driver(ch_device<Pipeline> &, bool=false, std::vector<unsigned> = std::vector<unsigned>());
-        bool dbus_driver(ch_device<Pipeline> &);
-        void interrupt_driver(ch_device<Pipeline> &);
-        void jtag_driver(ch_device<Pipeline> &);
+  unsigned start_pc;
 
-        std::map<unsigned,unsigned> inst_map;
-        RAM ram;
+  ch_device<Pipeline> pipeline;
 
-        unsigned start_pc;
-
-        ch_device<Pipeline> pipeline;
-
-        ch_simulator sim;
-        long int curr_cycle;
-        bool stop;
-        bool unit_test;
-        std::string instruction_file_name;
-        std::ofstream results;
-        int stats_static_inst;
-        int stats_dynamic_inst;
-        int stats_total_cycles;
-        int stats_fwd_stalls;
-        int stats_branch_stalls;
-        int debug_state;
-        int ibus_state;
-        int dbus_state;
-        int debug_return;
-        int debug_wait_num;
-        int debug_inst_num;
-        int debug_end_wait;
-        int debug_debugAddr;
-        double stats_sim_time;
-        double stats_kernel_time;
+  ch_simulator sim;
+  long int curr_cycle;
+  bool stop;
+  bool unit_test;
+  std::string instruction_file_name;
+  std::ofstream results;
+  int stats_static_inst;
+  int stats_dynamic_inst;
+  int stats_total_cycles;
+  int stats_fwd_stalls;
+  int stats_branch_stalls;
+  int debug_state;
+  int ibus_state;
+  int dbus_state;
+  int debug_return;
+  int debug_wait_num;
+  int debug_inst_num;
+  int debug_end_wait;
+  int debug_debugAddr;
+  double stats_sim_time;
+  double stats_kernel_time;
 };

@@ -8,11 +8,9 @@
 #define WORD_SIZE 32
 #define CACHE_SIZE 4096
 
-
-//BOOL
+// BOOL
 #define TRUE ch_bool(true)
 #define FALSE ch_bool(false)
-
 
 // OPCODES
 #define R_INST 51
@@ -25,8 +23,6 @@
 #define JAL_INST 111
 #define JALR_INST 103
 #define SYS_INST 115
-
-
 
 // BRANCH
 #define NO_BRANCH ch_bit<3>(0)
@@ -51,14 +47,12 @@
 #define TAKEN_int (1)
 #define NOT_TAKEN_int (0)
 
-
 // STALLS
 #define STALL ch_bit<1>(1)
 #define NO_STALL ch_bit<1>(0)
 
 #define STALL_int (1)
 #define NO_STALL_int (0)
-
 
 // VALID
 #define VALID ch_bit<1>(1)
@@ -86,7 +80,6 @@
 #define CSR_ALU_RS ch_bit<4>(14)
 #define CSR_ALU_RC ch_bit<4>(15)
 
-
 #define NO_ALU_int (15)
 #define ADD_int (0)
 #define SUB_int (1)
@@ -109,12 +102,12 @@
 #define WB_ALU ch_bit<2>(1)
 #define WB_MEM ch_bit<2>(2)
 #define WB_JAL ch_bit<2>(3)
-#define NO_WB  ch_bit<2>(0)
+#define NO_WB ch_bit<2>(0)
 
 #define WB_ALU_int (1)
 #define WB_MEM_int (2)
 #define WB_JAL_int (3)
-#define NO_WB_int  (0)
+#define NO_WB_int (0)
 
 // JAL
 #define JUMP ch_bit<1>(1)
@@ -130,11 +123,9 @@
 #define RS2_IMMED_int (1)
 #define RS2_REG_int (0)
 
-
 // FORWARDING
 #define NO_FWD ch_bit<1>(0)
 #define FWD ch_bit<1>(1)
-
 
 // FORWARDING CODES
 #define NO_FWD_ ch_bit<4>(0)
@@ -147,7 +138,6 @@
 #define WB_MEM_DATA ch_bit<4>(7)
 #define WB_ALU_ ch_bit<4>(8)
 
-
 #define NO_FWD_int (0)
 #define EXE_PC_NEXT_int (1)
 #define EXE_ALU_int (2)
@@ -158,12 +148,10 @@
 #define WB_MEM_DATA_int (7)
 #define WB_ALU_int_ (8)
 
-
-
 // Registers
 #define REG(x) ch_bit<5>(x)
 
-// IMMEDIATES 
+// IMMEDIATES
 #define ZERO 0
 #define CH_ZERO(x) ch_bit<x>(0)
 #define ONES_24BITS 16777215
@@ -173,21 +161,21 @@
 #define anything ch_bit<12>(123)
 #define anything32 ch_bit<32>(123)
 #define anything20 ch_bit<20>(123)
-#define INT_MAX    0xFFFFFFFF
+#define INT_MAX 0xFFFFFFFF
 
 // MEMORY
 
-#define NO_MEM_READ  ch_bit<3>(7)
-#define LB_MEM_READ  ch_bit<3>(0)
-#define LH_MEM_READ  ch_bit<3>(1)
-#define LW_MEM_READ  ch_bit<3>(2)
+#define NO_MEM_READ ch_bit<3>(7)
+#define LB_MEM_READ ch_bit<3>(0)
+#define LH_MEM_READ ch_bit<3>(1)
+#define LW_MEM_READ ch_bit<3>(2)
 #define LBU_MEM_READ ch_bit<3>(4)
 #define LHU_MEM_READ ch_bit<3>(5)
 
-#define NO_MEM_READ_int  (7)
-#define LB_MEM_READ_int  (0)
-#define LH_MEM_READ_int  (1)
-#define LW_MEM_READ_int  (2)
+#define NO_MEM_READ_int (7)
+#define LB_MEM_READ_int (0)
+#define LH_MEM_READ_int (1)
+#define LW_MEM_READ_int (2)
 #define LBU_MEM_READ_int (4)
 #define LHU_MEM_READ_int (5)
 
@@ -216,7 +204,6 @@
 #define ZERO_REG ch_bit<5>(0)
 #define ZERO_REG_int (0)
 
-
 // COLORS
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -235,47 +222,43 @@
 #define I_STATE_int 3
 #define S_STATE_int 4
 
-
 // ICACHE
 #define ICACHE_NORMAL TRUE
-#define ICACHE_MISS   FALSE
+#define ICACHE_MISS FALSE
 
-#ifdef  ICACHE_ENABLE
+#ifdef ICACHE_ENABLE
 
-	#define ILINE_SIZE    (1<<ILINE_BITS)
-	#define ICACHE_SIZE   (1<<ICACHE_BITS)
-	#define INUM_LINES    (1<<(ICACHE_BITS - ILINE_BITS))
-	#define INUM_BITS     (ICACHE_BITS - ILINE_BITS)
-	#define IG_TAG_BITS   (ICACHE_BITS)
-	#define ITAG_BITS     (32 - ICACHE_BITS)
-	#define OFFSET_BITS   (ILINE_BITS + 3)
-	#define LINE_BIT_SIZE (ILINE_SIZE << 3)
+#define ILINE_SIZE (1 << ILINE_BITS)
+#define ICACHE_SIZE (1 << ICACHE_BITS)
+#define INUM_LINES (1 << (ICACHE_BITS - ILINE_BITS))
+#define INUM_BITS (ICACHE_BITS - ILINE_BITS)
+#define IG_TAG_BITS (ICACHE_BITS)
+#define ITAG_BITS (32 - ICACHE_BITS)
+#define OFFSET_BITS (ILINE_BITS + 3)
+#define LINE_BIT_SIZE (ILINE_SIZE << 3)
 
-	#define ITAG_MASK      (((1<<ITAG_BITS) - 1) << ICACHE_BITS)
+#define ITAG_MASK (((1 << ITAG_BITS) - 1) << ICACHE_BITS)
 
-	#define CACHE_ENABLED
-
-#endif
-
-
-
-#ifdef  DCACHE_ENABLE
-
-	// #endif
-
-	#ifndef CACHE_ENABLED
-
-		#define CACHE_ENABLED
-
-	#endif
+#define CACHE_ENABLED
 
 #endif
 
+#ifdef DCACHE_ENABLE
 
+// #endif
 
-#include <chrono> 
+#ifndef CACHE_ENABLED
+
+#define CACHE_ENABLED
+
+#endif
+
+#endif
+
+#include <chrono>
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> clock_time;
 typedef std::chrono::duration<double> clock_diff;
 
-#define duration(a) std::chrono::duration_cast<std::chrono::nanoseconds>(a).count()
+#define duration(a) \
+  std::chrono::duration_cast<std::chrono::nanoseconds>(a).count()
 #define timeNow() std::chrono::high_resolution_clock::now()

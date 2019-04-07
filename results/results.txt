@@ -1,10 +1,10 @@
 
-****************	../tests/dhrystoneO3.hex	****************
-# Dynamic Instructions: 130531
-# of total cycles:      197329
-# of forwarding stalls: 2779
-# of branch stalls:     66101
-# CPI:                  1.51174
-# Total time:           1515.77 milliseconds
-# Kernel Time:          320.329 milliseconds
-# GRADE:                N/A [NOT A UNIT TEST]
+****************	../riscv-benchmarks/dhrystone.riscv.hex	****************
+# Dynamic Instructions: 304049
+# of total cycles:      441156
+# of forwarding stalls: 6468
+# of branch stalls:     135143
+# CPI:                  1.45094
+# Total time:           3893.63 milliseconds
+# Kernel Time:          731.793 milliseconds
+# GRADE:                Failed on test: 0

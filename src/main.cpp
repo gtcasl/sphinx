@@ -1,25 +1,16 @@
-////
-
-
 // #define SIM
-
 #include "Sphinx.h"
-
 #include "parse.h"
-
 
 // #define NUM_TESTS 39
 #define NUM_TESTS 7
 
-int main(int argc, char ** argv)
-{
-
-
+int main(int argc, char** argv) {
   execution_state es = parseArguments(argc, argv);
 
-    Sphinx sphinx;
+  Sphinx sphinx;
 
-    bool passed = true;
+  bool passed = true;
   // std::string tests[NUM_TESTS] = {
   // 	"../tests/rv32ui-p-add.hex",
   // 	"../tests/rv32ui-p-addi.hex",
@@ -66,27 +57,22 @@ int main(int argc, char ** argv)
   // 	// "../tests/I-CSRRSI-01.elf.hex",
   // 	// "../tests/I-CSRRW-01.elf.hex",
   // 	// "../tests/I-CSRRWI-01.elf.hex",
- //  //       "../tests/I-DELAY_SLOTS-01.elf.hex",
- //  //       "../tests/I-EBREAK-01.elf.hex",
- //  //       "../tests/I-ECALL-01.elf.hex",
- //  //       "../tests/I-ENDIANESS-01.elf.hex"
+  //  //       "../tests/I-DELAY_SLOTS-01.elf.hex",
+  //  //       "../tests/I-EBREAK-01.elf.hex",
+  //  //       "../tests/I-ECALL-01.elf.hex",
+  //  //       "../tests/I-ENDIANESS-01.elf.hex"
   // 	// "tests/dhrystoneO3.hex","
   // };
 
-  std::string bench[NUM_TESTS] = {
-    "../riscv-benchmarks/dhrystone.riscv.hex",
-    "../riscv-benchmarks/vvadd.riscv.hex",
-    "../riscv-benchmarks/towers.riscv.hex",
-    "../riscv-benchmarks/spmv.riscv.hex",
-    "../riscv-benchmarks/median.riscv.hex",
-    "../riscv-benchmarks/qsort.riscv.hex",
-    "../riscv-benchmarks/multiply.riscv.hex"
-  };
+  std::string bench[NUM_TESTS] = {"../riscv-benchmarks/dhrystone.riscv.hex",
+                                  "../riscv-benchmarks/vvadd.riscv.hex",
+                                  "../riscv-benchmarks/towers.riscv.hex",
+                                  "../riscv-benchmarks/spmv.riscv.hex",
+                                  "../riscv-benchmarks/median.riscv.hex",
+                                  "../riscv-benchmarks/qsort.riscv.hex",
+                                  "../riscv-benchmarks/multiply.riscv.hex"};
 
-
-  if (es.state == 0)
-  {
-
+  if (es.state == 0) {
     for (int ii = 0; ii < NUM_TESTS; ii++)
     // for (int ii = 0; ii < NUM_TESTS - 1; ii++)
     {
@@ -102,53 +88,42 @@ int main(int argc, char ** argv)
     // {
     // 	bool curr = sphinx.simulate(tests[ii]);
 
-    // 	if ( curr) std::cout << GREEN << "Test Passed: " << tests[ii] << std::endl;
-    // 	if (!curr) std::cout << RED   << "Test Failed: " << tests[ii] << std::endl;
-    // 	passed = passed && curr;
+    // 	if ( curr) std::cout << GREEN << "Test Passed: " << tests[ii] <<
+    // std::endl; 	if (!curr) std::cout << RED   << "Test Failed: " <<
+    // tests[ii] << std::endl; 	passed = passed && curr;
 
     // 	std::cout << DEFAULT;
     // }
 
     // if( passed) std::cout << DEFAULT << "PASSED ALL TESTS\n";
     // if(!passed) std::cout << DEFAULT << "Failed one or more tests\n";
-  }
-  else if (es.state == 1)
-  {
+  } else if (es.state == 1) {
     std::cout << DEFAULT << "Going to run " << es.numCycles << " cycles\n";
-    sphinx.simulate_numCycles(es.numCycles, es.print, es.printEvery, es.numRuns);
+    sphinx.simulate_numCycles(es.numCycles, es.print, es.printEvery,
+                              es.numRuns);
 
-
-
-  } else if (es.state == 2)
-  {
+  } else if (es.state == 2) {
     std::cout << DEFAULT << "Running: " << es.file_to_simulate << "\t";
     passed = sphinx.simulate(es.file_to_simulate);
-    if (es.file_to_simulate != "tests/dhrystoneO3.hex")
-    {
-      if ( passed) std::cout << GREEN << "Passed\n";
-      if (!passed) std::cout << RED   << "Failed\n";
+    if (es.file_to_simulate != "tests/dhrystoneO3.hex") {
+      if (passed) std::cout << GREEN << "Passed\n";
+      if (!passed) std::cout << RED << "Failed\n";
+    } else {
+      std::cout << RED << "Not a Test\n";
     }
-    else
-    {
-      std::cout << RED   << "Not a Test\n";
-    }
-  } else if (es.state == 3)
-  {
-    std::cout << DEFAULT << "Running: " << es.file_to_simulate << " with debugging enabled\n";
+  } else if (es.state == 3) {
+    std::cout << DEFAULT << "Running: " << es.file_to_simulate
+              << " with debugging enabled\n";
     passed = sphinx.simulate_debug(es.file_to_simulate, es.debugAddress);
-    if (es.file_to_simulate != "tests/dhrystoneO3.hex")
-    {
-      if ( passed) std::cout << GREEN << "Passed\n";
-      if (!passed) std::cout << RED   << "Failed\n";
-    }
-    else
-    {
-      std::cout << RED   << "Not a Test\n";
+    if (es.file_to_simulate != "tests/dhrystoneO3.hex") {
+      if (passed) std::cout << GREEN << "Passed\n";
+      if (!passed) std::cout << RED << "Failed\n";
+    } else {
+      std::cout << RED << "Not a Test\n";
     }
   }
 
-  if (es.exportVerilog)
-  {
+  if (es.exportVerilog) {
     std::cout << DEFAULT << "\nExporting model to Verilog ... ";
     sphinx.export_model();
     std::cout << GREEN << "Model successfully exported\n";
@@ -157,5 +132,4 @@ int main(int argc, char ** argv)
   std::cout << DEFAULT;
   if (passed) return 0;
   return -1;
-
 }

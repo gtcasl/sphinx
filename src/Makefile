@@ -24,7 +24,7 @@ clear:
 	rm -f *.out *.o *.vcd *.iv *.fir .depend *~ *\#
 
 run: $(PROJECT)
-	./$(PROJECT)
+	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex
 
 ifneq ($(MAKECMDGOALS),clean)
 	-include .depend
