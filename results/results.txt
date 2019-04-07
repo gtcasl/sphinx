@@ -1,70 +1,10 @@
 
-****************	../riscv-benchmarks/dhrystone.riscv.hex	****************
-# Dynamic Instructions: 304049
-# of total cycles:      441156
-# of forwarding stalls: 6468
-# of branch stalls:     135143
-# CPI:                  1.45094
-# Total time:           876.638 milliseconds
-# Kernel Time:          328.494 milliseconds
-# GRADE:                Failed on test: 0
-
-****************	../riscv-benchmarks/vvadd.riscv.hex	****************
-# Dynamic Instructions: 1936732
-# of total cycles:      2981069
-# of forwarding stalls: 22878
-# of branch stalls:     1023940
-# CPI:                  1.53923
-# Total time:           5821.84 milliseconds
-# Kernel Time:          2219.55 milliseconds
-# GRADE:                Failed on test: 246
-
-****************	../riscv-benchmarks/towers.riscv.hex	****************
-# Dynamic Instructions: 1190482
-# of total cycles:      1601784
-# of forwarding stalls: 32485
-# of branch stalls:     396711
-# CPI:                  1.34549
-# Total time:           3206.9 milliseconds
-# Kernel Time:          1207.29 milliseconds
-# GRADE:                Failed on test: 246
-
-****************	../riscv-benchmarks/spmv.riscv.hex	****************
-# Dynamic Instructions: 15931103
-# of total cycles:      23625087
-# of forwarding stalls: 28330
-# of branch stalls:     7667686
-# CPI:                  1.48295
-# Total time:           45120 milliseconds
-# Kernel Time:          17178.9 milliseconds
-# GRADE:                Failed on test: 125885
-
-****************	../riscv-benchmarks/median.riscv.hex	****************
-# Dynamic Instructions: 1763160
-# of total cycles:      2708718
-# of forwarding stalls: 21365
-# of branch stalls:     926661
-# CPI:                  1.53629
-# Total time:           5326.4 milliseconds
-# Kernel Time:          2050.9 milliseconds
-# GRADE:                Failed on test: 246
-
-****************	../riscv-benchmarks/qsort.riscv.hex	****************
-# Dynamic Instructions: 228176
-# of total cycles:      400058
-# of forwarding stalls: 42326
-# of branch stalls:     171277
-# CPI:                  1.75329
-# Total time:           788.65 milliseconds
-# Kernel Time:          292.279 milliseconds
-# GRADE:                Failed on test: 2147510092
-
-****************	../riscv-benchmarks/multiply.riscv.hex	****************
-# Dynamic Instructions: 1115343
-# of total cycles:      1786384
-# of forwarding stalls: 9959
-# of branch stalls:     661963
-# CPI:                  1.60165
-# Total time:           3444.22 milliseconds
-# Kernel Time:          1314.76 milliseconds
-# GRADE:                Failed on test: 246
+****************	../tests/dhrystoneO3.hex	****************
+# Dynamic Instructions: 130531
+# of total cycles:      197329
+# of forwarding stalls: 2779
+# of branch stalls:     66101
+# CPI:                  1.51174
+# Total time:           1515.77 milliseconds
+# Kernel Time:          320.329 milliseconds
+# GRADE:                N/A [NOT A UNIT TEST]

@@ -1,6 +1,7 @@
+#pragma once
+
 #include <cash.h>
 #include <ioport.h>
-
 
 using namespace ch::system;
 using namespace ch::logic;

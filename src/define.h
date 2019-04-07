@@ -1,7 +1,4 @@
-
-
-#ifndef __DEFINITIONS__
-#define __DEFINITIONS__
+#pragma once
 
 #include "config.h"
 
@@ -282,5 +279,3 @@ typedef std::chrono::duration<double> clock_diff;
 
 #define duration(a) std::chrono::duration_cast<std::chrono::nanoseconds>(a).count()
 #define timeNow() std::chrono::high_resolution_clock::now()
-
-#endif

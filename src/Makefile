@@ -1,22 +1,18 @@
 
-#CXX = clang-5.0
-
 #CXXFLAGS += -std=c++17 -O3 -DNDEBUG -I$(CASH_HOME)/include -Wall -Wextra -pedantic
 CXXFLAGS += -std=c++17 -O0 -g -I$(CASH_HOME)/include -Wall -Wextra -pedantic
 LDFLAGS += -lcash -lstdc++ -L$(CASH_HOME)/build/lib
 
-SRCS = Sphinx.cpp
+PROJECT = Sphinx.out
 
-PROJECTS = $(SRCS:.cpp=.out)
-PROJECTS_NAMES = $(SRCS:.cpp=)
+SRCS = Sphinx.cpp main.cpp
 
-all: $(PROJECTS)
+OBJS := $(SRCS:.cpp=.o)
 
-%.o: %.cpp *.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+all: $(PROJECT)
 
-%.out: %.o
-	$(CXX) $^ $(LDFLAGS) -o $@
+$(PROJECT): $(OBJS)
+	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
 
 .depend: $(SRCS)
 	$(CXX) $(CXXFLAGS) -MM $^ > .depend;
@@ -27,10 +23,8 @@ clean:
 clear:
 	rm -f *.out *.o *.vcd *.iv *.fir .depend *~ *\#
 
-run: $(PROJECTS)
-	$(foreach proj, $(PROJECTS), ./$(proj) || exit;)
-	$(foreach proj, $(PROJECTS_NAMES), iverilog $(proj)_tb.v -o $(proj)_tb.iv || exit;)
-	$(foreach proj, $(PROJECTS_NAMES), vvp $(proj)_tb.iv || exit;)
+run: $(PROJECT)
+	./$(PROJECT)
 
 ifneq ($(MAKECMDGOALS),clean)
 	-include .depend

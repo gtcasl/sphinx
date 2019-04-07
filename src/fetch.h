@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cash.h>
 #include <ioport.h>
 #include "define.h"

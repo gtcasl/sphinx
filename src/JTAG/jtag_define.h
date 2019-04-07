@@ -1,5 +1,4 @@
-
-
+#pragma once
 
 #define TEST_LOGIC_RESET ch_bit<4>(0) 
 #define RUN_TEST_IDLE ch_bit<4>(1)

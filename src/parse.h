@@ -1,7 +1,4 @@
-
-
-#ifndef __PARSE__
-#define __PARSE__
+#pragma once
 
 #include <string>
 #include <vector>
@@ -92,5 +89,3 @@ execution_state parseArguments(int argc, char ** argv)
 
 	return es;
 }
-
-#endif

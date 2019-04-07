@@ -1,5 +1,4 @@
-#ifndef __OPTIONS__
-#define __OPTIONS__
+#pragma once
 
 #include "literals.h"
 
@@ -15,5 +14,3 @@
 
 #define JAL_EXE
 #define FORWARDING
-
-#endif

@@ -1,3 +1,4 @@
+#pragma once
 
 using namespace ch::logic;
 using namespace ch::system;

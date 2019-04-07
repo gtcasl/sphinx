@@ -1,6 +1,4 @@
-
-#ifndef __BUSES__
-#define __BUSES__
+#pragma once
 
 #include <cash.h>
 #include <ioport.h>
@@ -43,7 +41,3 @@ __inout(JTAG_io, (
 	(ch_enq_io<ch_bit<1>>)   in_data,        // JTAG test data input pad
 	(ch_deq_io<ch_bit<1>>)   out_data        // JTAG test data output pad
 ));
-
-
-
-#endif
