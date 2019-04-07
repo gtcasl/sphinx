@@ -416,7 +416,7 @@ Sphinx::Sphinx() : start_pc(0), curr_cycle(0), stop(true), unit_test(true), stat
 
 
 
-void intHandler(int signo) {
+void intHandler(int /*signo*/) {
 
     keepRunning = 0;
 }
@@ -837,7 +837,9 @@ bool Sphinx::dbus_driver(ch_device<Pipeline> & pipeline)
             pipeline.io.DBUS.in_data.valid = false;
         }
 
+#ifdef SIM
      wrefresh(stdscr);
+#endif
 
     return false;
 
