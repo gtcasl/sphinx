@@ -152,7 +152,7 @@ void Sphinx::ProcessFile(void) {
   // if(debug) std::cout << "***********************" << std::endl;
 }
 
-bool Sphinx::ibus_driver(bool debug_mode, std::vector<unsigned> debugAddress) {
+bool Sphinx::ibus_driver(bool debug_mode, const std::vector<unsigned>& debugAddress) {
   static int store_state[31] = {
       0x00102023, 0x00202223, 0x00302423, 0x00402623, 0x00502823, 0x00602a23,
       0x00702c23, 0x00802e23, 0x02902023, 0x02a02223, 0x02b02423, 0x02c02623,
@@ -592,7 +592,7 @@ void Sphinx::jtag_driver() {
   ////////////////////// JATG //////////////////////
 }
 
-bool Sphinx::simulate(std::string file_to_simulate) {
+bool Sphinx::simulate(const std::string& file_to_simulate) {
   this->unit_test = true;
   if (file_to_simulate == "../tests/dhrystoneO3.hex") {
     this->unit_test = false;
@@ -627,7 +627,7 @@ bool Sphinx::simulate(std::string file_to_simulate) {
 
     // std::cout << "aaCycle: " << std::dec << cycle << "\n";
 
-    bool istop = ibus_driver();
+    bool istop = ibus_driver(false, std::vector<unsigned>());
     bool dstop = !dbus_driver();
     stop = istop && dstop;
     interrupt_driver();
@@ -738,8 +738,8 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod,
   this->print_stats(false);
 }
 
-bool Sphinx::simulate_debug(std::string file_to_simulate,
-                            std::vector<unsigned> debugAddress) {
+bool Sphinx::simulate_debug(const std::string& file_to_simulate,
+                            const std::vector<unsigned>& debugAddress) {
   this->unit_test = true;
   if (file_to_simulate == "../tests/dhrystoneO3.hex") {
     this->unit_test = false;
