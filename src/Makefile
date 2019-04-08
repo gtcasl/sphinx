@@ -25,6 +25,22 @@ clear:
 
 run: $(PROJECT)
 	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex
+	
+build-vcs: $(PROJECT)
+	vcs -cpp /usr/bin/gcc -o vsim pipeline_tb.v
+	
+run-vcs: build-vcs
+	./vsim
+	
+build-iverilog: $(PROJECT)
+	iverilog pipeline_tb.v -o pipeline_tb.iv
+	
+run-iverilog: build-iverilog
+	vvp -v pipeline_tb.iv
+	
+verilator: $(PROJECT)
+	verilator -Wno-fatal --cc pipeline.v --top-module Pipeline --exe Vpipeline_tb.cpp --Mdir vl_pipeline
+	make -j -C vl_pipeline -f VPipeline.mk VPipeline
 
 ifneq ($(MAKECMDGOALS),clean)
 	-include .depend
