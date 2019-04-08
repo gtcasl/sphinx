@@ -152,8 +152,7 @@ void Sphinx::ProcessFile(void) {
   // if(debug) std::cout << "***********************" << std::endl;
 }
 
-bool Sphinx::ibus_driver(ch_device<Pipeline>& pipeline, bool debug_mode,
-                         std::vector<unsigned> debugAddress) {
+bool Sphinx::ibus_driver(bool debug_mode, std::vector<unsigned> debugAddress) {
   static int store_state[31] = {
       0x00102023, 0x00202223, 0x00302423, 0x00402623, 0x00502823, 0x00602a23,
       0x00702c23, 0x00802e23, 0x02902023, 0x02a02223, 0x02b02423, 0x02c02623,
@@ -341,7 +340,7 @@ bool Sphinx::ibus_driver(ch_device<Pipeline>& pipeline, bool debug_mode,
   return stop;
 }
 
-bool Sphinx::dbus_driver(ch_device<Pipeline>& pipeline) {
+bool Sphinx::dbus_driver() {
   uint32_t data_read;
   uint32_t data_write;
   uint32_t addr;
@@ -560,7 +559,7 @@ bool Sphinx::dbus_driver(ch_device<Pipeline>& pipeline) {
   ////////////////////// DBUS //////////////////////
 }
 
-void Sphinx::interrupt_driver(ch_device<Pipeline>& pipeline) {
+void Sphinx::interrupt_driver() {
   ////////////////////// INTERRUPT //////////////////////
 
   if (this->debug_state == 0) {
@@ -573,7 +572,7 @@ void Sphinx::interrupt_driver(ch_device<Pipeline>& pipeline) {
   ////////////////////// INTERRUPT //////////////////////
 }
 
-void Sphinx::jtag_driver(ch_device<Pipeline>& pipeline) {
+void Sphinx::jtag_driver() {
   ////////////////////// JATG //////////////////////
 
   pipeline.io.jtag.JTAG_TAP.in_mode_select.valid = false;
@@ -628,11 +627,11 @@ bool Sphinx::simulate(std::string file_to_simulate) {
 
     // std::cout << "aaCycle: " << std::dec << cycle << "\n";
 
-    bool istop = ibus_driver(pipeline);
-    bool dstop = !dbus_driver(pipeline);
+    bool istop = ibus_driver();
+    bool dstop = !dbus_driver();
     stop = istop && dstop;
-    interrupt_driver(pipeline);
-    jtag_driver(pipeline);
+    interrupt_driver();
+    jtag_driver();
 
     if (stop) {
       counter++;
@@ -769,10 +768,10 @@ bool Sphinx::simulate_debug(std::string file_to_simulate,
 
     if (debug) std::cout << "Cycle: " << cycle << std::endl;
 
-    stop = ibus_driver(pipeline, true, debugAddress);
-    dbus_driver(pipeline);
-    interrupt_driver(pipeline);
-    jtag_driver(pipeline);
+    stop = ibus_driver(true, debugAddress);
+    dbus_driver();
+    interrupt_driver();
+    jtag_driver();
 
     // if (cycle%1000 == 0) std::cout << "Cycle: " << std::dec << cycle << "\n";
 

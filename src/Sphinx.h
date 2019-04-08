@@ -342,11 +342,11 @@ class Sphinx {
   void print_stats(bool = true);
   void reset_debug(void);
 
-  bool ibus_driver(ch_device<Pipeline> &, bool = false,
+  bool ibus_driver(bool = false,
                    std::vector<unsigned> = std::vector<unsigned>());
-  bool dbus_driver(ch_device<Pipeline> &);
-  void interrupt_driver(ch_device<Pipeline> &);
-  void jtag_driver(ch_device<Pipeline> &);
+  bool dbus_driver();
+  void interrupt_driver();
+  void jtag_driver();
 
   std::map<unsigned, unsigned> inst_map;
   RAM ram;
