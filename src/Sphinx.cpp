@@ -4,7 +4,9 @@ static volatile int keepRunning = 1;
 
 bool debug = false;
 
-void intHandler(int /*signo*/) { keepRunning = 0; }
+void intHandler(int /*signo*/) {
+  keepRunning = 0;
+}
 
 static void loadHexImpl(std::string path, RAM* mem) {
   mem->clear();
@@ -74,10 +76,11 @@ static void loadHexImpl(std::string path, RAM* mem) {
     size--;
   }
 
-  if (content) delete[] content;
+  if (content)
+    delete[] content;
 }
 
-Sphinx::Sphinx()
+Sphinx::Sphinx(bool use_trace)
     : start_pc(0),
       curr_cycle(0),
       stop(true),
@@ -95,7 +98,11 @@ Sphinx::Sphinx()
       debug_inst_num(0),
       debug_end_wait(0),
       debug_debugAddr(0) {
-  this->sim = ch_simulator(this->pipeline);
+  if (use_trace) {
+    this->sim = new ch_tracer(this->pipeline);
+  } else {
+    this->sim = new ch_simulator(this->pipeline);
+  }
   this->results.open("../results/results.txt");
 
 #ifdef SIM
@@ -109,6 +116,9 @@ Sphinx::Sphinx()
 }
 
 Sphinx::~Sphinx() {
+  if (sim) {
+    delete sim;
+  }
 #ifdef SIM
   endwin();
 #endif
@@ -606,7 +616,7 @@ bool Sphinx::simulate(std::string file_to_simulate) {
 
   std::chrono::duration<double> overhead;
 
-  sim.run([&](ch_tick t) -> bool {
+  sim->run([&](ch_tick t) -> bool {
     auto k_start_time = std::chrono::high_resolution_clock::now();
 
     long int cycle = t / 2;
@@ -673,7 +683,7 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod,
   auto start_time = clock();
 
   for (int i = 0; i < numRuns; ++i) {
-    sim.run([&](ch_tick t) -> bool {
+    sim->run([&](ch_tick t) -> bool {
 
       pipeline.io.IBUS.out_address.ready = pipeline.io.IBUS.out_address.valid;
       pipeline.io.IBUS.in_data.data = 0x0;
@@ -750,7 +760,7 @@ bool Sphinx::simulate_debug(std::string file_to_simulate,
   stop = false;
   auto start_time = clock();
 
-  sim.run([&](ch_tick t) -> bool {
+  sim->run([&](ch_tick t) -> bool {
 
     bool alt = true;
     long int cycle = t / 2;
@@ -863,9 +873,15 @@ void Sphinx::print_stats(bool cycle_test) {
   this->stats_branch_stalls = 0;
 }
 
-void Sphinx::export_model() {
+void Sphinx::export_verilog() {
   ch_toVerilog("pipeline.v", pipeline);
-  // sim.toVCD("pipeline.vcd");
+}
+
+void Sphinx::export_trace() {
+  auto trace = reinterpret_cast<ch_tracer*>(sim);
+  trace->toTestBench("pipeline_tb.v", "pipeline.v", true);
+  trace->toVerilator("Vpipeline_tb.h", "VPipeline");
+  trace->toVCD("pipeline.vcd");
 }
 
 void Sphinx::reset_debug() {

@@ -329,12 +329,13 @@ struct Pipeline {
 
 class Sphinx {
  public:
-  Sphinx();
+  Sphinx(bool use_trace = false);
   ~Sphinx();
   bool simulate(std::string);
   void simulate_numCycles(unsigned, bool, int, int);
   bool simulate_debug(std::string, std::vector<unsigned>);
-  void export_model(void);
+  void export_verilog(void);
+  void export_trace(void);
 
  private:
   void ProcessFile(void);
@@ -354,7 +355,7 @@ class Sphinx {
 
   ch_device<Pipeline> pipeline;
 
-  ch_simulator sim;
+  ch_simulator* sim;
   long int curr_cycle;
   bool stop;
   bool unit_test;

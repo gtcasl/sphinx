@@ -8,7 +8,7 @@
 int main(int argc, char** argv) {
   execution_state es = parseArguments(argc, argv);
 
-  Sphinx sphinx;
+  Sphinx sphinx(es.exportTrace);
 
   bool passed = true;
   // std::string tests[NUM_TESTS] = {
@@ -124,9 +124,13 @@ int main(int argc, char** argv) {
   }
 
   if (es.exportVerilog) {
-    std::cout << DEFAULT << "\nExporting model to Verilog ... ";
-    sphinx.export_model();
-    std::cout << GREEN << "Model successfully exported\n";
+    std::cout << DEFAULT << "\nExporting model to Verilog... ";
+    sphinx.export_verilog();
+  }
+
+  if (es.exportTrace) {
+    std::cout << DEFAULT << "\nExporting simulation trace... ";
+    sphinx.export_trace();
   }
 
   std::cout << DEFAULT;
