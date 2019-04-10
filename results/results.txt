@@ -1,10 +1,5 @@
 
 ****************	../riscv-benchmarks/dhrystone.riscv.hex	****************
-# Dynamic Instructions: 304049
-# of total cycles:      441156
-# of forwarding stalls: 6468
-# of branch stalls:     135143
-# CPI:                  1.45094
-# Total time:           4996.52 milliseconds
-# Kernel Time:          1559.13 milliseconds
+# Total time:           18548.9 milliseconds
+# Kernel Time:          15051.3 milliseconds
 # GRADE:                Failed on test: 0

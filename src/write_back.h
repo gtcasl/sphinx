@@ -28,13 +28,13 @@ struct Write_Back {
     io.out_rd = io.in_rd;
     io.out_wb = io.in_wb;
 
-    // ch_print("****************");
-    // ch_print("Write Back");
-    // ch_print("****************");
+    // ch_println("****************");
+    // ch_println("Write Back");
+    // ch_println("****************");
 
-    // ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, PC_next: {3}, WB:
+    // ch_println("rd: {0}, alu_result: {1}, mem_result: {2}, PC_next: {3}, WB:
     // {4}", io.in_rd, io.in_alu_result, io.in_mem_result, io.in_PC_next,
-    // io.in_wb); ch_print("rd: {0}, write+data: {1}", io.in_rd,
+    // io.in_wb); ch_println("rd: {0}, write+data: {1}", io.in_rd,
     // io.out_write_data);
   }
 };

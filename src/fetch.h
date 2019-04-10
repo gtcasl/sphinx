@@ -30,12 +30,12 @@ struct ICACHE {
 
 #else
 
-    // ch_print("****************");
+    // ch_println("****************");
 
     ch_mem<ch_bit<LINE_BIT_SIZE>, INUM_LINES> data_cache;
     ch_mem<ch_uint<32>, INUM_LINES> tag_cache;
 
-    // ch_print("ITAG_BITS: {0}, INUM_LINES: {1}", ch_uint(ITAG_BITS),
+    // ch_println("ITAG_BITS: {0}, INUM_LINES: {1}", ch_uint(ITAG_BITS),
     // ch_uint(INUM_LINES));
 
     auto line_index =
@@ -69,20 +69,20 @@ struct ICACHE {
     ch_bit<LINE_BIT_SIZE> data_to_write =
         ch_sel(icache_miss, ch_bit<LINE_BIT_SIZE>(0), new_data);
 
-    // ch_print("ADDRESS: {0}, instruction: {1}, DELAY: {2}", io.in_address,
+    // ch_println("ADDRESS: {0}, instruction: {1}, DELAY: {2}", io.in_address,
     // io.out_instruction, copying);
 
-    // ch_print("[0] {0}", data_to_write);
+    // ch_println("[0] {0}", data_to_write);
 
     // __if (icache_miss)
     // {
-    // 	ch_print("writing {0} to {1}", curr_tag, line_index);
+    // 	ch_println("writing {0} to {1}", curr_tag, line_index);
     // };
 
     tag_cache.write(line_index, curr_tag, icache_miss);
     data_cache.write(line_index, data_to_write, copying);
 
-    // ch_print("-----------------");
+    // ch_println("-----------------");
 
 #endif
   }
@@ -144,7 +144,7 @@ struct Fetch {
 
     io.out_delay = icache.io.out_delay;
     ch_bool delay = (icache.io.out_delay);
-    // ch_print("PC: {0}, JAL_reg: {1}, BR_reg: {2}, old: {3}, state: {4},
+    // ch_println("PC: {0}, JAL_reg: {1}, BR_reg: {2}, old: {3}, state: {4},
     // stall_reg: {5}", PC, JAL_reg, BR_reg, old, state, stall_reg);
 
     PC_to_use = ch_sel(delay_reg && !(io.in_freeze), old,
@@ -153,32 +153,32 @@ struct Fetch {
 
     // __if (io.in_branch_stall)
     // {
-    // 	ch_print("BRANCHING STALL");
+    // 	ch_println("BRANCHING STALL");
     // };
 
     // __if (io.in_fwd_stall)
     // {
-    // 	ch_print("FORAWARD STALL");
+    // 	ch_println("FORAWARD STALL");
     // };
 
     // __if (io.in_branch_stall_exe)
     // {
-    // 	ch_print("BRANCH STALL EXE");
+    // 	ch_println("BRANCH STALL EXE");
     // };
 
     // __if (io.in_jal)
     // {
-    // 	ch_print("JUMPING TO {0}", io.in_jal_dest);
+    // 	ch_println("JUMPING TO {0}", io.in_jal_dest);
     // };
 
     // __if (io.in_freeze)
     // {
-    // 	ch_print("FREEZING");
+    // 	ch_println("FREEZING");
     // };
 
     // __if (delay)
     // {
-    // 	ch_print("DELAYING");
+    // 	ch_println("DELAYING");
     // };
 
     ch_bool stall = (io.in_branch_stall == STALL) ||
@@ -187,7 +187,7 @@ struct Fetch {
     stall_reg->next = stall;
     delay_reg->next = delay || io.in_freeze;
 
-    // ch_print("FETCH STALL : {0}, DELAY: {1}, FREEZE: {2}", stall, delay,
+    // ch_println("FETCH STALL : {0}, DELAY: {1}, FREEZE: {2}", stall, delay,
     // io.in_freeze);
 
     io.out_instruction = ch_sel(stall, CH_ZERO(32), icache.io.out_instruction);
@@ -197,13 +197,13 @@ struct Fetch {
                ch_sel((io.in_branch_dir == TAKEN) && !delay_reg,
                       io.in_branch_dest, PC_to_use));
 
-    // ch_print("in_jal_dest: {0}, in_branch_dest: {1}", io.in_jal_dest,
+    // ch_println("in_jal_dest: {0}, in_branch_dest: {1}", io.in_jal_dest,
     // io.in_branch_dest); ch_bit<32> out_PC    = ch_sel(io.in_interrupt,
     // io.in_interrupt_pc, temp_PC);
     ch_bit<32> out_PC = temp_PC;
 
     icache.io.in_address = out_PC;
-    // ch_print("instruction in pipeline: {0}, PC: {1}", io.out_instruction,
+    // ch_println("instruction in pipeline: {0}, PC: {1}", io.out_instruction,
     // out_PC);
 
     ch_bit<5> temp_state =
@@ -223,17 +223,17 @@ struct Fetch {
     prev_debug->next = io.in_debug;
     // PC->next       = ch_sel(stall, out_PC.as_int(), pc_next.as_int());
 
-    // ch_print("out_PC: {0}, out_instruction: {1}, stall: {2}", out_PC,
+    // ch_println("out_PC: {0}, out_instruction: {1}, stall: {2}", out_PC,
     // io.out_instruction, stall);
 
-    // ch_print("actual PC: {1}, old: {0}", old, out_PC);
+    // ch_println("actual PC: {1}, old: {0}", old, out_PC);
 
     // PC->next = ch_sel(stall, out_PC, PC_to_use);
 
-    // ch_print("Inst_in: {0}", io.IBUS.in_data.data);
-    // ch_print("JAL: {0}\tBRANCH_DIR: {1}", io.in_jal, io.in_branch_dir);
-    // ch_print("BRANCH DEST: {0}", io.in_branch_dest);
-    // ch_print("io.in_branch_stall IS: {0}\tio.in_fwd_stall IS: {1}",
+    // ch_println("Inst_in: {0}", io.IBUS.in_data.data);
+    // ch_println("JAL: {0}\tBRANCH_DIR: {1}", io.in_jal, io.in_branch_dir);
+    // ch_println("BRANCH DEST: {0}", io.in_branch_dest);
+    // ch_println("io.in_branch_stall IS: {0}\tio.in_fwd_stall IS: {1}",
     // io.in_branch_stall, io.in_fwd_stall);
   }
 

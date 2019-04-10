@@ -50,9 +50,9 @@ struct Execute {
   );
 
   void describe() {
-    // ch_print("****************");
-    // ch_print("EXECUTE");
-    // ch_print("****************");
+    // ch_println("****************");
+    // ch_println("EXECUTE");
+    // ch_println("****************");
 
     ch_bool which_in2 = io.in_rs2_src == RS2_IMMED_int;
 
@@ -66,72 +66,69 @@ struct Execute {
 
     __switch (io.in_alu_op.as_uint())
     __case (ADD_int) {
-      // ch_print("ADD_int");
+      // ch_println("ADD_int");
       ch_int<32> temp = ALU_in1.as_int() + ALU_in2.as_int();
       io.out_alu_result = temp;
       io.out_csr_result = anything32;
 
-      ch_print("EXECUTE: {0} = {1} + {2}\t{3}", temp, ALU_in1, ALU_in2,
-               io.in_curr_PC);
-
-      ch_print("ADD_int: Immediate: {0}, rs1_reg: {1}, rs2_reg#: {2}",
-               io.in_itype_immed, io.in_rs1, io.in_rs2);
+      //ch_println("EXECUTE: {0} = {1} + {2}\t{3}", temp, ALU_in1, ALU_in2, io.in_curr_PC);
+      //ch_println("ADD_int: Immediate: {0}, rs1_reg: {1}, rs2_reg#: {2}", io.in_itype_immed, io.in_rs1, io.in_rs2);
     }
     __case (SUB_int) {
-      // ch_print("SUB_int");
+      // ch_println("SUB_int");
       io.out_alu_result = ALU_in1.as_int() - ALU_in2.as_int();
       io.out_csr_result = anything32;
-      // ch_print("SUB_int: {0} - {1} = {2}", ALU_in1, ALU_in2,
+      // ch_println("SUB_int: {0} - {1} = {2}", ALU_in1, ALU_in2,
       // io.out_alu_result);
     }
     __case (SLLA_int) {
-      // ch_print("SLLA_int");
+      // ch_println("SLLA_int");
       ch_bit<5> to_shift = ch_slice<5>(ALU_in2);
       io.out_alu_result = ALU_in1.as_uint() << to_shift.as_uint();
       io.out_csr_result = anything32;
     }
     __case (SLT_int) {
-      // ch_print("SLT_int");
+      // ch_println("SLT_int");
       io.out_alu_result = ch_sel(ALU_in1.as_int() < ALU_in2.as_int(),
                                  ch_bit<32>(1), ch_bit<32>(0));
       io.out_csr_result = anything32;
     }
     __case (SLTU_int) {
-      // ch_print("SLTU_int");
+      // ch_println("SLTU_int");
       ch_uint<32> ALU_in1_int = ALU_in1.as_uint();
       ch_uint<32> ALU_in2_int = ALU_in2.as_uint();
       io.out_alu_result =
           ch_sel(ALU_in1_int < ALU_in2_int, ch_bit<32>(1), ch_bit<32>(0));
       io.out_csr_result = anything32;
-      // ch_print("SLT: {0} < {1}? {2}", ALU_in1_int, ALU_in2_int,
+      // ch_println("SLT: {0} < {1}? {2}", ALU_in1_int, ALU_in2_int,
       // io.out_alu_result);
     }
     __case (XOR_int) {
-      // ch_print("XOR");
+      // ch_println("XOR");
       io.out_alu_result = ALU_in1 ^ ALU_in2;
       io.out_csr_result = anything32;
     }
     __case (SRL_int) {
-      // ch_print("SRL_int");
+      // ch_println("SRL_int");
       ch_bit<5> to_shift = ch_slice<5>(ALU_in2);
       io.out_alu_result = ALU_in1.as_uint() >> to_shift.as_uint();
       io.out_csr_result = anything32;
     }
     __case (SRA_int) {
-      // ch_print("SRA");
+      // ch_println("SRA");
       ch_int32 ALU_in1_int = ALU_in1.as_int();
       ch_bit<5> to_shift = ch_slice<5>(ALU_in2);
       io.out_alu_result = ALU_in1_int >> to_shift.as_uint();
       io.out_csr_result = anything32;
-      // ch_print("STA: {0} >> {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
+      // ch_println("STA: {0} >> {1} = {2}", ALU_in1, ALU_in2, io.out_alu_result);
     }
     __case (OR_int) {
-      // ch_print("OR");
+      // ch_println("OR");
       io.out_alu_result = ALU_in1 | ALU_in2;
       io.out_csr_result = anything32;
     }
     __case (AND_int) {
-      // ch_print("AND");
+      // ch_println("AND");
       io.out_alu_result = ALU_in2 & ALU_in1;
       io.out_csr_result = anything32;
     }
@@ -143,7 +140,7 @@ struct Execute {
       io.out_csr_result = anything32;
     }
     __case (LUI_ALU_int) {
-      // ch_print("LUI: {0} -------> {1}", io.in_upper_immed, upper_immed);
+      // ch_println("LUI: {0} -------> {1}", io.in_upper_immed, upper_immed);
       io.out_alu_result = upper_immed;
       io.out_csr_result = anything32;
     }
@@ -165,7 +162,7 @@ struct Execute {
           io.in_csr_data & (0xFFFFFFFF - io.in_csr_mask.as_uint());
     }
     __default {
-      // ch_print("INVALID ALU OP");
+      // ch_println("INVALID ALU OP");
       io.out_alu_result = 0;
       io.out_csr_result = anything32;
     };

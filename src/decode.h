@@ -50,38 +50,38 @@ struct RegisterFile {
     io.out_src2_data = ch_sel(io.in_src2.as_uint() == ZERO_REG_int, CH_ZERO(32),
                               registers.read(io.in_src2));
 
-    // ch_print("Reg 0: {0}", registers.read(ch_bit<5>(0)));
-    // ch_print("Reg 1: {0}", registers.read(ch_bit<5>(1)));
-    // ch_print("Reg 2: {0}", registers.read(ch_bit<5>(2)));
-    // ch_print("Reg 3: {0}", registers.read(ch_bit<5>(3)));
-    // ch_print("Reg 4: {0}", registers.read(ch_bit<5>(4)));
-    // ch_print("Reg 5: {0}", registers.read(ch_bit<5>(5)));
-    // ch_print("Reg 6: {0}", registers.read(ch_bit<5>(6)));
-    // ch_print("Reg 7: {0}", registers.read(ch_bit<5>(7)));
-    // ch_print("Reg 8: {0}", registers.read(ch_bit<5>(8)));
-    // ch_print("Reg 9: {0}", registers.read(ch_bit<5>(9)));
-    // ch_print("Reg 10: {0}", registers.read(ch_bit<5>(10)));
-    // ch_print("Reg 11: {0}", registers.read(ch_bit<5>(11)));
-    // ch_print("Reg 12: {0}", registers.read(ch_bit<5>(12)));
-    // ch_print("Reg 13: {0}", registers.read(ch_bit<5>(13)));
-    // ch_print("Reg 14: {0}", registers.read(ch_bit<5>(14)));
-    // ch_print("Reg 15: {0}", registers.read(ch_bit<5>(15)));
-    // ch_print("Reg 16: {0}", registers.read(ch_bit<5>(16)));
-    // ch_print("Reg 17: {0}", registers.read(ch_bit<5>(17)));
-    // ch_print("Reg 18: {0}", registers.read(ch_bit<5>(18)));
-    // ch_print("Reg 19: {0}", registers.read(ch_bit<5>(19)));
-    // ch_print("Reg 20: {0}", registers.read(ch_bit<5>(20)));
-    // ch_print("Reg 21: {0}", registers.read(ch_bit<5>(21)));
-    // ch_print("Reg 22: {0}", registers.read(ch_bit<5>(22)));
-    // ch_print("Reg 23: {0}", registers.read(ch_bit<5>(23)));
-    // ch_print("Reg 24: {0}", registers.read(ch_bit<5>(24)));
-    // ch_print("Reg 25: {0}", registers.read(ch_bit<5>(25)));
-    // ch_print("Reg 26: {0}", registers.read(ch_bit<5>(26)));
-    // ch_print("Reg 27: {0}", registers.read(ch_bit<5>(27)));
-    // ch_print("Reg 28: {0}", registers.read(ch_bit<5>(28)));
-    // ch_print("Reg 29: {0}", registers.read(ch_bit<5>(29)));
-    // ch_print("Reg 30: {0}", registers.read(ch_bit<5>(30)));
-    // ch_print("Reg 31: {0}", registers.read(ch_bit<5>(31)));
+    // ch_println("Reg 0: {0}", registers.read(ch_bit<5>(0)));
+    // ch_println("Reg 1: {0}", registers.read(ch_bit<5>(1)));
+    // ch_println("Reg 2: {0}", registers.read(ch_bit<5>(2)));
+    // ch_println("Reg 3: {0}", registers.read(ch_bit<5>(3)));
+    // ch_println("Reg 4: {0}", registers.read(ch_bit<5>(4)));
+    // ch_println("Reg 5: {0}", registers.read(ch_bit<5>(5)));
+    // ch_println("Reg 6: {0}", registers.read(ch_bit<5>(6)));
+    // ch_println("Reg 7: {0}", registers.read(ch_bit<5>(7)));
+    // ch_println("Reg 8: {0}", registers.read(ch_bit<5>(8)));
+    // ch_println("Reg 9: {0}", registers.read(ch_bit<5>(9)));
+    // ch_println("Reg 10: {0}", registers.read(ch_bit<5>(10)));
+    // ch_println("Reg 11: {0}", registers.read(ch_bit<5>(11)));
+    // ch_println("Reg 12: {0}", registers.read(ch_bit<5>(12)));
+    // ch_println("Reg 13: {0}", registers.read(ch_bit<5>(13)));
+    // ch_println("Reg 14: {0}", registers.read(ch_bit<5>(14)));
+    // ch_println("Reg 15: {0}", registers.read(ch_bit<5>(15)));
+    // ch_println("Reg 16: {0}", registers.read(ch_bit<5>(16)));
+    // ch_println("Reg 17: {0}", registers.read(ch_bit<5>(17)));
+    // ch_println("Reg 18: {0}", registers.read(ch_bit<5>(18)));
+    // ch_println("Reg 19: {0}", registers.read(ch_bit<5>(19)));
+    // ch_println("Reg 20: {0}", registers.read(ch_bit<5>(20)));
+    // ch_println("Reg 21: {0}", registers.read(ch_bit<5>(21)));
+    // ch_println("Reg 22: {0}", registers.read(ch_bit<5>(22)));
+    // ch_println("Reg 23: {0}", registers.read(ch_bit<5>(23)));
+    // ch_println("Reg 24: {0}", registers.read(ch_bit<5>(24)));
+    // ch_println("Reg 25: {0}", registers.read(ch_bit<5>(25)));
+    // ch_println("Reg 26: {0}", registers.read(ch_bit<5>(26)));
+    // ch_println("Reg 27: {0}", registers.read(ch_bit<5>(27)));
+    // ch_println("Reg 28: {0}", registers.read(ch_bit<5>(28)));
+    // ch_println("Reg 29: {0}", registers.read(ch_bit<5>(29)));
+    // ch_println("Reg 30: {0}", registers.read(ch_bit<5>(30)));
+    // ch_println("Reg 31: {0}", registers.read(ch_bit<5>(31)));
   }
 };
 
@@ -137,7 +137,7 @@ struct Decode {
   );
 
   void describe() {
-    // ch_print("PC: {0}", io.in_curr_PC);
+    // ch_println("PC: {0}", io.in_curr_PC);
 
     ch_bit<7> curr_opcode(0);
     ch_bit<4> alu_op;
@@ -193,7 +193,7 @@ struct Decode {
     is_csr_immed = (is_csr) && (func3[2] == 1);
     is_e_inst = (curr_opcode == SYS_INST) && (func3 == 0);
 
-    // ch_print("DECODE: PC: {0}, INSTRUCTION: {1}", io.in_curr_PC,
+    // ch_println("DECODE: PC: {0}, INSTRUCTION: {1}", io.in_curr_PC,
     // io.in_instruction);
 
 #ifdef FORWARDING
@@ -210,7 +210,7 @@ struct Decode {
     // io.out_csr_data = io.in_csr_data;
 #endif
 
-    // ch_print("curr_PC: {0}\tcurr_isnt: {1}\tStall: {2}", io.in_curr_PC,
+    // ch_println("curr_PC: {0}\tcurr_isnt: {1}\tStall: {2}", io.in_curr_PC,
     // io.in_instruction, io.in_stall);
 
     io.out_is_csr = is_csr.as_uint();
@@ -227,13 +227,13 @@ struct Decode {
     io.out_mem_read = ch_sel(is_linst, func3, NO_MEM_READ);
     io.out_mem_write = ch_sel(is_stype, func3, NO_MEM_WRITE);
 
-    // ch_print("****************");
-    // ch_print("DECODE");
-    // ch_print("****************");
+    // ch_println("****************");
+    // ch_println("DECODE");
+    // ch_println("****************");
 
-    // ch_print("Curr_inst: {0} , FWD for src1: {1} d: {2}, FWD for src2: {3} ,
+    // ch_println("Curr_inst: {0} , FWD for src1: {1} d: {2}, FWD for src2: {3} ,
     // d: {4}", io.in_instruction, io.in_src1_fwd, io.out_rd1, io.in_src2_fwd,
-    // io.out_rd2); ch_print("src1: {0}, src2: {1}, rd: {2}", io.out_rs1,
+    // io.out_rd2); ch_println("src1: {0}, src2: {1}, rd: {2}", io.out_rs1,
     // io.out_rs2, io.out_rd);
 
     // UPPER IMMEDIATE
@@ -340,7 +340,7 @@ struct Decode {
     __case (B_INST) {
       io.out_branch_stall = STALL;
 
-      // ch_print("BRANCH INSTRUCTION: {0}\tOFFSET: {1}", io.in_instruction,
+      // ch_println("BRANCH INSTRUCTION: {0}\tOFFSET: {1}", io.in_instruction,
       // (io.out_itype_immed << 1));
 
       __switch (func3.as_uint())

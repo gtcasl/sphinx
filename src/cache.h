@@ -94,7 +94,7 @@ struct Way {
           state && not_hit && valid_id && io.way_i.in_valid && !io.in_other_hit,
           FALSE, ch_sel(not_state && !io.in_dbus_valid, TRUE, state));
 
-      // ch_print("not_state: {0}, io.in_dbus_valid: {1}", not_state,
+      // ch_println("not_state: {0}, io.in_dbus_valid: {1}", not_state,
       // io.in_dbus_valid);
 
       auto byte0 = data_cache.read(io.in_Abyte0);
@@ -168,7 +168,7 @@ struct Way {
         Wbyte3 = FALSE;
       };
 
-      // ch_print("{2} == {3} ? reading {0} --------------> {1}", io.in_Abyte0,
+      // ch_println("{2} == {3} ? reading {0} --------------> {1}", io.in_Abyte0,
       // mem_out, curr_tag, io.in_tag);
 
       io.out_data =
@@ -188,20 +188,20 @@ struct Way {
 
       // __if (not_hit && state)
       // {
-      // 	ch_print("MISS ON: ADDR: {0}\tct: {1}\tit:{2}\tcv: {3}\t",
+      // 	ch_println("MISS ON: ADDR: {0}\tct: {1}\tit:{2}\tcv: {3}\t",
       // io.in_Abyte0, curr_tag, io.in_tag, curr_valid);
       // };
 
       __if (not_hit && state && io.way_i.in_valid) {
-        ch_print(" {0} == {1} ----------> {2}  {3}  {4}", io.in_tag, curr_tag,
+        ch_println(" {0} == {1} ----------> {2}  {3}  {4}", io.in_tag, curr_tag,
                  not_hit, state, io.way_i.in_valid);
       };
 
-      __if (not_state) { ch_print("......."); };
+      __if (not_state) { ch_println("......."); };
 
       // __if (not_state && !not_state_hist)
       // {
-      // 	ch_print("Writing: {0} in {1}       prev: {2}", io.in_tag,
+      // 	ch_println("Writing: {0} in {1}       prev: {2}", io.in_tag,
       // io.in_index, curr_tag);
       // };
 
@@ -218,7 +218,7 @@ struct Way {
       data_cache.write(io.in_Abyte3, ch_slice<8>(data_to_write >> 24),
                        (not_state) || (Wbyte3 && write_enable));
 
-      // ch_print("state: {2}:\t data: {0} = {1}", io.in_Abyte0, data_to_write,
+      // ch_println("state: {2}:\t data: {0} = {1}", io.in_Abyte0, data_to_write,
       // state);
 
     } else {

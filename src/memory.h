@@ -24,14 +24,14 @@ struct Cache_driver {
   );
 
   void describe() {
-    // ch_print("****************");
-    // ch_print("CACHE");
-    // ch_print("****************");
+    // ch_println("****************");
+    // ch_println("CACHE");
+    // ch_println("****************");
 
     ch_bool mem_write_enable = io.in_mem_write.as_uint() < NO_MEM_WRITE_int;
     ch_bool mem_read_enable = io.in_mem_read.as_uint() < NO_MEM_WRITE_int;
 
-    // ch_print("io.in_mem_write: {0}\tio.in_mem_read: {1}", io.in_mem_write,
+    // ch_println("io.in_mem_write: {0}\tio.in_mem_read: {1}", io.in_mem_write,
     // io.in_mem_read);
 
     //  READING MEMORY
@@ -46,7 +46,7 @@ struct Cache_driver {
     cache.io.way_i.in_control =
         ch_sel(mem_write_enable, io.in_mem_write, io.in_mem_read);
 
-    // ch_print("io.out_delay: {0}", cache.io.out_delay);
+    // ch_println("io.out_delay: {0}", cache.io.out_delay);
 
     io.out_data = cache.io.out_data;
     io.out_delay = cache.io.out_delay;
@@ -70,7 +70,7 @@ struct Cache_driver {
 
     io.DBUS.out_miss = FALSE;
 
-    // ch_print("io.out_delay: {0}", cache.io.out_delay);
+    // ch_println("io.out_delay: {0}", cache.io.out_delay);
 
     io.out_data = io.DBUS.in_data.data;
 
@@ -117,13 +117,13 @@ struct Memory {
   );
 
   void describe() {
-    // ch_print("****************");
-    // ch_print("MEMORY");
-    // ch_print("****************");
+    // ch_println("****************");
+    // ch_println("MEMORY");
+    // ch_println("****************");
 
     io.out_delay = cache_driver.io.out_delay;
 
-    // ch_print("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3},
+    // ch_println("rd: {0}, alu_result: {1}, mem_result: {2}, in_data: {3},
     // mem_write: {4}, mem_read: {5}", io.in_rd, io.in_alu_result,
     // io.out_mem_result, io.in_rd2, io.in_mem_write, io.in_mem_read);
 
@@ -135,13 +135,13 @@ struct Memory {
 
     // __if (io.in_mem_read.as_uint() < NO_MEM_WRITE_int)
     // {
-    // 	ch_print("--------------------------> {0} = {1}", io.in_alu_result,
+    // 	ch_println("--------------------------> {0} = {1}", io.in_alu_result,
     // cache_driver.io.out_data); } __else
     // {
-    // 	ch_print("**************************> PC: {0}", io.in_curr_PC);
+    // 	ch_println("**************************> PC: {0}", io.in_curr_PC);
     // };
 
-    // ch_print("io.in_curr_PC: {0}", io.in_curr_PC);
+    // ch_println("io.in_curr_PC: {0}", io.in_curr_PC);
 
     io.out_mem_result = cache_driver.io.out_data;
 
@@ -156,14 +156,14 @@ struct Memory {
         io.in_curr_PC.as_int() + (io.in_branch_offset.as_int() << 1);
     __switch (io.in_branch_type.as_uint())
     __case (BEQ_int) {
-      // ch_print("BEQ INSTRUCTION IN EXE");
-      // ch_print("RS1: {0}, RD1: {1}", io.in_rs1, io.in_rd1);
-      // ch_print("RS2: {0}, RD2: {1}", io.in_rs2, io.in_rd2);
-      // ch_print("ALU Result: {0}", io.out_alu_result);
+      // ch_println("BEQ INSTRUCTION IN EXE");
+      // ch_println("RS1: {0}, RD1: {1}", io.in_rs1, io.in_rd1);
+      // ch_println("RS2: {0}, RD2: {1}", io.in_rs2, io.in_rd2);
+      // ch_println("ALU Result: {0}", io.out_alu_result);
 
       io.out_branch_dir =
           ch_sel(io.in_alu_result.as_uint() == 0, TAKEN, NOT_TAKEN);
-      // ch_print("BEQ_int");
+      // ch_println("BEQ_int");
     }
     __case (BNE_int) {
       io.out_branch_dir =
@@ -171,31 +171,31 @@ struct Memory {
     }
     __case (BLT_int) {
       io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, NOT_TAKEN, TAKEN);
-      // ch_print("BRANCH: is {0} < {1}? The answer is: {2}, ALU_RESULT: {3}",
+      // ch_println("BRANCH: is {0} < {1}? The answer is: {2}, ALU_RESULT: {3}",
       // ALU_in1, ALU_in2, io.out_branch_dir, io.in_alu_result);
     }
     __case (BGT_int) {
       io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, TAKEN, NOT_TAKEN);
-      // ch_print("BGT_int");
-      // ch_print("BRANCH: sr1 {0}, src2: {1}", io.in_rs1, io.in_rs2);
-      // ch_print("BRANCH: is {0} > {1}? The answer is: {2}, ALU_RESULT: {3}",
+      // ch_println("BGT_int");
+      // ch_println("BRANCH: sr1 {0}, src2: {1}", io.in_rs1, io.in_rs2);
+      // ch_println("BRANCH: is {0} > {1}? The answer is: {2}, ALU_RESULT: {3}",
       // ALU_in1, ALU_in2, io.out_branch_dir, io.in_alu_result);
     }
     __case (BLTU_int) {
       io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, NOT_TAKEN, TAKEN);
-      // ch_print("BLTU_int: {0}", io.out_branch_dir);
+      // ch_println("BLTU_int: {0}", io.out_branch_dir);
     }
     __case (BGTU_int) {
       io.out_branch_dir = ch_sel(io.in_alu_result[31] == 0, TAKEN, NOT_TAKEN);
-      // ch_print("BGTU_int: RESULT: {0}", io.out_branch_dir);
+      // ch_println("BGTU_int: RESULT: {0}", io.out_branch_dir);
     }
     __case (NO_BRANCH_int) {
       io.out_branch_dir = NOT_TAKEN;
-      // ch_print("NO_B_int");
+      // ch_println("NO_B_int");
     }
     __default {
       io.out_branch_dir = NOT_TAKEN;
-      // ch_print("Default_b_int");
+      // ch_println("Default_b_int");
     };
 
 #ifdef BRANCH_WB
