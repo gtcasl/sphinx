@@ -34,7 +34,7 @@ struct Interrupt_Handler {
     // 	interrupt = ch_bool(false);
     // }
 
-    io.INTERRUPT.in_interrupt_id.ready = io.INTERRUPT.in_interrupt_id.valid;
+    io.INTERRUPT.in_interrupt_id.ready = true; //io.INTERRUPT.in_interrupt_id.valid;
 
     ch_rom<ch_bit<32>, 2> ivt({0x70000000, 0xdeadbeef});
 

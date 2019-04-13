@@ -14,9 +14,9 @@ struct TAP {
   );
 
   void describe() {
-    io.JTAG_TAP.in_mode_select.ready = io.JTAG_TAP.in_mode_select.valid;
-    io.JTAG_TAP.in_clock.ready = io.JTAG_TAP.in_clock.valid;
-    io.JTAG_TAP.in_reset.ready = io.JTAG_TAP.in_reset.valid;
+    io.JTAG_TAP.in_mode_select.ready = true; //io.JTAG_TAP.in_mode_select.valid;
+    io.JTAG_TAP.in_clock.ready = true; //io.JTAG_TAP.in_clock.valid;
+    io.JTAG_TAP.in_reset.ready = true; //io.JTAG_TAP.in_reset.valid;
 
     ch_reg<ch_bit<4>> curr_state(TEST_LOGIC_RESET_int);
 
@@ -106,7 +106,7 @@ struct JTAG {
     ch_reg<ch_bit<32>> data_reg(0x1234);
     ch_reg<ch_bit<32>> data_id_reg(0x5678);
 
-    io.JTAG.in_data.ready = io.JTAG.in_data.valid;
+    io.JTAG.in_data.ready = true; //io.JTAG.in_data.valid;
 
     tap.io.JTAG_TAP(io.JTAG.JTAG_TAP);
     ch_bit<4> curr_state = tap.io.out_curr_state;
@@ -118,7 +118,7 @@ struct JTAG {
       ch_bool bypass = instruction_reg.as_uint() == BYPASS_INST_int;
       __if (bypass) {
         io.JTAG.out_data.valid = true;
-        io.JTAG.out_data.data = io.JTAG.in_data.data;
+        io.JTAG.out_data.data = 0; //io.JTAG.in_data.data;
       }
       __else {
         io.JTAG.out_data.valid = false;
@@ -142,7 +142,7 @@ struct JTAG {
       ch_bool bypass = instruction_reg.as_uint() == BYPASS_INST_int;
       __if (bypass) {
         io.JTAG.out_data.valid = true;
-        io.JTAG.out_data.data = io.JTAG.in_data.data;
+        io.JTAG.out_data.data = 0; //io.JTAG.in_data.data;
       }
       __else {
         io.JTAG.out_data.valid = false;
@@ -165,7 +165,7 @@ struct JTAG {
       ch_bool bypass = instruction_reg.as_uint() == BYPASS_INST_int;
       __if (bypass) {
         io.JTAG.out_data.valid = true;
-        io.JTAG.out_data.data = io.JTAG.in_data.data;
+        io.JTAG.out_data.data = 0; //io.JTAG.in_data.data;
       }
       __else {
         io.JTAG.out_data.valid = false;
@@ -176,7 +176,7 @@ struct JTAG {
     }
     __case (SHIFT_IR_int) {
       io.JTAG.out_data.valid = true;
-      io.JTAG.out_data.data = curr_captured[0];
+      io.JTAG.out_data.data = 0; //curr_captured[0];
 
       curr_captured->next =
           ch_cat(io.JTAG.in_data.data, ch_slice<31>(curr_captured >> 1));
@@ -185,7 +185,7 @@ struct JTAG {
       ch_bool bypass = instruction_reg.as_uint() == BYPASS_INST_int;
       __if (bypass) {
         io.JTAG.out_data.valid = true;
-        io.JTAG.out_data.data = io.JTAG.in_data.data;
+        io.JTAG.out_data.data = 0; //io.JTAG.in_data.data;
       }
       __else {
         io.JTAG.out_data.valid = false;
@@ -198,7 +198,7 @@ struct JTAG {
       ch_bool bypass = instruction_reg.as_uint() == BYPASS_INST_int;
       __if (bypass) {
         io.JTAG.out_data.valid = true;
-        io.JTAG.out_data.data = io.JTAG.in_data.data;
+        io.JTAG.out_data.data = 0; //io.JTAG.in_data.data;
       }
       __else {
         io.JTAG.out_data.valid = false;

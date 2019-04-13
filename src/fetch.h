@@ -20,7 +20,7 @@ struct ICACHE {
   void describe() {
 #ifndef ICACHE_ENABLE
 
-    io.IBUS.in_data.ready = io.IBUS.in_data.valid;
+    io.IBUS.in_data.ready = true; //io.IBUS.in_data.valid;
 
     io.IBUS.out_address.data = io.in_address;
     io.IBUS.out_address.valid = TRUE;

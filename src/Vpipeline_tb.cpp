@@ -98,6 +98,7 @@ int main(int argc, char **argv) {
 
   auto end_time = std::chrono::system_clock::now();
   auto elasped_time = std::chrono::duration<double, std::milli>(end_time - start_time).count();
+
   std::cout << "Kernel latency = " << kernel_time << " ms" << std::endl;
   std::cout << "Total elapsed time = " << elasped_time << " ms" << std::endl;
   std::cout << "Run time overhead: " << std::dec << (elasped_time - kernel_time) << " ms" << std::endl;

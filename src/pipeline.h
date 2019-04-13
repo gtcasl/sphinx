@@ -46,7 +46,8 @@ struct Pipeline {
 
     // IBUS I/O
     fetch.io.IBUS(io.IBUS);
-    fetch.io.in_debug(io.in_debug);
+    //fetch.io.in_debug(io.in_debug);
+    fetch.io.in_debug = false;
     // DBUS I/O
     memory.io.DBUS(io.DBUS);
 
