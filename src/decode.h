@@ -252,10 +252,10 @@ struct Decode {
     __switch (curr_opcode)
     __case (JAL_INST) {
       ch_bit<8> b_19_to_12 = ch_slice<8>(io.in_instruction >> 12);
-      ch_bit<1> b_11 = io.in_instruction[20];
+      ch_uint<1> b_11 = io.in_instruction[20];
       ch_bit<10> b_10_to_1 = ch_slice<10>(io.in_instruction >> 21);
-      ch_bit<1> b_20 = io.in_instruction[31];
-      ch_bit<1> b_0 = ch_bit<1>(0);
+      ch_uint<1> b_20 = io.in_instruction[31];
+      ch_bit<1> b_0 = 0;
       ch_bit<21> unsigned_offset =
           ch_cat(b_20, b_19_to_12, b_11, b_10_to_1, b_0);
       ch_bit<32> offset =
@@ -322,8 +322,8 @@ struct Decode {
           ch_sel(u_12[11] == 1, ch_cat(ONES_20BITS, u_12), ch_resize<32>(u_12));
     }
     __case (B_INST) {
-      ch_bit<1> b_12 = io.in_instruction[31];
-      ch_bit<1> b_11 = io.in_instruction[7];
+      ch_uint<1> b_12 = io.in_instruction[31];
+      ch_uint<1> b_11 = io.in_instruction[7];
       ch_bit<4> b_1_to_4 = ch_slice<4>(io.in_instruction >> 8);
       ch_bit<6> b_5_to_10 = ch_slice<6>(io.in_instruction >> 25);
 

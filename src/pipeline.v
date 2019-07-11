@@ -9,7 +9,7 @@ module ICACHE(
   output wire[31:0] io_out_instruction,
   output wire io_out_delay
 );
-  assign io_IBUS_in_data_ready = io_IBUS_in_data_valid;
+  assign io_IBUS_in_data_ready = 1'h1;
   assign io_IBUS_out_address_data = io_in_address;
   assign io_IBUS_out_address_valid = 1'h1;
   assign io_out_instruction = io_IBUS_in_data_data;
@@ -1346,19 +1346,19 @@ module Interrupt_Handler(
   output wire io_out_interrupt,
   output wire[31:0] io_out_interrupt_pc
 );
-  reg[31:0] mem_ch_bit_32u_2301 [0:1];
-  wire[31:0] marport_ch_bit_32u_2302, sel_2307;
+  reg[31:0] mem_ch_bit_32u_2302 [0:1];
+  wire[31:0] marport_ch_bit_32u_2303, sel_2308;
 
   initial begin
-    mem_ch_bit_32u_2301[0] = 32'h70000000;
-    mem_ch_bit_32u_2301[1] = 32'hdeadbeef;
+    mem_ch_bit_32u_2302[0] = 32'h70000000;
+    mem_ch_bit_32u_2302[1] = 32'hdeadbeef;
   end
-  assign marport_ch_bit_32u_2302 = mem_ch_bit_32u_2301[io_INTERRUPT_in_interrupt_id_data];
-  assign sel_2307 = io_INTERRUPT_in_interrupt_id_valid ? marport_ch_bit_32u_2302 : 32'hdeadbeef;
+  assign marport_ch_bit_32u_2303 = mem_ch_bit_32u_2302[io_INTERRUPT_in_interrupt_id_data];
+  assign sel_2308 = io_INTERRUPT_in_interrupt_id_valid ? marport_ch_bit_32u_2303 : 32'hdeadbeef;
 
-  assign io_INTERRUPT_in_interrupt_id_ready = io_INTERRUPT_in_interrupt_id_valid;
+  assign io_INTERRUPT_in_interrupt_id_ready = 1'h1;
   assign io_out_interrupt = io_INTERRUPT_in_interrupt_id_valid;
-  assign io_out_interrupt_pc = sel_2307;
+  assign io_out_interrupt_pc = sel_2308;
 
 endmodule
 
@@ -1376,64 +1376,64 @@ module TAP(
   output wire io_JTAG_TAP_in_reset_ready,
   output wire[3:0] io_out_curr_state
 );
-  reg[3:0] reg_ch_bit_4u_2359, sel_2444;
-  wire[3:0] sel_2368, sel_2373, sel_2379, sel_2385, sel_2395, sel_2400, sel_2404, sel_2413, sel_2419, sel_2429, sel_2434, sel_2438, sel_2445, sel_2455, sel_2456, sel_2458;
-  wire op_eq_2362, op_andl_2446, op_eq_2448, op_andl_2451, op_eq_2453, op_andb_2459;
+  reg[3:0] reg_ch_bit_4u_2361, sel_2445;
+  wire[3:0] sel_2369, sel_2374, sel_2380, sel_2386, sel_2396, sel_2401, sel_2405, sel_2414, sel_2420, sel_2430, sel_2435, sel_2439, sel_2446, sel_2456, sel_2457, sel_2459;
+  wire op_eq_2363, op_andl_2447, op_eq_2449, op_andl_2452, op_eq_2454, op_andb_2460;
 
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_bit_4u_2359 <= 4'h0;
+      reg_ch_bit_4u_2361 <= 4'h0;
     else
-      reg_ch_bit_4u_2359 <= sel_2458;
+      reg_ch_bit_4u_2361 <= sel_2459;
   end
-  assign sel_2368 = op_eq_2362 ? 4'h0 : 4'h1;
-  assign sel_2373 = op_eq_2362 ? 4'h2 : 4'h1;
-  assign sel_2379 = op_eq_2362 ? 4'h9 : 4'h3;
-  assign sel_2385 = op_eq_2362 ? 4'h5 : 4'h4;
-  assign sel_2395 = op_eq_2362 ? 4'h8 : 4'h6;
-  assign sel_2400 = op_eq_2362 ? 4'h7 : 4'h6;
-  assign sel_2404 = op_eq_2362 ? 4'h4 : 4'h8;
-  assign sel_2413 = op_eq_2362 ? 4'h0 : 4'ha;
-  assign sel_2419 = op_eq_2362 ? 4'hc : 4'hb;
-  assign sel_2429 = op_eq_2362 ? 4'hf : 4'hd;
-  assign sel_2434 = op_eq_2362 ? 4'he : 4'hd;
-  assign sel_2438 = op_eq_2362 ? 4'hf : 4'hb;
+  assign sel_2369 = op_eq_2363 ? 4'h0 : 4'h1;
+  assign sel_2374 = op_eq_2363 ? 4'h2 : 4'h1;
+  assign sel_2380 = op_eq_2363 ? 4'h9 : 4'h3;
+  assign sel_2386 = op_eq_2363 ? 4'h5 : 4'h4;
+  assign sel_2396 = op_eq_2363 ? 4'h8 : 4'h6;
+  assign sel_2401 = op_eq_2363 ? 4'h7 : 4'h6;
+  assign sel_2405 = op_eq_2363 ? 4'h4 : 4'h8;
+  assign sel_2414 = op_eq_2363 ? 4'h0 : 4'ha;
+  assign sel_2420 = op_eq_2363 ? 4'hc : 4'hb;
+  assign sel_2430 = op_eq_2363 ? 4'hf : 4'hd;
+  assign sel_2435 = op_eq_2363 ? 4'he : 4'hd;
+  assign sel_2439 = op_eq_2363 ? 4'hf : 4'hb;
   always @(*) begin
-    case (reg_ch_bit_4u_2359)
-      4'h0: sel_2444 = sel_2368;
-      4'h1: sel_2444 = sel_2373;
-      4'h2: sel_2444 = sel_2379;
-      4'h3: sel_2444 = sel_2385;
-      4'h4: sel_2444 = sel_2385;
-      4'h5: sel_2444 = sel_2395;
-      4'h6: sel_2444 = sel_2400;
-      4'h7: sel_2444 = sel_2404;
-      4'h8: sel_2444 = sel_2373;
-      4'h9: sel_2444 = sel_2413;
-      4'ha: sel_2444 = sel_2419;
-      4'hb: sel_2444 = sel_2419;
-      4'hc: sel_2444 = sel_2429;
-      4'hd: sel_2444 = sel_2434;
-      4'he: sel_2444 = sel_2438;
-      4'hf: sel_2444 = sel_2373;
-      default: sel_2444 = reg_ch_bit_4u_2359;
+    case (reg_ch_bit_4u_2361)
+      4'h0: sel_2445 = sel_2369;
+      4'h1: sel_2445 = sel_2374;
+      4'h2: sel_2445 = sel_2380;
+      4'h3: sel_2445 = sel_2386;
+      4'h4: sel_2445 = sel_2386;
+      4'h5: sel_2445 = sel_2396;
+      4'h6: sel_2445 = sel_2401;
+      4'h7: sel_2445 = sel_2405;
+      4'h8: sel_2445 = sel_2374;
+      4'h9: sel_2445 = sel_2414;
+      4'ha: sel_2445 = sel_2420;
+      4'hb: sel_2445 = sel_2420;
+      4'hc: sel_2445 = sel_2430;
+      4'hd: sel_2445 = sel_2435;
+      4'he: sel_2445 = sel_2439;
+      4'hf: sel_2445 = sel_2374;
+      default: sel_2445 = reg_ch_bit_4u_2361;
     endcase
   end
-  assign sel_2445 = io_JTAG_TAP_in_mode_select_valid ? sel_2444 : 4'h0;
-  assign sel_2455 = op_eq_2448 ? 4'h0 : reg_ch_bit_4u_2359;
-  assign sel_2456 = op_andb_2459 ? sel_2445 : reg_ch_bit_4u_2359;
-  assign sel_2458 = op_andl_2446 ? sel_2455 : sel_2456;
-  assign op_eq_2362 = io_JTAG_TAP_in_mode_select_data == 1'h1;
-  assign op_andl_2446 = io_JTAG_TAP_in_mode_select_valid && io_JTAG_TAP_in_reset_valid;
-  assign op_eq_2448 = io_JTAG_TAP_in_reset_data == 1'h1;
-  assign op_andl_2451 = io_JTAG_TAP_in_mode_select_valid && io_JTAG_TAP_in_clock_valid;
-  assign op_eq_2453 = io_JTAG_TAP_in_clock_data == 1'h1;
-  assign op_andb_2459 = op_andl_2451 & op_eq_2453;
+  assign sel_2446 = io_JTAG_TAP_in_mode_select_valid ? sel_2445 : 4'h0;
+  assign sel_2456 = op_eq_2449 ? 4'h0 : reg_ch_bit_4u_2361;
+  assign sel_2457 = op_andb_2460 ? sel_2446 : reg_ch_bit_4u_2361;
+  assign sel_2459 = op_andl_2447 ? sel_2456 : sel_2457;
+  assign op_eq_2363 = io_JTAG_TAP_in_mode_select_data == 1'h1;
+  assign op_andl_2447 = io_JTAG_TAP_in_mode_select_valid && io_JTAG_TAP_in_reset_valid;
+  assign op_eq_2449 = io_JTAG_TAP_in_reset_data == 1'h1;
+  assign op_andl_2452 = io_JTAG_TAP_in_mode_select_valid && io_JTAG_TAP_in_clock_valid;
+  assign op_eq_2454 = io_JTAG_TAP_in_clock_data == 1'h1;
+  assign op_andb_2460 = op_andl_2452 & op_eq_2454;
 
-  assign io_JTAG_TAP_in_mode_select_ready = io_JTAG_TAP_in_mode_select_valid;
-  assign io_JTAG_TAP_in_clock_ready = io_JTAG_TAP_in_clock_valid;
-  assign io_JTAG_TAP_in_reset_ready = io_JTAG_TAP_in_reset_valid;
-  assign io_out_curr_state = reg_ch_bit_4u_2359;
+  assign io_JTAG_TAP_in_mode_select_ready = 1'h1;
+  assign io_JTAG_TAP_in_clock_ready = 1'h1;
+  assign io_JTAG_TAP_in_reset_ready = 1'h1;
+  assign io_out_curr_state = reg_ch_bit_4u_2361;
 
 endmodule
 
@@ -1456,91 +1456,85 @@ module JTAG(
   output wire io_JTAG_out_data_valid,
   input wire io_JTAG_out_data_ready
 );
-  reg[31:0] reg_ch_bit_32u_2489, reg_ch_bit_32u_2492, reg_ch_bit_32u_2495, reg_ch_bit_32u_2498, sel_2549;
-  wire[31:0] proxy_cat_2520, sel_2511, sel_2513, sel_2546, sel_2547, sel_2548, sel_2557, sel_2558, op_shr_2517;
-  reg sel_2556, sel_2566;
-  wire sel_2561, op_notl_2500, op_eq_2505, op_eq_2508, op_eq_2567, op_eq_2568, op_andb_2570, TAP_2460_clk, TAP_2460_reset, TAP_2460_io_JTAG_TAP_in_mode_select_data, TAP_2460_io_JTAG_TAP_in_mode_select_valid, TAP_2460_io_JTAG_TAP_in_mode_select_ready, TAP_2460_io_JTAG_TAP_in_clock_data, TAP_2460_io_JTAG_TAP_in_clock_valid, TAP_2460_io_JTAG_TAP_in_clock_ready, TAP_2460_io_JTAG_TAP_in_reset_data, TAP_2460_io_JTAG_TAP_in_reset_valid, TAP_2460_io_JTAG_TAP_in_reset_ready;
-  wire[3:0] TAP_2460_io_out_curr_state;
+  reg[31:0] reg_ch_bit_32u_2490, reg_ch_bit_32u_2493, reg_ch_bit_32u_2496, reg_ch_bit_32u_2500, sel_2552;
+  wire[31:0] proxy_cat_2521, sel_2512, sel_2514, sel_2546, sel_2547, sel_2548, sel_2549, sel_2550, op_shr_2518;
+  reg sel_2559;
+  wire sel_2566, op_notl_2502, op_eq_2506, op_eq_2509, op_eq_2567, op_eq_2568, op_andb_2570, op_eq_2571, TAP_2461_clk, TAP_2461_reset, TAP_2461_io_JTAG_TAP_in_mode_select_data, TAP_2461_io_JTAG_TAP_in_mode_select_valid, TAP_2461_io_JTAG_TAP_in_mode_select_ready, TAP_2461_io_JTAG_TAP_in_clock_data, TAP_2461_io_JTAG_TAP_in_clock_valid, TAP_2461_io_JTAG_TAP_in_clock_ready, TAP_2461_io_JTAG_TAP_in_reset_data, TAP_2461_io_JTAG_TAP_in_reset_valid, TAP_2461_io_JTAG_TAP_in_reset_ready;
+  wire[3:0] TAP_2461_io_out_curr_state;
 
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_bit_32u_2489 <= 32'h0;
+      reg_ch_bit_32u_2490 <= 32'h0;
     else
-      reg_ch_bit_32u_2489 <= sel_2557;
+      reg_ch_bit_32u_2490 <= sel_2546;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_bit_32u_2492 <= 32'h1234;
+      reg_ch_bit_32u_2493 <= 32'h1234;
     else
-      reg_ch_bit_32u_2492 <= sel_2548;
+      reg_ch_bit_32u_2493 <= sel_2549;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_bit_32u_2495 <= 32'h5678;
+      reg_ch_bit_32u_2496 <= 32'h5678;
     else
-      reg_ch_bit_32u_2495 <= sel_2558;
+      reg_ch_bit_32u_2496 <= sel_2550;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_bit_32u_2498 <= 32'h0;
+      reg_ch_bit_32u_2500 <= 32'h0;
     else
-      reg_ch_bit_32u_2498 <= sel_2549;
+      reg_ch_bit_32u_2500 <= sel_2552;
   end
-  assign proxy_cat_2520 = {io_JTAG_in_data_data, op_shr_2517[30:0]};
-  assign sel_2511 = op_eq_2508 ? reg_ch_bit_32u_2492 : 32'hdeadbeef;
-  assign sel_2513 = op_eq_2505 ? reg_ch_bit_32u_2495 : sel_2511;
-  assign sel_2546 = op_eq_2508 ? reg_ch_bit_32u_2498 : reg_ch_bit_32u_2492;
-  assign sel_2547 = op_eq_2505 ? reg_ch_bit_32u_2492 : sel_2546;
-  assign sel_2548 = op_eq_2567 ? sel_2547 : reg_ch_bit_32u_2492;
+  assign proxy_cat_2521 = {io_JTAG_in_data_data, op_shr_2518[30:0]};
+  assign sel_2512 = op_eq_2509 ? reg_ch_bit_32u_2493 : 32'hdeadbeef;
+  assign sel_2514 = op_eq_2506 ? reg_ch_bit_32u_2496 : sel_2512;
+  assign sel_2546 = op_eq_2567 ? reg_ch_bit_32u_2500 : reg_ch_bit_32u_2490;
+  assign sel_2547 = op_eq_2509 ? reg_ch_bit_32u_2500 : reg_ch_bit_32u_2493;
+  assign sel_2548 = op_eq_2506 ? reg_ch_bit_32u_2493 : sel_2547;
+  assign sel_2549 = op_eq_2568 ? sel_2548 : reg_ch_bit_32u_2493;
+  assign sel_2550 = op_andb_2570 ? reg_ch_bit_32u_2500 : reg_ch_bit_32u_2496;
   always @(*) begin
-    case (TAP_2460_io_out_curr_state)
-      4'h3: sel_2549 = sel_2513;
-      4'h4: sel_2549 = proxy_cat_2520;
-      4'ha: sel_2549 = reg_ch_bit_32u_2489;
-      4'hb: sel_2549 = proxy_cat_2520;
-      default: sel_2549 = reg_ch_bit_32u_2498;
+    case (TAP_2461_io_out_curr_state)
+      4'h3: sel_2552 = sel_2514;
+      4'h4: sel_2552 = proxy_cat_2521;
+      4'ha: sel_2552 = reg_ch_bit_32u_2490;
+      4'hb: sel_2552 = proxy_cat_2521;
+      default: sel_2552 = reg_ch_bit_32u_2500;
     endcase
   end
   always @(*) begin
-    case (TAP_2460_io_out_curr_state)
-      4'h4: sel_2556 = 1'h1;
-      4'hb: sel_2556 = 1'h1;
-      default: sel_2556 = op_notl_2500;
+    case (TAP_2461_io_out_curr_state)
+      4'h4: sel_2559 = 1'h1;
+      4'hb: sel_2559 = 1'h1;
+      default: sel_2559 = op_notl_2502;
     endcase
   end
-  assign sel_2557 = op_eq_2568 ? reg_ch_bit_32u_2498 : reg_ch_bit_32u_2489;
-  assign sel_2558 = op_andb_2570 ? reg_ch_bit_32u_2498 : reg_ch_bit_32u_2495;
-  assign sel_2561 = op_notl_2500 ? io_JTAG_in_data_data : 1'h0;
-  always @(*) begin
-    case (TAP_2460_io_out_curr_state)
-      4'h4: sel_2566 = reg_ch_bit_32u_2498[0];
-      4'hb: sel_2566 = reg_ch_bit_32u_2498[0];
-      default: sel_2566 = sel_2561;
-    endcase
-  end
-  assign op_notl_2500 = !reg_ch_bit_32u_2489;
-  assign op_eq_2505 = reg_ch_bit_32u_2489 == 32'h1;
-  assign op_eq_2508 = reg_ch_bit_32u_2489 == 32'h2;
-  assign op_shr_2517 = reg_ch_bit_32u_2498 >> 32'h1;
-  assign op_eq_2567 = TAP_2460_io_out_curr_state == 4'h8;
-  assign op_eq_2568 = TAP_2460_io_out_curr_state == 4'hf;
-  assign op_andb_2570 = op_eq_2567 & op_eq_2505;
-  TAP TAP_2460(.clk(TAP_2460_clk), .reset(TAP_2460_reset), .io_JTAG_TAP_in_mode_select_data(TAP_2460_io_JTAG_TAP_in_mode_select_data), .io_JTAG_TAP_in_mode_select_valid(TAP_2460_io_JTAG_TAP_in_mode_select_valid), .io_JTAG_TAP_in_clock_data(TAP_2460_io_JTAG_TAP_in_clock_data), .io_JTAG_TAP_in_clock_valid(TAP_2460_io_JTAG_TAP_in_clock_valid), .io_JTAG_TAP_in_reset_data(TAP_2460_io_JTAG_TAP_in_reset_data), .io_JTAG_TAP_in_reset_valid(TAP_2460_io_JTAG_TAP_in_reset_valid), .io_JTAG_TAP_in_mode_select_ready(TAP_2460_io_JTAG_TAP_in_mode_select_ready), .io_JTAG_TAP_in_clock_ready(TAP_2460_io_JTAG_TAP_in_clock_ready), .io_JTAG_TAP_in_reset_ready(TAP_2460_io_JTAG_TAP_in_reset_ready), .io_out_curr_state(TAP_2460_io_out_curr_state));
-  assign TAP_2460_clk = clk;
-  assign TAP_2460_reset = reset;
-  assign TAP_2460_io_JTAG_TAP_in_mode_select_data = io_JTAG_JTAG_TAP_in_mode_select_data;
-  assign TAP_2460_io_JTAG_TAP_in_mode_select_valid = io_JTAG_JTAG_TAP_in_mode_select_valid;
-  assign TAP_2460_io_JTAG_TAP_in_clock_data = io_JTAG_JTAG_TAP_in_clock_data;
-  assign TAP_2460_io_JTAG_TAP_in_clock_valid = io_JTAG_JTAG_TAP_in_clock_valid;
-  assign TAP_2460_io_JTAG_TAP_in_reset_data = io_JTAG_JTAG_TAP_in_reset_data;
-  assign TAP_2460_io_JTAG_TAP_in_reset_valid = io_JTAG_JTAG_TAP_in_reset_valid;
+  assign sel_2566 = op_eq_2571 ? reg_ch_bit_32u_2500[0] : 1'h0;
+  assign op_notl_2502 = !reg_ch_bit_32u_2490;
+  assign op_eq_2506 = reg_ch_bit_32u_2490 == 32'h1;
+  assign op_eq_2509 = reg_ch_bit_32u_2490 == 32'h2;
+  assign op_shr_2518 = reg_ch_bit_32u_2500 >> 32'h1;
+  assign op_eq_2567 = TAP_2461_io_out_curr_state == 4'hf;
+  assign op_eq_2568 = TAP_2461_io_out_curr_state == 4'h8;
+  assign op_andb_2570 = op_eq_2568 & op_eq_2506;
+  assign op_eq_2571 = TAP_2461_io_out_curr_state == 4'h4;
+  TAP TAP_2461(.clk(TAP_2461_clk), .reset(TAP_2461_reset), .io_JTAG_TAP_in_mode_select_data(TAP_2461_io_JTAG_TAP_in_mode_select_data), .io_JTAG_TAP_in_mode_select_valid(TAP_2461_io_JTAG_TAP_in_mode_select_valid), .io_JTAG_TAP_in_clock_data(TAP_2461_io_JTAG_TAP_in_clock_data), .io_JTAG_TAP_in_clock_valid(TAP_2461_io_JTAG_TAP_in_clock_valid), .io_JTAG_TAP_in_reset_data(TAP_2461_io_JTAG_TAP_in_reset_data), .io_JTAG_TAP_in_reset_valid(TAP_2461_io_JTAG_TAP_in_reset_valid), .io_JTAG_TAP_in_mode_select_ready(TAP_2461_io_JTAG_TAP_in_mode_select_ready), .io_JTAG_TAP_in_clock_ready(TAP_2461_io_JTAG_TAP_in_clock_ready), .io_JTAG_TAP_in_reset_ready(TAP_2461_io_JTAG_TAP_in_reset_ready), .io_out_curr_state(TAP_2461_io_out_curr_state));
+  assign TAP_2461_clk = clk;
+  assign TAP_2461_reset = reset;
+  assign TAP_2461_io_JTAG_TAP_in_mode_select_data = io_JTAG_JTAG_TAP_in_mode_select_data;
+  assign TAP_2461_io_JTAG_TAP_in_mode_select_valid = io_JTAG_JTAG_TAP_in_mode_select_valid;
+  assign TAP_2461_io_JTAG_TAP_in_clock_data = io_JTAG_JTAG_TAP_in_clock_data;
+  assign TAP_2461_io_JTAG_TAP_in_clock_valid = io_JTAG_JTAG_TAP_in_clock_valid;
+  assign TAP_2461_io_JTAG_TAP_in_reset_data = io_JTAG_JTAG_TAP_in_reset_data;
+  assign TAP_2461_io_JTAG_TAP_in_reset_valid = io_JTAG_JTAG_TAP_in_reset_valid;
 
-  assign io_JTAG_JTAG_TAP_in_mode_select_ready = TAP_2460_io_JTAG_TAP_in_mode_select_ready;
-  assign io_JTAG_JTAG_TAP_in_clock_ready = TAP_2460_io_JTAG_TAP_in_clock_ready;
-  assign io_JTAG_JTAG_TAP_in_reset_ready = TAP_2460_io_JTAG_TAP_in_reset_ready;
-  assign io_JTAG_in_data_ready = io_JTAG_in_data_valid;
+  assign io_JTAG_JTAG_TAP_in_mode_select_ready = TAP_2461_io_JTAG_TAP_in_mode_select_ready;
+  assign io_JTAG_JTAG_TAP_in_clock_ready = TAP_2461_io_JTAG_TAP_in_clock_ready;
+  assign io_JTAG_JTAG_TAP_in_reset_ready = TAP_2461_io_JTAG_TAP_in_reset_ready;
+  assign io_JTAG_in_data_ready = 1'h1;
   assign io_JTAG_out_data_data = sel_2566;
-  assign io_JTAG_out_data_valid = sel_2556;
+  assign io_JTAG_out_data_valid = sel_2559;
 
 endmodule
 
@@ -1553,53 +1547,53 @@ module CSR_Handler(
   input wire[31:0] io_in_mem_csr_result,
   output wire[31:0] io_out_decode_csr_data
 );
-  reg[11:0] mem_ch_bit_12u_2610 [0:4095];
-  wire[11:0] marport_ch_bit_12u_2650;
-  reg[63:0] reg_ch_uint_64u_2616, reg_ch_uint_64u_2618;
-  reg[11:0] reg_ch_bit_12u_2628;
-  wire[31:0] sel_2658, sel_2661, sel_2666, sel_2669, op_pad_2653;
-  wire[63:0] op_add_2621, op_add_2624, op_shr_2655, op_shr_2663;
-  wire op_eq_2636, op_eq_2640, op_eq_2644, op_eq_2648;
+  reg[11:0] mem_ch_bit_12u_2611 [0:4095];
+  wire[11:0] marport_ch_bit_12u_2651;
+  reg[63:0] reg_ch_uint_64u_2617, reg_ch_uint_64u_2619;
+  reg[11:0] reg_ch_bit_12u_2629;
+  wire[31:0] sel_2659, sel_2662, sel_2667, sel_2670, op_pad_2654;
+  wire[63:0] op_add_2622, op_add_2625, op_shr_2656, op_shr_2664;
+  wire op_eq_2637, op_eq_2641, op_eq_2645, op_eq_2649;
 
-  assign marport_ch_bit_12u_2650 = mem_ch_bit_12u_2610[reg_ch_bit_12u_2628];
+  assign marport_ch_bit_12u_2651 = mem_ch_bit_12u_2611[reg_ch_bit_12u_2629];
   always @ (posedge clk) begin
     if (io_in_mem_is_csr) begin
-      mem_ch_bit_12u_2610[io_in_mem_csr_address] <= io_in_mem_csr_result[11:0];
+      mem_ch_bit_12u_2611[io_in_mem_csr_address] <= io_in_mem_csr_result[11:0];
     end
   end
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_uint_64u_2616 <= 64'h0;
+      reg_ch_uint_64u_2617 <= 64'h0;
     else
-      reg_ch_uint_64u_2616 <= op_add_2621;
+      reg_ch_uint_64u_2617 <= op_add_2622;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_uint_64u_2618 <= 64'h0;
+      reg_ch_uint_64u_2619 <= 64'h0;
     else
-      reg_ch_uint_64u_2618 <= op_add_2624;
+      reg_ch_uint_64u_2619 <= op_add_2625;
   end
   always @ (posedge clk) begin
     if (reset)
-      reg_ch_bit_12u_2628 <= 12'h0;
+      reg_ch_bit_12u_2629 <= 12'h0;
     else
-      reg_ch_bit_12u_2628 <= io_in_decode_csr_address;
+      reg_ch_bit_12u_2629 <= io_in_decode_csr_address;
   end
-  assign sel_2658 = op_eq_2648 ? op_shr_2655[31:0] : op_pad_2653;
-  assign sel_2661 = op_eq_2644 ? reg_ch_uint_64u_2618[31:0] : sel_2658;
-  assign sel_2666 = op_eq_2640 ? op_shr_2663[31:0] : sel_2661;
-  assign sel_2669 = op_eq_2636 ? reg_ch_uint_64u_2616[31:0] : sel_2666;
-  assign op_add_2621 = reg_ch_uint_64u_2616 + 64'h1;
-  assign op_add_2624 = reg_ch_uint_64u_2618 + 64'h1;
-  assign op_eq_2636 = reg_ch_bit_12u_2628 == 12'hc00;
-  assign op_eq_2640 = reg_ch_bit_12u_2628 == 12'hc80;
-  assign op_eq_2644 = reg_ch_bit_12u_2628 == 12'hc02;
-  assign op_eq_2648 = reg_ch_bit_12u_2628 == 12'hc82;
-  assign op_pad_2653 = {{20{1'b0}}, marport_ch_bit_12u_2650};
-  assign op_shr_2655 = reg_ch_uint_64u_2618 >> 32'h20;
-  assign op_shr_2663 = reg_ch_uint_64u_2616 >> 32'h20;
+  assign sel_2659 = op_eq_2649 ? op_shr_2656[31:0] : op_pad_2654;
+  assign sel_2662 = op_eq_2645 ? reg_ch_uint_64u_2619[31:0] : sel_2659;
+  assign sel_2667 = op_eq_2641 ? op_shr_2664[31:0] : sel_2662;
+  assign sel_2670 = op_eq_2637 ? reg_ch_uint_64u_2617[31:0] : sel_2667;
+  assign op_add_2622 = reg_ch_uint_64u_2617 + 64'h1;
+  assign op_add_2625 = reg_ch_uint_64u_2619 + 64'h1;
+  assign op_eq_2637 = reg_ch_bit_12u_2629 == 12'hc00;
+  assign op_eq_2641 = reg_ch_bit_12u_2629 == 12'hc80;
+  assign op_eq_2645 = reg_ch_bit_12u_2629 == 12'hc02;
+  assign op_eq_2649 = reg_ch_bit_12u_2629 == 12'hc82;
+  assign op_pad_2654 = {{20{1'b0}}, marport_ch_bit_12u_2651};
+  assign op_shr_2656 = reg_ch_uint_64u_2619 >> 32'h20;
+  assign op_shr_2664 = reg_ch_uint_64u_2617 >> 32'h20;
 
-  assign io_out_decode_csr_data = sel_2669;
+  assign io_out_decode_csr_data = sel_2670;
 
 endmodule
 
@@ -1648,17 +1642,17 @@ module Pipeline(
   output wire io_out_fwd_stall,
   output wire io_out_branch_stall
 );
-  wire op_orl_2684, op_eq_2688, Fetch_248_clk, Fetch_248_reset, Fetch_248_io_IBUS_in_data_valid, Fetch_248_io_IBUS_in_data_ready, Fetch_248_io_IBUS_out_address_valid, Fetch_248_io_IBUS_out_address_ready, Fetch_248_io_in_branch_dir, Fetch_248_io_in_freeze, Fetch_248_io_in_branch_stall, Fetch_248_io_in_fwd_stall, Fetch_248_io_in_branch_stall_exe, Fetch_248_io_in_jal, Fetch_248_io_in_interrupt, Fetch_248_io_in_debug, F_D_Register_331_clk, F_D_Register_331_reset, F_D_Register_331_io_in_branch_stall, F_D_Register_331_io_in_branch_stall_exe, F_D_Register_331_io_in_fwd_stall, Decode_890_clk, Decode_890_io_in_stall, Decode_890_io_in_src1_fwd, Decode_890_io_in_src2_fwd, Decode_890_io_in_csr_fwd, Decode_890_io_out_is_csr, Decode_890_io_out_rs2_src, Decode_890_io_out_branch_stall, Decode_890_io_out_jal, D_E_Register_1141_clk, D_E_Register_1141_reset, D_E_Register_1141_io_in_rs2_src, D_E_Register_1141_io_in_fwd_stall, D_E_Register_1141_io_in_branch_stall, D_E_Register_1141_io_in_is_csr, D_E_Register_1141_io_in_jal, D_E_Register_1141_io_out_is_csr, D_E_Register_1141_io_out_rs2_src, D_E_Register_1141_io_out_jal, Execute_1384_io_in_rs2_src, Execute_1384_io_in_is_csr, Execute_1384_io_in_jal, Execute_1384_io_out_is_csr, Execute_1384_io_out_jal, Execute_1384_io_out_branch_stall, E_M_Register_1551_clk, E_M_Register_1551_reset, E_M_Register_1551_io_in_is_csr, E_M_Register_1551_io_out_is_csr, Memory_1826_io_DBUS_out_miss, Memory_1826_io_DBUS_out_rw, Memory_1826_io_DBUS_in_data_valid, Memory_1826_io_DBUS_in_data_ready, Memory_1826_io_DBUS_out_data_valid, Memory_1826_io_DBUS_out_data_ready, Memory_1826_io_DBUS_out_address_valid, Memory_1826_io_DBUS_out_address_ready, Memory_1826_io_DBUS_out_control_valid, Memory_1826_io_DBUS_out_control_ready, Memory_1826_io_out_branch_dir, M_W_Register_1942_clk, M_W_Register_1942_reset, Forwarding_2232_io_in_execute_is_csr, Forwarding_2232_io_in_memory_is_csr, Forwarding_2232_io_out_src1_fwd, Forwarding_2232_io_out_src2_fwd, Forwarding_2232_io_out_csr_fwd, Forwarding_2232_io_out_fwd_stall, Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_data, Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_valid, Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_ready, Interrupt_Handler_2308_io_out_interrupt, JTAG_2571_clk, JTAG_2571_reset, JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_data, JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_valid, JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_ready, JTAG_2571_io_JTAG_JTAG_TAP_in_clock_data, JTAG_2571_io_JTAG_JTAG_TAP_in_clock_valid, JTAG_2571_io_JTAG_JTAG_TAP_in_clock_ready, JTAG_2571_io_JTAG_JTAG_TAP_in_reset_data, JTAG_2571_io_JTAG_JTAG_TAP_in_reset_valid, JTAG_2571_io_JTAG_JTAG_TAP_in_reset_ready, JTAG_2571_io_JTAG_in_data_data, JTAG_2571_io_JTAG_in_data_valid, JTAG_2571_io_JTAG_in_data_ready, JTAG_2571_io_JTAG_out_data_data, JTAG_2571_io_JTAG_out_data_valid, JTAG_2571_io_JTAG_out_data_ready, CSR_Handler_2671_clk, CSR_Handler_2671_reset, CSR_Handler_2671_io_in_mem_is_csr;
-  wire[31:0] Fetch_248_io_IBUS_in_data_data, Fetch_248_io_IBUS_out_address_data, Fetch_248_io_in_branch_dest, Fetch_248_io_in_jal_dest, Fetch_248_io_in_interrupt_pc, Fetch_248_io_out_instruction, Fetch_248_io_out_curr_PC, F_D_Register_331_io_in_instruction, F_D_Register_331_io_in_curr_PC, F_D_Register_331_io_out_instruction, F_D_Register_331_io_out_curr_PC, Decode_890_io_in_instruction, Decode_890_io_in_curr_PC, Decode_890_io_in_write_data, Decode_890_io_in_src1_fwd_data, Decode_890_io_in_src2_fwd_data, Decode_890_io_in_csr_fwd_data, Decode_890_io_out_csr_mask, Decode_890_io_out_rd1, Decode_890_io_out_rd2, Decode_890_io_out_itype_immed, Decode_890_io_out_jal_offset, Decode_890_io_out_PC_next, D_E_Register_1141_io_in_rd1, D_E_Register_1141_io_in_rd2, D_E_Register_1141_io_in_itype_immed, D_E_Register_1141_io_in_PC_next, D_E_Register_1141_io_in_csr_mask, D_E_Register_1141_io_in_curr_PC, D_E_Register_1141_io_in_jal_offset, D_E_Register_1141_io_out_csr_mask, D_E_Register_1141_io_out_rd1, D_E_Register_1141_io_out_rd2, D_E_Register_1141_io_out_itype_immed, D_E_Register_1141_io_out_curr_PC, D_E_Register_1141_io_out_jal_offset, D_E_Register_1141_io_out_PC_next, Execute_1384_io_in_rd1, Execute_1384_io_in_rd2, Execute_1384_io_in_itype_immed, Execute_1384_io_in_PC_next, Execute_1384_io_in_csr_data, Execute_1384_io_in_csr_mask, Execute_1384_io_in_jal_offset, Execute_1384_io_in_curr_PC, Execute_1384_io_out_csr_result, Execute_1384_io_out_alu_result, Execute_1384_io_out_rd1, Execute_1384_io_out_rd2, Execute_1384_io_out_jal_dest, Execute_1384_io_out_branch_offset, Execute_1384_io_out_PC_next, E_M_Register_1551_io_in_alu_result, E_M_Register_1551_io_in_rd1, E_M_Register_1551_io_in_rd2, E_M_Register_1551_io_in_PC_next, E_M_Register_1551_io_in_csr_result, E_M_Register_1551_io_in_curr_PC, E_M_Register_1551_io_in_branch_offset, E_M_Register_1551_io_out_csr_result, E_M_Register_1551_io_out_alu_result, E_M_Register_1551_io_out_rd1, E_M_Register_1551_io_out_rd2, E_M_Register_1551_io_out_curr_PC, E_M_Register_1551_io_out_branch_offset, E_M_Register_1551_io_out_PC_next, Memory_1826_io_DBUS_in_data_data, Memory_1826_io_DBUS_out_data_data, Memory_1826_io_DBUS_out_address_data, Memory_1826_io_in_alu_result, Memory_1826_io_in_rd1, Memory_1826_io_in_rd2, Memory_1826_io_in_PC_next, Memory_1826_io_in_curr_PC, Memory_1826_io_in_branch_offset, Memory_1826_io_out_alu_result, Memory_1826_io_out_mem_result, Memory_1826_io_out_branch_dest, Memory_1826_io_out_PC_next, M_W_Register_1942_io_in_alu_result, M_W_Register_1942_io_in_mem_result, M_W_Register_1942_io_in_PC_next, M_W_Register_1942_io_out_alu_result, M_W_Register_1942_io_out_mem_result, M_W_Register_1942_io_out_PC_next, Write_Back_1996_io_in_alu_result, Write_Back_1996_io_in_mem_result, Write_Back_1996_io_in_PC_next, Write_Back_1996_io_out_write_data, Forwarding_2232_io_in_execute_alu_result, Forwarding_2232_io_in_execute_PC_next, Forwarding_2232_io_in_execute_csr_result, Forwarding_2232_io_in_memory_alu_result, Forwarding_2232_io_in_memory_mem_data, Forwarding_2232_io_in_memory_PC_next, Forwarding_2232_io_in_memory_csr_result, Forwarding_2232_io_in_writeback_alu_result, Forwarding_2232_io_in_writeback_mem_data, Forwarding_2232_io_in_writeback_PC_next, Forwarding_2232_io_out_src1_fwd_data, Forwarding_2232_io_out_src2_fwd_data, Forwarding_2232_io_out_csr_fwd_data, Interrupt_Handler_2308_io_out_interrupt_pc, CSR_Handler_2671_io_in_mem_csr_result, CSR_Handler_2671_io_out_decode_csr_data;
+  wire op_orl_2685, op_eq_2690, Fetch_248_clk, Fetch_248_reset, Fetch_248_io_IBUS_in_data_valid, Fetch_248_io_IBUS_in_data_ready, Fetch_248_io_IBUS_out_address_valid, Fetch_248_io_IBUS_out_address_ready, Fetch_248_io_in_branch_dir, Fetch_248_io_in_freeze, Fetch_248_io_in_branch_stall, Fetch_248_io_in_fwd_stall, Fetch_248_io_in_branch_stall_exe, Fetch_248_io_in_jal, Fetch_248_io_in_interrupt, Fetch_248_io_in_debug, F_D_Register_331_clk, F_D_Register_331_reset, F_D_Register_331_io_in_branch_stall, F_D_Register_331_io_in_branch_stall_exe, F_D_Register_331_io_in_fwd_stall, Decode_890_clk, Decode_890_io_in_stall, Decode_890_io_in_src1_fwd, Decode_890_io_in_src2_fwd, Decode_890_io_in_csr_fwd, Decode_890_io_out_is_csr, Decode_890_io_out_rs2_src, Decode_890_io_out_branch_stall, Decode_890_io_out_jal, D_E_Register_1141_clk, D_E_Register_1141_reset, D_E_Register_1141_io_in_rs2_src, D_E_Register_1141_io_in_fwd_stall, D_E_Register_1141_io_in_branch_stall, D_E_Register_1141_io_in_is_csr, D_E_Register_1141_io_in_jal, D_E_Register_1141_io_out_is_csr, D_E_Register_1141_io_out_rs2_src, D_E_Register_1141_io_out_jal, Execute_1384_io_in_rs2_src, Execute_1384_io_in_is_csr, Execute_1384_io_in_jal, Execute_1384_io_out_is_csr, Execute_1384_io_out_jal, Execute_1384_io_out_branch_stall, E_M_Register_1551_clk, E_M_Register_1551_reset, E_M_Register_1551_io_in_is_csr, E_M_Register_1551_io_out_is_csr, Memory_1826_io_DBUS_out_miss, Memory_1826_io_DBUS_out_rw, Memory_1826_io_DBUS_in_data_valid, Memory_1826_io_DBUS_in_data_ready, Memory_1826_io_DBUS_out_data_valid, Memory_1826_io_DBUS_out_data_ready, Memory_1826_io_DBUS_out_address_valid, Memory_1826_io_DBUS_out_address_ready, Memory_1826_io_DBUS_out_control_valid, Memory_1826_io_DBUS_out_control_ready, Memory_1826_io_out_branch_dir, M_W_Register_1942_clk, M_W_Register_1942_reset, Forwarding_2232_io_in_execute_is_csr, Forwarding_2232_io_in_memory_is_csr, Forwarding_2232_io_out_src1_fwd, Forwarding_2232_io_out_src2_fwd, Forwarding_2232_io_out_csr_fwd, Forwarding_2232_io_out_fwd_stall, Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_data, Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_valid, Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_ready, Interrupt_Handler_2309_io_out_interrupt, JTAG_2572_clk, JTAG_2572_reset, JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_data, JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_valid, JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_ready, JTAG_2572_io_JTAG_JTAG_TAP_in_clock_data, JTAG_2572_io_JTAG_JTAG_TAP_in_clock_valid, JTAG_2572_io_JTAG_JTAG_TAP_in_clock_ready, JTAG_2572_io_JTAG_JTAG_TAP_in_reset_data, JTAG_2572_io_JTAG_JTAG_TAP_in_reset_valid, JTAG_2572_io_JTAG_JTAG_TAP_in_reset_ready, JTAG_2572_io_JTAG_in_data_data, JTAG_2572_io_JTAG_in_data_valid, JTAG_2572_io_JTAG_in_data_ready, JTAG_2572_io_JTAG_out_data_data, JTAG_2572_io_JTAG_out_data_valid, JTAG_2572_io_JTAG_out_data_ready, CSR_Handler_2672_clk, CSR_Handler_2672_reset, CSR_Handler_2672_io_in_mem_is_csr;
+  wire[31:0] Fetch_248_io_IBUS_in_data_data, Fetch_248_io_IBUS_out_address_data, Fetch_248_io_in_branch_dest, Fetch_248_io_in_jal_dest, Fetch_248_io_in_interrupt_pc, Fetch_248_io_out_instruction, Fetch_248_io_out_curr_PC, F_D_Register_331_io_in_instruction, F_D_Register_331_io_in_curr_PC, F_D_Register_331_io_out_instruction, F_D_Register_331_io_out_curr_PC, Decode_890_io_in_instruction, Decode_890_io_in_curr_PC, Decode_890_io_in_write_data, Decode_890_io_in_src1_fwd_data, Decode_890_io_in_src2_fwd_data, Decode_890_io_in_csr_fwd_data, Decode_890_io_out_csr_mask, Decode_890_io_out_rd1, Decode_890_io_out_rd2, Decode_890_io_out_itype_immed, Decode_890_io_out_jal_offset, Decode_890_io_out_PC_next, D_E_Register_1141_io_in_rd1, D_E_Register_1141_io_in_rd2, D_E_Register_1141_io_in_itype_immed, D_E_Register_1141_io_in_PC_next, D_E_Register_1141_io_in_csr_mask, D_E_Register_1141_io_in_curr_PC, D_E_Register_1141_io_in_jal_offset, D_E_Register_1141_io_out_csr_mask, D_E_Register_1141_io_out_rd1, D_E_Register_1141_io_out_rd2, D_E_Register_1141_io_out_itype_immed, D_E_Register_1141_io_out_curr_PC, D_E_Register_1141_io_out_jal_offset, D_E_Register_1141_io_out_PC_next, Execute_1384_io_in_rd1, Execute_1384_io_in_rd2, Execute_1384_io_in_itype_immed, Execute_1384_io_in_PC_next, Execute_1384_io_in_csr_data, Execute_1384_io_in_csr_mask, Execute_1384_io_in_jal_offset, Execute_1384_io_in_curr_PC, Execute_1384_io_out_csr_result, Execute_1384_io_out_alu_result, Execute_1384_io_out_rd1, Execute_1384_io_out_rd2, Execute_1384_io_out_jal_dest, Execute_1384_io_out_branch_offset, Execute_1384_io_out_PC_next, E_M_Register_1551_io_in_alu_result, E_M_Register_1551_io_in_rd1, E_M_Register_1551_io_in_rd2, E_M_Register_1551_io_in_PC_next, E_M_Register_1551_io_in_csr_result, E_M_Register_1551_io_in_curr_PC, E_M_Register_1551_io_in_branch_offset, E_M_Register_1551_io_out_csr_result, E_M_Register_1551_io_out_alu_result, E_M_Register_1551_io_out_rd1, E_M_Register_1551_io_out_rd2, E_M_Register_1551_io_out_curr_PC, E_M_Register_1551_io_out_branch_offset, E_M_Register_1551_io_out_PC_next, Memory_1826_io_DBUS_in_data_data, Memory_1826_io_DBUS_out_data_data, Memory_1826_io_DBUS_out_address_data, Memory_1826_io_in_alu_result, Memory_1826_io_in_rd1, Memory_1826_io_in_rd2, Memory_1826_io_in_PC_next, Memory_1826_io_in_curr_PC, Memory_1826_io_in_branch_offset, Memory_1826_io_out_alu_result, Memory_1826_io_out_mem_result, Memory_1826_io_out_branch_dest, Memory_1826_io_out_PC_next, M_W_Register_1942_io_in_alu_result, M_W_Register_1942_io_in_mem_result, M_W_Register_1942_io_in_PC_next, M_W_Register_1942_io_out_alu_result, M_W_Register_1942_io_out_mem_result, M_W_Register_1942_io_out_PC_next, Write_Back_1996_io_in_alu_result, Write_Back_1996_io_in_mem_result, Write_Back_1996_io_in_PC_next, Write_Back_1996_io_out_write_data, Forwarding_2232_io_in_execute_alu_result, Forwarding_2232_io_in_execute_PC_next, Forwarding_2232_io_in_execute_csr_result, Forwarding_2232_io_in_memory_alu_result, Forwarding_2232_io_in_memory_mem_data, Forwarding_2232_io_in_memory_PC_next, Forwarding_2232_io_in_memory_csr_result, Forwarding_2232_io_in_writeback_alu_result, Forwarding_2232_io_in_writeback_mem_data, Forwarding_2232_io_in_writeback_PC_next, Forwarding_2232_io_out_src1_fwd_data, Forwarding_2232_io_out_src2_fwd_data, Forwarding_2232_io_out_csr_fwd_data, Interrupt_Handler_2309_io_out_interrupt_pc, CSR_Handler_2672_io_in_mem_csr_result, CSR_Handler_2672_io_out_decode_csr_data;
   wire[4:0] Decode_890_io_in_rd, Decode_890_io_out_rd, Decode_890_io_out_rs1, Decode_890_io_out_rs2, D_E_Register_1141_io_in_rd, D_E_Register_1141_io_in_rs1, D_E_Register_1141_io_in_rs2, D_E_Register_1141_io_out_rd, D_E_Register_1141_io_out_rs1, D_E_Register_1141_io_out_rs2, Execute_1384_io_in_rd, Execute_1384_io_in_rs1, Execute_1384_io_in_rs2, Execute_1384_io_out_rd, Execute_1384_io_out_rs1, Execute_1384_io_out_rs2, E_M_Register_1551_io_in_rd, E_M_Register_1551_io_in_rs1, E_M_Register_1551_io_in_rs2, E_M_Register_1551_io_out_rd, E_M_Register_1551_io_out_rs1, E_M_Register_1551_io_out_rs2, Memory_1826_io_in_rd, Memory_1826_io_in_rs1, Memory_1826_io_in_rs2, Memory_1826_io_out_rd, Memory_1826_io_out_rs1, Memory_1826_io_out_rs2, M_W_Register_1942_io_in_rd, M_W_Register_1942_io_in_rs1, M_W_Register_1942_io_in_rs2, M_W_Register_1942_io_out_rd, M_W_Register_1942_io_out_rs1, M_W_Register_1942_io_out_rs2, Write_Back_1996_io_in_rd, Write_Back_1996_io_in_rs1, Write_Back_1996_io_in_rs2, Write_Back_1996_io_out_rd, Forwarding_2232_io_in_decode_src1, Forwarding_2232_io_in_decode_src2, Forwarding_2232_io_in_execute_dest, Forwarding_2232_io_in_memory_dest, Forwarding_2232_io_in_writeback_dest;
   wire[1:0] Decode_890_io_in_wb, Decode_890_io_out_wb, D_E_Register_1141_io_in_wb, D_E_Register_1141_io_out_wb, Execute_1384_io_in_wb, Execute_1384_io_out_wb, E_M_Register_1551_io_in_wb, E_M_Register_1551_io_out_wb, Memory_1826_io_in_wb, Memory_1826_io_out_wb, M_W_Register_1942_io_in_wb, M_W_Register_1942_io_out_wb, Write_Back_1996_io_in_wb, Write_Back_1996_io_out_wb, Forwarding_2232_io_in_execute_wb, Forwarding_2232_io_in_memory_wb, Forwarding_2232_io_in_writeback_wb;
-  wire[11:0] Decode_890_io_out_csr_address, D_E_Register_1141_io_in_csr_address, D_E_Register_1141_io_out_csr_address, Execute_1384_io_in_csr_address, Execute_1384_io_out_csr_address, E_M_Register_1551_io_in_csr_address, E_M_Register_1551_io_out_csr_address, Forwarding_2232_io_in_decode_csr_address, Forwarding_2232_io_in_execute_csr_address, Forwarding_2232_io_in_memory_csr_address, CSR_Handler_2671_io_in_decode_csr_address, CSR_Handler_2671_io_in_mem_csr_address;
+  wire[11:0] Decode_890_io_out_csr_address, D_E_Register_1141_io_in_csr_address, D_E_Register_1141_io_out_csr_address, Execute_1384_io_in_csr_address, Execute_1384_io_out_csr_address, E_M_Register_1551_io_in_csr_address, E_M_Register_1551_io_out_csr_address, Forwarding_2232_io_in_decode_csr_address, Forwarding_2232_io_in_execute_csr_address, Forwarding_2232_io_in_memory_csr_address, CSR_Handler_2672_io_in_decode_csr_address, CSR_Handler_2672_io_in_mem_csr_address;
   wire[3:0] Decode_890_io_out_alu_op, D_E_Register_1141_io_in_alu_op, D_E_Register_1141_io_out_alu_op, Execute_1384_io_in_alu_op;
   wire[2:0] Decode_890_io_out_mem_read, Decode_890_io_out_mem_write, Decode_890_io_out_branch_type, D_E_Register_1141_io_in_mem_read, D_E_Register_1141_io_in_mem_write, D_E_Register_1141_io_in_branch_type, D_E_Register_1141_io_out_mem_read, D_E_Register_1141_io_out_mem_write, D_E_Register_1141_io_out_branch_type, Execute_1384_io_in_mem_read, Execute_1384_io_in_mem_write, Execute_1384_io_in_branch_type, Execute_1384_io_out_mem_read, Execute_1384_io_out_mem_write, E_M_Register_1551_io_in_mem_read, E_M_Register_1551_io_in_mem_write, E_M_Register_1551_io_in_branch_type, E_M_Register_1551_io_out_mem_read, E_M_Register_1551_io_out_mem_write, E_M_Register_1551_io_out_branch_type, Memory_1826_io_DBUS_out_control_data, Memory_1826_io_in_mem_read, Memory_1826_io_in_mem_write, Memory_1826_io_in_branch_type;
   wire[19:0] Decode_890_io_out_upper_immed, D_E_Register_1141_io_in_upper_immed, D_E_Register_1141_io_out_upper_immed, Execute_1384_io_in_upper_immed;
 
-  assign op_orl_2684 = Decode_890_io_out_branch_stall || Execute_1384_io_out_branch_stall;
-  assign op_eq_2688 = Execute_1384_io_out_branch_stall == 1'h1;
+  assign op_orl_2685 = Decode_890_io_out_branch_stall || Execute_1384_io_out_branch_stall;
+  assign op_eq_2690 = Execute_1384_io_out_branch_stall == 1'h1;
   Fetch Fetch_248(.clk(Fetch_248_clk), .reset(Fetch_248_reset), .io_IBUS_in_data_data(Fetch_248_io_IBUS_in_data_data), .io_IBUS_in_data_valid(Fetch_248_io_IBUS_in_data_valid), .io_IBUS_out_address_ready(Fetch_248_io_IBUS_out_address_ready), .io_in_branch_dir(Fetch_248_io_in_branch_dir), .io_in_freeze(Fetch_248_io_in_freeze), .io_in_branch_dest(Fetch_248_io_in_branch_dest), .io_in_branch_stall(Fetch_248_io_in_branch_stall), .io_in_fwd_stall(Fetch_248_io_in_fwd_stall), .io_in_branch_stall_exe(Fetch_248_io_in_branch_stall_exe), .io_in_jal(Fetch_248_io_in_jal), .io_in_jal_dest(Fetch_248_io_in_jal_dest), .io_in_interrupt(Fetch_248_io_in_interrupt), .io_in_interrupt_pc(Fetch_248_io_in_interrupt_pc), .io_in_debug(Fetch_248_io_in_debug), .io_IBUS_in_data_ready(Fetch_248_io_IBUS_in_data_ready), .io_IBUS_out_address_data(Fetch_248_io_IBUS_out_address_data), .io_IBUS_out_address_valid(Fetch_248_io_IBUS_out_address_valid), .io_out_instruction(Fetch_248_io_out_instruction), .io_out_curr_PC(Fetch_248_io_out_curr_PC));
   F_D_Register F_D_Register_331(.clk(F_D_Register_331_clk), .reset(F_D_Register_331_reset), .io_in_instruction(F_D_Register_331_io_in_instruction), .io_in_curr_PC(F_D_Register_331_io_in_curr_PC), .io_in_branch_stall(F_D_Register_331_io_in_branch_stall), .io_in_branch_stall_exe(F_D_Register_331_io_in_branch_stall_exe), .io_in_fwd_stall(F_D_Register_331_io_in_fwd_stall), .io_out_instruction(F_D_Register_331_io_out_instruction), .io_out_curr_PC(F_D_Register_331_io_out_curr_PC));
   Decode Decode_890(.clk(Decode_890_clk), .io_in_instruction(Decode_890_io_in_instruction), .io_in_curr_PC(Decode_890_io_in_curr_PC), .io_in_stall(Decode_890_io_in_stall), .io_in_write_data(Decode_890_io_in_write_data), .io_in_rd(Decode_890_io_in_rd), .io_in_wb(Decode_890_io_in_wb), .io_in_src1_fwd(Decode_890_io_in_src1_fwd), .io_in_src1_fwd_data(Decode_890_io_in_src1_fwd_data), .io_in_src2_fwd(Decode_890_io_in_src2_fwd), .io_in_src2_fwd_data(Decode_890_io_in_src2_fwd_data), .io_in_csr_fwd(Decode_890_io_in_csr_fwd), .io_in_csr_fwd_data(Decode_890_io_in_csr_fwd_data), .io_out_csr_address(Decode_890_io_out_csr_address), .io_out_is_csr(Decode_890_io_out_is_csr), .io_out_csr_mask(Decode_890_io_out_csr_mask), .io_out_rd(Decode_890_io_out_rd), .io_out_rs1(Decode_890_io_out_rs1), .io_out_rd1(Decode_890_io_out_rd1), .io_out_rs2(Decode_890_io_out_rs2), .io_out_rd2(Decode_890_io_out_rd2), .io_out_wb(Decode_890_io_out_wb), .io_out_alu_op(Decode_890_io_out_alu_op), .io_out_rs2_src(Decode_890_io_out_rs2_src), .io_out_itype_immed(Decode_890_io_out_itype_immed), .io_out_mem_read(Decode_890_io_out_mem_read), .io_out_mem_write(Decode_890_io_out_mem_write), .io_out_branch_type(Decode_890_io_out_branch_type), .io_out_branch_stall(Decode_890_io_out_branch_stall), .io_out_jal(Decode_890_io_out_jal), .io_out_jal_offset(Decode_890_io_out_jal_offset), .io_out_upper_immed(Decode_890_io_out_upper_immed), .io_out_PC_next(Decode_890_io_out_PC_next));
@@ -1669,9 +1663,9 @@ module Pipeline(
   M_W_Register M_W_Register_1942(.clk(M_W_Register_1942_clk), .reset(M_W_Register_1942_reset), .io_in_alu_result(M_W_Register_1942_io_in_alu_result), .io_in_mem_result(M_W_Register_1942_io_in_mem_result), .io_in_rd(M_W_Register_1942_io_in_rd), .io_in_wb(M_W_Register_1942_io_in_wb), .io_in_rs1(M_W_Register_1942_io_in_rs1), .io_in_rs2(M_W_Register_1942_io_in_rs2), .io_in_PC_next(M_W_Register_1942_io_in_PC_next), .io_out_alu_result(M_W_Register_1942_io_out_alu_result), .io_out_mem_result(M_W_Register_1942_io_out_mem_result), .io_out_rd(M_W_Register_1942_io_out_rd), .io_out_wb(M_W_Register_1942_io_out_wb), .io_out_rs1(M_W_Register_1942_io_out_rs1), .io_out_rs2(M_W_Register_1942_io_out_rs2), .io_out_PC_next(M_W_Register_1942_io_out_PC_next));
   Write_Back Write_Back_1996(.io_in_alu_result(Write_Back_1996_io_in_alu_result), .io_in_mem_result(Write_Back_1996_io_in_mem_result), .io_in_rd(Write_Back_1996_io_in_rd), .io_in_wb(Write_Back_1996_io_in_wb), .io_in_rs1(Write_Back_1996_io_in_rs1), .io_in_rs2(Write_Back_1996_io_in_rs2), .io_in_PC_next(Write_Back_1996_io_in_PC_next), .io_out_write_data(Write_Back_1996_io_out_write_data), .io_out_rd(Write_Back_1996_io_out_rd), .io_out_wb(Write_Back_1996_io_out_wb));
   Forwarding Forwarding_2232(.io_in_decode_src1(Forwarding_2232_io_in_decode_src1), .io_in_decode_src2(Forwarding_2232_io_in_decode_src2), .io_in_decode_csr_address(Forwarding_2232_io_in_decode_csr_address), .io_in_execute_dest(Forwarding_2232_io_in_execute_dest), .io_in_execute_wb(Forwarding_2232_io_in_execute_wb), .io_in_execute_alu_result(Forwarding_2232_io_in_execute_alu_result), .io_in_execute_PC_next(Forwarding_2232_io_in_execute_PC_next), .io_in_execute_is_csr(Forwarding_2232_io_in_execute_is_csr), .io_in_execute_csr_address(Forwarding_2232_io_in_execute_csr_address), .io_in_execute_csr_result(Forwarding_2232_io_in_execute_csr_result), .io_in_memory_dest(Forwarding_2232_io_in_memory_dest), .io_in_memory_wb(Forwarding_2232_io_in_memory_wb), .io_in_memory_alu_result(Forwarding_2232_io_in_memory_alu_result), .io_in_memory_mem_data(Forwarding_2232_io_in_memory_mem_data), .io_in_memory_PC_next(Forwarding_2232_io_in_memory_PC_next), .io_in_memory_is_csr(Forwarding_2232_io_in_memory_is_csr), .io_in_memory_csr_address(Forwarding_2232_io_in_memory_csr_address), .io_in_memory_csr_result(Forwarding_2232_io_in_memory_csr_result), .io_in_writeback_dest(Forwarding_2232_io_in_writeback_dest), .io_in_writeback_wb(Forwarding_2232_io_in_writeback_wb), .io_in_writeback_alu_result(Forwarding_2232_io_in_writeback_alu_result), .io_in_writeback_mem_data(Forwarding_2232_io_in_writeback_mem_data), .io_in_writeback_PC_next(Forwarding_2232_io_in_writeback_PC_next), .io_out_src1_fwd(Forwarding_2232_io_out_src1_fwd), .io_out_src2_fwd(Forwarding_2232_io_out_src2_fwd), .io_out_csr_fwd(Forwarding_2232_io_out_csr_fwd), .io_out_src1_fwd_data(Forwarding_2232_io_out_src1_fwd_data), .io_out_src2_fwd_data(Forwarding_2232_io_out_src2_fwd_data), .io_out_csr_fwd_data(Forwarding_2232_io_out_csr_fwd_data), .io_out_fwd_stall(Forwarding_2232_io_out_fwd_stall));
-  Interrupt_Handler Interrupt_Handler_2308(.io_INTERRUPT_in_interrupt_id_data(Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_data), .io_INTERRUPT_in_interrupt_id_valid(Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_valid), .io_INTERRUPT_in_interrupt_id_ready(Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_ready), .io_out_interrupt(Interrupt_Handler_2308_io_out_interrupt), .io_out_interrupt_pc(Interrupt_Handler_2308_io_out_interrupt_pc));
-  JTAG JTAG_2571(.clk(JTAG_2571_clk), .reset(JTAG_2571_reset), .io_JTAG_JTAG_TAP_in_mode_select_data(JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_data), .io_JTAG_JTAG_TAP_in_mode_select_valid(JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_valid), .io_JTAG_JTAG_TAP_in_clock_data(JTAG_2571_io_JTAG_JTAG_TAP_in_clock_data), .io_JTAG_JTAG_TAP_in_clock_valid(JTAG_2571_io_JTAG_JTAG_TAP_in_clock_valid), .io_JTAG_JTAG_TAP_in_reset_data(JTAG_2571_io_JTAG_JTAG_TAP_in_reset_data), .io_JTAG_JTAG_TAP_in_reset_valid(JTAG_2571_io_JTAG_JTAG_TAP_in_reset_valid), .io_JTAG_in_data_data(JTAG_2571_io_JTAG_in_data_data), .io_JTAG_in_data_valid(JTAG_2571_io_JTAG_in_data_valid), .io_JTAG_out_data_ready(JTAG_2571_io_JTAG_out_data_ready), .io_JTAG_JTAG_TAP_in_mode_select_ready(JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_ready), .io_JTAG_JTAG_TAP_in_clock_ready(JTAG_2571_io_JTAG_JTAG_TAP_in_clock_ready), .io_JTAG_JTAG_TAP_in_reset_ready(JTAG_2571_io_JTAG_JTAG_TAP_in_reset_ready), .io_JTAG_in_data_ready(JTAG_2571_io_JTAG_in_data_ready), .io_JTAG_out_data_data(JTAG_2571_io_JTAG_out_data_data), .io_JTAG_out_data_valid(JTAG_2571_io_JTAG_out_data_valid));
-  CSR_Handler CSR_Handler_2671(.clk(CSR_Handler_2671_clk), .reset(CSR_Handler_2671_reset), .io_in_decode_csr_address(CSR_Handler_2671_io_in_decode_csr_address), .io_in_mem_csr_address(CSR_Handler_2671_io_in_mem_csr_address), .io_in_mem_is_csr(CSR_Handler_2671_io_in_mem_is_csr), .io_in_mem_csr_result(CSR_Handler_2671_io_in_mem_csr_result), .io_out_decode_csr_data(CSR_Handler_2671_io_out_decode_csr_data));
+  Interrupt_Handler Interrupt_Handler_2309(.io_INTERRUPT_in_interrupt_id_data(Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_data), .io_INTERRUPT_in_interrupt_id_valid(Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_valid), .io_INTERRUPT_in_interrupt_id_ready(Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_ready), .io_out_interrupt(Interrupt_Handler_2309_io_out_interrupt), .io_out_interrupt_pc(Interrupt_Handler_2309_io_out_interrupt_pc));
+  JTAG JTAG_2572(.clk(JTAG_2572_clk), .reset(JTAG_2572_reset), .io_JTAG_JTAG_TAP_in_mode_select_data(JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_data), .io_JTAG_JTAG_TAP_in_mode_select_valid(JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_valid), .io_JTAG_JTAG_TAP_in_clock_data(JTAG_2572_io_JTAG_JTAG_TAP_in_clock_data), .io_JTAG_JTAG_TAP_in_clock_valid(JTAG_2572_io_JTAG_JTAG_TAP_in_clock_valid), .io_JTAG_JTAG_TAP_in_reset_data(JTAG_2572_io_JTAG_JTAG_TAP_in_reset_data), .io_JTAG_JTAG_TAP_in_reset_valid(JTAG_2572_io_JTAG_JTAG_TAP_in_reset_valid), .io_JTAG_in_data_data(JTAG_2572_io_JTAG_in_data_data), .io_JTAG_in_data_valid(JTAG_2572_io_JTAG_in_data_valid), .io_JTAG_out_data_ready(JTAG_2572_io_JTAG_out_data_ready), .io_JTAG_JTAG_TAP_in_mode_select_ready(JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_ready), .io_JTAG_JTAG_TAP_in_clock_ready(JTAG_2572_io_JTAG_JTAG_TAP_in_clock_ready), .io_JTAG_JTAG_TAP_in_reset_ready(JTAG_2572_io_JTAG_JTAG_TAP_in_reset_ready), .io_JTAG_in_data_ready(JTAG_2572_io_JTAG_in_data_ready), .io_JTAG_out_data_data(JTAG_2572_io_JTAG_out_data_data), .io_JTAG_out_data_valid(JTAG_2572_io_JTAG_out_data_valid));
+  CSR_Handler CSR_Handler_2672(.clk(CSR_Handler_2672_clk), .reset(CSR_Handler_2672_reset), .io_in_decode_csr_address(CSR_Handler_2672_io_in_decode_csr_address), .io_in_mem_csr_address(CSR_Handler_2672_io_in_mem_csr_address), .io_in_mem_is_csr(CSR_Handler_2672_io_in_mem_is_csr), .io_in_mem_csr_result(CSR_Handler_2672_io_in_mem_csr_result), .io_out_decode_csr_data(CSR_Handler_2672_io_out_decode_csr_data));
   assign Fetch_248_clk = clk;
   assign Fetch_248_reset = reset;
   assign Fetch_248_io_IBUS_in_data_data = io_IBUS_in_data_data;
@@ -1685,9 +1679,9 @@ module Pipeline(
   assign Fetch_248_io_in_branch_stall_exe = Execute_1384_io_out_branch_stall;
   assign Fetch_248_io_in_jal = Execute_1384_io_out_jal;
   assign Fetch_248_io_in_jal_dest = Execute_1384_io_out_jal_dest;
-  assign Fetch_248_io_in_interrupt = Interrupt_Handler_2308_io_out_interrupt;
-  assign Fetch_248_io_in_interrupt_pc = Interrupt_Handler_2308_io_out_interrupt_pc;
-  assign Fetch_248_io_in_debug = io_in_debug;
+  assign Fetch_248_io_in_interrupt = Interrupt_Handler_2309_io_out_interrupt;
+  assign Fetch_248_io_in_interrupt_pc = Interrupt_Handler_2309_io_out_interrupt_pc;
+  assign Fetch_248_io_in_debug = 1'h0;
   assign F_D_Register_331_clk = clk;
   assign F_D_Register_331_reset = reset;
   assign F_D_Register_331_io_in_instruction = Fetch_248_io_out_instruction;
@@ -1698,7 +1692,7 @@ module Pipeline(
   assign Decode_890_clk = clk;
   assign Decode_890_io_in_instruction = F_D_Register_331_io_out_instruction;
   assign Decode_890_io_in_curr_PC = F_D_Register_331_io_out_curr_PC;
-  assign Decode_890_io_in_stall = op_eq_2688;
+  assign Decode_890_io_in_stall = op_eq_2690;
   assign Decode_890_io_in_write_data = Write_Back_1996_io_out_write_data;
   assign Decode_890_io_in_rd = Write_Back_1996_io_out_rd;
   assign Decode_890_io_in_wb = Write_Back_1996_io_out_wb;
@@ -1748,7 +1742,7 @@ module Pipeline(
   assign Execute_1384_io_in_upper_immed = D_E_Register_1141_io_out_upper_immed;
   assign Execute_1384_io_in_csr_address = D_E_Register_1141_io_out_csr_address;
   assign Execute_1384_io_in_is_csr = D_E_Register_1141_io_out_is_csr;
-  assign Execute_1384_io_in_csr_data = CSR_Handler_2671_io_out_decode_csr_data;
+  assign Execute_1384_io_in_csr_data = CSR_Handler_2672_io_out_decode_csr_data;
   assign Execute_1384_io_in_csr_mask = D_E_Register_1141_io_out_csr_mask;
   assign Execute_1384_io_in_jal = D_E_Register_1141_io_out_jal;
   assign Execute_1384_io_in_jal_offset = D_E_Register_1141_io_out_jal_offset;
@@ -1828,25 +1822,25 @@ module Pipeline(
   assign Forwarding_2232_io_in_writeback_alu_result = M_W_Register_1942_io_out_alu_result;
   assign Forwarding_2232_io_in_writeback_mem_data = M_W_Register_1942_io_out_mem_result;
   assign Forwarding_2232_io_in_writeback_PC_next = M_W_Register_1942_io_out_PC_next;
-  assign Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_data = io_INTERRUPT_in_interrupt_id_data;
-  assign Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_valid = io_INTERRUPT_in_interrupt_id_valid;
-  assign JTAG_2571_clk = clk;
-  assign JTAG_2571_reset = reset;
-  assign JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_data = io_jtag_JTAG_TAP_in_mode_select_data;
-  assign JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_valid = io_jtag_JTAG_TAP_in_mode_select_valid;
-  assign JTAG_2571_io_JTAG_JTAG_TAP_in_clock_data = io_jtag_JTAG_TAP_in_clock_data;
-  assign JTAG_2571_io_JTAG_JTAG_TAP_in_clock_valid = io_jtag_JTAG_TAP_in_clock_valid;
-  assign JTAG_2571_io_JTAG_JTAG_TAP_in_reset_data = io_jtag_JTAG_TAP_in_reset_data;
-  assign JTAG_2571_io_JTAG_JTAG_TAP_in_reset_valid = io_jtag_JTAG_TAP_in_reset_valid;
-  assign JTAG_2571_io_JTAG_in_data_data = io_jtag_in_data_data;
-  assign JTAG_2571_io_JTAG_in_data_valid = io_jtag_in_data_valid;
-  assign JTAG_2571_io_JTAG_out_data_ready = io_jtag_out_data_ready;
-  assign CSR_Handler_2671_clk = clk;
-  assign CSR_Handler_2671_reset = reset;
-  assign CSR_Handler_2671_io_in_decode_csr_address = Decode_890_io_out_csr_address;
-  assign CSR_Handler_2671_io_in_mem_csr_address = E_M_Register_1551_io_out_csr_address;
-  assign CSR_Handler_2671_io_in_mem_is_csr = E_M_Register_1551_io_out_is_csr;
-  assign CSR_Handler_2671_io_in_mem_csr_result = E_M_Register_1551_io_out_csr_result;
+  assign Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_data = io_INTERRUPT_in_interrupt_id_data;
+  assign Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_valid = io_INTERRUPT_in_interrupt_id_valid;
+  assign JTAG_2572_clk = clk;
+  assign JTAG_2572_reset = reset;
+  assign JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_data = io_jtag_JTAG_TAP_in_mode_select_data;
+  assign JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_valid = io_jtag_JTAG_TAP_in_mode_select_valid;
+  assign JTAG_2572_io_JTAG_JTAG_TAP_in_clock_data = io_jtag_JTAG_TAP_in_clock_data;
+  assign JTAG_2572_io_JTAG_JTAG_TAP_in_clock_valid = io_jtag_JTAG_TAP_in_clock_valid;
+  assign JTAG_2572_io_JTAG_JTAG_TAP_in_reset_data = io_jtag_JTAG_TAP_in_reset_data;
+  assign JTAG_2572_io_JTAG_JTAG_TAP_in_reset_valid = io_jtag_JTAG_TAP_in_reset_valid;
+  assign JTAG_2572_io_JTAG_in_data_data = io_jtag_in_data_data;
+  assign JTAG_2572_io_JTAG_in_data_valid = io_jtag_in_data_valid;
+  assign JTAG_2572_io_JTAG_out_data_ready = io_jtag_out_data_ready;
+  assign CSR_Handler_2672_clk = clk;
+  assign CSR_Handler_2672_reset = reset;
+  assign CSR_Handler_2672_io_in_decode_csr_address = Decode_890_io_out_csr_address;
+  assign CSR_Handler_2672_io_in_mem_csr_address = E_M_Register_1551_io_out_csr_address;
+  assign CSR_Handler_2672_io_in_mem_is_csr = E_M_Register_1551_io_out_is_csr;
+  assign CSR_Handler_2672_io_in_mem_csr_result = E_M_Register_1551_io_out_csr_result;
 
   assign io_IBUS_in_data_ready = Fetch_248_io_IBUS_in_data_ready;
   assign io_IBUS_out_address_data = Fetch_248_io_IBUS_out_address_data;
@@ -1860,14 +1854,14 @@ module Pipeline(
   assign io_DBUS_out_address_valid = Memory_1826_io_DBUS_out_address_valid;
   assign io_DBUS_out_control_data = Memory_1826_io_DBUS_out_control_data;
   assign io_DBUS_out_control_valid = Memory_1826_io_DBUS_out_control_valid;
-  assign io_INTERRUPT_in_interrupt_id_ready = Interrupt_Handler_2308_io_INTERRUPT_in_interrupt_id_ready;
-  assign io_jtag_JTAG_TAP_in_mode_select_ready = JTAG_2571_io_JTAG_JTAG_TAP_in_mode_select_ready;
-  assign io_jtag_JTAG_TAP_in_clock_ready = JTAG_2571_io_JTAG_JTAG_TAP_in_clock_ready;
-  assign io_jtag_JTAG_TAP_in_reset_ready = JTAG_2571_io_JTAG_JTAG_TAP_in_reset_ready;
-  assign io_jtag_in_data_ready = JTAG_2571_io_JTAG_in_data_ready;
-  assign io_jtag_out_data_data = JTAG_2571_io_JTAG_out_data_data;
-  assign io_jtag_out_data_valid = JTAG_2571_io_JTAG_out_data_valid;
+  assign io_INTERRUPT_in_interrupt_id_ready = Interrupt_Handler_2309_io_INTERRUPT_in_interrupt_id_ready;
+  assign io_jtag_JTAG_TAP_in_mode_select_ready = JTAG_2572_io_JTAG_JTAG_TAP_in_mode_select_ready;
+  assign io_jtag_JTAG_TAP_in_clock_ready = JTAG_2572_io_JTAG_JTAG_TAP_in_clock_ready;
+  assign io_jtag_JTAG_TAP_in_reset_ready = JTAG_2572_io_JTAG_JTAG_TAP_in_reset_ready;
+  assign io_jtag_in_data_ready = JTAG_2572_io_JTAG_in_data_ready;
+  assign io_jtag_out_data_data = JTAG_2572_io_JTAG_out_data_data;
+  assign io_jtag_out_data_valid = JTAG_2572_io_JTAG_out_data_valid;
   assign io_out_fwd_stall = Forwarding_2232_io_out_fwd_stall;
-  assign io_out_branch_stall = op_orl_2684;
+  assign io_out_branch_stall = op_orl_2685;
 
 endmodule

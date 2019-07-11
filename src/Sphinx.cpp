@@ -863,6 +863,7 @@ void Sphinx::print_stats(bool cycle_test) {
 
 void Sphinx::export_verilog() {
   ch_toVerilog("pipeline.v", pipeline);
+  ch_stats(std::cout, pipeline);
 }
 
 void Sphinx::export_trace() {

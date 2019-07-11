@@ -1,7 +1,7 @@
 
 CXXFLAGS += -std=c++17 -O3 -DNDEBUG -I$(CASH_HOME)/include -Wall -Wextra -pedantic
 #CXXFLAGS += -std=c++17 -O0 -g -I$(CASH_HOME)/include -Wall -Wextra -pedantic
-LDFLAGS += -lcash -lstdc++ -L$(CASH_HOME)/build/lib
+LDFLAGS += -lcash -L$(CASH_HOME)/build/lib
 
 PROJECT = Sphinx.out
 
@@ -25,6 +25,8 @@ clear:
 
 run: $(PROJECT)
 	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex
+
+perf: run
 	
 build-vcs: $(PROJECT)
 	vcs -cpp /usr/bin/gcc -o vsim pipeline_tb.v
