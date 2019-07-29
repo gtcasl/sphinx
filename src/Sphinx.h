@@ -12,9 +12,12 @@
 #include <utility>
 #include <vector>
 
-#include <ncurses.h>  // sim
-#include <signal.h>   // sim
+// sim
+#ifdef SIM
+#include <ncurses.h>  
+#include <signal.h>   
 #include <ctime>
+#endif
 
 // Cash libraries
 #include <cash.h>
