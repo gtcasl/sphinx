@@ -25,7 +25,9 @@ clear:
 run: $(PROJECT)
 	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex
 
-perf: run
+perf: $(PROJECT)
+	./$(PROJECT) --test ../tests/dhrystoneO3.hex || true
+	cat ../results/results.txt
 
 verilog: $(PROJECT)
 	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex --exportVerilog --exportTrace
