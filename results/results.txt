@@ -6,6 +6,6 @@
 # of forwarding stalls: 6468
 # of branch stalls:     135143
 # CPI:                  1.45094
-# Total time:           6961.6 milliseconds
-# Kernel Time:          782.885 milliseconds
+# Total time:           11696.1 milliseconds
+# Kernel Time:          4942.53 milliseconds
 # GRADE: Failed on test: 0

@@ -869,7 +869,8 @@ void Sphinx::export_verilog() {
 void Sphinx::export_trace() {
   auto trace = reinterpret_cast<ch_tracer*>(sim);
   trace->toTestBench("pipeline_tb.v", "pipeline.v", true);
-  trace->toVerilator("Vpipeline_tb.h", "VPipeline");
+  trace->toVerilator("vl_pipeline_tb.h", "VPipeline");
+  trace->toSystemC("sc_pipeline_tb.h", "VPipeline");
   trace->toVCD("pipeline.vcd");
 }
 
