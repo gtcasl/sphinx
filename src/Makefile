@@ -17,10 +17,7 @@ $(PROJECT): $(OBJS)
 	$(CXX) $(CXXFLAGS) -MM $^ > .depend;
 
 clean:
-	rm -f *.out *.o *.vcd *.iv *.fir .depend *~ *\#
-
-clear:
-	rm -f *.out *.o *.vcd *.iv *.fir .depend *~ *\#
+	rm -rf *.out *.o *.vcd *.iv *.fir .depend *~ *\# vl_pipeline sc_pipeline sc2_pipeline
 
 run: $(PROJECT)
 	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex
