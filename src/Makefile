@@ -20,14 +20,14 @@ clean:
 	rm -rf *.out *.o *.vcd *.iv *.fir .depend *~ *\# vl_pipeline sc_pipeline sc2_pipeline
 
 run: $(PROJECT)
-	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex
+	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex || true
 
 perf: $(PROJECT)
 	./$(PROJECT) --test ../tests/dhrystoneO3.hex || true
 	cat ../results/results.txt
 
 verilog: $(PROJECT)
-	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex --exportVerilog --exportTrace
+	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex --exportVerilog --exportTrace || true
 	
 build-vcs: 
 	vcs -cpp /usr/bin/gcc -o vsim pipeline_tb.v

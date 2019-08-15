@@ -1499,11 +1499,11 @@ module JTAG(
   output wire io_JTAG_out_data_valid,
   input wire io_JTAG_out_data_ready
 );
-  reg[31:0] reg_ch_bit_32u_2271, reg_ch_bit_32u_2275, reg_ch_bit_32u_2279, reg_ch_bit_32u_2284, sel_2337;
+  reg[31:0] reg_ch_bit_32u_2271, reg_ch_bit_32u_2275, reg_ch_bit_32u_2279, reg_ch_bit_32u_2284, sel_2328;
   wire[30:0] proxy_slice_2302;
-  wire[31:0] proxy_cat_2303, sel_2296, sel_2297, sel_2340, sel_2341, op_shr_2301;
-  wire sel_2330, op_eq_2287, op_eq_2291, op_eq_2294, op_eq_2308, op_eq_2343, op_eq_2344, op_eq_2345, op_andb_2346, TAP_2242_clk, TAP_2242_reset, TAP_2242_io_JTAG_TAP_in_mode_select_data, TAP_2242_io_JTAG_TAP_in_mode_select_valid, TAP_2242_io_JTAG_TAP_in_mode_select_ready, TAP_2242_io_JTAG_TAP_in_clock_data, TAP_2242_io_JTAG_TAP_in_clock_valid, TAP_2242_io_JTAG_TAP_in_clock_ready, TAP_2242_io_JTAG_TAP_in_reset_data, TAP_2242_io_JTAG_TAP_in_reset_valid, TAP_2242_io_JTAG_TAP_in_reset_ready;
-  reg sel_2336;
+  wire[31:0] proxy_cat_2303, sel_2296, sel_2297, sel_2325, sel_2326, op_shr_2301;
+  reg sel_2334;
+  wire sel_2342, op_eq_2287, op_eq_2291, op_eq_2294, op_eq_2308, op_eq_2343, op_eq_2345, op_andb_2346, op_eq_2347, TAP_2242_clk, TAP_2242_reset, TAP_2242_io_JTAG_TAP_in_mode_select_data, TAP_2242_io_JTAG_TAP_in_mode_select_valid, TAP_2242_io_JTAG_TAP_in_mode_select_ready, TAP_2242_io_JTAG_TAP_in_clock_data, TAP_2242_io_JTAG_TAP_in_clock_valid, TAP_2242_io_JTAG_TAP_in_clock_ready, TAP_2242_io_JTAG_TAP_in_reset_data, TAP_2242_io_JTAG_TAP_in_reset_valid, TAP_2242_io_JTAG_TAP_in_reset_ready;
   wire[3:0] TAP_2242_io_out_curr_state;
 
   always @ (posedge clk) begin
@@ -1518,7 +1518,7 @@ module JTAG(
       reg_ch_bit_32u_2275 <= 32'h1234;
     else
     if (op_eq_2345)
-      reg_ch_bit_32u_2275 <= sel_2341;
+      reg_ch_bit_32u_2275 <= sel_2326;
   end
   always @ (posedge clk) begin
     if (reset)
@@ -1531,40 +1531,40 @@ module JTAG(
     if (reset)
       reg_ch_bit_32u_2284 <= 32'h0;
     else
-      reg_ch_bit_32u_2284 <= sel_2337;
+      reg_ch_bit_32u_2284 <= sel_2328;
   end
   assign proxy_slice_2302 = op_shr_2301[30:0];
   assign proxy_cat_2303 = {io_JTAG_in_data_data, proxy_slice_2302};
   assign sel_2296 = op_eq_2294 ? reg_ch_bit_32u_2275 : 32'hdeadbeef;
   assign sel_2297 = op_eq_2291 ? reg_ch_bit_32u_2279 : sel_2296;
-  assign sel_2330 = op_eq_2344 ? reg_ch_bit_32u_2284[0] : 1'h0;
+  assign sel_2325 = op_eq_2294 ? reg_ch_bit_32u_2284 : reg_ch_bit_32u_2275;
+  assign sel_2326 = op_eq_2308 ? reg_ch_bit_32u_2275 : sel_2325;
   always @(*) begin
     case (TAP_2242_io_out_curr_state)
-      4'h4: sel_2336 = 1'h1;
-      4'hb: sel_2336 = 1'h1;
-      default: sel_2336 = op_eq_2287;
+      4'h3: sel_2328 = sel_2297;
+      4'h4: sel_2328 = proxy_cat_2303;
+      4'ha: sel_2328 = reg_ch_bit_32u_2271;
+      4'hb: sel_2328 = proxy_cat_2303;
+      default: sel_2328 = reg_ch_bit_32u_2284;
     endcase
   end
   always @(*) begin
     case (TAP_2242_io_out_curr_state)
-      4'h3: sel_2337 = sel_2297;
-      4'h4: sel_2337 = proxy_cat_2303;
-      4'ha: sel_2337 = reg_ch_bit_32u_2271;
-      4'hb: sel_2337 = proxy_cat_2303;
-      default: sel_2337 = reg_ch_bit_32u_2284;
+      4'h4: sel_2334 = 1'h1;
+      4'hb: sel_2334 = 1'h1;
+      default: sel_2334 = op_eq_2287;
     endcase
   end
-  assign sel_2340 = op_eq_2294 ? reg_ch_bit_32u_2284 : reg_ch_bit_32u_2275;
-  assign sel_2341 = op_eq_2308 ? reg_ch_bit_32u_2275 : sel_2340;
+  assign sel_2342 = op_eq_2347 ? reg_ch_bit_32u_2284[0] : 1'h0;
   assign op_eq_2287 = reg_ch_bit_32u_2271 == 32'h0;
   assign op_eq_2291 = reg_ch_bit_32u_2271 == 32'h1;
   assign op_eq_2294 = reg_ch_bit_32u_2271 == 32'h2;
   assign op_shr_2301 = reg_ch_bit_32u_2284 >> 32'h1;
   assign op_eq_2308 = reg_ch_bit_32u_2271 == 32'h1;
   assign op_eq_2343 = TAP_2242_io_out_curr_state == 4'hf;
-  assign op_eq_2344 = TAP_2242_io_out_curr_state == 4'h4;
   assign op_eq_2345 = TAP_2242_io_out_curr_state == 4'h8;
   assign op_andb_2346 = op_eq_2345 & op_eq_2308;
+  assign op_eq_2347 = TAP_2242_io_out_curr_state == 4'h4;
   TAP TAP_2242(
     .io_JTAG_TAP_in_mode_select_data(TAP_2242_io_JTAG_TAP_in_mode_select_data),
     .io_JTAG_TAP_in_mode_select_valid(TAP_2242_io_JTAG_TAP_in_mode_select_valid),
@@ -1591,8 +1591,8 @@ module JTAG(
   assign io_JTAG_JTAG_TAP_in_clock_ready = TAP_2242_io_JTAG_TAP_in_clock_ready;
   assign io_JTAG_JTAG_TAP_in_reset_ready = TAP_2242_io_JTAG_TAP_in_reset_ready;
   assign io_JTAG_in_data_ready = 1'h1;
-  assign io_JTAG_out_data_data = sel_2330;
-  assign io_JTAG_out_data_valid = sel_2336;
+  assign io_JTAG_out_data_data = sel_2342;
+  assign io_JTAG_out_data_valid = sel_2334;
 
 endmodule
 
