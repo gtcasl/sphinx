@@ -2,6 +2,8 @@
 CXXFLAGS += -std=c++17 -O0 -g -I$(CASH_HOME)/include -Wall -Wextra -pedantic
 LDFLAGS += -lcash -L$(CASH_HOME)/build/lib
 
+CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
+
 PROJECT = Sphinx.out
 
 SRCS = Sphinx.cpp main.cpp
@@ -17,16 +19,16 @@ $(PROJECT): $(OBJS)
 	$(CXX) $(CXXFLAGS) -MM $^ > .depend;
 
 clean:
-	rm -rf *.out *.o *.vcd *.iv *.fir .depend *~ *\# vl_pipeline sc_pipeline sc2_pipeline
+	rm -rf *.out *.o *.vcd *.iv *.fir .depend *~ *\# vsim* vl_pipeline sc_pipeline sc2_pipeline
 
 run: $(PROJECT)
 	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex || true
 
 perf: $(PROJECT)
-	./$(PROJECT) --test ../tests/dhrystoneO3.hex || true
+	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex || true
 	cat ../results/results.txt
 
-verilog: $(PROJECT)
+codegen: $(PROJECT)
 	./$(PROJECT) --test ../riscv-benchmarks/dhrystone.riscv.hex --exportVerilog --exportTrace || true
 	
 build-vcs: 
@@ -42,16 +44,16 @@ run-iverilog:
 	vvp -v pipeline_tb.iv
 	
 build-verilator: 
-	verilator --cc pipeline.v --top-module Pipeline -Wno-WIDTH -CFLAGS "-I$(CASH_HOME)/include" --exe vl_pipeline_tb.cpp --Mdir vl_pipeline
+	verilator --cc pipeline.v --top-module Pipeline -Wno-WIDTH -O3 -CFLAGS "-I$(CASH_HOME)/include" --exe vl_pipeline_tb.cpp --Mdir vl_pipeline
 	make -j -C vl_pipeline -f VPipeline.mk VPipeline
 
 run-verilator: 
 	./vl_pipeline/VPipeline
 
 build-systemc: 
-	verilator --sc pipeline.v --top-module Pipeline -Wno-WIDTH -CFLAGS "-I$(CASH_HOME)/include" --exe sc_pipeline_tb.cpp --Mdir sc_pipeline
+	verilator --sc pipeline.v --top-module Pipeline -Wno-WIDTH -O3 -CFLAGS "-I$(CASH_HOME)/include" --exe sc_pipeline_tb.cpp --Mdir sc_pipeline
 	make -j -C sc_pipeline -f VPipeline.mk VPipeline
-	verilator --sc pipeline.v --threads 2 --top-module Pipeline -Wno-WIDTH -CFLAGS "-I$(CASH_HOME)/include" --exe sc_pipeline_tb.cpp --Mdir sc2_pipeline
+	verilator --sc pipeline.v --threads 2 --top-module Pipeline -Wno-WIDTH -O3 -CFLAGS "-I$(CASH_HOME)/include" --exe sc_pipeline_tb.cpp --Mdir sc2_pipeline
 	make -j -C sc2_pipeline -f VPipeline.mk VPipeline
 
 run-systemc: 

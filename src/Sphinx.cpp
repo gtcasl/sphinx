@@ -645,7 +645,7 @@ bool Sphinx::simulate(const std::string& file_to_simulate) {
     overhead += (std::chrono::high_resolution_clock::now() - k_start_time);
 
     return this->stop && (!(stop && (counter > 5)));
-  });
+  }, 2);
 
   // {
   //     using namespace std::chrono;
@@ -717,7 +717,7 @@ void Sphinx::simulate_numCycles(unsigned numCycles, bool print, int mod,
       // RETURNS FALSE TO STOP
       // return (!(stop && (counter > 5)) || true);
       return ((t / 2) != numCycles);
-    });
+    }, 2);
   }
 
   auto end_time = clock();
@@ -803,7 +803,7 @@ bool Sphinx::simulate_debug(const std::string& file_to_simulate,
     // if ((!to_stop && (this->debug_state == 0))) std::cout << "ABOUT TO
     // EXIT\n";
     return !((!to_stop && (this->debug_state == 0))) && alt;
-  });
+  }, 2);
 
   // {
   //     using namespace std::chrono;
@@ -868,7 +868,7 @@ void Sphinx::export_verilog() {
 
 void Sphinx::export_trace() {
   auto trace = reinterpret_cast<ch_tracer*>(sim);
-  trace->toTestBench("pipeline_tb.v", "pipeline.v", true);
+  trace->toVerilog("pipeline_tb.v", "pipeline.v", true);
   trace->toVerilator("vl_pipeline_tb.h", "VPipeline");
   trace->toSystemC("sc_pipeline_tb.h", "VPipeline");
   trace->toVCD("pipeline.vcd");
